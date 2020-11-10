@@ -1,0 +1,47 @@
+name: Rcc
+on:
+    push:
+        branches:
+            - master
+            - maintenance
+
+jobs:
+    build:
+        name: Build
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v1
+            - uses: actions/setup-ruby@v1
+              with:
+                  ruby-version: '2.5'
+            - name: What
+              run: rake what
+            - name: Building
+              run: rake build
+
+    robot:
+        name: Robot
+        runs-on: ${{ matrix.os }}-latest
+        strategy:
+            fail-fast: false
+            matrix:
+                os: ['ubuntu']
+        steps:
+            - uses: actions/checkout@v1
+            - uses: actions/setup-ruby@v1
+              with:
+                  ruby-version: '2.5'
+            - uses: actions/setup-python@v1
+              with:
+                  python-version: '3.7'
+            - name: Setup
+              run: rake robotsetup
+            - name: What
+              run: rake what
+            - name: Testing
+              run: rake robot
+            - uses: actions/upload-artifact@v1
+              if: success() || failure()
+              with:
+                  name: ${{ matrix.os }}-test-reports
+                  path: ./tmp/output/
