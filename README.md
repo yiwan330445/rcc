@@ -1,6 +1,6 @@
 ![Robocorp Command Center (RCC)](/docs/title.png)
 
-Robocorp Command Center or `rcc` is a set of tooling that allows you to create, mange, and distribute Python-based self-contained automation packages - or robots as we call them. Together with [robot.yaml](https://robocorp.com/docs/setup/robot-yaml-format) configuration file, `rcc` is a foundation that allows anyone to build and share automation with ease.
+Robocorp Command Center or `rcc` is a set of tooling that allows you to create, manage, and distribute Python-based self-contained automation packages - or robots as we call them. Together with [robot.yaml](https://robocorp.com/docs/setup/robot-yaml-format) configuration file, `rcc` is a foundation that allows anyone to build and share automation with ease.
 
 ## Getting Started
 
@@ -24,4 +24,3 @@ Robocorp Command Center or `rcc` is a set of tooling that allows you to create, 
 The Robocorp community can be found on [Developer Slack](https://robocorp-developers.slack.com), where you can ask questions, voice ideas, and share your projects.
 
 You can also use the [Robocorp Forum](https://forum.robocorp.com)
-
