@@ -1,0 +1,9 @@
+channels:
+  - defaults
+dependencies:
+  - python=3.7.5
+  - pip
+  - robotframework=3.2
+  - robotframework-seleniumlibrary
+  - pip:
+    - webdrivermanager
