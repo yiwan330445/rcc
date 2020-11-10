@@ -7,7 +7,7 @@ Robocorp Command Center or `rcc` is a set of tooling that allows you to create, 
 * If you just want to use the `rcc` visit [Robocorp rcc documentation site](https://robocorp.com/docs/product-manuals/robocorp-cli) to get started.
 * To build `rcc` from this repository see the [Setup Guide](/docs/BUILD.md)
 
-### Direct downloads for signed executables provided by Robocorp
+### Direct downloads for signed executables provided by Robocorp ([EULA](https://cdn.robocorp.com/legal/Robocorp-EULA-v1.0.pdf))
 
 | OS      | Download URL                                                     |
 | ------- | ---------------------------------------------------------------- |
