@@ -20,7 +20,10 @@ end result will be a composite environment.`,
 		if common.Debug {
 			defer common.Stopwatch("New environment creation lasted").Report()
 		}
-		conda.MustConda()
+		ok := conda.MustConda()
+		if !ok {
+			common.Exit(2, "Could not get miniconda installed.")
+		}
 		label, err := conda.NewEnvironment(forceFlag, args...)
 		if err != nil {
 			common.Exit(1, "Environment creation failed: %v", err)

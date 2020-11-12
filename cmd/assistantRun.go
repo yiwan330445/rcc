@@ -31,7 +31,10 @@ var assistantRunCmd = &cobra.Command{
 		}
 		now := time.Now()
 		marker := now.Unix()
-		conda.MustConda()
+		ok := conda.MustConda()
+		if !ok {
+			common.Exit(2, "Could not get miniconda installed.")
+		}
 		defer xviper.RunMinutes().Done()
 		account := operations.AccountByName(AccountName())
 		if account == nil {

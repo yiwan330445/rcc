@@ -1,0 +1,22 @@
+Road to Robocorp Command Center (RCC)
+=====================================
+
+First, download a bunch of example robots using following command.
+
+    rcc pull example-activities
+
+Then change into some robot root directory.
+
+    cd example-activities-master/google-image-search
+
+Now you are ready to run your first robot.
+
+    rcc run
+
+Explore other available commands.
+
+    rcc
+    rcc robot -h
+    rcc robot initialize -h
+
+Have fun! ;-)

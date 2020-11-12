@@ -29,7 +29,7 @@ conda using "rcc conda download" and "rcc conda install" commands.  `,
 		if common.Debug {
 			common.Log("Starting conda download ...")
 		}
-		if !doDownload() {
+		if !conda.DoDownload() {
 			common.Exit(2, "Error: Conda download failed.")
 		}
 		if common.Debug {

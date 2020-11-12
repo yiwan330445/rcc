@@ -26,15 +26,23 @@ var communityPullCmd = &cobra.Command{
 			defer common.Stopwatch("Pull lasted").Report()
 		}
 
-		link := operations.CommunityLocation(args[0], branch)
-
 		zipfile := filepath.Join(os.TempDir(), fmt.Sprintf("pull%x.zip", time.Now().Unix()))
 		defer os.Remove(zipfile)
 		if common.Debug {
 			common.Log("Using temporary zipfile at %v", zipfile)
 		}
 
-		err := operations.DownloadCommunityRobot(link, zipfile)
+		var err error
+		branches := []string{branch, "master", "trunk", "main"}
+
+		for _, selected := range branches {
+			link := operations.CommunityLocation(args[0], selected)
+			err = operations.DownloadCommunityRobot(link, zipfile)
+			if err == nil {
+				break
+			}
+		}
+
 		if err != nil {
 			common.Exit(1, "Download failed: %v!", err)
 		}

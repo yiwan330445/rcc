@@ -134,7 +134,10 @@ var variablesCmd = &cobra.Command{
 			common.Silent = silent
 		}()
 
-		conda.MustConda()
+		ok := conda.MustConda()
+		if !ok {
+			common.Exit(2, "Could not get miniconda installed.")
+		}
 		err := exportEnvironment(args, robotFile, runTask, environmentFile, workspaceId, validityTime, jsonFlag)
 		if err != nil {
 			common.Exit(1, "Error: Variable exporting failed because: %v", err)

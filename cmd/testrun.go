@@ -25,7 +25,10 @@ var testrunCmd = &cobra.Command{
 		if common.Debug {
 			defer common.Stopwatch("Task testrun lasted").Report()
 		}
-		conda.MustConda()
+		ok := conda.MustConda()
+		if !ok {
+			common.Exit(4, "Could not get miniconda installed.")
+		}
 		defer xviper.RunMinutes().Done()
 		now := time.Now()
 		marker := now.Unix()

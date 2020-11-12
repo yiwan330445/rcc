@@ -7,21 +7,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func doDownload() bool {
-	if common.Debug {
-		defer common.Stopwatch("Download done in").Report()
-	}
-
-	err := conda.DownloadConda()
-	if err != nil {
-		common.Log("FAILURE: %s", err)
-		return false
-	} else {
-		common.Log("Verify checksum from https://docs.conda.io/en/latest/miniconda.html")
-		return true
-	}
-}
-
 var condaDownloadCmd = &cobra.Command{
 	Use:     "download",
 	Aliases: []string{"dl", "d"},
@@ -29,7 +14,7 @@ var condaDownloadCmd = &cobra.Command{
 	Long:    `Downloads the miniconda3 installer for this platform.`,
 	Args:    cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {
-		if !doDownload() {
+		if !conda.DoDownload() {
 			common.Exit(1, "Download failed.")
 		}
 	},

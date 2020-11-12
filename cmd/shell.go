@@ -20,7 +20,10 @@ command within that environment.`,
 		if common.Debug {
 			defer common.Stopwatch("rcc shell lasted").Report()
 		}
-		conda.MustConda()
+		ok := conda.MustConda()
+		if !ok {
+			common.Exit(2, "Could not get miniconda installed.")
+		}
 		simple, config, todo, label := operations.LoadTaskWithEnvironment(robotFile, runTask, forceFlag)
 		if simple {
 			common.Exit(1, "Cannot do shell for simple execution model.")

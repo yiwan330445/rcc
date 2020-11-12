@@ -136,12 +136,6 @@ func CondaCache() string {
 	return ExpandPath(filepath.Join(MinicondaLocation(), "pkgs", "cache"))
 }
 
-func MustConda() {
-	if !HasConda() {
-		common.Exit(125, "Error: This command needs conda. Use 'rcc conda ...' to install it!")
-	}
-}
-
 func HasConda() bool {
 	location := ExpandPath(filepath.Join(MinicondaLocation(), "condabin"))
 	stat, err := os.Stat(location)

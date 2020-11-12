@@ -25,7 +25,10 @@ in your own machine.`,
 		if common.Debug {
 			defer common.Stopwatch("Task run lasted").Report()
 		}
-		conda.MustConda()
+		ok := conda.MustConda()
+		if !ok {
+			common.Exit(2, "Could not get miniconda installed.")
+		}
 		defer xviper.RunMinutes().Done()
 		simple, config, todo, label := operations.LoadTaskWithEnvironment(robotFile, runTask, forceFlag)
 		operations.BackgroundMetric("rcc", "rcc.cli.run", "+1")
