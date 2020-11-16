@@ -3,6 +3,7 @@ package cmd
 import (
 	"github.com/robocorp/rcc/common"
 	"github.com/robocorp/rcc/operations"
+	"github.com/robocorp/rcc/pretty"
 	"github.com/robocorp/rcc/xviper"
 
 	"github.com/spf13/cobra"
@@ -23,10 +24,10 @@ var metricCmd = &cobra.Command{
 			defer common.Stopwatch("Feedback metric lasted").Report()
 		}
 		if !xviper.CanTrack() {
-			common.Exit(1, "Tracking is disabled. Quitting.")
+			pretty.Exit(1, "Tracking is disabled. Quitting.")
 		}
 		operations.SendMetric(metricType, metricName, metricValue)
-		common.Exit(0, "OK")
+		pretty.Exit(0, "OK")
 	},
 }
 

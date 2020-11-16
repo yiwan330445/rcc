@@ -10,6 +10,7 @@ import (
 	"github.com/robocorp/rcc/conda"
 	"github.com/robocorp/rcc/operations"
 	"github.com/robocorp/rcc/pathlib"
+	"github.com/robocorp/rcc/pretty"
 	"github.com/robocorp/rcc/xviper"
 
 	"github.com/spf13/cobra"
@@ -22,7 +23,7 @@ func toplevelCommands(parent *cobra.Command) {
 			continue
 		}
 		name := strings.Split(child.Use, " ")
-		common.Log("| %-14s  %s", name[0], child.Short)
+		common.Log("| %s%-14s%s  %s", pretty.Cyan, name[0], pretty.Reset, child.Short)
 	}
 }
 
@@ -57,9 +58,19 @@ tasks can be developed, debugged, and run.`,
 	},
 }
 
+func Origin() string {
+	target, _, err := rootCmd.Find(os.Args[1:])
+	origin := []string{common.Version}
+	for err == nil && target != nil {
+		origin = append(origin, target.Name())
+		target = target.Parent()
+	}
+	return strings.Join(origin, ":")
+}
+
 func Execute() {
 	if err := rootCmd.Execute(); err != nil {
-		common.Exit(1, "Error: [rcc %v] %v", common.Version, err)
+		pretty.Exit(1, "Error: [rcc %v] %v", common.Version, err)
 	}
 }
 

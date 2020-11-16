@@ -3,6 +3,7 @@ package cmd
 import (
 	"github.com/robocorp/rcc/common"
 	"github.com/robocorp/rcc/conda"
+	"github.com/robocorp/rcc/pretty"
 
 	"github.com/spf13/cobra"
 )
@@ -23,9 +24,9 @@ After cleanup, they will not be available anymore.`,
 		}
 		err := conda.Cleanup(daysOption, dryFlag, allFlag)
 		if err != nil {
-			common.Exit(1, "Error: %v", err)
+			pretty.Exit(1, "Error: %v", err)
 		}
-		common.Log("OK.")
+		pretty.Ok()
 	},
 }
 

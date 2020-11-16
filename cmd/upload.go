@@ -4,6 +4,7 @@ import (
 	"github.com/robocorp/rcc/cloud"
 	"github.com/robocorp/rcc/common"
 	"github.com/robocorp/rcc/operations"
+	"github.com/robocorp/rcc/pretty"
 
 	"github.com/spf13/cobra"
 )
@@ -18,17 +19,17 @@ var uploadCmd = &cobra.Command{
 		}
 		account := operations.AccountByName(AccountName())
 		if account == nil {
-			common.Exit(1, "Could not find account by name: %v", AccountName())
+			pretty.Exit(1, "Could not find account by name: %v", AccountName())
 		}
 		client, err := cloud.NewClient(account.Endpoint)
 		if err != nil {
-			common.Exit(2, "Could not create client for endpoint: %v, reason: %v", account.Endpoint, err)
+			pretty.Exit(2, "Could not create client for endpoint: %v, reason: %v", account.Endpoint, err)
 		}
 		err = operations.UploadCommand(client, account, workspaceId, robotId, zipfile, common.Debug)
 		if err != nil {
-			common.Exit(3, "Error: %v", err)
+			pretty.Exit(3, "Error: %v", err)
 		}
-		common.Log("OK.")
+		pretty.Ok()
 	},
 }
 

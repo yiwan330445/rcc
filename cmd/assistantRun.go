@@ -11,6 +11,7 @@ import (
 	"github.com/robocorp/rcc/conda"
 	"github.com/robocorp/rcc/operations"
 	"github.com/robocorp/rcc/pathlib"
+	"github.com/robocorp/rcc/pretty"
 	"github.com/robocorp/rcc/robot"
 	"github.com/robocorp/rcc/xviper"
 
@@ -33,16 +34,16 @@ var assistantRunCmd = &cobra.Command{
 		marker := now.Unix()
 		ok := conda.MustConda()
 		if !ok {
-			common.Exit(2, "Could not get miniconda installed.")
+			pretty.Exit(2, "Could not get miniconda installed.")
 		}
 		defer xviper.RunMinutes().Done()
 		account := operations.AccountByName(AccountName())
 		if account == nil {
-			common.Exit(1, "Could not find account by name: %v", AccountName())
+			pretty.Exit(1, "Could not find account by name: %v", AccountName())
 		}
 		client, err := cloud.NewClient(account.Endpoint)
 		if err != nil {
-			common.Exit(2, "Could not create client for endpoint: %v, reason: %v", account.Endpoint, err)
+			pretty.Exit(2, "Could not create client for endpoint: %v, reason: %v", account.Endpoint, err)
 		}
 		reason = "START_FAILURE"
 		operations.BackgroundMetric("rcc", "rcc.assistant.run.start", elapser.String())
@@ -51,7 +52,7 @@ var assistantRunCmd = &cobra.Command{
 		}()
 		assistant, err := operations.StartAssistantRun(client, account, workspaceId, assistantId)
 		if err != nil {
-			common.Exit(3, "Could not run assistant, reason: %v", err)
+			pretty.Exit(3, "Could not run assistant, reason: %v", err)
 		}
 		cancel := make(chan bool)
 		go operations.BackgroundAssistantHeartbeat(cancel, client, account, workspaceId, assistantId, assistant.RunId)
@@ -80,7 +81,7 @@ var assistantRunCmd = &cobra.Command{
 		reason = "UNZIP_FAILURE"
 		err = operations.Unzip(workarea, assistant.Zipfile, false, true)
 		if err != nil {
-			common.Exit(4, "Error: %v", err)
+			pretty.Exit(4, "Error: %v", err)
 		}
 		reason = "SETUP_FAILURE"
 		targetRobot := robot.DetectConfigurationName(workarea)
@@ -109,7 +110,7 @@ var assistantRunCmd = &cobra.Command{
 			pathlib.Walk(artifactDir, pathlib.IgnoreDirectories, publisher.Publish)
 			if publisher.ErrorCount > 0 {
 				reason = "UPLOAD_FAILURE"
-				common.Exit(5, "Error: Some of uploads failed.")
+				pretty.Exit(5, "Error: Some of uploads failed.")
 			}
 		}()
 
@@ -119,7 +120,7 @@ var assistantRunCmd = &cobra.Command{
 		}()
 		reason = "ROBOT_FAILURE"
 		operations.SelectExecutionModel(captureRunFlags(), simple, todo.Commandline(), config, todo, label, false, assistant.Environment)
-		common.Log("OK.")
+		pretty.Ok()
 		status, reason = "OK", "PASS"
 	},
 }

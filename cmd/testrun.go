@@ -10,6 +10,7 @@ import (
 	"github.com/robocorp/rcc/conda"
 	"github.com/robocorp/rcc/operations"
 	"github.com/robocorp/rcc/pathlib"
+	"github.com/robocorp/rcc/pretty"
 	"github.com/robocorp/rcc/robot"
 	"github.com/robocorp/rcc/xviper"
 
@@ -27,7 +28,7 @@ var testrunCmd = &cobra.Command{
 		}
 		ok := conda.MustConda()
 		if !ok {
-			common.Exit(4, "Could not get miniconda installed.")
+			pretty.Exit(4, "Could not get miniconda installed.")
 		}
 		defer xviper.RunMinutes().Done()
 		now := time.Now()
@@ -41,11 +42,11 @@ var testrunCmd = &cobra.Command{
 		testrunDir := filepath.Join(sourceDir, "testrun", now.Format("2006-01-02_15_04_05"))
 		err := os.MkdirAll(testrunDir, 0o755)
 		if err != nil {
-			common.Exit(1, "Error: %v", err)
+			pretty.Exit(1, "Error: %v", err)
 		}
 		err = operations.Zip(sourceDir, zipfile, ignores)
 		if err != nil {
-			common.Exit(2, "Error: %v", err)
+			pretty.Exit(2, "Error: %v", err)
 		}
 		sentinelTime := time.Now()
 		workarea := filepath.Join(os.TempDir(), fmt.Sprintf("workarea%x", marker))
@@ -55,13 +56,13 @@ var testrunCmd = &cobra.Command{
 		}
 		err = operations.Unzip(workarea, zipfile, false, true)
 		if err != nil {
-			common.Exit(3, "Error: %v", err)
+			pretty.Exit(3, "Error: %v", err)
 		}
 		defer pathlib.Walk(workarea, pathlib.IgnoreOlder(sentinelTime).Ignore, TargetDir(testrunDir).CopyBack)
 		targetRobot := robot.DetectConfigurationName(workarea)
 		simple, config, todo, label := operations.LoadTaskWithEnvironment(targetRobot, runTask, forceFlag)
 		defer common.Log("Moving outputs to %v directory.", testrunDir)
-		operations.BackgroundMetric("rcc", "rcc.cli.testrun", "+1")
+		operations.BackgroundMetric("rcc", "rcc.cli.testrun", common.Version)
 		operations.SelectExecutionModel(captureRunFlags(), simple, todo.Commandline(), config, todo, label, false, nil)
 	},
 }

@@ -6,6 +6,7 @@ import (
 	"github.com/robocorp/rcc/cloud"
 	"github.com/robocorp/rcc/common"
 	"github.com/robocorp/rcc/operations"
+	"github.com/robocorp/rcc/pretty"
 
 	"github.com/spf13/cobra"
 )
@@ -21,19 +22,19 @@ var assistantListCmd = &cobra.Command{
 		}
 		account := operations.AccountByName(AccountName())
 		if account == nil {
-			common.Exit(1, "Could not find account by name: %v", AccountName())
+			pretty.Exit(1, "Could not find account by name: %v", AccountName())
 		}
 		client, err := cloud.NewClient(account.Endpoint)
 		if err != nil {
-			common.Exit(2, "Could not create client for endpoint: %v, reason: %v", account.Endpoint, err)
+			pretty.Exit(2, "Could not create client for endpoint: %v, reason: %v", account.Endpoint, err)
 		}
 		assistants, err := operations.ListAssistantsCommand(client, account, workspaceId)
 		if err != nil {
-			common.Exit(3, "Could not get list of assistants for workspace %v, reason: %v", workspaceId, err)
+			pretty.Exit(3, "Could not get list of assistants for workspace %v, reason: %v", workspaceId, err)
 		}
 		nice, err := json.MarshalIndent(assistants, "", "  ")
 		if err != nil {
-			common.Exit(4, "Could not format reply: %v", err)
+			pretty.Exit(4, "Could not format reply: %v", err)
 		}
 		common.Log("%s", nice)
 	},

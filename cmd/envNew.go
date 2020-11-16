@@ -5,6 +5,7 @@ import (
 
 	"github.com/robocorp/rcc/common"
 	"github.com/robocorp/rcc/conda"
+	"github.com/robocorp/rcc/pretty"
 
 	"github.com/spf13/cobra"
 )
@@ -22,11 +23,11 @@ end result will be a composite environment.`,
 		}
 		ok := conda.MustConda()
 		if !ok {
-			common.Exit(2, "Could not get miniconda installed.")
+			pretty.Exit(2, "Could not get miniconda installed.")
 		}
 		label, err := conda.NewEnvironment(forceFlag, args...)
 		if err != nil {
-			common.Exit(1, "Environment creation failed: %v", err)
+			pretty.Exit(1, "Environment creation failed: %v", err)
 		} else {
 			common.Log("Environment for %v as %v created.", args, label)
 		}

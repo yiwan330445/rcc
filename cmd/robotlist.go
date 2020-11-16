@@ -7,6 +7,7 @@ import (
 
 	"github.com/robocorp/rcc/common"
 	"github.com/robocorp/rcc/operations"
+	"github.com/robocorp/rcc/pretty"
 
 	"github.com/spf13/cobra"
 )
@@ -22,20 +23,20 @@ const (
 func updateRobotDirectory(directory string) {
 	err := operations.UpdateRobot(directory)
 	if err != nil {
-		common.Exit(1, "Error: %v", err)
+		pretty.Exit(1, "Error: %v", err)
 	}
 }
 
 func jsonRobots() {
 	robots, err := operations.ListRobots()
 	if err != nil {
-		common.Exit(1, "Error: %v", err)
+		pretty.Exit(1, "Error: %v", err)
 	}
 	encoder := json.NewEncoder(os.Stdout)
 	encoder.SetIndent("", "  ")
 	err = encoder.Encode(robots)
 	if err != nil {
-		common.Exit(2, "Error: %v", err)
+		pretty.Exit(2, "Error: %v", err)
 	}
 }
 
@@ -46,10 +47,10 @@ func listRobots() {
 	}
 	robots, err := operations.ListRobots()
 	if err != nil {
-		common.Exit(1, "Error: %v", err)
+		pretty.Exit(1, "Error: %v", err)
 	}
 	if len(robots) == 0 {
-		common.Exit(2, "Error: No robots found!")
+		pretty.Exit(2, "Error: No robots found!")
 	}
 	common.Log("Updated at       | Created at       | Directory")
 	for _, robot := range robots {

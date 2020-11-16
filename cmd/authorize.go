@@ -5,6 +5,7 @@ import (
 
 	"github.com/robocorp/rcc/common"
 	"github.com/robocorp/rcc/operations"
+	"github.com/robocorp/rcc/pretty"
 
 	"github.com/spf13/cobra"
 )
@@ -25,11 +26,11 @@ var authorizeCmd = &cobra.Command{
 		}
 		data, err := operations.AuthorizeClaims(AccountName(), claims)
 		if err != nil {
-			common.Exit(3, "Error: %v", err)
+			pretty.Exit(3, "Error: %v", err)
 		}
 		nice, err := json.MarshalIndent(data, "", "  ")
 		if err != nil {
-			common.Exit(4, "Error: Could not format reply: %v", err)
+			pretty.Exit(4, "Error: Could not format reply: %v", err)
 		}
 		common.Log("%s", nice)
 	},

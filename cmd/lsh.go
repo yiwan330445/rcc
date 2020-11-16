@@ -3,6 +3,7 @@ package cmd
 import (
 	"github.com/robocorp/rcc/common"
 	"github.com/robocorp/rcc/conda"
+	"github.com/robocorp/rcc/pretty"
 
 	"github.com/spf13/cobra"
 )
@@ -30,7 +31,7 @@ or requirements.txt, or similar text files.`,
 			common.Log("%s: %s <%d>", out, arg, distance)
 		}
 		if failure {
-			common.Exit(1, "Error!")
+			pretty.Exit(1, "Error!")
 		}
 	},
 }

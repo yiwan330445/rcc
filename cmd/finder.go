@@ -3,6 +3,7 @@ package cmd
 import (
 	"github.com/robocorp/rcc/common"
 	"github.com/robocorp/rcc/pathlib"
+	"github.com/robocorp/rcc/pretty"
 
 	"github.com/spf13/cobra"
 )
@@ -24,7 +25,7 @@ Example:
 		}
 		found, err := pathlib.FindNamedPath(shellDirectory, args[0])
 		if err != nil {
-			common.Exit(1, "Error: %v", err)
+			pretty.Exit(1, "Error: %v", err)
 		} else {
 			common.Log("%s", found)
 		}

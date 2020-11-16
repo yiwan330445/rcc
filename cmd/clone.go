@@ -3,6 +3,7 @@ package cmd
 import (
 	"github.com/robocorp/rcc/common"
 	"github.com/robocorp/rcc/conda"
+	"github.com/robocorp/rcc/pretty"
 
 	"github.com/spf13/cobra"
 )
@@ -18,7 +19,7 @@ var cloneCmd = &cobra.Command{
 		success := conda.CloneFromTo(source, target)
 		common.Log("Was successful: %v", success)
 		if !success {
-			common.Exit(1, "Error: Cloning failed.")
+			pretty.Exit(1, "Error: Cloning failed.")
 		}
 	},
 }

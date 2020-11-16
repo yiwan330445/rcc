@@ -3,17 +3,18 @@ package cmd
 import (
 	"github.com/robocorp/rcc/common"
 	"github.com/robocorp/rcc/operations"
+	"github.com/robocorp/rcc/pretty"
 
 	"github.com/spf13/cobra"
 )
 
 func createWorkarea() {
 	if len(directory) == 0 {
-		common.Exit(1, "Error: missing target directory")
+		pretty.Exit(1, "Error: missing target directory")
 	}
 	err := operations.InitializeWorkarea(directory, templateName, forceFlag)
 	if err != nil {
-		common.Exit(2, "Error: %v", err)
+		pretty.Exit(2, "Error: %v", err)
 	}
 }
 
@@ -38,7 +39,7 @@ var initializeCmd = &cobra.Command{
 		} else {
 			createWorkarea()
 		}
-		common.Log("OK.")
+		pretty.Ok()
 	},
 }
 
