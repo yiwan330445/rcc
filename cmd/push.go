@@ -19,7 +19,7 @@ var pushCmd = &cobra.Command{
 	Short: "Wrap the local directory and push it into Robocorp Cloud as a specific robot.",
 	Long:  "Wrap the local directory and push it into Robocorp Cloud as a specific robot.",
 	Run: func(cmd *cobra.Command, args []string) {
-		if common.Debug {
+		if common.DebugFlag {
 			defer common.Stopwatch("Push lasted").Report()
 		}
 		account := operations.AccountByName(AccountName())
@@ -33,15 +33,13 @@ var pushCmd = &cobra.Command{
 
 		zipfile := filepath.Join(os.TempDir(), fmt.Sprintf("push%x.zip", time.Now().Unix()))
 		defer os.Remove(zipfile)
-		if common.Debug {
-			common.Log("Using temporary zipfile at %v", zipfile)
-		}
+		common.Debug("Using temporary zipfile at %v", zipfile)
 
 		err = operations.Zip(directory, zipfile, ignores)
 		if err != nil {
 			pretty.Exit(3, "Error: %v", err)
 		}
-		err = operations.UploadCommand(client, account, workspaceId, robotId, zipfile, common.Debug)
+		err = operations.UploadCommand(client, account, workspaceId, robotId, zipfile, common.DebugFlag)
 		if err != nil {
 			pretty.Exit(4, "Error: %v", err)
 		}

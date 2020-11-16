@@ -20,7 +20,7 @@ Example:
     rcc internal finder -d /starting/path/somewhere robot.yaml`,
 	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		if common.Debug {
+		if common.DebugFlag {
 			defer common.Stopwatch("Finder run lasted").Report()
 		}
 		found, err := pathlib.FindNamedPath(shellDirectory, args[0])

@@ -85,9 +85,7 @@ func LiveExecution(liveFolder string, command ...string) error {
 	if !ok {
 		return errors.New(fmt.Sprintf("Cannot find command: %v", commandName))
 	}
-	if common.Debug {
-		common.Log("Using %v as command %v.", task, commandName)
-	}
+	common.Debug("Using %v as command %v.", task, commandName)
 	command[0] = task
 	environment := EnvironmentFor(liveFolder)
 	_, err := shell.New(environment, ".", command...).Transparent()
@@ -104,11 +102,9 @@ func newLive(condaYaml, requirementsText, key string, force, freshInstall bool) 
 		common.Log("rcc touching conda cache. (Stamp: %v)", when)
 		SilentTouch(CondaCache(), when)
 	}
-	if common.Debug {
-		common.Log("Setting up new conda environment using %v to folder %v", condaYaml, targetFolder)
-	}
+	common.Debug("Setting up new conda environment using %v to folder %v", condaYaml, targetFolder)
 	command := []string{CondaExecutable(), "env", "create", "-q", "-f", condaYaml, "-p", targetFolder}
-	if common.Debug {
+	if common.DebugFlag {
 		command = []string{CondaExecutable(), "env", "create", "-f", condaYaml, "-p", targetFolder}
 	}
 	_, err := shell.New(nil, ".", command...).Transparent()
@@ -116,11 +112,9 @@ func newLive(condaYaml, requirementsText, key string, force, freshInstall bool) 
 		common.Log("Conda error: %v", err)
 		return false
 	}
-	if common.Debug {
-		common.Log("Updating new environment at %v with pip requirements from %v", targetFolder, requirementsText)
-	}
+	common.Debug("Updating new environment at %v with pip requirements from %v", targetFolder, requirementsText)
 	pipCommand := []string{"pip", "install", "--no-color", "--disable-pip-version-check", "--prefer-binary", "--cache-dir", PipCache(), "--find-links", WheelCache(), "--requirement", requirementsText, "--quiet"}
-	if common.Debug {
+	if common.DebugFlag {
 		pipCommand = []string{"pip", "install", "--no-color", "--disable-pip-version-check", "--prefer-binary", "--cache-dir", PipCache(), "--find-links", WheelCache(), "--requirement", requirementsText}
 	}
 	err = LiveExecution(targetFolder, pipCommand...)
@@ -195,9 +189,7 @@ func NewEnvironment(force bool, configurations ...string) (string, error) {
 	marker := time.Now().Unix()
 	condaYaml := filepath.Join(os.TempDir(), fmt.Sprintf("conda_%x.yaml", marker))
 	requirementsText := filepath.Join(os.TempDir(), fmt.Sprintf("require_%x.txt", marker))
-	if common.Debug {
-		common.Log("Using temporary conda.yaml file: %v and requirement.txt file: %v", condaYaml, requirementsText)
-	}
+	common.Debug("Using temporary conda.yaml file: %v and requirement.txt file: %v", condaYaml, requirementsText)
 	key, err := temporaryConfig(condaYaml, requirementsText, configurations...)
 	if err != nil {
 		failures += 1

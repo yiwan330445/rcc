@@ -155,7 +155,7 @@ func listAccountsAsJson(accounts accountList) {
 		if common.Separator {
 			common.Log("--")
 		}
-		common.Log("%s", body)
+		common.Out("%s", body)
 	}
 }
 

@@ -14,7 +14,7 @@ func dumpYaml(title string, environment *conda.Environment) {
 	if err != nil {
 		pretty.Exit(3, err.Error())
 	}
-	common.Log("%s", content)
+	common.Out("%s", content)
 }
 
 var mergeCmd = &cobra.Command{
@@ -42,7 +42,7 @@ var mergeCmd = &cobra.Command{
 		dumpYaml("Full merge:", right)
 		dumpYaml("Pure conda:", right.AsPureConda())
 		common.Log("Requirements text:")
-		common.Log("%s", right.AsRequirementsText())
+		common.Out("%s", right.AsRequirementsText())
 	},
 }
 

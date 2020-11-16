@@ -14,7 +14,7 @@ var downloadCmd = &cobra.Command{
 	Short: "Fetch an existing robot from Robocorp Cloud.",
 	Long:  "Fetch an existing robot from Robocorp Cloud.",
 	Run: func(cmd *cobra.Command, args []string) {
-		if common.Debug {
+		if common.DebugFlag {
 			defer common.Stopwatch("Download lasted").Report()
 		}
 		account := operations.AccountByName(AccountName())
@@ -25,7 +25,7 @@ var downloadCmd = &cobra.Command{
 		if err != nil {
 			pretty.Exit(2, "Could not create client for endpoint: %v, reason: %v", account.Endpoint, err)
 		}
-		err = operations.DownloadCommand(client, account, workspaceId, robotId, zipfile, common.Debug)
+		err = operations.DownloadCommand(client, account, workspaceId, robotId, zipfile, common.DebugFlag)
 		if err != nil {
 			pretty.Exit(3, "Error: %v", err)
 		}

@@ -2,7 +2,6 @@ package common
 
 import (
 	"fmt"
-	"log"
 	"os"
 )
 
@@ -24,13 +23,30 @@ func init() {
 	logTool = flatLog(true)
 }
 
-func TrueLog() {
-	logTool = log.New(os.Stdout, "| ", log.LstdFlags)
+func Log(format string, details ...interface{}) {
+	if !Silent {
+		fmt.Fprintln(os.Stderr, fmt.Sprintf(format, details...))
+		os.Stderr.Sync()
+	}
 }
 
-func Log(format string, details ...interface{}) {
-	if Silent {
-		return
+func Debug(format string, details ...interface{}) error {
+	if DebugFlag {
+		fmt.Fprintln(os.Stderr, fmt.Sprintf(format, details...))
+		os.Stderr.Sync()
 	}
-	logTool.Println(fmt.Sprintf(format, details...))
+	return nil
+}
+
+func Trace(format string, details ...interface{}) error {
+	if TraceFlag {
+		fmt.Fprintln(os.Stderr, fmt.Sprintf(format, details...))
+		os.Stderr.Sync()
+	}
+	return nil
+}
+
+func Out(format string, details ...interface{}) {
+	fmt.Fprintf(os.Stdout, format, details...)
+	os.Stdout.Sync()
 }

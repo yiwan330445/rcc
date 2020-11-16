@@ -15,7 +15,7 @@ var fixCmd = &cobra.Command{
 - make files in PATH folder executable
 - convert .sh newlines to unix form`,
 	Run: func(cmd *cobra.Command, args []string) {
-		if common.Debug {
+		if common.DebugFlag {
 			defer common.Stopwatch("Fix run lasted").Report()
 		}
 		err := operations.FixRobot(robotFile)

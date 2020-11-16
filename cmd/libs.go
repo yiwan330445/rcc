@@ -25,7 +25,7 @@ var libsCmd = &cobra.Command{
 	Short:   "Manage library dependencies in an action oriented way.",
 	Long:    "Manage library dependencies in an action oriented way.",
 	Run: func(cmd *cobra.Command, args []string) {
-		if common.Debug {
+		if common.DebugFlag {
 			defer common.Stopwatch("Robot libs lasted").Report()
 		}
 		changes := &conda.Changes{
@@ -40,7 +40,7 @@ var libsCmd = &cobra.Command{
 		if err != nil {
 			pretty.Exit(1, "Error: %v", err)
 		}
-		common.Log("%s", output)
+		common.Out("%s", output)
 		pretty.Ok()
 	},
 }

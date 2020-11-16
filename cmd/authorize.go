@@ -15,7 +15,7 @@ var authorizeCmd = &cobra.Command{
 	Short: "Convert an API key to a valid authorization JWT token.",
 	Long:  "Convert an API key to a valid authorization JWT token.",
 	Run: func(cmd *cobra.Command, args []string) {
-		if common.Debug {
+		if common.DebugFlag {
 			defer common.Stopwatch("Authorize query lasted").Report()
 		}
 		var claims *operations.Claims
@@ -32,7 +32,7 @@ var authorizeCmd = &cobra.Command{
 		if err != nil {
 			pretty.Exit(4, "Error: Could not format reply: %v", err)
 		}
-		common.Log("%s", nice)
+		common.Out("%s", nice)
 	},
 }
 

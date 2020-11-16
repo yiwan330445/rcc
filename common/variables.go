@@ -2,8 +2,8 @@ package common
 
 var (
 	Silent    bool
-	Debug     bool
-	Trace     bool
+	DebugFlag bool
+	TraceFlag bool
 	Separator bool
 	NoCache   bool
 )
@@ -14,10 +14,10 @@ const (
 
 func UnifyVerbosityFlags() {
 	if Silent {
-		Debug = false
-		Trace = false
+		DebugFlag = false
+		TraceFlag = false
 	}
-	if Trace {
-		Debug = true
+	if TraceFlag {
+		DebugFlag = true
 	}
 }

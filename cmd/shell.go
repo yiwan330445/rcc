@@ -18,7 +18,7 @@ It can be used to get inside a managed environment and execute your own
 command within that environment.`,
 	Args: cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {
-		if common.Debug {
+		if common.DebugFlag {
 			defer common.Stopwatch("rcc shell lasted").Report()
 		}
 		ok := conda.MustConda()

@@ -95,9 +95,7 @@ func (it *ArtifactPublisher) NewClient(targetUrl string) (cloud.Client, *url.URL
 }
 
 func (it *ArtifactPublisher) Publish(fullpath, relativepath string, details os.FileInfo) {
-	if common.Debug {
-		common.Log("- publishing %s", relativepath)
-	}
+	common.Debug("- publishing %s", relativepath)
 	size, ok := pathlib.Size(fullpath)
 	if !ok {
 		it.ErrorCount += 1
@@ -245,15 +243,11 @@ func BackgroundAssistantHeartbeat(cancel chan bool, client cloud.Client, account
 	for {
 		select {
 		case _ = <-cancel:
-			if common.Trace {
-				common.Log("Stopping assistant heartbeat.")
-			}
+			common.Trace("Stopping assistant heartbeat.")
 			return
 		case <-time.After(60 * time.Second):
 			counter += 1
-			if common.Trace {
-				common.Log("Sending assistant heartbeat #%d.", counter)
-			}
+			common.Trace("Sending assistant heartbeat #%d.", counter)
 			go BeatAssistantRun(client, account, workspaceId, assistantId, runId, counter)
 		}
 	}

@@ -23,7 +23,7 @@ var testrunCmd = &cobra.Command{
 	Short:   "Run a task in a clean environment and clean directory.",
 	Long:    "Run a task in a clean environment and clean directory.",
 	Run: func(cmd *cobra.Command, args []string) {
-		if common.Debug {
+		if common.DebugFlag {
 			defer common.Stopwatch("Task testrun lasted").Report()
 		}
 		ok := conda.MustConda()
@@ -35,9 +35,7 @@ var testrunCmd = &cobra.Command{
 		marker := now.Unix()
 		zipfile := filepath.Join(os.TempDir(), fmt.Sprintf("testrun%x.zip", marker))
 		defer os.Remove(zipfile)
-		if common.Debug {
-			common.Log("Using temporary zip file: %v", zipfile)
-		}
+		common.Debug("Using temporary zip file: %v", zipfile)
 		sourceDir := filepath.Dir(robotFile)
 		testrunDir := filepath.Join(sourceDir, "testrun", now.Format("2006-01-02_15_04_05"))
 		err := os.MkdirAll(testrunDir, 0o755)
@@ -51,9 +49,7 @@ var testrunCmd = &cobra.Command{
 		sentinelTime := time.Now()
 		workarea := filepath.Join(os.TempDir(), fmt.Sprintf("workarea%x", marker))
 		defer os.RemoveAll(workarea)
-		if common.Debug {
-			common.Log("Using temporary workarea: %v", workarea)
-		}
+		common.Debug("Using temporary workarea: %v", workarea)
 		err = operations.Unzip(workarea, zipfile, false, true)
 		if err != nil {
 			pretty.Exit(3, "Error: %v", err)

@@ -109,12 +109,12 @@ func (it *internalClient) does(method string, request *Request) *Response {
 	} else {
 		response.Body, response.Err = ioutil.ReadAll(httpResponse.Body)
 	}
-	if common.Debug {
+	if common.DebugFlag {
 		body := "ignore"
 		if response.Status > 399 {
 			body = string(response.Body)
 		}
-		common.Log("%v %v %v => %v (%v)", <-common.Identities, method, url, response.Status, body)
+		common.Debug("%v %v %v => %v (%v)", <-common.Identities, method, url, response.Status, body)
 	}
 	return response
 }

@@ -18,7 +18,7 @@ When given multiple conda.yaml files, they will be merged together and the
 end result will be a composite environment.`,
 	Args: cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		if common.Debug {
+		if common.DebugFlag {
 			defer common.Stopwatch("New environment creation lasted").Report()
 		}
 		ok := conda.MustConda()

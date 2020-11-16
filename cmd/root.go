@@ -85,8 +85,8 @@ func init() {
 	rootCmd.PersistentFlags().BoolVarP(&pathlib.Lockless, "lockless", "", false, "do not use file locking ... DANGER!")
 	rootCmd.PersistentFlags().BoolVarP(&common.NoCache, "nocache", "", false, "do not use cache for credentials and tokens, always request them from cloud")
 
-	rootCmd.PersistentFlags().BoolVarP(&common.Debug, "debug", "", false, "to get debug output where available (not for production use)")
-	rootCmd.PersistentFlags().BoolVarP(&common.Trace, "trace", "", false, "to get trace output where available (not for production use)")
+	rootCmd.PersistentFlags().BoolVarP(&common.DebugFlag, "debug", "", false, "to get debug output where available (not for production use)")
+	rootCmd.PersistentFlags().BoolVarP(&common.TraceFlag, "trace", "", false, "to get trace output where available (not for production use)")
 }
 
 func initConfig() {
@@ -101,11 +101,6 @@ func initConfig() {
 		operations.BackgroundMetric("rcc", "rcc.controlled.by", controllerType)
 	}
 
-	if common.Trace {
-		common.Log("CLI command was: %#v", os.Args)
-	}
-
-	if common.Debug {
-		common.Log("Using config file: %v", xviper.ConfigFileUsed())
-	}
+	common.Trace("CLI command was: %#v", os.Args)
+	common.Debug("Using config file: %v", xviper.ConfigFileUsed())
 }

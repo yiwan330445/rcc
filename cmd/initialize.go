@@ -19,9 +19,9 @@ func createWorkarea() {
 }
 
 func listTemplates() {
-	common.Log("Template names:")
+	common.Out("Template names:")
 	for _, name := range operations.ListTemplates() {
-		common.Log("- %v", name)
+		common.Out("- %v", name)
 	}
 }
 
@@ -31,7 +31,7 @@ var initializeCmd = &cobra.Command{
 	Short:   "Create a directory structure for a robot.",
 	Long:    "Create a directory structure for a robot.",
 	Run: func(cmd *cobra.Command, args []string) {
-		if common.Debug {
+		if common.DebugFlag {
 			defer common.Stopwatch("Initialization lasted").Report()
 		}
 		if listFlag {

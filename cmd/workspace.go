@@ -16,7 +16,7 @@ var workspaceCmd = &cobra.Command{
 	Short: "List the available workspaces and their tasks (with --workspace option).",
 	Long:  "List the available workspaces and their tasks (with --workspace option).",
 	Run: func(cmd *cobra.Command, args []string) {
-		if common.Debug {
+		if common.DebugFlag {
 			defer common.Stopwatch("Workspace query lasted").Report()
 		}
 		account := operations.AccountByName(AccountName())
@@ -42,7 +42,7 @@ var workspaceCmd = &cobra.Command{
 		if err != nil {
 			pretty.Exit(3, "Could not format reply: %v", err)
 		}
-		common.Log("%s", nice)
+		common.Out("%s", nice)
 	},
 }
 

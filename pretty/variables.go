@@ -7,6 +7,7 @@ import (
 )
 
 var (
+	Disabled    bool
 	Interactive bool
 	Red         string
 	Green       string
@@ -20,7 +21,7 @@ func init() {
 	stderr := isatty.IsTerminal(os.Stderr.Fd())
 	Interactive = stdin && stdout && stderr
 
-	if Interactive {
+	if Interactive && !Disabled {
 		Red = csi("1;31m")
 		Green = csi("1;32m")
 		Cyan = csi("1;36m")

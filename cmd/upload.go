@@ -14,7 +14,7 @@ var uploadCmd = &cobra.Command{
 	Short: "Push an existing robot to Robocorp Cloud.",
 	Long:  "Push an existing robot to Robocorp Cloud.",
 	Run: func(cmd *cobra.Command, args []string) {
-		if common.Debug {
+		if common.DebugFlag {
 			defer common.Stopwatch("Upload lasted").Report()
 		}
 		account := operations.AccountByName(AccountName())
@@ -25,7 +25,7 @@ var uploadCmd = &cobra.Command{
 		if err != nil {
 			pretty.Exit(2, "Could not create client for endpoint: %v, reason: %v", account.Endpoint, err)
 		}
-		err = operations.UploadCommand(client, account, workspaceId, robotId, zipfile, common.Debug)
+		err = operations.UploadCommand(client, account, workspaceId, robotId, zipfile, common.DebugFlag)
 		if err != nil {
 			pretty.Exit(3, "Error: %v", err)
 		}

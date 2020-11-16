@@ -70,7 +70,7 @@ var robotlistCmd = &cobra.Command{
 	Long:  "List or update tracked robot directories.",
 	Args:  cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {
-		if common.Debug {
+		if common.DebugFlag {
 			defer common.Stopwatch("Robot list lasted").Report()
 		}
 		if len(taskDirectory) > 0 {

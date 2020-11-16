@@ -23,7 +23,7 @@ var runCmd = &cobra.Command{
 in your own machine.`,
 	Args: cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {
-		if common.Debug {
+		if common.DebugFlag {
 			defer common.Stopwatch("Task run lasted").Report()
 		}
 		ok := conda.MustConda()

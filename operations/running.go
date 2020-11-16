@@ -80,9 +80,7 @@ func SelectExecutionModel(runFlags *RunFlags, simple bool, template []string, co
 }
 
 func ExecuteSimpleTask(flags *RunFlags, template []string, config robot.Robot, todo robot.Task, interactive bool, extraEnv map[string]string) {
-	if common.Debug {
-		common.Log("Command line is: %v", template)
-	}
+	common.Debug("Command line is: %v", template)
 	task := make([]string, len(template))
 	copy(task, template)
 	searchPath := pathlib.TargetPath()
@@ -123,9 +121,7 @@ func ExecuteSimpleTask(flags *RunFlags, template []string, config robot.Robot, t
 		}
 	}
 	outputDir := todo.ArtifactDirectory(config)
-	if common.Debug {
-		common.Log("DEBUG: about to run command - %v", task)
-	}
+	common.Debug("DEBUG: about to run command - %v", task)
 	_, err = shell.New(environment, directory, task...).Tee(outputDir, interactive)
 	if err != nil {
 		pretty.Exit(9, "Error: %v", err)
@@ -134,9 +130,7 @@ func ExecuteSimpleTask(flags *RunFlags, template []string, config robot.Robot, t
 }
 
 func ExecuteTask(flags *RunFlags, template []string, config robot.Robot, todo robot.Task, label string, interactive bool, extraEnv map[string]string) {
-	if common.Debug {
-		common.Log("Command line is: %v", template)
-	}
+	common.Debug("Command line is: %v", template)
 	developmentEnvironment, err := robot.LoadEnvironmentSetup(flags.EnvironmentFile)
 	if err != nil {
 		pretty.Exit(5, "Error: %v", err)
@@ -183,9 +177,7 @@ func ExecuteTask(flags *RunFlags, template []string, config robot.Robot, todo ro
 	if !common.Silent && !interactive {
 		PipFreeze(searchPath, directory, outputDir, environment)
 	}
-	if common.Debug {
-		common.Log("DEBUG: about to run command - %v", task)
-	}
+	common.Debug("DEBUG: about to run command - %v", task)
 	_, err = shell.New(environment, directory, task...).Tee(outputDir, interactive)
 	if err != nil {
 		pretty.Exit(9, "Error: %v", err)

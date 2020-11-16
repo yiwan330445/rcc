@@ -14,7 +14,7 @@ var newCloudCmd = &cobra.Command{
 	Short: "Create a new robot into Robocorp Cloud.",
 	Long:  "Create a new robot into Robocorp Cloud.",
 	Run: func(cmd *cobra.Command, args []string) {
-		if common.Debug {
+		if common.DebugFlag {
 			defer common.Stopwatch("New robot creation lasted").Report()
 		}
 		account := operations.AccountByName(AccountName())

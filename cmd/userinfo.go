@@ -17,7 +17,7 @@ var userinfoCmd = &cobra.Command{
 	Short:   "Query user information from Robocorp Cloud.",
 	Long:    "Query user information from Robocorp Cloud.",
 	Run: func(cmd *cobra.Command, args []string) {
-		if common.Debug {
+		if common.DebugFlag {
 			defer common.Stopwatch("Userinfo query lasted").Report()
 		}
 		account := operations.AccountByName(AccountName())
@@ -36,7 +36,7 @@ var userinfoCmd = &cobra.Command{
 		if err != nil {
 			pretty.Exit(4, "Error: Could not format reply: %v", err)
 		}
-		common.Log("%s", nice)
+		common.Out("%s", nice)
 	},
 }
 

@@ -27,7 +27,7 @@ var assistantRunCmd = &cobra.Command{
 		var status, reason string
 		status, reason = "ERROR", "UNKNOWN"
 		elapser := common.Stopwatch("Robot Assistant startup lasted")
-		if common.Debug {
+		if common.DebugFlag {
 			defer common.Stopwatch("Robot Assistant run lasted").Report()
 		}
 		now := time.Now()
@@ -59,25 +59,19 @@ var assistantRunCmd = &cobra.Command{
 		if assistant != nil && len(assistant.RunId) > 0 {
 			defer func() {
 				close(cancel)
-				if common.Debug {
-					common.Log("Signaling cloud with status %v with reason %v.", status, reason)
-				}
+				common.Debug("Signaling cloud with status %v with reason %v.", status, reason)
 				err := operations.StopAssistantRun(client, account, workspaceId, assistantId, assistant.RunId, status, reason)
 				if err != nil {
 					common.Log("Error stopping assistant: %v", err)
 				}
 			}()
 		}
-		if common.Debug {
-			common.Log("Robot Assistant run-id is %v.", assistant.RunId)
-			common.Log("With task '%v' from zip %v.", assistant.TaskName, assistant.Zipfile)
-		}
+		common.Debug("Robot Assistant run-id is %v.", assistant.RunId)
+		common.Debug("With task '%v' from zip %v.", assistant.TaskName, assistant.Zipfile)
 		sentinelTime := time.Now()
 		workarea := filepath.Join(os.TempDir(), fmt.Sprintf("workarea%x", marker))
 		defer os.RemoveAll(workarea)
-		if common.Debug {
-			common.Log("Using temporary workarea: %v", workarea)
-		}
+		common.Debug("Using temporary workarea: %v", workarea)
 		reason = "UNZIP_FAILURE"
 		err = operations.Unzip(workarea, assistant.Zipfile, false, true)
 		if err != nil {
@@ -93,7 +87,7 @@ var assistantRunCmd = &cobra.Command{
 				defer pathlib.Walk(artifactDir, pathlib.IgnoreOlder(sentinelTime).Ignore, TargetDir(copyDirectory).OverwriteBack)
 			}
 		}
-		if common.Debug {
+		if common.DebugFlag {
 			elapser.Report()
 		}
 
