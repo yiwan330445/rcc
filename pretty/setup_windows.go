@@ -9,10 +9,10 @@ import (
 )
 
 const (
-	ENABLE_VIRTUAL_TERMINAL_PROCESSING = 0x400
+	ENABLE_VIRTUAL_TERMINAL_PROCESSING = 0x4
 )
 
-func init() {
+func localSetup() {
 	Disabled = true
 	kernel32 := syscall.NewLazyDLL("kernel32.dll")
 	if kernel32 == nil {

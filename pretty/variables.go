@@ -16,11 +16,13 @@ var (
 	Reset       string
 )
 
-func init() {
+func Setup() {
 	stdin := isatty.IsTerminal(os.Stdin.Fd())
 	stdout := isatty.IsTerminal(os.Stdout.Fd())
 	stderr := isatty.IsTerminal(os.Stderr.Fd())
 	Interactive = stdin && stdout && stderr
+
+	localSetup()
 
 	common.Trace("Interactive mode enabled: %v; colors enabled: %v", Interactive, !Disabled)
 	if Interactive && !Disabled {

@@ -100,6 +100,7 @@ func initConfig() {
 		operations.BackgroundMetric("rcc", "rcc.controlled.by", controllerType)
 	}
 
+	pretty.Setup()
 	common.Trace("CLI command was: %#v", os.Args)
 	common.Debug("Using config file: %v", xviper.ConfigFileUsed())
 }

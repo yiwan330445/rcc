@@ -2,6 +2,6 @@
 
 package pretty
 
-func init() {
+func localSetup() {
 	Disabled = false
 }
