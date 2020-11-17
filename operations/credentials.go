@@ -150,11 +150,8 @@ func (it *account) UpdateDetails(details Token) {
 func listAccountsAsJson(accounts accountList) {
 	body, err := NiceJsonOutput(accounts)
 	if err != nil {
-		common.Log("Error: %v", err)
+		common.Error("list-accounts", err)
 	} else {
-		if common.Separator {
-			common.Log("--")
-		}
 		common.Out("%s", body)
 	}
 }

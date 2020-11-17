@@ -1,8 +1,6 @@
 package cmd
 
 import (
-	"fmt"
-
 	"github.com/robocorp/rcc/common"
 	"github.com/robocorp/rcc/conda"
 	"github.com/robocorp/rcc/pretty"
@@ -32,7 +30,7 @@ end result will be a composite environment.`,
 			common.Log("Environment for %v as %v created.", args, label)
 		}
 		if common.Silent {
-			fmt.Println(label)
+			common.Out("%s", label)
 		}
 	},
 }

@@ -18,7 +18,7 @@ func DoDownload() bool {
 
 	err := DownloadConda()
 	if err != nil {
-		common.Log("FAILURE: %s", err)
+		common.Error("Download", err)
 		return false
 	} else {
 		common.Log("Verify checksum from https://docs.conda.io/en/latest/miniconda.html")
@@ -41,7 +41,7 @@ func DoInstall() bool {
 	common.Debug("Running: %v", install)
 	_, err := shell.New(nil, ".", install...).Transparent()
 	if err != nil {
-		common.Log("Error: %v", err)
+		common.Error("Install", err)
 		return false
 	}
 	return true

@@ -97,7 +97,7 @@ func (it *internalClient) does(method string, request *Request) *Response {
 	}
 	httpResponse, err := it.client.Do(httpRequest)
 	if err != nil {
-		common.Log("DO: %v", err)
+		common.Error("http.Do", err)
 		response.Status = 9002
 		response.Err = err
 		return response

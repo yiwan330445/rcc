@@ -41,19 +41,13 @@ func asJson(items []string) error {
 	if err != nil {
 		return err
 	}
-	if common.Separator {
-		fmt.Println("--")
-	}
-	fmt.Println(content)
+	common.Out("%s", content)
 	return nil
 }
 
 func asText(items []string) {
-	if common.Separator {
-		fmt.Println("--")
-	}
 	for _, line := range items {
-		fmt.Println(line)
+		common.Out(line)
 	}
 }
 

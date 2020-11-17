@@ -61,9 +61,7 @@ var assistantRunCmd = &cobra.Command{
 				close(cancel)
 				common.Debug("Signaling cloud with status %v with reason %v.", status, reason)
 				err := operations.StopAssistantRun(client, account, workspaceId, assistantId, assistant.RunId, status, reason)
-				if err != nil {
-					common.Log("Error stopping assistant: %v", err)
-				}
+				common.Error("Stop assistant", err)
 			}()
 		}
 		common.Debug("Robot Assistant run-id is %v.", assistant.RunId)

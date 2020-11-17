@@ -5,22 +5,10 @@ import (
 	"os"
 )
 
-var (
-	logTool logging
-)
-
-type logging interface {
-	Println(...interface{})
-}
-
-type flatLog bool
-
-func (it flatLog) Println(values ...interface{}) {
-	fmt.Println(values...)
-}
-
-func init() {
-	logTool = flatLog(true)
+func Error(context string, err error) {
+	if err != nil {
+		Log("Error [%s]: %v", context, err)
+	}
 }
 
 func Log(format string, details ...interface{}) {

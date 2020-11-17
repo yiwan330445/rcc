@@ -109,7 +109,7 @@ func newLive(condaYaml, requirementsText, key string, force, freshInstall bool) 
 	}
 	_, err := shell.New(nil, ".", command...).Transparent()
 	if err != nil {
-		common.Log("Conda error: %v", err)
+		common.Error("Conda error", err)
 		return false
 	}
 	common.Debug("Updating new environment at %v with pip requirements from %v", targetFolder, requirementsText)
@@ -119,12 +119,12 @@ func newLive(condaYaml, requirementsText, key string, force, freshInstall bool) 
 	}
 	err = LiveExecution(targetFolder, pipCommand...)
 	if err != nil {
-		common.Log("Pip error: %v", err)
+		common.Error("Pip error", err)
 		return false
 	}
 	digest, err := DigestFor(targetFolder)
 	if err != nil {
-		common.Log("DIGEST ERROR: %v", err)
+		common.Error("Digest", err)
 		return false
 	}
 	return metaSave(targetFolder, Hexdigest(digest)) == nil
@@ -303,13 +303,13 @@ func copyFolder(source, target string, queue chan copyRequest) bool {
 
 	handle, err := os.Open(source)
 	if err != nil {
-		common.Log("OPEN error: %v", err)
+		common.Error("OPEN", err)
 		return false
 	}
 	entries, err := handle.Readdir(-1)
 	handle.Close()
 	if err != nil {
-		common.Log("DIR error: %v", err)
+		common.Error("DIR", err)
 		return false
 	}
 
@@ -349,7 +349,7 @@ func copyWorker(tasks chan copyRequest, done chan bool) {
 		}
 		err = os.Symlink(link, task.target)
 		if err != nil {
-			common.Log("LINK error: %v", err)
+			common.Error("LINK", err)
 			continue
 		}
 	}

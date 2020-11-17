@@ -20,7 +20,7 @@ or requirements.txt, or similar text files.`,
 		for _, arg := range args {
 			out, err := conda.HashConfig(arg)
 			if err != nil {
-				common.Log("%v", err.Error())
+				common.Error("lsh", err)
 				failure = true
 				continue
 			}

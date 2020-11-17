@@ -4,6 +4,7 @@ import (
 	"os"
 
 	"github.com/mattn/go-isatty"
+	"github.com/robocorp/rcc/common"
 )
 
 var (
@@ -21,6 +22,7 @@ func init() {
 	stderr := isatty.IsTerminal(os.Stderr.Fd())
 	Interactive = stdin && stdout && stderr
 
+	common.Trace("Interactive mode enabled: %v; colors enabled: %v", Interactive, !Disabled)
 	if Interactive && !Disabled {
 		Red = csi("1;31m")
 		Green = csi("1;32m")

@@ -4,7 +4,6 @@ var (
 	Silent    bool
 	DebugFlag bool
 	TraceFlag bool
-	Separator bool
 	NoCache   bool
 )
 

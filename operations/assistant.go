@@ -104,7 +104,7 @@ func (it *ArtifactPublisher) Publish(fullpath, relativepath string, details os.F
 	client, url, err := it.NewClient(it.ArtifactPostURL)
 	if err != nil {
 		it.ErrorCount += 1
-		fmt.Println("ERR:", err)
+		common.Error("Assistant", err)
 		return //err
 	}
 	basename := filepath.Base(fullpath)
@@ -116,41 +116,41 @@ func (it *ArtifactPublisher) Publish(fullpath, relativepath string, details os.F
 	body, err := data.AsJson()
 	if err != nil {
 		it.ErrorCount += 1
-		fmt.Println("ERR:", err)
+		common.Error("Assistant", err)
 		return //err
 	}
 	request.Body = strings.NewReader(body)
 	response := client.Post(request)
 	if response.Err != nil {
 		it.ErrorCount += 1
-		fmt.Println("ERR:", response.Err)
+		common.Error("Assistant", response.Err)
 		return //err
 	}
 	if response.Status < 200 || 299 < response.Status {
-		fmt.Println("ERR: status code", response.Status)
+		common.Log("ERR: status code %v", response.Status)
 		return //err
 	}
 	var outcome awsWrapper
 	err = json.Unmarshal(response.Body, &outcome)
 	if err != nil {
 		it.ErrorCount += 1
-		fmt.Println("ERR:", err)
+		common.Error("Assistant", err)
 		return //err
 	}
 	if outcome.Response == nil {
 		it.ErrorCount += 1
-		fmt.Println("ERR: did not get correct response in reply from cloud.")
+		common.Log("ERR: did not get correct response in reply from cloud.")
 		return //err
 	}
 	if outcome.Response.PostInfo == nil {
 		it.ErrorCount += 1
-		fmt.Println("ERR: did not get correct response postinfo in reply from cloud.")
+		common.Log("ERR: did not get correct response postinfo in reply from cloud.")
 		return //err
 	}
 	err = multipartUpload(outcome.Response.PostInfo.Url, outcome.Response.PostInfo.Fields, basename, fullpath)
 	if err != nil {
 		it.ErrorCount += 1
-		fmt.Println("LAST ERR:", err)
+		common.Error("Assistant/Last", err)
 	}
 }
 

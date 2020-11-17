@@ -18,7 +18,7 @@ var tutorialCmd = &cobra.Command{
 		if err != nil {
 			pretty.Exit(1, "Cannot show tutorial text, reason: %v", err)
 		}
-		common.Log("%s", content)
+		common.Out("%s", content)
 	},
 }
 
