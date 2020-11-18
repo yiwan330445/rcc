@@ -24,9 +24,16 @@ func localSetup() {
 		common.Trace("Cannot use colors. Did not get SetConsoleMode!")
 		return
 	}
-	_, _, err := setConsoleMode.Call(ENABLE_VIRTUAL_TERMINAL_PROCESSING)
-	Disabled = err != nil
+	target := syscall.Stdout
+	var mode uint32
+	err := syscall.GetConsoleMode(target, &mode)
 	if err != nil {
+		common.Trace("Cannot use colors. Got mode error '%v'!", err)
+	}
+	mode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING
+	success, _, err := setConsoleMode.Call(uintptr(target), uintptr(mode))
+	Disabled = success == 0
+	if Disabled && err != nil {
 		common.Trace("Cannot use colors. Got error '%v'!", err)
 	}
 }

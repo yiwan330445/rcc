@@ -6,8 +6,9 @@ import (
 	"github.com/robocorp/rcc/common"
 )
 
-func Ok() {
+func Ok() error {
 	common.Log("%sOK.%s", Green, Reset)
+	return nil
 }
 
 func Exit(code int, format string, rest ...interface{}) {
