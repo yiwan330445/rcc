@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/robocorp/rcc/common"
+	"github.com/robocorp/rcc/pretty"
 )
 
 var (
@@ -19,15 +20,15 @@ func validateLocations(checked map[string]string) bool {
 		}
 		if strings.ContainsAny(value, " \t") {
 			success = false
-			common.Log("WARNING!  %s contain spaces. Cannot install miniconda at %v.", name, value)
+			common.Log("%sWARNING!  %s contain spaces. Cannot install miniconda at %v.%s", pretty.Red, name, value, pretty.Reset)
 		}
 		if !validPathCharacters.MatchString(value) {
 			success = false
-			common.Log("WARNING!  %s contain illegal characters. Cannot install miniconda at %v.", name, value)
+			common.Log("%sWARNING!  %s contain illegal characters. Cannot install miniconda at %v.%s", pretty.Red, name, value, pretty.Reset)
 		}
 	}
 	if !success {
-		common.Log("ERROR!  Cannot install miniconda on your system. See above.")
+		common.Log("%sERROR!  Cannot install miniconda on your system. See above.%s", pretty.Red, pretty.Reset)
 	}
 	return success
 }

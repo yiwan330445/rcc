@@ -19,9 +19,9 @@ func createWorkarea() {
 }
 
 func listTemplates() {
-	common.Out("Template names:")
+	common.Stdout("Template names:")
 	for _, name := range operations.ListTemplates() {
-		common.Out("- %v", name)
+		common.Stdout("- %v", name)
 	}
 }
 

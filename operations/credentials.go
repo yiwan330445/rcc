@@ -152,7 +152,7 @@ func listAccountsAsJson(accounts accountList) {
 	if err != nil {
 		common.Error("list-accounts", err)
 	} else {
-		common.Out("%s", body)
+		common.Stdout("%s", body)
 	}
 }
 

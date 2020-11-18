@@ -10,8 +10,12 @@ import (
 var (
 	Disabled    bool
 	Interactive bool
+	White       string
+	Grey        string
+	Black       string
 	Red         string
 	Green       string
+	Yellow      string
 	Cyan        string
 	Reset       string
 )
@@ -26,9 +30,13 @@ func Setup() {
 
 	common.Trace("Interactive mode enabled: %v; colors enabled: %v", Interactive, !Disabled)
 	if Interactive && !Disabled {
-		Red = csi("1;31m")
-		Green = csi("1;32m")
-		Cyan = csi("1;36m")
+		White = csi("97m")
+		Grey = csi("90m")
+		Black = csi("30m")
+		Red = csi("91m")
+		Green = csi("92m")
+		Cyan = csi("96m")
+		Yellow = csi("93m")
 		Reset = csi("0m")
 	}
 }

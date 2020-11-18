@@ -17,7 +17,7 @@ var licenseCmd = &cobra.Command{
 		if err != nil {
 			pretty.Exit(1, "Cannot show LICENSE, reason: %v", err)
 		}
-		common.Out("%s", content)
+		common.Stdout("%s", content)
 	},
 }
 

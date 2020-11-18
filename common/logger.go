@@ -34,7 +34,7 @@ func Trace(format string, details ...interface{}) error {
 	return nil
 }
 
-func Out(format string, details ...interface{}) {
+func Stdout(format string, details ...interface{}) {
 	fmt.Fprintf(os.Stdout, format, details...)
 	os.Stdout.Sync()
 }

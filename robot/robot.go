@@ -12,6 +12,7 @@ import (
 	"github.com/robocorp/rcc/common"
 	"github.com/robocorp/rcc/conda"
 	"github.com/robocorp/rcc/pathlib"
+	"github.com/robocorp/rcc/pretty"
 
 	"github.com/google/shlex"
 	"gopkg.in/yaml.v2"
@@ -310,7 +311,7 @@ func LoadRobotYaml(filename string) (Robot, error) {
 
 func LoadYamlConfiguration(filename string) (Robot, error) {
 	if strings.HasSuffix(filename, "package.yaml") {
-		common.Log("WARNING! Support for 'package.yaml' is deprecated. Upgrade to 'robot.yaml'!")
+		common.Log("%sWARNING! Support for 'package.yaml' is deprecated. Upgrade to 'robot.yaml'!%s", pretty.Red, pretty.Reset)
 		return LoadActivityPackage(filename)
 	}
 	return LoadRobotYaml(filename)

@@ -42,7 +42,7 @@ var workspaceCmd = &cobra.Command{
 		if err != nil {
 			pretty.Exit(3, "Could not format reply: %v", err)
 		}
-		common.Out("%s", nice)
+		common.Stdout("%s", nice)
 	},
 }
 

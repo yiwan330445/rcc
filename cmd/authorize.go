@@ -32,7 +32,7 @@ var authorizeCmd = &cobra.Command{
 		if err != nil {
 			pretty.Exit(4, "Error: Could not format reply: %v", err)
 		}
-		common.Out("%s", nice)
+		common.Stdout("%s", nice)
 	},
 }
 

@@ -21,7 +21,7 @@ var wizardCreateCmd = &cobra.Command{
 		}
 		err := wizard.Create(args)
 		if err != nil {
-			common.Exit(2, "Error: %v", err)
+			pretty.Exit(2, "%v", err)
 		}
 	},
 }
