@@ -13,6 +13,7 @@ const (
 )
 
 func localSetup() {
+	Iconic = false
 	Disabled = true
 	kernel32 := syscall.NewLazyDLL("kernel32.dll")
 	if kernel32 == nil {

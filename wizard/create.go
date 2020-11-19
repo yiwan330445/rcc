@@ -57,10 +57,10 @@ func Create(arguments []string) error {
 		return err
 	}
 
-	common.Stdout("%sThe %s robot has been created to: %s%s\n", pretty.Green, selected, robotName, pretty.Reset)
+	common.Stdout("%s%s%sThe %s robot has been created to: %s%s\n", pretty.Yellow, pretty.Sparkles, pretty.Green, selected, robotName, pretty.Reset)
 	common.Stdout("\n")
 
-	common.Stdout("%sGet started with following commands:%s\n", pretty.White, pretty.Reset)
+	common.Stdout("%s%sGet started with following commands:%s\n", pretty.White, pretty.Rocket, pretty.Reset)
 	common.Stdout("\n")
 
 	common.Stdout("%s$ %scd %s%s\n", pretty.Grey, pretty.Cyan, robotName, pretty.Reset)

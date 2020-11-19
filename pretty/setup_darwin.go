@@ -1,7 +1,6 @@
-// +build darwin linux !windows
-
 package pretty
 
 func localSetup() {
+	Iconic = true
 	Disabled = false
 }

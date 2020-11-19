@@ -8,6 +8,7 @@ import (
 )
 
 var (
+	Iconic      bool
 	Disabled    bool
 	Interactive bool
 	White       string
@@ -18,6 +19,8 @@ var (
 	Yellow      string
 	Cyan        string
 	Reset       string
+	Sparkles    string
+	Rocket      string
 )
 
 func Setup() {
@@ -28,7 +31,7 @@ func Setup() {
 
 	localSetup()
 
-	common.Trace("Interactive mode enabled: %v; colors enabled: %v", Interactive, !Disabled)
+	common.Trace("Interactive mode enabled: %v; colors enabled: %v; icons enabled: %v", Interactive, !Disabled, Iconic)
 	if Interactive && !Disabled {
 		White = csi("97m")
 		Grey = csi("90m")
@@ -38,5 +41,9 @@ func Setup() {
 		Cyan = csi("96m")
 		Yellow = csi("93m")
 		Reset = csi("0m")
+	}
+	if Iconic {
+		Sparkles = "\u2728 "
+		Rocket = "\U0001F680 "
 	}
 }
