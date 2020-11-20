@@ -40,7 +40,7 @@ var libsCmd = &cobra.Command{
 		if err != nil {
 			pretty.Exit(1, "Error: %v", err)
 		}
-		common.Stdout("%s", output)
+		common.Stdout("%s\n", output)
 		pretty.Ok()
 	},
 }

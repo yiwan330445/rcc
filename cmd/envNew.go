@@ -30,7 +30,7 @@ end result will be a composite environment.`,
 			common.Log("Environment for %v as %v created.", args, label)
 		}
 		if common.Silent {
-			common.Stdout("%s", label)
+			common.Stdout("%s\n", label)
 		}
 	},
 }

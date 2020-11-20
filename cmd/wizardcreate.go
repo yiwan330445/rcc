@@ -8,6 +8,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var altFlag bool
+
 var wizardCreateCmd = &cobra.Command{
 	Use:   "create",
 	Short: "Create a directory structure for a robot interactively.",
@@ -19,9 +21,16 @@ var wizardCreateCmd = &cobra.Command{
 		if common.DebugFlag {
 			defer common.Stopwatch("Interactive create lasted").Report()
 		}
-		err := wizard.Create(args)
-		if err != nil {
-			pretty.Exit(2, "%v", err)
+		if altFlag {
+			err := wizard.AltCreate(args)
+			if err != nil {
+				pretty.Exit(2, "%v", err)
+			}
+		} else {
+			err := wizard.Create(args)
+			if err != nil {
+				pretty.Exit(2, "%v", err)
+			}
 		}
 	},
 }
@@ -29,4 +38,5 @@ var wizardCreateCmd = &cobra.Command{
 func init() {
 	interactiveCmd.AddCommand(wizardCreateCmd)
 	rootCmd.AddCommand(wizardCreateCmd)
+	wizardCreateCmd.Flags().BoolVarP(&altFlag, "alt", "a", false, "select alternative create command")
 }

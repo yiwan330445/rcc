@@ -27,7 +27,7 @@ Example:
 		if err != nil {
 			pretty.Exit(1, "Error: %v", err)
 		} else {
-			common.Stdout("%s", found)
+			common.Stdout("%s\n", found)
 		}
 	},
 }

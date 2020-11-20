@@ -41,13 +41,13 @@ func asJson(items []string) error {
 	if err != nil {
 		return err
 	}
-	common.Stdout("%s", content)
+	common.Stdout("%s\n", content)
 	return nil
 }
 
 func asText(items []string) {
 	for _, line := range items {
-		common.Stdout(line)
+		common.Stdout("%s\n", line)
 	}
 }
 

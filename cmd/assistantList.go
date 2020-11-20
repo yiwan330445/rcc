@@ -36,7 +36,7 @@ var assistantListCmd = &cobra.Command{
 		if err != nil {
 			pretty.Exit(4, "Could not format reply: %v", err)
 		}
-		common.Stdout("%s", nice)
+		common.Stdout("%s\n", nice)
 	},
 }
 
