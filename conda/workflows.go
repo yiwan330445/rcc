@@ -215,8 +215,12 @@ func NewEnvironment(force bool, configurations ...string) (string, error) {
 	if newLive(condaYaml, requirementsText, key, force, freshInstall) {
 		misses += 1
 		xviper.Set("stats.env.miss", misses)
-		common.Log("####  Progress: 3/4  [backup new environment as template]")
-		CloneFromTo(liveFolder, TemplateFrom(key))
+		if !common.Liveonly {
+			common.Log("####  Progress: 3/4  [backup new environment as template]")
+			CloneFromTo(liveFolder, TemplateFrom(key))
+		} else {
+			common.Log("####  Progress: 3/4  [skipped]")
+		}
 		return liveFolder, nil
 	}
 

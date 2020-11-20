@@ -5,6 +5,7 @@ var (
 	DebugFlag bool
 	TraceFlag bool
 	NoCache   bool
+	Liveonly  bool
 )
 
 const (

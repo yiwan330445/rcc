@@ -25,5 +25,5 @@ func TestCanExecuteSimpleEcho(t *testing.T) {
 
 	code, err = shell.New(nil, ".", "ls", "-l", "crapiti.crap").Transparent()
 	wont_be.Nil(err)
-	must_be.Equal(2, code)
+	wont_be.Equal(0, code)
 }
