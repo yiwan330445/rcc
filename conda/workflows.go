@@ -94,6 +94,18 @@ func LiveExecution(liveFolder string, command ...string) error {
 
 func newLive(condaYaml, requirementsText, key string, force, freshInstall bool) bool {
 	targetFolder := LiveFrom(key)
+	removeClone(targetFolder)
+	success := newLiveInternal(condaYaml, requirementsText, key, force, freshInstall)
+	if !success && !force {
+		common.Log("Retry! First try failed ... now retrying with force!")
+		removeClone(targetFolder)
+		success = newLiveInternal(condaYaml, requirementsText, key, true, freshInstall)
+	}
+	return success
+}
+
+func newLiveInternal(condaYaml, requirementsText, key string, force, freshInstall bool) bool {
+	targetFolder := LiveFrom(key)
 	when := time.Now()
 	if force {
 		when = when.Add(-20 * 24 * time.Hour)
