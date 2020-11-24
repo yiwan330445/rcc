@@ -1,9 +1,14 @@
 package conda
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 	"regexp"
+
+	"github.com/robocorp/rcc/common"
+	"github.com/robocorp/rcc/pretty"
+	"github.com/robocorp/rcc/shell"
 )
 
 const (
@@ -82,4 +87,24 @@ func ValidateLocations() bool {
 		"Path to 'ROBOCORP_HOME' directory":    RobocorpHome(),
 	}
 	return validateLocations(checked)
+}
+
+func HasLongPathSupport() bool {
+	baseline := []string{RobocorpHome(), "stump"}
+	stumpath := filepath.Join(baseline...)
+	defer os.RemoveAll(stumpath)
+
+	for count := 0; count < 24; count++ {
+		baseline = append(baseline, fmt.Sprintf("verylongpath%d", count+1))
+	}
+	fullpath := filepath.Join(baseline...)
+
+	code, err := shell.New(nil, ".", "cmd.exe", "/c", "mkdir", fullpath).Transparent()
+	common.Trace("Checking long path support with MKDIR '%v' (%d characters) -> %v [%v] {%d}", fullpath, len(fullpath), err == nil, err, code)
+	if err != nil {
+		common.Log("%sWARNING!  Long path support failed. Reason: %v.%s", pretty.Red, err, pretty.Reset)
+		common.Log("%sWARNING!  See %v for more details.%s", pretty.Red, longPathSupportArticle, pretty.Reset)
+		return false
+	}
+	return true
 }

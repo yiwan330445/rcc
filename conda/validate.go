@@ -8,6 +8,10 @@ import (
 	"github.com/robocorp/rcc/pretty"
 )
 
+const (
+	longPathSupportArticle = `https://robocorp.com/docs/product-manuals/robocorp-lab/troubleshooting#windows-has-to-have-long-filenames-support-on`
+)
+
 var (
 	validPathCharacters = regexp.MustCompile("(?i)^[.a-z0-9_:/\\\\]+$")
 )

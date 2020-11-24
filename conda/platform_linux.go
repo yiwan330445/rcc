@@ -49,6 +49,10 @@ func IsWindows() bool {
 	return false
 }
 
+func HasLongPathSupport() bool {
+	return true
+}
+
 func ValidateLocations() bool {
 	return true
 }

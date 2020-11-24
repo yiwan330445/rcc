@@ -93,6 +93,9 @@ func LiveExecution(liveFolder string, command ...string) error {
 }
 
 func newLive(condaYaml, requirementsText, key string, force, freshInstall bool) bool {
+	if !HasLongPathSupport() {
+		return false
+	}
 	targetFolder := LiveFrom(key)
 	removeClone(targetFolder)
 	success := newLiveInternal(condaYaml, requirementsText, key, force, freshInstall)
