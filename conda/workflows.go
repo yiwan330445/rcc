@@ -177,6 +177,15 @@ func temporaryConfig(condaYaml, requirementsText string, filenames ...string) (s
 }
 
 func NewEnvironment(force bool, configurations ...string) (string, error) {
+	lockfile := MinicondaLock()
+	locker, err := pathlib.Locker(lockfile, 30000)
+	if err != nil {
+		common.Log("Could not get lock on miniconda. Quitting!")
+		return "", err
+	}
+	defer locker.Release()
+	defer os.Remove(lockfile)
+
 	requests := xviper.GetInt("stats.env.request") + 1
 	hits := xviper.GetInt("stats.env.hit")
 	dirty := xviper.GetInt("stats.env.dirty")

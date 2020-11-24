@@ -161,6 +161,10 @@ func TemplateLocation() string {
 	return filepath.Join(RobocorpHome(), "base")
 }
 
+func MinicondaLock() string {
+	return fmt.Sprintf("%s.lck", MinicondaLocation())
+}
+
 func MinicondaLocation() string {
 	return filepath.Join(RobocorpHome(), "miniconda3")
 }

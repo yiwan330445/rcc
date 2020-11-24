@@ -35,6 +35,6 @@ func Locker(filename string, trycount int) (Releaser, error) {
 func (it Locked) Release() error {
 	defer it.Close()
 	err := syscall.Flock(int(it.Fd()), int(syscall.LOCK_UN))
-	common.Trace("LOCKER: release with err: %v", err)
+	common.Trace("LOCKER: release %v with err: %v", it.Name(), err)
 	return err
 }

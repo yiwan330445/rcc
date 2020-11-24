@@ -70,7 +70,7 @@ func Locker(filename string, trycount int) (Releaser, error) {
 
 func (it Locked) Release() error {
 	success, err := trylock(unlockFile, it)
-	common.Trace("LOCKER: release success: %v with err: %v", success, err)
+	common.Trace("LOCKER: release %v success: %v with err: %v", it.Name(), success, err)
 	return err
 }
 

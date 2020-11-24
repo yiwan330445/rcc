@@ -2,6 +2,7 @@ package xviper
 
 import (
 	"fmt"
+	"os"
 	"time"
 
 	"github.com/robocorp/rcc/common"
@@ -44,6 +45,7 @@ func (it *config) Save() {
 		return
 	}
 	defer locker.Release()
+	defer os.Remove(it.Lockfile)
 
 	it.Viper.WriteConfigAs(it.Filename)
 	when, err := pathlib.Modtime(it.Filename)
@@ -59,6 +61,7 @@ func (it *config) Reload() {
 		return
 	}
 	defer locker.Release()
+	defer os.Remove(it.Lockfile)
 
 	it.Viper = viper.New()
 	it.Viper.SetConfigFile(it.Filename)

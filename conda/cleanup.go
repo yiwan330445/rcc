@@ -1,12 +1,23 @@
 package conda
 
 import (
+	"os"
 	"time"
 
 	"github.com/robocorp/rcc/common"
+	"github.com/robocorp/rcc/pathlib"
 )
 
 func Cleanup(daylimit int, dryrun, all bool) error {
+	lockfile := MinicondaLock()
+	locker, err := pathlib.Locker(lockfile, 30000)
+	if err != nil {
+		common.Log("Could not get lock on miniconda. Quitting!")
+		return err
+	}
+	defer locker.Release()
+	defer os.Remove(lockfile)
+
 	deadline := time.Now().Add(-24 * time.Duration(daylimit) * time.Hour)
 	for _, template := range TemplateList() {
 		whenLive, err := LastUsed(LiveFrom(template))
