@@ -21,3 +21,9 @@ func UnifyVerbosityFlags() {
 		DebugFlag = true
 	}
 }
+
+func ForceDebug() {
+	Silent = false
+	DebugFlag = true
+	UnifyVerbosityFlags()
+}

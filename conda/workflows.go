@@ -97,7 +97,8 @@ func newLive(condaYaml, requirementsText, key string, force, freshInstall bool) 
 	removeClone(targetFolder)
 	success := newLiveInternal(condaYaml, requirementsText, key, force, freshInstall)
 	if !success && !force {
-		common.Log("Retry! First try failed ... now retrying with force!")
+		common.ForceDebug()
+		common.Log("Retry! First try failed ... now retrying with debug and force options!")
 		removeClone(targetFolder)
 		success = newLiveInternal(condaYaml, requirementsText, key, true, freshInstall)
 	}
