@@ -6,10 +6,13 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 
+	"github.com/robocorp/rcc/cloud"
 	"github.com/robocorp/rcc/common"
 	"github.com/robocorp/rcc/pathlib"
+	"github.com/robocorp/rcc/pretty"
 	"github.com/robocorp/rcc/shell"
 	"github.com/robocorp/rcc/xviper"
 )
@@ -92,23 +95,54 @@ func LiveExecution(liveFolder string, command ...string) error {
 	return err
 }
 
+type InstallObserver map[string]bool
+
+func (it InstallObserver) Write(content []byte) (int, error) {
+	text := strings.ToLower(string(content))
+	if strings.Contains(text, "safetyerror:") {
+		it["safetyerror"] = true
+	}
+	if strings.Contains(text, "pkgs") {
+		it["pkgs"] = true
+	}
+	if strings.Contains(text, "appears to be corrupted") {
+		it["corrupted"] = true
+	}
+	return len(content), nil
+}
+
+func (it InstallObserver) HasFailures(targetFolder string) bool {
+	if it["safetyerror"] && it["corrupted"] && len(it) > 2 {
+		cloud.BackgroundMetric("rcc", "rcc.env.creation.failure", common.Version)
+		removeClone(targetFolder)
+		location := filepath.Join(MinicondaLocation(), "pkgs")
+		common.Log("%sWARNING! Conda environment is unstable, see above error.%s", pretty.Red, pretty.Reset)
+		common.Log("%sWARNING! To fix it, try to remove directory: %v%s", pretty.Red, location, pretty.Reset)
+		return true
+	}
+	return false
+}
+
 func newLive(condaYaml, requirementsText, key string, force, freshInstall bool) bool {
 	if !HasLongPathSupport() {
 		return false
 	}
 	targetFolder := LiveFrom(key)
+	common.Debug("===  new live  ---  pre cleanup phase ===")
 	removeClone(targetFolder)
-	success := newLiveInternal(condaYaml, requirementsText, key, force, freshInstall)
-	if !success && !force {
+	common.Debug("===  new live  ---  first try phase ===")
+	success, fatal := newLiveInternal(condaYaml, requirementsText, key, force, freshInstall)
+	if !success && !force && !fatal {
+		common.Debug("===  new live  ---  second try phase ===")
 		common.ForceDebug()
 		common.Log("Retry! First try failed ... now retrying with debug and force options!")
 		removeClone(targetFolder)
-		success = newLiveInternal(condaYaml, requirementsText, key, true, freshInstall)
+		success, _ = newLiveInternal(condaYaml, requirementsText, key, true, freshInstall)
 	}
 	return success
 }
 
-func newLiveInternal(condaYaml, requirementsText, key string, force, freshInstall bool) bool {
+func newLiveInternal(condaYaml, requirementsText, key string, force, freshInstall bool) (bool, bool) {
 	targetFolder := LiveFrom(key)
 	when := time.Now()
 	if force {
@@ -123,27 +157,34 @@ func newLiveInternal(condaYaml, requirementsText, key string, force, freshInstal
 	if common.DebugFlag {
 		command = []string{CondaExecutable(), "env", "create", "-f", condaYaml, "-p", targetFolder}
 	}
-	_, err := shell.New(nil, ".", command...).Transparent()
-	if err != nil {
+	observer := make(InstallObserver)
+	common.Debug("===  new live  ---  conda env create phase ===")
+	code, err := shell.New(nil, ".", command...).Observed(observer, false)
+	if err != nil || code != 0 {
 		common.Error("Conda error", err)
-		return false
+		return false, false
+	}
+	if observer.HasFailures(targetFolder) {
+		return false, true
 	}
 	common.Debug("Updating new environment at %v with pip requirements from %v", targetFolder, requirementsText)
 	pipCommand := []string{"pip", "install", "--no-color", "--disable-pip-version-check", "--prefer-binary", "--cache-dir", PipCache(), "--find-links", WheelCache(), "--requirement", requirementsText, "--quiet"}
 	if common.DebugFlag {
 		pipCommand = []string{"pip", "install", "--no-color", "--disable-pip-version-check", "--prefer-binary", "--cache-dir", PipCache(), "--find-links", WheelCache(), "--requirement", requirementsText}
 	}
+	common.Debug("===  new live  ---  pip install phase ===")
 	err = LiveExecution(targetFolder, pipCommand...)
 	if err != nil {
 		common.Error("Pip error", err)
-		return false
+		return false, false
 	}
+	common.Debug("===  new live  ---  finalize phase ===")
 	digest, err := DigestFor(targetFolder)
 	if err != nil {
 		common.Error("Digest", err)
-		return false
+		return false, false
 	}
-	return metaSave(targetFolder, Hexdigest(digest)) == nil
+	return metaSave(targetFolder, Hexdigest(digest)) == nil, false
 }
 
 func temporaryConfig(condaYaml, requirementsText string, filenames ...string) (string, error) {

@@ -68,3 +68,12 @@ func (it *Task) Tee(folder string, interactive bool) (int, error) {
 	}
 	return it.execute(os.Stdin, stdout, stderr)
 }
+
+func (it *Task) Observed(sink io.Writer, interactive bool) (int, error) {
+	stdout := io.MultiWriter(os.Stdout, sink)
+	stderr := io.MultiWriter(os.Stderr, sink)
+	if !interactive {
+		os.Stdin.Close()
+	}
+	return it.execute(os.Stdin, stdout, stderr)
+}

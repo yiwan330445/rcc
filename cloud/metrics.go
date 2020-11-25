@@ -1,11 +1,10 @@
-package operations
+package cloud
 
 import (
 	"fmt"
 	"net/url"
 	"time"
 
-	"github.com/robocorp/rcc/cloud"
 	"github.com/robocorp/rcc/common"
 	"github.com/robocorp/rcc/xviper"
 )
@@ -16,7 +15,7 @@ const (
 )
 
 func sendMetric(kind, name, value string) {
-	client, err := cloud.NewClient(metricsHost)
+	client, err := NewClient(metricsHost)
 	if err != nil {
 		common.Debug("ERROR: %v", err)
 		return

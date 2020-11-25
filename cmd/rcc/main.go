@@ -3,9 +3,9 @@ package main
 import (
 	"os"
 
+	"github.com/robocorp/rcc/cloud"
 	"github.com/robocorp/rcc/cmd"
 	"github.com/robocorp/rcc/common"
-	"github.com/robocorp/rcc/operations"
 )
 
 func ExitProtection() {
@@ -16,7 +16,7 @@ func ExitProtection() {
 			exit.ShowMessage()
 			os.Exit(exit.Code)
 		}
-		operations.SendMetric("rcc", "rcc.panic.origin", cmd.Origin())
+		cloud.SendMetric("rcc", "rcc.panic.origin", cmd.Origin())
 		panic(status)
 	}
 }

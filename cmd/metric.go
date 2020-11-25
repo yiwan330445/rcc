@@ -1,8 +1,8 @@
 package cmd
 
 import (
+	"github.com/robocorp/rcc/cloud"
 	"github.com/robocorp/rcc/common"
-	"github.com/robocorp/rcc/operations"
 	"github.com/robocorp/rcc/pretty"
 	"github.com/robocorp/rcc/xviper"
 
@@ -26,7 +26,7 @@ var metricCmd = &cobra.Command{
 		if !xviper.CanTrack() {
 			pretty.Exit(1, "Tracking is disabled. Quitting.")
 		}
-		operations.SendMetric(metricType, metricName, metricValue)
+		cloud.SendMetric(metricType, metricName, metricValue)
 		pretty.Exit(0, "OK")
 	},
 }

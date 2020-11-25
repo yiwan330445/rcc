@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 	"time"
 
+	"github.com/robocorp/rcc/cloud"
 	"github.com/robocorp/rcc/common"
 	"github.com/robocorp/rcc/conda"
 	"github.com/robocorp/rcc/operations"
@@ -58,7 +59,7 @@ var testrunCmd = &cobra.Command{
 		targetRobot := robot.DetectConfigurationName(workarea)
 		simple, config, todo, label := operations.LoadTaskWithEnvironment(targetRobot, runTask, forceFlag)
 		defer common.Log("Moving outputs to %v directory.", testrunDir)
-		operations.BackgroundMetric("rcc", "rcc.cli.testrun", common.Version)
+		cloud.BackgroundMetric("rcc", "rcc.cli.testrun", common.Version)
 		operations.SelectExecutionModel(captureRunFlags(), simple, todo.Commandline(), config, todo, label, false, nil)
 	},
 }

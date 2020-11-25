@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"github.com/robocorp/rcc/cloud"
 	"github.com/robocorp/rcc/common"
 	"github.com/robocorp/rcc/conda"
 	"github.com/robocorp/rcc/operations"
@@ -32,7 +33,7 @@ in your own machine.`,
 		}
 		defer xviper.RunMinutes().Done()
 		simple, config, todo, label := operations.LoadTaskWithEnvironment(robotFile, runTask, forceFlag)
-		operations.BackgroundMetric("rcc", "rcc.cli.run", common.Version)
+		cloud.BackgroundMetric("rcc", "rcc.cli.run", common.Version)
 		operations.SelectExecutionModel(captureRunFlags(), simple, todo.Commandline(), config, todo, label, false, nil)
 	},
 }

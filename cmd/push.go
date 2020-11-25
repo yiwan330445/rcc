@@ -43,7 +43,7 @@ var pushCmd = &cobra.Command{
 		if err != nil {
 			pretty.Exit(4, "Error: %v", err)
 		}
-		operations.BackgroundMetric("rcc", "rcc.cli.push", common.Version)
+		cloud.BackgroundMetric("rcc", "rcc.cli.push", common.Version)
 		pretty.Ok()
 	},
 }

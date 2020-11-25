@@ -6,9 +6,9 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/robocorp/rcc/cloud"
 	"github.com/robocorp/rcc/common"
 	"github.com/robocorp/rcc/conda"
-	"github.com/robocorp/rcc/operations"
 	"github.com/robocorp/rcc/pathlib"
 	"github.com/robocorp/rcc/pretty"
 	"github.com/robocorp/rcc/xviper"
@@ -99,7 +99,7 @@ func initConfig() {
 
 	common.UnifyVerbosityFlags()
 	if len(controllerType) > 0 {
-		operations.BackgroundMetric("rcc", "rcc.controlled.by", controllerType)
+		cloud.BackgroundMetric("rcc", "rcc.controlled.by", controllerType)
 	}
 
 	pretty.Setup()
