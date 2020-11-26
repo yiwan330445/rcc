@@ -3,6 +3,7 @@ package operations
 import (
 	"fmt"
 	"path/filepath"
+	"strings"
 
 	"github.com/robocorp/rcc/common"
 	"github.com/robocorp/rcc/conda"
@@ -57,7 +58,7 @@ func LoadTaskWithEnvironment(packfile, theTask string, force bool) (bool, robot.
 
 	todo := config.TaskByName(theTask)
 	if todo == nil {
-		pretty.Exit(3, "Error: Could not resolve task to run. Available tasks are: %v", config.AvailableTasks())
+		pretty.Exit(3, "Error: Could not resolve task to run. Available tasks are: %v", strings.Join(config.AvailableTasks(), ", "))
 	}
 
 	if !config.UsesConda() {
