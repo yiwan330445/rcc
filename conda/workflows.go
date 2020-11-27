@@ -209,6 +209,7 @@ func temporaryConfig(condaYaml, requirementsText string, filenames ...string) (s
 	if err != nil {
 		return "", err
 	}
+	common.Trace("FINAL union conda environment descriptior:\n---\n%v---", yaml)
 	hash, err := LocalitySensitiveHash(AsUnifiedLines(yaml))
 	if err != nil {
 		return "", err
