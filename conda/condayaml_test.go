@@ -70,6 +70,7 @@ func TestCanCreateCondaYamlFromEmptyByteSlice(t *testing.T) {
 	must_be.Equal(0, len(sut.Channels))
 	must_be.Equal(0, len(sut.Conda))
 	must_be.Equal(0, len(sut.Pip))
+	must_be.Equal(0, len(sut.PostInstall))
 }
 
 func TestCanReadCondaYaml(t *testing.T) {

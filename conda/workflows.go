@@ -9,6 +9,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/google/shlex"
 	"github.com/robocorp/rcc/cloud"
 	"github.com/robocorp/rcc/common"
 	"github.com/robocorp/rcc/pathlib"
@@ -123,7 +124,7 @@ func (it InstallObserver) HasFailures(targetFolder string) bool {
 	return false
 }
 
-func newLive(condaYaml, requirementsText, key string, force, freshInstall bool) bool {
+func newLive(condaYaml, requirementsText, key string, force, freshInstall bool, postInstall []string) bool {
 	if !HasLongPathSupport() {
 		return false
 	}
@@ -131,18 +132,18 @@ func newLive(condaYaml, requirementsText, key string, force, freshInstall bool) 
 	common.Debug("===  new live  ---  pre cleanup phase ===")
 	removeClone(targetFolder)
 	common.Debug("===  new live  ---  first try phase ===")
-	success, fatal := newLiveInternal(condaYaml, requirementsText, key, force, freshInstall)
+	success, fatal := newLiveInternal(condaYaml, requirementsText, key, force, freshInstall, postInstall)
 	if !success && !force && !fatal {
 		common.Debug("===  new live  ---  second try phase ===")
 		common.ForceDebug()
 		common.Log("Retry! First try failed ... now retrying with debug and force options!")
 		removeClone(targetFolder)
-		success, _ = newLiveInternal(condaYaml, requirementsText, key, true, freshInstall)
+		success, _ = newLiveInternal(condaYaml, requirementsText, key, true, freshInstall, postInstall)
 	}
 	return success
 }
 
-func newLiveInternal(condaYaml, requirementsText, key string, force, freshInstall bool) (bool, bool) {
+func newLiveInternal(condaYaml, requirementsText, key string, force, freshInstall bool, postInstall []string) (bool, bool) {
 	targetFolder := LiveFrom(key)
 	when := time.Now()
 	if force {
@@ -178,6 +179,21 @@ func newLiveInternal(condaYaml, requirementsText, key string, force, freshInstal
 		common.Error("Pip error", err)
 		return false, false
 	}
+	if postInstall != nil && len(postInstall) > 0 {
+		common.Debug("===  new live  ---  post install phase ===")
+		for _, script := range postInstall {
+			scriptCommand, err := shlex.Split(script)
+			if err != nil {
+				return false, false
+			}
+			common.Log("Running post install script '%s' ...", script)
+			err = LiveExecution(targetFolder, scriptCommand...)
+			if err != nil {
+				common.Log("%sScript '%s' failure: %v%s", pretty.Red, script, err, pretty.Reset)
+				return false, false
+			}
+		}
+	}
 	common.Debug("===  new live  ---  finalize phase ===")
 	digest, err := DigestFor(targetFolder)
 	if err != nil {
@@ -187,7 +203,7 @@ func newLiveInternal(condaYaml, requirementsText, key string, force, freshInstal
 	return metaSave(targetFolder, Hexdigest(digest)) == nil, false
 }
 
-func temporaryConfig(condaYaml, requirementsText string, filenames ...string) (string, error) {
+func temporaryConfig(condaYaml, requirementsText string, filenames ...string) (string, *Environment, error) {
 	var left, right *Environment
 	var err error
 
@@ -195,31 +211,31 @@ func temporaryConfig(condaYaml, requirementsText string, filenames ...string) (s
 		left = right
 		right, err = ReadCondaYaml(filename)
 		if err != nil {
-			return "", err
+			return "", nil, err
 		}
 		if left == nil {
 			continue
 		}
 		right, err = left.Merge(right)
 		if err != nil {
-			return "", err
+			return "", nil, err
 		}
 	}
 	yaml, err := right.AsYaml()
 	if err != nil {
-		return "", err
+		return "", nil, err
 	}
 	common.Trace("FINAL union conda environment descriptior:\n---\n%v---", yaml)
 	hash, err := LocalitySensitiveHash(AsUnifiedLines(yaml))
 	if err != nil {
-		return "", err
+		return "", nil, err
 	}
 	err = right.SaveAsRequirements(requirementsText)
 	if err != nil {
-		return "", err
+		return "", nil, err
 	}
 	pure := right.AsPureConda()
-	return hash, pure.SaveAs(condaYaml)
+	return hash, right, pure.SaveAs(condaYaml)
 }
 
 func NewEnvironment(force bool, configurations ...string) (string, error) {
@@ -257,7 +273,7 @@ func NewEnvironment(force bool, configurations ...string) (string, error) {
 	condaYaml := filepath.Join(os.TempDir(), fmt.Sprintf("conda_%x.yaml", marker))
 	requirementsText := filepath.Join(os.TempDir(), fmt.Sprintf("require_%x.txt", marker))
 	common.Debug("Using temporary conda.yaml file: %v and requirement.txt file: %v", condaYaml, requirementsText)
-	key, err := temporaryConfig(condaYaml, requirementsText, configurations...)
+	key, finalEnv, err := temporaryConfig(condaYaml, requirementsText, configurations...)
 	if err != nil {
 		failures += 1
 		xviper.Set("stats.env.failures", failures)
@@ -279,7 +295,7 @@ func NewEnvironment(force bool, configurations ...string) (string, error) {
 		return liveFolder, nil
 	}
 	common.Log("####  Progress: 2/4  [try create new environment from scratch]")
-	if newLive(condaYaml, requirementsText, key, force, freshInstall) {
+	if newLive(condaYaml, requirementsText, key, force, freshInstall, finalEnv.PostInstall) {
 		misses += 1
 		xviper.Set("stats.env.miss", misses)
 		if !common.Liveonly {

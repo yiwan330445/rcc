@@ -22,14 +22,16 @@ type internalEnvironment struct {
 	Channels     []string      `yaml:"channels"`
 	Dependencies []interface{} `yaml:"dependencies"`
 	Prefix       string        `yaml:"prefix,omitempty"`
+	PostInstall  []string      `yaml:"rccPostInstall,omitempty"`
 }
 
 type Environment struct {
-	Name     string
-	Prefix   string
-	Channels []string
-	Conda    []*Dependency
-	Pip      []*Dependency
+	Name        string
+	Prefix      string
+	Channels    []string
+	Conda       []*Dependency
+	Pip         []*Dependency
+	PostInstall []string
 }
 
 type Dependency struct {
@@ -92,9 +94,12 @@ func (it *Dependency) Index(others []*Dependency) int {
 
 func (it *internalEnvironment) AsEnvironment() *Environment {
 	result := &Environment{
-		Name:   it.Name,
-		Prefix: it.Prefix,
+		Name:        it.Name,
+		Prefix:      it.Prefix,
+		PostInstall: []string{},
 	}
+	seenScripts := make(map[string]bool)
+	result.PostInstall = addItem(seenScripts, it.PostInstall, result.PostInstall)
 	channel, ok := LocalChannel()
 	if ok {
 		pushChannels(result, []string{channel})
@@ -180,12 +185,12 @@ func (it *internalEnvironment) condaDependencies() []*Dependency {
 	return result
 }
 
-func addChannels(seen map[string]bool, source, target []string) []string {
-	for _, channel := range source {
-		found := seen[channel]
+func addItem(seen map[string]bool, source, target []string) []string {
+	for _, item := range source {
+		found := seen[item]
 		if !found {
-			seen[channel] = true
-			target = append(target, channel)
+			seen[item] = true
+			target = append(target, item)
 		}
 	}
 	return target
@@ -220,9 +225,15 @@ func pushPip(target *Environment, dependencies []*Dependency) error {
 func (it *Environment) Merge(right *Environment) (*Environment, error) {
 	result := new(Environment)
 	result.Name = it.Name + "+" + right.Name
+
 	seenChannels := make(map[string]bool)
-	result.Channels = addChannels(seenChannels, it.Channels, result.Channels)
-	result.Channels = addChannels(seenChannels, right.Channels, result.Channels)
+	result.Channels = addItem(seenChannels, it.Channels, result.Channels)
+	result.Channels = addItem(seenChannels, right.Channels, result.Channels)
+
+	seenScripts := make(map[string]bool)
+	result.PostInstall = addItem(seenScripts, it.PostInstall, result.PostInstall)
+	result.PostInstall = addItem(seenScripts, right.PostInstall, result.PostInstall)
+
 	err := pushConda(result, it.Conda)
 	if err != nil {
 		return nil, err
@@ -341,6 +352,8 @@ func (it *Environment) AsYaml() (string, error) {
 	result.Prefix = it.Prefix
 	result.Channels = it.Channels
 	result.Dependencies = it.CondaList()
+	seenScripts := make(map[string]bool)
+	result.PostInstall = addItem(seenScripts, it.PostInstall, result.PostInstall)
 	if len(it.Pip) > 0 {
 		result.Dependencies = append(result.Dependencies, it.PipMap())
 	}
