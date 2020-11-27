@@ -184,6 +184,7 @@ func newLiveInternal(condaYaml, requirementsText, key string, force, freshInstal
 		for _, script := range postInstall {
 			scriptCommand, err := shlex.Split(script)
 			if err != nil {
+				common.Log("%sScript '%s' parsing failure: %v%s", pretty.Red, script, err, pretty.Reset)
 				return false, false
 			}
 			common.Log("Running post install script '%s' ...", script)
