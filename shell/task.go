@@ -12,6 +12,7 @@ type Task struct {
 	directory   string
 	executable  string
 	args        []string
+	stderronly  bool
 }
 
 func New(environment []string, directory string, task ...string) *Task {
@@ -21,7 +22,20 @@ func New(environment []string, directory string, task ...string) *Task {
 		directory:   directory,
 		executable:  executable,
 		args:        args,
+		stderronly:  false,
 	}
+}
+
+func (it *Task) StderrOnly() *Task {
+	it.stderronly = true
+	return it
+}
+
+func (it *Task) stdout() io.Writer {
+	if it.stderronly {
+		return os.Stderr
+	}
+	return os.Stdout
 }
 
 func (it *Task) execute(stdin io.Reader, stdout, stderr io.Writer) (int, error) {
@@ -43,7 +57,7 @@ func (it *Task) execute(stdin io.Reader, stdout, stderr io.Writer) (int, error) 
 }
 
 func (it *Task) Transparent() (int, error) {
-	return it.execute(os.Stdin, os.Stdout, os.Stderr)
+	return it.execute(os.Stdin, it.stdout(), os.Stderr)
 }
 
 func (it *Task) Tee(folder string, interactive bool) (int, error) {
@@ -61,7 +75,7 @@ func (it *Task) Tee(folder string, interactive bool) (int, error) {
 		return -602, err
 	}
 	defer errfile.Close()
-	stdout := io.MultiWriter(os.Stdout, outfile)
+	stdout := io.MultiWriter(it.stdout(), outfile)
 	stderr := io.MultiWriter(os.Stderr, errfile)
 	if !interactive {
 		os.Stdin.Close()
@@ -70,7 +84,7 @@ func (it *Task) Tee(folder string, interactive bool) (int, error) {
 }
 
 func (it *Task) Observed(sink io.Writer, interactive bool) (int, error) {
-	stdout := io.MultiWriter(os.Stdout, sink)
+	stdout := io.MultiWriter(it.stdout(), sink)
 	stderr := io.MultiWriter(os.Stderr, sink)
 	if !interactive {
 		os.Stdin.Close()

@@ -92,7 +92,7 @@ func LiveExecution(liveFolder string, command ...string) error {
 	common.Debug("Using %v as command %v.", task, commandName)
 	command[0] = task
 	environment := EnvironmentFor(liveFolder)
-	_, err := shell.New(environment, ".", command...).Transparent()
+	_, err := shell.New(environment, ".", command...).StderrOnly().Transparent()
 	return err
 }
 
@@ -160,7 +160,7 @@ func newLiveInternal(condaYaml, requirementsText, key string, force, freshInstal
 	}
 	observer := make(InstallObserver)
 	common.Debug("===  new live  ---  conda env create phase ===")
-	code, err := shell.New(nil, ".", command...).Observed(observer, false)
+	code, err := shell.New(nil, ".", command...).StderrOnly().Observed(observer, false)
 	if err != nil || code != 0 {
 		common.Error("Conda error", err)
 		return false, false
