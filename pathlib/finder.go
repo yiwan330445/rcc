@@ -1,7 +1,6 @@
 package pathlib
 
 import (
-	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -27,8 +26,7 @@ func FindNamedPath(basedir, name string) (string, error) {
 				return result[0], nil
 			}
 			if len(result) > 1 {
-				message := fmt.Sprintf("Found %d files named as '%s'. Expecting exactly one. %s", len(result), name, result)
-				return emptyString, errors.New(message)
+				return emptyString, fmt.Errorf("Found %d files named as '%s'. Expecting exactly one. %s", len(result), name, result)
 			}
 			if len(pending) > 0 {
 				pending = append(pending, emptyString)
@@ -54,6 +52,5 @@ func FindNamedPath(basedir, name string) (string, error) {
 			}
 		}
 	}
-	message := fmt.Sprintf("Could not find path named '%s'.", name)
-	return emptyString, errors.New(message)
+	return emptyString, fmt.Errorf("Could not find path named '%s'.", name)
 }

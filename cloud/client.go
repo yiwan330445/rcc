@@ -1,7 +1,6 @@
 package cloud
 
 import (
-	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -49,8 +48,7 @@ func EnsureHttps(endpoint string) (string, error) {
 	if strings.HasPrefix(nice, "https://") {
 		return nice, nil
 	}
-	message := fmt.Sprintf("Endpoint '%s' must start with https:// prefix.", nice)
-	return "", errors.New(message)
+	return "", fmt.Errorf("Endpoint '%s' must start with https:// prefix.", nice)
 }
 
 func NewClient(endpoint string) (Client, error) {

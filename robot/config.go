@@ -159,24 +159,19 @@ func (it *Config) Validate() (bool, error) {
 	}
 	for name, activity := range it.Activities {
 		if activity.Output == "" {
-			message := fmt.Sprintf("In package.yaml, 'output:' is required for activity %s!", name)
-			return false, errors.New(message)
+			return false, fmt.Errorf("In package.yaml, 'output:' is required for activity %s!", name)
 		}
 		if activity.Root == "" {
-			message := fmt.Sprintf("In package.yaml, 'activityRoot:' is required for activity %s!", name)
-			return false, errors.New(message)
+			return false, fmt.Errorf("In package.yaml, 'activityRoot:' is required for activity %s!", name)
 		}
 		if activity.Action == nil {
-			message := fmt.Sprintf("In package.yaml, 'action:' is required for activity %s!", name)
-			return false, errors.New(message)
+			return false, fmt.Errorf("In package.yaml, 'action:' is required for activity %s!", name)
 		}
 		if activity.Action.Command == nil {
-			message := fmt.Sprintf("In package.yaml, 'action/command:' is required for activity %s!", name)
-			return false, errors.New(message)
+			return false, fmt.Errorf("In package.yaml, 'action/command:' is required for activity %s!", name)
 		}
 		if len(activity.Action.Command) == 0 {
-			message := fmt.Sprintf("In package.yaml, 'action/command:' cannot be empty for activity %s!", name)
-			return false, errors.New(message)
+			return false, fmt.Errorf("In package.yaml, 'action/command:' cannot be empty for activity %s!", name)
 		}
 	}
 	return true, nil
