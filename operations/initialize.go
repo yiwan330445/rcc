@@ -3,7 +3,6 @@ package operations
 import (
 	"archive/zip"
 	"bytes"
-	"errors"
 	"fmt"
 	"path/filepath"
 	"sort"
@@ -36,7 +35,7 @@ func unpack(content []byte, directory string) error {
 	}
 	common.Debug("Done.")
 	if !success {
-		return errors.New(fmt.Sprintf("Problems while initializing robot. Use --debug to see details."))
+		return fmt.Errorf("Problems while initializing robot. Use --debug to see details.")
 	}
 	return nil
 }

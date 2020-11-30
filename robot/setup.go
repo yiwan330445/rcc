@@ -36,11 +36,11 @@ func LoadEnvironmentSetup(filename string) (Setup, error) {
 	}
 	fullpath, err := filepath.Abs(filename)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("%q: %w", filename, err)
 	}
 	content, err := ioutil.ReadFile(fullpath)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("%q: %w", fullpath, err)
 	}
 	return EnvironmentSetupFrom(content)
 }

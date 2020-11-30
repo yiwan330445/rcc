@@ -1,7 +1,6 @@
 package conda
 
 import (
-	"errors"
 	"fmt"
 	"io/ioutil"
 	"regexp"
@@ -69,7 +68,7 @@ func (it *Dependency) ExactlySame(right *Dependency) bool {
 
 func (it *Dependency) ChooseSpecific(right *Dependency) (*Dependency, error) {
 	if !it.SameAs(right) {
-		return nil, errors.New(fmt.Sprintf("Not same component: %v vs. %v", it.Name, right.Name))
+		return nil, fmt.Errorf("Not same component: %v vs. %v", it.Name, right.Name)
 	}
 	if it.IsExact() && !right.IsExact() {
 		return it, nil
@@ -80,7 +79,7 @@ func (it *Dependency) ChooseSpecific(right *Dependency) (*Dependency, error) {
 	if it.ExactlySame(right) {
 		return it, nil
 	}
-	return nil, errors.New(fmt.Sprintf("Wont choose between dependencies: %v vs. %v", it.Original, right.Original))
+	return nil, fmt.Errorf("Wont choose between dependencies: %v vs. %v", it.Original, right.Original)
 }
 
 func (it *Dependency) Index(others []*Dependency) int {
@@ -384,7 +383,7 @@ func CondaYamlFrom(content []byte) (*Environment, error) {
 func ReadCondaYaml(filename string) (*Environment, error) {
 	content, err := ioutil.ReadFile(filename)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("%q: %w", filename, err)
 	}
 	return CondaYamlFrom(content)
 }

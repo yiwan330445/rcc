@@ -2,7 +2,6 @@ package wizard
 
 import (
 	"bufio"
-	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -87,7 +86,7 @@ func Create(arguments []string) error {
 	}
 
 	if pathlib.IsDir(fullpath) {
-		return errors.New(fmt.Sprintf("Folder %s already exists. Try with other name.", robotName))
+		return fmt.Errorf("Folder %s already exists. Try with other name.", robotName)
 	}
 
 	selected, err := choose("Choose a template", "Templates", operations.ListTemplates())

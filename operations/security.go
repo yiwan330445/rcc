@@ -114,7 +114,7 @@ func (it *EncryptionV1) Decode(blob []byte) ([]byte, error) {
 		return nil, err
 	}
 	if aesgcm.NonceSize() != len(iv) {
-		return nil, errors.New(fmt.Sprintf("Size difference in AES GCM nonce, %d vs. %d!", aesgcm.NonceSize(), len(iv)))
+		return nil, fmt.Errorf("Size difference in AES GCM nonce, %d vs. %d!", aesgcm.NonceSize(), len(iv))
 	}
 	atag, err := Decoded(content.Encryption.Atag)
 	if err != nil {

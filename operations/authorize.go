@@ -5,7 +5,6 @@ import (
 	"crypto/sha256"
 	"encoding/base64"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"strings"
 	"time"
@@ -167,15 +166,15 @@ func HmacSignature(claims *Claims, secret, nonce, bodyHash string) string {
 func AuthorizeClaims(accountName string, claims *Claims) (Token, error) {
 	account := AccountByName(accountName)
 	if account == nil {
-		return nil, errors.New(fmt.Sprintf("Could not find account by name: %s", accountName))
+		return nil, fmt.Errorf("Could not find account by name: %s", accountName)
 	}
 	client, err := cloud.NewClient(account.Endpoint)
 	if err != nil {
-		return nil, errors.New(fmt.Sprintf("Could not create client for endpoint: %s reason: %s", account.Endpoint, err))
+		return nil, fmt.Errorf("Could not create client for endpoint: %s reason: %w", account.Endpoint, err)
 	}
 	data, err := AuthorizeCommand(client, account, claims)
 	if err != nil {
-		return nil, errors.New(fmt.Sprintf("Could not authorize: %s", err))
+		return nil, fmt.Errorf("Could not authorize: %w", err)
 	}
 	return data, nil
 }
@@ -208,7 +207,7 @@ func AuthorizeCommand(client cloud.Client, account *account, claims *Claims) (To
 	request.Body = strings.NewReader(body)
 	response := client.Post(request)
 	if response.Status != 200 {
-		return nil, errors.New(fmt.Sprintf("%d: %s", response.Status, response.Body))
+		return nil, fmt.Errorf("%d: %s", response.Status, response.Body)
 	}
 	token := make(Token)
 	err = json.Unmarshal(response.Body, &token)
@@ -240,7 +239,7 @@ func DeleteAccount(client cloud.Client, account *account) error {
 	request.Headers[nonceHeader] = nonce
 	response := client.Delete(request)
 	if response.Status < 200 || 299 < response.Status {
-		return errors.New(fmt.Sprintf("%d: %s", response.Status, response.Body))
+		return fmt.Errorf("%d: %s", response.Status, response.Body)
 	}
 	return nil
 }
@@ -257,7 +256,7 @@ func UserinfoCommand(client cloud.Client, account *account) (*UserInfo, error) {
 	request.Headers[nonceHeader] = nonce
 	response := client.Get(request)
 	if response.Status != 200 {
-		return nil, errors.New(fmt.Sprintf("%d: %s", response.Status, response.Body))
+		return nil, fmt.Errorf("%d: %s", response.Status, response.Body)
 	}
 	var result UserInfo
 	err := json.Unmarshal(response.Body, &result)

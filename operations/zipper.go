@@ -2,7 +2,6 @@ package operations
 
 import (
 	"archive/zip"
-	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -127,7 +126,7 @@ func (it *unzipper) Extract(directory string) error {
 	}
 	common.Debug("Done.")
 	if !success {
-		return errors.New(fmt.Sprintf("Problems while unwrapping robot. Use --debug to see details."))
+		return fmt.Errorf("Problems while unwrapping robot. Use --debug to see details.")
 	}
 	return nil
 }

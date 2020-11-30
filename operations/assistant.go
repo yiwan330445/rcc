@@ -99,7 +99,7 @@ func (it *ArtifactPublisher) Publish(fullpath, relativepath string, details os.F
 	size, ok := pathlib.Size(fullpath)
 	if !ok {
 		it.ErrorCount += 1
-		return //errors.New(fmt.Sprintf("Could not publish file %v, reason: could not determine size!", fullpath))
+		return //fmt.Errorf("Could not publish file %v, reason: could not determine size!", fullpath)
 	}
 	client, url, err := it.NewClient(it.ArtifactPostURL)
 	if err != nil {
@@ -193,7 +193,7 @@ func multipartUpload(url string, fields map[string]string, basename, fullpath st
 		return err
 	}
 	if response.StatusCode < 200 || response.StatusCode > 299 {
-		return errors.New(fmt.Sprintf("Warning: status: %d reason: %s", response.StatusCode, IoAsString(response.Body)))
+		return fmt.Errorf("Warning: status: %d reason: %s", response.StatusCode, IoAsString(response.Body))
 	}
 	return nil
 }
@@ -228,7 +228,7 @@ func ListAssistantsCommand(client cloud.Client, account *account, workspaceId st
 	request.Headers[authorization] = WorkspaceToken(credentials)
 	response := client.Get(request)
 	if response.Status != 200 {
-		return nil, errors.New(fmt.Sprintf("%d: %s", response.Status, response.Body))
+		return nil, fmt.Errorf("%d: %s", response.Status, response.Body)
 	}
 	tokens := make([]Token, 100)
 	err = json.Unmarshal(response.Body, &tokens)
@@ -268,7 +268,7 @@ func BeatAssistantRun(client cloud.Client, account *account, workspaceId, assist
 	}
 	response := client.Post(request)
 	if response.Status != 200 {
-		return errors.New(fmt.Sprintf("%d: %s", response.Status, response.Body))
+		return fmt.Errorf("%d: %s", response.Status, response.Body)
 	}
 	return nil
 }
@@ -289,7 +289,7 @@ func StopAssistantRun(client cloud.Client, account *account, workspaceId, assist
 	}
 	response := client.Put(request)
 	if response.Status != 200 {
-		return errors.New(fmt.Sprintf("%d: %s", response.Status, response.Body))
+		return fmt.Errorf("%d: %s", response.Status, response.Body)
 	}
 	return nil
 }
@@ -311,7 +311,7 @@ func StartAssistantRun(client cloud.Client, account *account, workspaceId, assis
 	}
 	response := client.Post(request)
 	if response.Status != 200 {
-		return nil, errors.New(fmt.Sprintf("%d: %s", response.Status, response.Body))
+		return nil, fmt.Errorf("%d: %s", response.Status, response.Body)
 	}
 	plaintext, err := key.Decode(response.Body)
 	if err != nil {

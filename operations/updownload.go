@@ -56,7 +56,7 @@ func getAnyloadLink(client cloud.Client, cloudUrl, credentials string) (string, 
 	request.Headers[authorization] = BearerToken(credentials)
 	response := client.Get(request)
 	if response.Status != 200 {
-		return "", errors.New(fmt.Sprintf("%d: %s", response.Status, response.Body))
+		return "", fmt.Errorf("%d: %s", response.Status, response.Body)
 	}
 	token := make(Token)
 	err := json.Unmarshal(response.Body, &token)
@@ -65,11 +65,11 @@ func getAnyloadLink(client cloud.Client, cloudUrl, credentials string) (string, 
 	}
 	uri, ok := token["uri"]
 	if !ok {
-		return "", errors.New(fmt.Sprintf("Cannot find URI from %s.", response.Body))
+		return "", fmt.Errorf("Cannot find URI from %s.", response.Body)
 	}
 	converted, ok := uri.(string)
 	if !ok {
-		return "", errors.New(fmt.Sprintf("Cannot find URI as string from %s.", response.Body))
+		return "", fmt.Errorf("Cannot find URI as string from %s.", response.Body)
 	}
 	return converted, nil
 }
@@ -90,7 +90,7 @@ func putContent(client cloud.Client, awsUrl, zipfile string) error {
 	request.Body = handle
 	response := client.Put(request)
 	if response.Status != 200 {
-		return errors.New(fmt.Sprintf("%d: %s", response.Status, response.Body))
+		return fmt.Errorf("%d: %s", response.Status, response.Body)
 	}
 	return nil
 }
@@ -105,7 +105,7 @@ func getContent(client cloud.Client, awsUrl, zipfile string) error {
 	request.Stream = handle
 	response := client.Get(request)
 	if response.Status != 200 {
-		return errors.New(fmt.Sprintf("%d: %s", response.Status, response.Body))
+		return fmt.Errorf("%d: %s", response.Status, response.Body)
 	}
 	return nil
 }

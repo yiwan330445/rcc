@@ -1,7 +1,6 @@
 package pathlib
 
 import (
-	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -52,7 +51,7 @@ func EnsureDirectory(directory string) (string, error) {
 	}
 	stats, err := os.Stat(fullpath)
 	if !stats.IsDir() {
-		return "", errors.New(fmt.Sprintf("Path %s is not a directory!", fullpath))
+		return "", fmt.Errorf("Path %s is not a directory!", fullpath)
 	}
 	return fullpath, nil
 }

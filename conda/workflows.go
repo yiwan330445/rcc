@@ -87,7 +87,7 @@ func LiveExecution(liveFolder string, command ...string) error {
 	commandName := command[0]
 	task, ok := searchPath.Which(commandName, FileExtensions)
 	if !ok {
-		return errors.New(fmt.Sprintf("Cannot find command: %v", commandName))
+		return fmt.Errorf("Cannot find command: %v", commandName)
 	}
 	common.Debug("Using %v as command %v.", task, commandName)
 	command[0] = task

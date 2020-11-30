@@ -1,7 +1,6 @@
 package operations
 
 import (
-	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -43,7 +42,7 @@ func CacheRobot(filename string) error {
 	}
 	if verify != digest {
 		defer os.Remove(target)
-		return errors.New(fmt.Sprintf("Could not cache %v, reason: digest mismatch.", fullpath))
+		return fmt.Errorf("Could not cache %v, reason: digest mismatch.", fullpath)
 	}
 	go CleanupOldestRobot()
 	return nil

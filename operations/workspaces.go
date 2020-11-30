@@ -65,7 +65,7 @@ func WorkspacesCommand(client cloud.Client, account *account) (interface{}, erro
 	request.Headers[authorization] = BearerToken(credentials)
 	response := client.Get(request)
 	if response.Status != 200 {
-		return nil, errors.New(fmt.Sprintf("%d: %s", response.Status, response.Body))
+		return nil, fmt.Errorf("%d: %s", response.Status, response.Body)
 	}
 	tokens := make([]Token, 100)
 	err = json.Unmarshal(response.Body, &tokens)
@@ -84,7 +84,7 @@ func WorkspaceTreeCommandRequest(client cloud.Client, account *account, workspac
 	request.Headers[authorization] = BearerToken(credentials)
 	response := client.Get(request)
 	if response.Status != 200 {
-		return nil, errors.New(fmt.Sprintf("%d: %s", response.Status, response.Body))
+		return nil, fmt.Errorf("%d: %s", response.Status, response.Body)
 	}
 	return response, nil
 }
@@ -108,7 +108,7 @@ func RobotDigestCommand(client cloud.Client, account *account, workspaceId, robo
 		return "", err
 	}
 	if treedata.Robots == nil {
-		return "", errors.New(fmt.Sprintf("Cannot find any valid robots from workspace %v!", workspaceId))
+		return "", fmt.Errorf("Cannot find any valid robots from workspace %v!", workspaceId)
 	}
 	var selected *RobotData = nil
 	for _, robot := range treedata.Robots {
@@ -118,15 +118,15 @@ func RobotDigestCommand(client cloud.Client, account *account, workspaceId, robo
 		}
 	}
 	if selected == nil {
-		return "", errors.New(fmt.Sprintf("Cannot find robot %v from workspace %v!", robotId, workspaceId))
+		return "", fmt.Errorf("Cannot find robot %v from workspace %v!", robotId, workspaceId)
 	}
 	found, ok := selected.Package["sha256"]
 	if !ok {
-		return "", errors.New(fmt.Sprintf("Robot %v from workspace %v has no digest available!", robotId, workspaceId))
+		return "", fmt.Errorf("Robot %v from workspace %v has no digest available!", robotId, workspaceId)
 	}
 	digest, ok := found.(string)
 	if !ok {
-		return "", errors.New(fmt.Sprintf("Robot %v from workspace %v has no string digest available, only %#v!", robotId, workspaceId, found))
+		return "", fmt.Errorf("Robot %v from workspace %v has no string digest available, only %#v!", robotId, workspaceId, found)
 	}
 	return digest, nil
 }
@@ -147,7 +147,7 @@ func NewRobotCommand(client cloud.Client, account *account, workspace, robotName
 	request.Body = strings.NewReader(body)
 	response := client.Post(request)
 	if response.Status != 200 {
-		return nil, errors.New(fmt.Sprintf("%d: %s", response.Status, response.Body))
+		return nil, fmt.Errorf("%d: %s", response.Status, response.Body)
 	}
 	reply := make(Token)
 	err = json.Unmarshal(response.Body, &reply)

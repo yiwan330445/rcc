@@ -2,7 +2,6 @@ package operations
 
 import (
 	"crypto/sha256"
-	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -54,7 +53,7 @@ func DownloadCommunityRobot(url, filename string) error {
 	defer response.Body.Close()
 
 	if response.StatusCode < 200 || 299 < response.StatusCode {
-		return errors.New(fmt.Sprintf("%s (%s)", response.Status, url))
+		return fmt.Errorf("%s (%s)", response.Status, url)
 	}
 
 	out, err := os.Create(filename)

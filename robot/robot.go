@@ -85,7 +85,7 @@ func (it *robot) Validate() (bool, error) {
 			count += 1
 		}
 		if count != 1 {
-			return false, errors.New(fmt.Sprintf("In robot.yaml, task '%s' needs exactly one of robotTaskName/shell/command definition!", name))
+			return false, fmt.Errorf("In robot.yaml, task '%s' needs exactly one of robotTaskName/shell/command definition!", name)
 		}
 	}
 	return true, nil
@@ -295,15 +295,15 @@ func robotFrom(content []byte) (*robot, error) {
 func LoadRobotYaml(filename string) (Robot, error) {
 	fullpath, err := filepath.Abs(filename)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("%q: %w", filename, err)
 	}
 	content, err := ioutil.ReadFile(fullpath)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("%q: %w", fullpath, err)
 	}
 	robot, err := robotFrom(content)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("%q: %w", fullpath, err)
 	}
 	robot.Root = filepath.Dir(fullpath)
 	return robot, nil

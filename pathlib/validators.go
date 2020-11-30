@@ -1,7 +1,6 @@
 package pathlib
 
 import (
-	"errors"
 	"fmt"
 	"os"
 )
@@ -27,7 +26,7 @@ func EnsureEmptyDirectory(directory string) error {
 	}
 	entries, err := handle.Readdir(-1)
 	if len(entries) > 0 {
-		return errors.New(fmt.Sprintf("Directory %s is not empty!", fullpath))
+		return fmt.Errorf("Directory %s is not empty!", fullpath)
 	}
 	return nil
 }
