@@ -9,7 +9,7 @@ Using and running template example with shell file
 
   Goal        Show rcc version information.
   Step        build/rcc version --controller citests
-  Must Have   v6.
+  Must Have   v7.
 
   Goal        Show rcc license information.
   Step        build/rcc man license --controller citests
@@ -98,7 +98,7 @@ Using and running template example with shell file
 
   Goal        Merge two different conda.yaml files with conflict fails
   Step        build/rcc env new --controller citests conda/testdata/other.yaml conda/testdata/third.yaml --silent
-  Must Have   44d08c86724dd710b33228c3a1ea1a0b4bef1a44f01fe825d0e412044aaa7c0242030a
+  Must Have   786f01e87dc8d6e6
 
   Goal        See variables from specific environment without robot.yaml knowledge
   Step        build/rcc env variables --controller citests conda/testdata/conda.yaml
@@ -117,7 +117,7 @@ Using and running template example with shell file
   Must Have   PYTHONNOUSERSITE=1
   Wont Have   ROBOT_ROOT=
   Wont Have   ROBOT_ARTIFACTS=
-  Must Have   ded08c86224cc710b22228d3a1aa1a074bdf1a44f01be819c0a816044eebb80242030a
+  Must Have   f0a9e281269b31ea
 
   Goal        See variables from specific environment without robot.yaml knowledge in JSON form
   Step        build/rcc env variables --controller citests --json conda/testdata/conda.yaml

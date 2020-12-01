@@ -4,7 +4,6 @@ go 1.14
 
 require (
 	github.com/fsnotify/fsnotify v1.4.9 // indirect
-	github.com/glaslos/tlsh v0.2.1-0.20190803090415-ef1954596284
 	github.com/go-bindata/go-bindata v3.1.2+incompatible // indirect
 	github.com/google/shlex v0.0.0-20191202100458-e7afc7fbc510
 	github.com/mattn/go-isatty v0.0.12

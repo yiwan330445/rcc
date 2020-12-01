@@ -18,9 +18,6 @@ conda using "rcc conda download" and "rcc conda install" commands.  `,
 		if common.DebugFlag {
 			defer common.Stopwatch("Conda check took").Report()
 		}
-		if !conda.HasLongPathSupport() {
-			pretty.Exit(9, "Error: does not support long paths. See above!.")
-		}
 		if conda.HasConda() {
 			pretty.Exit(0, "OK.")
 		}

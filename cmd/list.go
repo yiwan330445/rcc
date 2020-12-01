@@ -23,7 +23,7 @@ in human readable form.`,
 			pretty.Exit(1, "No environments available.")
 		}
 		lines := make([]string, 0, len(templates))
-		common.Log("%-25s  %-25s  %s", "Last used", "Last cloned", "Environment (TLSH)")
+		common.Log("%-25s  %-25s  %s", "Last used", "Last cloned", "Environment")
 		for _, template := range templates {
 			cloned := "N/A"
 			used := cloned

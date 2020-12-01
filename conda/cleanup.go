@@ -41,5 +41,15 @@ func Cleanup(daylimit int, dryrun, all bool) error {
 		RemoveEnvironment(template)
 		common.Debug("Removed environment %v.", template)
 	}
+	if all {
+		err = os.RemoveAll(TemplateLocation())
+		if err != nil {
+			return err
+		}
+		err = os.RemoveAll(LiveLocation())
+		if err != nil {
+			return err
+		}
+	}
 	return nil
 }

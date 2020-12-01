@@ -1,6 +1,7 @@
 package conda
 
 import (
+	"crypto/sha256"
 	"errors"
 	"fmt"
 	"io/ioutil"
@@ -17,20 +18,6 @@ import (
 	"github.com/robocorp/rcc/shell"
 	"github.com/robocorp/rcc/xviper"
 )
-
-func chooseBestEnvironment(best int, selected, reference string, candidates []string) (int, string) {
-	for _, candidate := range candidates {
-		move, err := Distance(reference, candidate)
-		if err != nil {
-			continue
-		}
-		if move < best {
-			best, selected = move, candidate
-		}
-	}
-
-	return best, selected
-}
 
 func Hexdigest(raw []byte) string {
 	return fmt.Sprintf("%02x", raw)
@@ -125,9 +112,6 @@ func (it InstallObserver) HasFailures(targetFolder string) bool {
 }
 
 func newLive(condaYaml, requirementsText, key string, force, freshInstall bool, postInstall []string) bool {
-	if !HasLongPathSupport() {
-		return false
-	}
 	targetFolder := LiveFrom(key)
 	common.Debug("===  new live  ---  pre cleanup phase ===")
 	removeClone(targetFolder)
@@ -227,16 +211,20 @@ func temporaryConfig(condaYaml, requirementsText string, filenames ...string) (s
 		return "", nil, err
 	}
 	common.Trace("FINAL union conda environment descriptior:\n---\n%v---", yaml)
-	hash, err := LocalitySensitiveHash(AsUnifiedLines(yaml))
-	if err != nil {
-		return "", nil, err
-	}
+	hash := shortDigest(yaml)
 	err = right.SaveAsRequirements(requirementsText)
 	if err != nil {
 		return "", nil, err
 	}
 	pure := right.AsPureConda()
 	return hash, right, pure.SaveAs(condaYaml)
+}
+
+func shortDigest(content string) string {
+	digester := sha256.New()
+	digester.Write([]byte(content))
+	result := Hexdigest(digester.Sum(nil))
+	return result[:16]
 }
 
 func NewEnvironment(force bool, configurations ...string) (string, error) {
