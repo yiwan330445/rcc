@@ -101,7 +101,7 @@ func (it InstallObserver) Write(content []byte) (int, error) {
 
 func (it InstallObserver) HasFailures(targetFolder string) bool {
 	if it["safetyerror"] && it["corrupted"] && len(it) > 2 {
-		cloud.BackgroundMetric("rcc", "rcc.env.creation.failure", common.Version)
+		cloud.BackgroundMetric(common.ControllerIdentity(), "rcc.env.creation.failure", common.Version)
 		removeClone(targetFolder)
 		location := filepath.Join(MinicondaLocation(), "pkgs")
 		common.Log("%sWARNING! Conda environment is unstable, see above error.%s", pretty.Red, pretty.Reset)

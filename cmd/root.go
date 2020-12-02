@@ -6,7 +6,6 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/robocorp/rcc/cloud"
 	"github.com/robocorp/rcc/common"
 	"github.com/robocorp/rcc/conda"
 	"github.com/robocorp/rcc/pathlib"
@@ -77,7 +76,7 @@ func Execute() {
 func init() {
 	cobra.OnInitialize(initConfig)
 
-	rootCmd.PersistentFlags().StringVar(&controllerType, "controller", "user", "internal, DO NOT USE (unless you know what you are doing)")
+	rootCmd.PersistentFlags().StringVar(&common.ControllerType, "controller", "user", "internal, DO NOT USE (unless you know what you are doing)")
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $ROBOCORP/rcc.yaml)")
 
 	rootCmd.PersistentFlags().BoolVarP(&common.Silent, "silent", "", false, "be less verbose on output")
@@ -98,9 +97,6 @@ func initConfig() {
 	}
 
 	common.UnifyVerbosityFlags()
-	if len(controllerType) > 0 {
-		cloud.BackgroundMetric("rcc", "rcc.controlled.by", controllerType)
-	}
 
 	pretty.Setup()
 	common.Trace("CLI command was: %#v", os.Args)

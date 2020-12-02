@@ -1,11 +1,17 @@
 package common
 
+import (
+	"fmt"
+	"strings"
+)
+
 var (
-	Silent    bool
-	DebugFlag bool
-	TraceFlag bool
-	NoCache   bool
-	Liveonly  bool
+	Silent         bool
+	DebugFlag      bool
+	TraceFlag      bool
+	NoCache        bool
+	Liveonly       bool
+	ControllerType string
 )
 
 const (
@@ -26,4 +32,8 @@ func ForceDebug() {
 	Silent = false
 	DebugFlag = true
 	UnifyVerbosityFlags()
+}
+
+func ControllerIdentity() string {
+	return strings.ToLower(fmt.Sprintf("rcc.%s", ControllerType))
 }

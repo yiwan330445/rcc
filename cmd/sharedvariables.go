@@ -16,7 +16,6 @@ var (
 	assistantId     string
 	bearerToken     string
 	cfgFile         string
-	controllerType  string
 	copyDirectory   string
 	directory       string
 	endpointUrl     string

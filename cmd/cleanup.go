@@ -10,6 +10,7 @@ import (
 
 var (
 	allFlag    bool
+	orphanFlag bool
 	daysOption int
 )
 
@@ -22,7 +23,7 @@ After cleanup, they will not be available anymore.`,
 		if common.DebugFlag {
 			defer common.Stopwatch("Env cleanup lasted").Report()
 		}
-		err := conda.Cleanup(daysOption, dryFlag, allFlag)
+		err := conda.Cleanup(daysOption, dryFlag, orphanFlag, allFlag)
 		if err != nil {
 			pretty.Exit(1, "Error: %v", err)
 		}
@@ -33,6 +34,7 @@ After cleanup, they will not be available anymore.`,
 func init() {
 	envCmd.AddCommand(cleanupCmd)
 	cleanupCmd.Flags().BoolVarP(&dryFlag, "dryrun", "d", false, "Don't delete environments, just show what would happen.")
+	cleanupCmd.Flags().BoolVarP(&orphanFlag, "orphans", "o", false, "Cleanup orphan, unreachable enviroments.")
 	cleanupCmd.Flags().BoolVarP(&allFlag, "all", "a", false, "Cleanup all enviroments.")
 	cleanupCmd.Flags().IntVarP(&daysOption, "days", "", 30, "What is the limit in days to keep environments for (deletes environments older than this).")
 }

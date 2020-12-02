@@ -33,7 +33,7 @@ in your own machine.`,
 		}
 		defer xviper.RunMinutes().Done()
 		simple, config, todo, label := operations.LoadTaskWithEnvironment(robotFile, runTask, forceFlag)
-		cloud.BackgroundMetric("rcc", "rcc.cli.run", common.Version)
+		cloud.BackgroundMetric(common.ControllerIdentity(), "rcc.cli.run", common.Version)
 		operations.SelectExecutionModel(captureRunFlags(), simple, todo.Commandline(), config, todo, label, false, nil)
 	},
 }

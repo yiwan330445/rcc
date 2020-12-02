@@ -16,7 +16,7 @@ func ExitProtection() {
 			exit.ShowMessage()
 			os.Exit(exit.Code)
 		}
-		cloud.SendMetric("rcc", "rcc.panic.origin", cmd.Origin())
+		cloud.SendMetric(common.ControllerIdentity(), "rcc.panic.origin", cmd.Origin())
 		panic(status)
 	}
 }

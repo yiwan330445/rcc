@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"regexp"
 	"sort"
 
 	"github.com/robocorp/rcc/common"
@@ -18,6 +19,7 @@ const (
 var (
 	ignoredPaths = []string{"python", "conda"}
 	pythonPaths  = []string{"resources", "libraries", "tasks", "variables"}
+	hashPattern  = regexp.MustCompile("^[0-9a-f]{16}(?:\\.meta)?$")
 )
 
 func sorted(files []os.FileInfo) {
@@ -57,6 +59,19 @@ func DigestFor(folder string) ([]byte, error) {
 	return result, nil
 }
 
+func hashedEntity(name string) bool {
+	return hashPattern.MatchString(name)
+}
+
+func hasDatadir(basedir, metafile string) bool {
+	if filepath.Ext(metafile) != ".meta" {
+		return false
+	}
+	fullpath := filepath.Join(basedir, metafile)
+	stat, err := os.Stat(fullpath[:len(fullpath)-5])
+	return err == nil && stat.IsDir()
+}
+
 func hasMetafile(basedir, subdir string) bool {
 	folder := filepath.Join(basedir, subdir)
 	_, err := os.Stat(metafile(folder))
@@ -81,6 +96,34 @@ func dirnamesFrom(location string) []string {
 		if child.IsDir() && hasMetafile(location, child.Name()) {
 			result = append(result, child.Name())
 		}
+	}
+
+	return result
+}
+
+func orphansFrom(location string) []string {
+	result := make([]string, 0, 20)
+	handle, err := os.Open(ExpandPath(location))
+	if err != nil {
+		common.Error("Warning", err)
+		return result
+	}
+	defer handle.Close()
+	children, err := handle.Readdir(-1)
+	if err != nil {
+		common.Error("Warning", err)
+		return result
+	}
+
+	for _, child := range children {
+		hashed := hashedEntity(child.Name())
+		if hashed && child.IsDir() && hasMetafile(location, child.Name()) {
+			continue
+		}
+		if hashed && !child.IsDir() && hasDatadir(location, child.Name()) {
+			continue
+		}
+		result = append(result, filepath.Join(location, child.Name()))
 	}
 
 	return result
@@ -132,8 +175,12 @@ func CondaExecutable() string {
 	return ExpandPath(filepath.Join(MinicondaLocation(), "condabin", "conda"))
 }
 
+func CondaPackages() string {
+	return ExpandPath(filepath.Join(MinicondaLocation(), "pkgs"))
+}
+
 func CondaCache() string {
-	return ExpandPath(filepath.Join(MinicondaLocation(), "pkgs", "cache"))
+	return ExpandPath(filepath.Join(CondaPackages(), "cache"))
 }
 
 func HasConda() bool {
@@ -213,4 +260,10 @@ func TemplateList() []string {
 
 func LiveList() []string {
 	return dirnamesFrom(LiveLocation())
+}
+
+func OrphanList() []string {
+	result := orphansFrom(TemplateLocation())
+	result = append(result, orphansFrom(LiveLocation())...)
+	return result
 }
