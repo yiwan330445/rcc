@@ -3,6 +3,7 @@ package cmd
 import (
 	"github.com/robocorp/rcc/common"
 	"github.com/robocorp/rcc/conda"
+	"github.com/robocorp/rcc/pathlib"
 	"github.com/robocorp/rcc/pretty"
 
 	"github.com/spf13/cobra"
@@ -16,7 +17,7 @@ var cloneCmd = &cobra.Command{
 		source := cmd.LocalFlags().Lookup("source").Value.String()
 		target := cmd.LocalFlags().Lookup("target").Value.String()
 		defer common.Stopwatch("rcc internal clone lasted").Report()
-		success := conda.CloneFromTo(source, target)
+		success := conda.CloneFromTo(source, target, pathlib.CopyFile)
 		if !success {
 			pretty.Exit(1, "Error: Cloning failed.")
 		}

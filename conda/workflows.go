@@ -278,7 +278,7 @@ func NewEnvironment(force bool, configurations ...string) (string, error) {
 		return liveFolder, nil
 	}
 	common.Log("####  Progress: 1/4  [try clone existing same template to live, key: %v]", key)
-	if CloneFromTo(TemplateFrom(key), liveFolder) {
+	if CloneFromTo(TemplateFrom(key), liveFolder, pathlib.CopyFile) {
 		dirty += 1
 		xviper.Set("stats.env.dirty", dirty)
 		return liveFolder, nil
@@ -289,7 +289,7 @@ func NewEnvironment(force bool, configurations ...string) (string, error) {
 		xviper.Set("stats.env.miss", misses)
 		if !common.Liveonly {
 			common.Log("####  Progress: 3/4  [backup new environment as template]")
-			CloneFromTo(liveFolder, TemplateFrom(key))
+			CloneFromTo(liveFolder, TemplateFrom(key), pathlib.CopyFile)
 		} else {
 			common.Log("####  Progress: 3/4  [skipped]")
 		}
@@ -311,7 +311,7 @@ func removeClone(location string) {
 	os.RemoveAll(location)
 }
 
-func CloneFromTo(source, target string) bool {
+func CloneFromTo(source, target string, copier pathlib.Copier) bool {
 	removeClone(target)
 	os.MkdirAll(target, 0755)
 
@@ -323,7 +323,7 @@ func CloneFromTo(source, target string) bool {
 	if err != nil {
 		return false
 	}
-	success := cloneFolder(source, target, 8)
+	success := cloneFolder(source, target, 8, copier)
 	if !success {
 		removeClone(target)
 		return false
@@ -338,12 +338,12 @@ func CloneFromTo(source, target string) bool {
 	return true
 }
 
-func cloneFolder(source, target string, workers int) bool {
+func cloneFolder(source, target string, workers int, copier pathlib.Copier) bool {
 	queue := make(chan copyRequest)
 	done := make(chan bool)
 
 	for x := 0; x < workers; x++ {
-		go copyWorker(queue, done)
+		go copyWorker(queue, done, copier)
 	}
 
 	success := copyFolder(source, target, queue)
@@ -412,7 +412,7 @@ type copyRequest struct {
 	source, target string
 }
 
-func copyWorker(tasks chan copyRequest, done chan bool) {
+func copyWorker(tasks chan copyRequest, done chan bool, copier pathlib.Copier) {
 	for {
 		task, ok := <-tasks
 		if !ok {
@@ -420,7 +420,7 @@ func copyWorker(tasks chan copyRequest, done chan bool) {
 		}
 		link, err := os.Readlink(task.source)
 		if err != nil {
-			pathlib.CopyFile(task.source, task.target, false)
+			copier(task.source, task.target, false)
 			continue
 		}
 		err = os.Symlink(link, task.target)
