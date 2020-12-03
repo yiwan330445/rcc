@@ -188,7 +188,7 @@ func newLiveInternal(condaYaml, requirementsText, key string, force, freshInstal
 	return metaSave(targetFolder, Hexdigest(digest)) == nil, false
 }
 
-func temporaryConfig(condaYaml, requirementsText string, filenames ...string) (string, *Environment, error) {
+func temporaryConfig(condaYaml, requirementsText string, save bool, filenames ...string) (string, *Environment, error) {
 	var left, right *Environment
 	var err error
 
@@ -212,12 +212,16 @@ func temporaryConfig(condaYaml, requirementsText string, filenames ...string) (s
 	}
 	common.Trace("FINAL union conda environment descriptior:\n---\n%v---", yaml)
 	hash := shortDigest(yaml)
+	if !save {
+		return hash, right, nil
+	}
 	err = right.SaveAsRequirements(requirementsText)
 	if err != nil {
 		return "", nil, err
 	}
 	pure := right.AsPureConda()
-	return hash, right, pure.SaveAs(condaYaml)
+	err = pure.SaveAs(condaYaml)
+	return hash, right, err
 }
 
 func shortDigest(content string) string {
@@ -225,6 +229,14 @@ func shortDigest(content string) string {
 	digester.Write([]byte(content))
 	result := Hexdigest(digester.Sum(nil))
 	return result[:16]
+}
+
+func CalculateComboHash(configurations ...string) (string, error) {
+	key, _, err := temporaryConfig("/dev/null", "/dev/null", false, configurations...)
+	if err != nil {
+		return "", err
+	}
+	return key, nil
 }
 
 func NewEnvironment(force bool, configurations ...string) (string, error) {
@@ -264,7 +276,7 @@ func NewEnvironment(force bool, configurations ...string) (string, error) {
 	condaYaml := filepath.Join(os.TempDir(), fmt.Sprintf("conda_%x.yaml", marker))
 	requirementsText := filepath.Join(os.TempDir(), fmt.Sprintf("require_%x.txt", marker))
 	common.Debug("Using temporary conda.yaml file: %v and requirement.txt file: %v", condaYaml, requirementsText)
-	key, finalEnv, err := temporaryConfig(condaYaml, requirementsText, configurations...)
+	key, finalEnv, err := temporaryConfig(condaYaml, requirementsText, true, configurations...)
 	if err != nil {
 		failures += 1
 		xviper.Set("stats.env.failures", failures)
