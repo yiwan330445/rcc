@@ -228,6 +228,8 @@ func shortDigest(content string) string {
 }
 
 func NewEnvironment(force bool, configurations ...string) (string, error) {
+	cloud.BackgroundMetric(common.ControllerIdentity(), "rcc.env.create.start", common.Version)
+
 	lockfile := MinicondaLock()
 	locker, err := pathlib.Locker(lockfile, 30000)
 	if err != nil {
