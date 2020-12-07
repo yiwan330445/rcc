@@ -1,5 +1,6 @@
 *** Settings ***
-Documentation   An example robot.
+Documentation   Template robot main suite.
+
 
 *** Tasks ***
 Minimal task

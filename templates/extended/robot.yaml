@@ -10,16 +10,15 @@ tasks:
       - output
       - --logtitle
       - Task log
-      - tasks/
+      - tasks.robot
 
-condaConfigFile: config/conda.yaml
+condaConfigFile: conda.yaml
 ignoreFiles:
   - .gitignore
 artifactsDir: output
 PATH:
-  - bin
-  - entrypoints
+  - .
 PYTHONPATH:
-  - variables
+  - keywords
   - libraries
-  - resources
+  - variables
