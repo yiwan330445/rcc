@@ -73,10 +73,13 @@ func (it *internalClient) Endpoint() string {
 func (it *internalClient) does(method string, request *Request) *Response {
 	response := new(Response)
 	started := time.Now()
-	defer func() {
-		response.Elapsed = time.Now().Sub(started)
-	}()
 	url := it.Endpoint() + request.Url
+	common.Trace("Doing %s %s", method, url)
+	defer func() {
+		elapsed := time.Now().Sub(started)
+		response.Elapsed = elapsed
+		common.Trace("%s %s took %v", method, url, elapsed)
+	}()
 	httpRequest, err := http.NewRequest(method, url, request.Body)
 	if err != nil {
 		response.Status = 9001

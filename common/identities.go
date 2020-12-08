@@ -20,6 +20,7 @@ func identityProvider(sink chan string) {
 
 func init() {
 	Startup = time.Now()
+
 	Identities = make(chan string, 3)
 	go identityProvider(Identities)
 }

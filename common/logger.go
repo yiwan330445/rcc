@@ -2,8 +2,18 @@ package common
 
 import (
 	"fmt"
+	"io"
 	"os"
+	"time"
 )
+
+func printout(out io.Writer, message string) {
+	var stamp string
+	if TraceFlag {
+		stamp = time.Now().Format("02.150405.000 ")
+	}
+	fmt.Fprintf(out, "%s%s\n", stamp, message)
+}
 
 func Error(context string, err error) {
 	if err != nil {
@@ -13,14 +23,14 @@ func Error(context string, err error) {
 
 func Log(format string, details ...interface{}) {
 	if !Silent {
-		fmt.Fprintln(os.Stderr, fmt.Sprintf(format, details...))
+		printout(os.Stderr, fmt.Sprintf(format, details...))
 		os.Stderr.Sync()
 	}
 }
 
 func Debug(format string, details ...interface{}) error {
 	if DebugFlag {
-		fmt.Fprintln(os.Stderr, fmt.Sprintf(format, details...))
+		printout(os.Stderr, fmt.Sprintf(format, details...))
 		os.Stderr.Sync()
 	}
 	return nil
@@ -28,7 +38,7 @@ func Debug(format string, details ...interface{}) error {
 
 func Trace(format string, details ...interface{}) error {
 	if TraceFlag {
-		fmt.Fprintln(os.Stderr, fmt.Sprintf(format, details...))
+		printout(os.Stderr, fmt.Sprintf(format, details...))
 		os.Stderr.Sync()
 	}
 	return nil
