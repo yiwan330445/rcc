@@ -6,6 +6,8 @@ import (
 	"path/filepath"
 	"regexp"
 
+	"golang.org/x/sys/windows/registry"
+
 	"github.com/robocorp/rcc/common"
 	"github.com/robocorp/rcc/pretty"
 	"github.com/robocorp/rcc/shell"
@@ -107,4 +109,13 @@ func HasLongPathSupport() bool {
 		return false
 	}
 	return true
+}
+
+func EnforceLongpathSupport() error {
+	key, _, err := registry.CreateKey(registry.LOCAL_MACHINE, `SYSTEM\CurrentControlSet\Control\FileSystem`, registry.SET_VALUE)
+	if err != nil {
+		return err
+	}
+	defer key.Close()
+	return key.SetDWordValue("LongPathsEnabled", 1)
 }
