@@ -127,7 +127,6 @@ Using and running template example with shell file
   Step        build/rcc env variables --controller citests conda/testdata/conda.yaml --config tmp/alternative.yaml -r tmp/fluffy/robot.yaml -e tmp/fluffy/devdata/env.json
   Must Have   ROBOCORP_HOME=
   Must Have   PYTHON_EXE=
-  Must Have   THE_ANSWER=42
   Must Have   CONDA_DEFAULT_ENV=rcc
   Must Have   CONDA_EXE=
   Must Have   CONDA_PREFIX=
