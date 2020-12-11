@@ -1,6 +1,7 @@
 package conda
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 )
@@ -23,6 +24,16 @@ func ExpandPath(entry string) string {
 		return intermediate
 	}
 	return result
+}
+
+func CondaEnvironment() []string {
+	env := os.Environ()
+	env = append(env, fmt.Sprintf("MAMBA_ROOT_PREFIX=%s", RobocorpHome()))
+	return env
+}
+
+func BinMicromamba() string {
+	return ExpandPath(filepath.Join(BinLocation(), "micromamba"))
 }
 
 func BinConda() string {

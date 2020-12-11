@@ -50,6 +50,28 @@ func ExpandPath(entry string) string {
 	return result
 }
 
+func ensureHardlinkEnvironmment() (string, error) {
+	return "", fmt.Errorf("Not implemented yet!")
+}
+
+func CondaEnvironment() []string {
+	env := os.Environ()
+	env = append(env, fmt.Sprintf("MAMBA_ROOT_PREFIX=%s", RobocorpHome()))
+	/*
+		path, err := ensureHardlinkEnvironmment()
+		if err != nil {
+			return nil
+		}
+		env = append(env, fmt.Sprintf("TEMP=%s", path))
+		env = append(env, fmt.Sprintf("TMP=%s", path))
+	*/
+	return env
+}
+
+func BinMicromamba() string {
+	return ExpandPath(filepath.Join(BinLocation(), "micromamba.exe"))
+}
+
 func BinConda() string {
 	return ExpandPath(filepath.Join(MinicondaLocation(), "Scripts", "conda.exe"))
 }

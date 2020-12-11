@@ -142,9 +142,12 @@ func newLiveInternal(condaYaml, requirementsText, key string, force, freshInstal
 	if common.DebugFlag {
 		command = []string{CondaExecutable(), "env", "create", "-f", condaYaml, "-p", targetFolder}
 	}
+	if HasMicroMamba() {
+		command = []string{BinMicromamba(), "create", "-y", "-f", condaYaml, "-p", targetFolder}
+	}
 	observer := make(InstallObserver)
 	common.Debug("===  new live  ---  conda env create phase ===")
-	code, err := shell.New(nil, ".", command...).StderrOnly().Observed(observer, false)
+	code, err := shell.New(CondaEnvironment(), ".", command...).StderrOnly().Observed(observer, false)
 	if err != nil || code != 0 {
 		common.Error("Conda error", err)
 		return false, false

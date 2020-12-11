@@ -184,6 +184,9 @@ func CondaCache() string {
 }
 
 func HasConda() bool {
+	if HasMicroMamba() {
+		return true
+	}
 	location := ExpandPath(filepath.Join(MinicondaLocation(), "condabin"))
 	stat, err := os.Stat(location)
 	if err == nil && stat.IsDir() {
@@ -192,12 +195,20 @@ func HasConda() bool {
 	return false
 }
 
+func HasMicroMamba() bool {
+	return pathlib.IsFile(BinMicromamba())
+}
+
 func RobocorpHome() string {
 	home := os.Getenv(ROBOCORP_HOME_VARIABLE)
 	if len(home) > 0 {
 		return ExpandPath(home)
 	}
 	return ExpandPath(defaultRobocorpLocation)
+}
+
+func BinLocation() string {
+	return filepath.Join(RobocorpHome(), "bin")
 }
 
 func LiveLocation() string {

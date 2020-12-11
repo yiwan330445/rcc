@@ -39,7 +39,7 @@ func DoInstall() bool {
 
 	install := InstallCommand()
 	common.Debug("Running: %v", install)
-	_, err := shell.New(nil, ".", install...).Transparent()
+	_, err := shell.New(CondaEnvironment(), ".", install...).Transparent()
 	if err != nil {
 		common.Error("Install", err)
 		return false
