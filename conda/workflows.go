@@ -111,23 +111,23 @@ func (it InstallObserver) HasFailures(targetFolder string) bool {
 	return false
 }
 
-func newLive(condaYaml, requirementsText, key string, force, freshInstall bool, postInstall []string) bool {
+func newLive(yaml, condaYaml, requirementsText, key string, force, freshInstall bool, postInstall []string) bool {
 	targetFolder := LiveFrom(key)
 	common.Debug("===  new live  ---  pre cleanup phase ===")
 	removeClone(targetFolder)
 	common.Debug("===  new live  ---  first try phase ===")
-	success, fatal := newLiveInternal(condaYaml, requirementsText, key, force, freshInstall, postInstall)
+	success, fatal := newLiveInternal(yaml, condaYaml, requirementsText, key, force, freshInstall, postInstall)
 	if !success && !force && !fatal {
 		common.Debug("===  new live  ---  second try phase ===")
 		common.ForceDebug()
 		common.Log("Retry! First try failed ... now retrying with debug and force options!")
 		removeClone(targetFolder)
-		success, _ = newLiveInternal(condaYaml, requirementsText, key, true, freshInstall, postInstall)
+		success, _ = newLiveInternal(yaml, condaYaml, requirementsText, key, true, freshInstall, postInstall)
 	}
 	return success
 }
 
-func newLiveInternal(condaYaml, requirementsText, key string, force, freshInstall bool, postInstall []string) (bool, bool) {
+func newLiveInternal(yaml, condaYaml, requirementsText, key string, force, freshInstall bool, postInstall []string) (bool, bool) {
 	targetFolder := LiveFrom(key)
 	when := time.Now()
 	if force {
@@ -183,6 +183,13 @@ func newLiveInternal(condaYaml, requirementsText, key string, force, freshInstal
 		}
 	}
 	common.Debug("===  new live  ---  finalize phase ===")
+
+	markerFile := filepath.Join(targetFolder, "identity.yaml")
+	err = ioutil.WriteFile(markerFile, []byte(yaml), 0o640)
+	if err != nil {
+		return false, false
+	}
+
 	digest, err := DigestFor(targetFolder)
 	if err != nil {
 		common.Error("Digest", err)
@@ -191,7 +198,7 @@ func newLiveInternal(condaYaml, requirementsText, key string, force, freshInstal
 	return metaSave(targetFolder, Hexdigest(digest)) == nil, false
 }
 
-func temporaryConfig(condaYaml, requirementsText string, save bool, filenames ...string) (string, *Environment, error) {
+func temporaryConfig(condaYaml, requirementsText string, save bool, filenames ...string) (string, string, *Environment, error) {
 	var left, right *Environment
 	var err error
 
@@ -199,32 +206,32 @@ func temporaryConfig(condaYaml, requirementsText string, save bool, filenames ..
 		left = right
 		right, err = ReadCondaYaml(filename)
 		if err != nil {
-			return "", nil, err
+			return "", "", nil, err
 		}
 		if left == nil {
 			continue
 		}
 		right, err = left.Merge(right)
 		if err != nil {
-			return "", nil, err
+			return "", "", nil, err
 		}
 	}
 	yaml, err := right.AsYaml()
 	if err != nil {
-		return "", nil, err
+		return "", "", nil, err
 	}
 	common.Trace("FINAL union conda environment descriptior:\n---\n%v---", yaml)
 	hash := shortDigest(yaml)
 	if !save {
-		return hash, right, nil
+		return hash, yaml, right, nil
 	}
 	err = right.SaveAsRequirements(requirementsText)
 	if err != nil {
-		return "", nil, err
+		return "", "", nil, err
 	}
 	pure := right.AsPureConda()
 	err = pure.SaveAs(condaYaml)
-	return hash, right, err
+	return hash, yaml, right, err
 }
 
 func shortDigest(content string) string {
@@ -235,7 +242,7 @@ func shortDigest(content string) string {
 }
 
 func CalculateComboHash(configurations ...string) (string, error) {
-	key, _, err := temporaryConfig("/dev/null", "/dev/null", false, configurations...)
+	key, _, _, err := temporaryConfig("/dev/null", "/dev/null", false, configurations...)
 	if err != nil {
 		return "", err
 	}
@@ -279,7 +286,7 @@ func NewEnvironment(force bool, configurations ...string) (string, error) {
 	condaYaml := filepath.Join(os.TempDir(), fmt.Sprintf("conda_%x.yaml", marker))
 	requirementsText := filepath.Join(os.TempDir(), fmt.Sprintf("require_%x.txt", marker))
 	common.Debug("Using temporary conda.yaml file: %v and requirement.txt file: %v", condaYaml, requirementsText)
-	key, finalEnv, err := temporaryConfig(condaYaml, requirementsText, true, configurations...)
+	key, yaml, finalEnv, err := temporaryConfig(condaYaml, requirementsText, true, configurations...)
 	if err != nil {
 		failures += 1
 		xviper.Set("stats.env.failures", failures)
@@ -301,7 +308,7 @@ func NewEnvironment(force bool, configurations ...string) (string, error) {
 		return liveFolder, nil
 	}
 	common.Log("####  Progress: 2/4  [try create new environment from scratch]")
-	if newLive(condaYaml, requirementsText, key, force, freshInstall, finalEnv.PostInstall) {
+	if newLive(yaml, condaYaml, requirementsText, key, force, freshInstall, finalEnv.PostInstall) {
 		misses += 1
 		xviper.Set("stats.env.miss", misses)
 		if !common.Liveonly {

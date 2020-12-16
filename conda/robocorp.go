@@ -175,6 +175,10 @@ func CondaExecutable() string {
 	return ExpandPath(filepath.Join(MinicondaLocation(), "condabin", "conda"))
 }
 
+func MambaPackages() string {
+	return ExpandPath(filepath.Join(RobocorpHome(), "pkgs"))
+}
+
 func CondaPackages() string {
 	return ExpandPath(filepath.Join(MinicondaLocation(), "pkgs"))
 }

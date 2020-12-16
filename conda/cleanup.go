@@ -42,6 +42,7 @@ func spotlessCleanup(dryrun bool) error {
 		common.Log("- %v", LiveLocation())
 		common.Log("- %v", PipCache())
 		common.Log("- %v", CondaPackages())
+		common.Log("- %v", MambaPackages())
 		return nil
 	}
 	err := os.RemoveAll(TemplateLocation())
@@ -64,6 +65,11 @@ func spotlessCleanup(dryrun bool) error {
 		return err
 	}
 	common.Debug("Removed directory %v.", CondaPackages())
+	err = os.RemoveAll(MambaPackages())
+	if err != nil {
+		return err
+	}
+	common.Debug("Removed directory %v.", MambaPackages())
 	return nil
 }
 
