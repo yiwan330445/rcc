@@ -19,4 +19,4 @@ PATH:
 PYTHONPATH:
   - .
 ignoreFiles:
-    - .gitignore
+  - .gitignore
