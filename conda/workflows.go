@@ -149,9 +149,9 @@ func newLiveInternal(yaml, condaYaml, requirementsText, key string, force, fresh
 		command = []string{CondaExecutable(), "env", "create", "-f", condaYaml, "-p", targetFolder}
 	}
 	if HasMicroMamba() {
-		command = []string{BinMicromamba(), "create", "-q", "-y", "-f", condaYaml, "-p", targetFolder}
+		command = []string{BinMicromamba(), "create", "--strict-channel-priority", "-q", "-y", "-f", condaYaml, "-p", targetFolder}
 		if common.DebugFlag {
-			command = []string{BinMicromamba(), "create", "-y", "-f", condaYaml, "-p", targetFolder}
+			command = []string{BinMicromamba(), "create", "--strict-channel-priority", "-y", "-f", condaYaml, "-p", targetFolder}
 		}
 	}
 	observer := make(InstallObserver)
