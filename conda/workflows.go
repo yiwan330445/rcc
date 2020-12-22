@@ -36,6 +36,9 @@ func metaLoad(location string) (string, error) {
 }
 
 func metaSave(location, data string) error {
+	if common.Stageonly {
+		return nil
+	}
 	return ioutil.WriteFile(metafile(location), []byte(data), 0644)
 }
 
@@ -60,6 +63,9 @@ func IsPristine(folder string) bool {
 }
 
 func reuseExistingLive(key string) bool {
+	if common.Stageonly {
+		return false
+	}
 	candidate := LiveFrom(key)
 	if IsPristine(candidate) {
 		touchMetafile(candidate)
@@ -143,7 +149,10 @@ func newLiveInternal(yaml, condaYaml, requirementsText, key string, force, fresh
 		command = []string{CondaExecutable(), "env", "create", "-f", condaYaml, "-p", targetFolder}
 	}
 	if HasMicroMamba() {
-		command = []string{BinMicromamba(), "create", "-y", "-f", condaYaml, "-p", targetFolder}
+		command = []string{BinMicromamba(), "create", "-q", "-y", "-f", condaYaml, "-p", targetFolder}
+		if common.DebugFlag {
+			command = []string{BinMicromamba(), "create", "-y", "-f", condaYaml, "-p", targetFolder}
+		}
 	}
 	observer := make(InstallObserver)
 	common.Debug("===  new live  ---  conda env create phase ===")
@@ -220,7 +229,7 @@ func temporaryConfig(condaYaml, requirementsText string, save bool, filenames ..
 	if err != nil {
 		return "", "", nil, err
 	}
-	common.Trace("FINAL union conda environment descriptior:\n---\n%v---", yaml)
+	common.Log("FINAL union conda environment descriptior:\n---\n%v---", yaml)
 	hash := shortDigest(yaml)
 	if !save {
 		return hash, yaml, right, nil
@@ -301,21 +310,25 @@ func NewEnvironment(force bool, configurations ...string) (string, error) {
 		xviper.Set("stats.env.hit", hits)
 		return liveFolder, nil
 	}
-	common.Log("####  Progress: 1/4  [try clone existing same template to live, key: %v]", key)
-	if CloneFromTo(TemplateFrom(key), liveFolder, pathlib.CopyFile) {
-		dirty += 1
-		xviper.Set("stats.env.dirty", dirty)
-		return liveFolder, nil
+	if common.Stageonly {
+		common.Log("####  Progress: 1/4  [skipped -- stage only]")
+	} else {
+		common.Log("####  Progress: 1/4  [try clone existing same template to live, key: %v]", key)
+		if CloneFromTo(TemplateFrom(key), liveFolder, pathlib.CopyFile) {
+			dirty += 1
+			xviper.Set("stats.env.dirty", dirty)
+			return liveFolder, nil
+		}
 	}
 	common.Log("####  Progress: 2/4  [try create new environment from scratch]")
 	if newLive(yaml, condaYaml, requirementsText, key, force, freshInstall, finalEnv.PostInstall) {
 		misses += 1
 		xviper.Set("stats.env.miss", misses)
-		if !common.Liveonly {
+		if common.Liveonly {
+			common.Log("####  Progress: 3/4  [skipped -- live only]")
+		} else {
 			common.Log("####  Progress: 3/4  [backup new environment as template]")
 			CloneFromTo(liveFolder, TemplateFrom(key), pathlib.CopyFile)
-		} else {
-			common.Log("####  Progress: 3/4  [skipped]")
 		}
 		return liveFolder, nil
 	}

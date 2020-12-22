@@ -97,6 +97,7 @@ func initConfig() {
 	}
 
 	common.UnifyVerbosityFlags()
+	common.UnifyStageHandling()
 
 	pretty.Setup()
 	common.Trace("CLI command was: %#v", os.Args)

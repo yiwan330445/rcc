@@ -266,6 +266,9 @@ func TemplateFrom(hash string) string {
 }
 
 func LiveFrom(hash string) string {
+	if common.Stageonly {
+		return common.StageFolder
+	}
 	return ExpandPath(filepath.Join(LiveLocation(), hash))
 }
 

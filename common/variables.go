@@ -11,6 +11,8 @@ var (
 	TraceFlag      bool
 	NoCache        bool
 	Liveonly       bool
+	Stageonly      bool
+	StageFolder    string
 	ControllerType string
 )
 
@@ -25,6 +27,13 @@ func UnifyVerbosityFlags() {
 	}
 	if TraceFlag {
 		DebugFlag = true
+	}
+}
+
+func UnifyStageHandling() {
+	if len(StageFolder) > 0 {
+		Liveonly = true
+		Stageonly = true
 	}
 }
 
