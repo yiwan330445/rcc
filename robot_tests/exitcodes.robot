@@ -12,7 +12,6 @@ Help for rcc command                0    build/rcc -h
 
 Help for rcc assistant subcommand   0    build/rcc assistant -h --controller citests
 Help for rcc cloud subcommand       0    build/rcc cloud -h --controller citests
-Help for rcc conda subcommand       0    build/rcc conda -h --controller citests
 Help for rcc configure subcommand   0    build/rcc configure -h --controller citests
 Help for rcc env subcommand         0    build/rcc env -h --controller citests
 Help for rcc feedback subcommand    0    build/rcc feedback -h --controller citests
@@ -34,10 +33,6 @@ Help for rcc cloud push             0    build/rcc cloud push -h --controller ci
 Help for rcc cloud upload           0    build/rcc cloud upload -h --controller citests
 Help for rcc cloud userinfo         0    build/rcc cloud userinfo -h --controller citests
 Help for rcc cloud workspace        0    build/rcc cloud workspace -h --controller citests
-
-Help for rcc conda check            0    build/rcc conda check -h --controller citests
-Help for rcc conda download         0    build/rcc conda download -h --controller citests
-Help for rcc conda install          0    build/rcc conda install -h --controller citests
 
 Help for rcc configure credentials  0    build/rcc configure credentials -h --controller citests
 

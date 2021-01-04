@@ -129,9 +129,9 @@ var variablesCmd = &cobra.Command{
 			common.Silent = silent
 		}()
 
-		ok := conda.MustConda()
+		ok := conda.MustMicromamba()
 		if !ok {
-			pretty.Exit(2, "Could not get miniconda installed.")
+			pretty.Exit(2, "Could not get micromamba installed.")
 		}
 		err := exportEnvironment(args, robotFile, runTask, environmentFile, workspaceId, validityTime, jsonFlag)
 		if err != nil {

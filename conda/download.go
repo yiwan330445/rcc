@@ -5,19 +5,22 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"path/filepath"
 
 	"github.com/robocorp/rcc/common"
+	"github.com/robocorp/rcc/pathlib"
 )
 
-func DownloadConda() error {
-	url := DownloadLink()
-	filename := DownloadTarget()
+func DownloadMicromamba() error {
+	url := MicromambaLink()
+	filename := BinMicromamba()
 	response, err := http.Get(url)
 	if err != nil {
 		return err
 	}
 	defer response.Body.Close()
 
+	pathlib.EnsureDirectory(filepath.Dir(BinMicromamba()))
 	out, err := os.Create(filename)
 	if err != nil {
 		return err

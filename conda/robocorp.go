@@ -152,10 +152,8 @@ func EnvironmentExtensionFor(location string) []string {
 	}
 	return append(environment,
 		"CONDA_DEFAULT_ENV=rcc",
-		"CONDA_EXE="+BinConda(),
 		"CONDA_PREFIX="+location,
 		"CONDA_PROMPT_MODIFIER=(rcc)",
-		"CONDA_PYTHON_EXE="+BinPython(),
 		"CONDA_SHLVL=1",
 		"PYTHONHOME=",
 		"PYTHONSTARTUP=",
@@ -171,32 +169,12 @@ func EnvironmentFor(location string) []string {
 	return append(os.Environ(), EnvironmentExtensionFor(location)...)
 }
 
-func CondaExecutable() string {
-	return ExpandPath(filepath.Join(MinicondaLocation(), "condabin", "conda"))
-}
-
 func MambaPackages() string {
 	return ExpandPath(filepath.Join(RobocorpHome(), "pkgs"))
 }
 
-func CondaPackages() string {
-	return ExpandPath(filepath.Join(MinicondaLocation(), "pkgs"))
-}
-
-func CondaCache() string {
-	return ExpandPath(filepath.Join(CondaPackages(), "cache"))
-}
-
-func HasConda() bool {
-	if HasMicroMamba() {
-		return true
-	}
-	location := ExpandPath(filepath.Join(MinicondaLocation(), "condabin"))
-	stat, err := os.Stat(location)
-	if err == nil && stat.IsDir() {
-		return true
-	}
-	return false
+func MambaCache() string {
+	return ExpandPath(filepath.Join(MambaPackages(), "cache"))
 }
 
 func HasMicroMamba() bool {
@@ -223,11 +201,12 @@ func TemplateLocation() string {
 	return filepath.Join(RobocorpHome(), "base")
 }
 
-func MinicondaLock() string {
-	return fmt.Sprintf("%s.lck", MinicondaLocation())
+func RobocorpLock() string {
+	return fmt.Sprintf("%s.lck", LiveLocation())
 }
 
 func MinicondaLocation() string {
+	// Legacy function, but must remain until cleanup is done
 	return filepath.Join(RobocorpHome(), "miniconda3")
 }
 

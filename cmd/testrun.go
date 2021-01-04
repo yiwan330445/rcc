@@ -27,9 +27,9 @@ var testrunCmd = &cobra.Command{
 		if common.DebugFlag {
 			defer common.Stopwatch("Task testrun lasted").Report()
 		}
-		ok := conda.MustConda()
+		ok := conda.MustMicromamba()
 		if !ok {
-			pretty.Exit(4, "Could not get miniconda installed.")
+			pretty.Exit(4, "Could not get micromamba installed.")
 		}
 		defer xviper.RunMinutes().Done()
 		now := time.Now()

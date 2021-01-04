@@ -109,7 +109,7 @@ func (it InstallObserver) HasFailures(targetFolder string) bool {
 	if it["safetyerror"] && it["corrupted"] && len(it) > 2 {
 		cloud.BackgroundMetric(common.ControllerIdentity(), "rcc.env.creation.failure", common.Version)
 		removeClone(targetFolder)
-		location := filepath.Join(MinicondaLocation(), "pkgs")
+		location := filepath.Join(RobocorpHome(), "pkgs")
 		common.Log("%sWARNING! Conda environment is unstable, see above error.%s", pretty.Red, pretty.Reset)
 		common.Log("%sWARNING! To fix it, try to remove directory: %v%s", pretty.Red, location, pretty.Reset)
 		return true
@@ -140,19 +140,13 @@ func newLiveInternal(yaml, condaYaml, requirementsText, key string, force, fresh
 		when = when.Add(-20 * 24 * time.Hour)
 	}
 	if force || !freshInstall {
-		common.Log("rcc touching conda cache. (Stamp: %v)", when)
-		SilentTouch(CondaCache(), when)
+		common.Log("rcc touching mamba cache. (Stamp: %v)", when)
+		SilentTouch(MambaCache(), when)
 	}
 	common.Debug("Setting up new conda environment using %v to folder %v", condaYaml, targetFolder)
-	command := []string{CondaExecutable(), "env", "create", "-q", "-f", condaYaml, "-p", targetFolder}
+	command := []string{BinMicromamba(), "create", "--strict-channel-priority", "-q", "-y", "-f", condaYaml, "-p", targetFolder}
 	if common.DebugFlag {
-		command = []string{CondaExecutable(), "env", "create", "-f", condaYaml, "-p", targetFolder}
-	}
-	if HasMicroMamba() {
-		command = []string{BinMicromamba(), "create", "--strict-channel-priority", "-q", "-y", "-f", condaYaml, "-p", targetFolder}
-		if common.DebugFlag {
-			command = []string{BinMicromamba(), "create", "--strict-channel-priority", "-y", "-f", condaYaml, "-p", targetFolder}
-		}
+		command = []string{BinMicromamba(), "create", "--strict-channel-priority", "-y", "-f", condaYaml, "-p", targetFolder}
 	}
 	observer := make(InstallObserver)
 	common.Debug("===  new live  ---  conda env create phase ===")
@@ -261,10 +255,10 @@ func CalculateComboHash(configurations ...string) (string, error) {
 func NewEnvironment(force bool, configurations ...string) (string, error) {
 	cloud.BackgroundMetric(common.ControllerIdentity(), "rcc.env.create.start", common.Version)
 
-	lockfile := MinicondaLock()
+	lockfile := RobocorpLock()
 	locker, err := pathlib.Locker(lockfile, 30000)
 	if err != nil {
-		common.Log("Could not get lock on miniconda. Quitting!")
+		common.Log("Could not get lock on live environment. Quitting!")
 		return "", err
 	}
 	defer locker.Release()

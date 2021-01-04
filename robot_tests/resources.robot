@@ -15,14 +15,13 @@ Prepare Local
   Create Directory  tmp/robocorp
   Set Environment Variable  ROBOCORP_HOME  tmp/robocorp
 
-  Goal        Verify miniconda is installed or download and install it.
-  Step        build/rcc conda check -i
-  Must Have   OK.
-  Must Exist  %{ROBOCORP_HOME}/miniconda3/
-  Wont Exist  %{ROBOCORP_HOME}/base/
-  Wont Exist  %{ROBOCORP_HOME}/live/
-  Wont Exist  %{ROBOCORP_HOME}/wheels/
-  Wont Exist  %{ROBOCORP_HOME}/pipcache/
+  Goal        Verify micromamba is installed or download and install it.
+  Step        build/rcc env new robot_tests/conda.yaml
+  Must Exist  %{ROBOCORP_HOME}/bin/
+  Must Exist  %{ROBOCORP_HOME}/base/
+  Must Exist  %{ROBOCORP_HOME}/live/
+  Must Exist  %{ROBOCORP_HOME}/wheels/
+  Must Exist  %{ROBOCORP_HOME}/pipcache/
 
 Goal
   [Arguments]  ${anything}

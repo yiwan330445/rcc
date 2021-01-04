@@ -34,7 +34,7 @@ task :assets do
 end
 
 task :support do
-  sh 'mkdir -p tmp build/linux64 build/linux32 build/macos64 build/windows64 build/windows32'
+  sh 'mkdir -p tmp build/linux64 build/macos64 build/windows64'
 end
 
 desc 'Run tests.'
@@ -50,13 +50,6 @@ task :linux64 => [:what, :test] do
   sh "sha256sum build/linux64/* || true"
 end
 
-task :linux32 => [:what, :test] do
-  ENV['GOOS'] = 'linux'
-  ENV['GOARCH'] = '386'
-  sh "go build -ldflags '-s' -o build/linux32/ ./cmd/..."
-  sh "sha256sum build/linux32/* || true"
-end
-
 task :macos64 => [:support] do
   ENV['GOOS'] = 'darwin'
   ENV['GOARCH'] = 'amd64'
@@ -69,13 +62,6 @@ task :windows64 => [:support] do
   ENV['GOARCH'] = 'amd64'
   sh "go build -ldflags '-s' -o build/windows64/ ./cmd/..."
   sh "sha256sum build/windows64/* || true"
-end
-
-task :windows32 => [:support] do
-  ENV['GOOS'] = 'windows'
-  ENV['GOARCH'] = '386'
-  sh "go build -ldflags '-s' -o build/windows32/ ./cmd/..."
-  sh "sha256sum build/windows32/* || true"
 end
 
 desc 'Setup build environment'
@@ -95,7 +81,7 @@ task :robot => :local do
 end
 
 desc 'Build commands to linux, macos, and windows.'
-task :build => [:tooling, :version_txt, :linux64, :linux32, :macos64, :windows64, :windows32] do
+task :build => [:tooling, :version_txt, :linux64, :macos64, :windows64] do
   sh 'ls -l $(find build -type f)'
 end
 

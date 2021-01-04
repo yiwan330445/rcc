@@ -21,9 +21,9 @@ command within that environment.`,
 		if common.DebugFlag {
 			defer common.Stopwatch("rcc shell lasted").Report()
 		}
-		ok := conda.MustConda()
+		ok := conda.MustMicromamba()
 		if !ok {
-			pretty.Exit(2, "Could not get miniconda installed.")
+			pretty.Exit(2, "Could not get micromamba installed.")
 		}
 		simple, config, todo, label := operations.LoadTaskWithEnvironment(robotFile, runTask, forceFlag)
 		if simple {

@@ -32,9 +32,9 @@ var assistantRunCmd = &cobra.Command{
 		}
 		now := time.Now()
 		marker := now.Unix()
-		ok := conda.MustConda()
+		ok := conda.MustMicromamba()
 		if !ok {
-			pretty.Exit(2, "Could not get miniconda installed.")
+			pretty.Exit(2, "Could not get micromamba installed.")
 		}
 		defer xviper.RunMinutes().Done()
 		account := operations.AccountByName(AccountName())

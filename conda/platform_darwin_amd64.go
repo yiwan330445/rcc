@@ -36,28 +36,12 @@ func BinMicromamba() string {
 	return ExpandPath(filepath.Join(BinLocation(), "micromamba"))
 }
 
-func BinConda() string {
-	return ExpandPath(filepath.Join(MinicondaLocation(), "bin", "conda"))
-}
-
-func BinPython() string {
-	return ExpandPath(filepath.Join(MinicondaLocation(), "bin", "python"))
-}
-
 func CondaPaths(prefix string) []string {
 	return []string{prefix + binSuffix}
 }
 
-func DownloadLink() string {
-	return "https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-x86_64.sh"
-}
-
-func DownloadTarget() string {
-	return filepath.Join(os.TempDir(), "miniconda3.sh")
-}
-
-func InstallCommand() []string {
-	return []string{"bash", DownloadTarget(), "-u", "-b", "-p", MinicondaLocation()}
+func MicromambaLink() string {
+	return "https://downloads.robocorp.com/micromamba/stable/macos64/micromamba"
 }
 
 func IsPosix() bool {

@@ -41,7 +41,6 @@ func spotlessCleanup(dryrun bool) error {
 		common.Log("- %v", TemplateLocation())
 		common.Log("- %v", LiveLocation())
 		common.Log("- %v", PipCache())
-		common.Log("- %v", CondaPackages())
 		common.Log("- %v", MambaPackages())
 		return nil
 	}
@@ -60,11 +59,6 @@ func spotlessCleanup(dryrun bool) error {
 		return err
 	}
 	common.Debug("Removed directory %v.", PipCache())
-	err = os.RemoveAll(CondaPackages())
-	if err != nil {
-		return err
-	}
-	common.Debug("Removed directory %v.", CondaPackages())
 	err = os.RemoveAll(MambaPackages())
 	if err != nil {
 		return err
@@ -74,10 +68,10 @@ func spotlessCleanup(dryrun bool) error {
 }
 
 func Cleanup(daylimit int, dryrun, orphans, all bool) error {
-	lockfile := MinicondaLock()
+	lockfile := RobocorpLock()
 	locker, err := pathlib.Locker(lockfile, 30000)
 	if err != nil {
-		common.Log("Could not get lock on miniconda. Quitting!")
+		common.Log("Could not get lock on live environment. Quitting!")
 		return err
 	}
 	defer locker.Release()

@@ -27,9 +27,9 @@ in your own machine.`,
 		if common.DebugFlag {
 			defer common.Stopwatch("Task run lasted").Report()
 		}
-		ok := conda.MustConda()
+		ok := conda.MustMicromamba()
 		if !ok {
-			pretty.Exit(2, "Could not get miniconda installed.")
+			pretty.Exit(2, "Could not get micromamba installed.")
 		}
 		defer xviper.RunMinutes().Done()
 		simple, config, todo, label := operations.LoadTaskWithEnvironment(robotFile, runTask, forceFlag)

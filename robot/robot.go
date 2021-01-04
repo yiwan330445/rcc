@@ -211,10 +211,8 @@ func (it *robot) ExecutionEnvironment(taskname, location string, inject []string
 	}
 	return append(environment,
 		"CONDA_DEFAULT_ENV=rcc",
-		"CONDA_EXE="+conda.BinConda(),
 		"CONDA_PREFIX="+location,
 		"CONDA_PROMPT_MODIFIER=(rcc)",
-		"CONDA_PYTHON_EXE="+conda.BinPython(),
 		"CONDA_SHLVL=1",
 		"PYTHONHOME=",
 		"PYTHONSTARTUP=",

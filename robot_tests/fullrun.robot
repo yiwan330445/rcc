@@ -9,7 +9,7 @@ Using and running template example with shell file
 
   Goal        Show rcc version information.
   Step        build/rcc version --controller citests
-  Must Have   v7.
+  Must Have   v8.
 
   Goal        Show rcc license information.
   Step        build/rcc man license --controller citests
@@ -105,10 +105,8 @@ Using and running template example with shell file
   Must Have   ROBOCORP_HOME=
   Must Have   PYTHON_EXE=
   Must Have   CONDA_DEFAULT_ENV=rcc
-  Must Have   CONDA_EXE=
   Must Have   CONDA_PREFIX=
   Must Have   CONDA_PROMPT_MODIFIER=(rcc)
-  Must Have   CONDA_PYTHON_EXE=
   Must Have   CONDA_SHLVL=1
   Must Have   PATH=
   Must Have   PYTHONPATH=
@@ -128,10 +126,8 @@ Using and running template example with shell file
   Must Have   ROBOCORP_HOME=
   Must Have   PYTHON_EXE=
   Must Have   CONDA_DEFAULT_ENV=rcc
-  Must Have   CONDA_EXE=
   Must Have   CONDA_PREFIX=
   Must Have   CONDA_PROMPT_MODIFIER=(rcc)
-  Must Have   CONDA_PYTHON_EXE=
   Must Have   CONDA_SHLVL=1
   Must Have   PATH=
   Must Have   PYTHONPATH=

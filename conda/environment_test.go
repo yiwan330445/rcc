@@ -10,11 +10,5 @@ import (
 func TestHasDownloadLinkAvailable(t *testing.T) {
 	must_be, _ := hamlet.Specifications(t)
 
-	must_be.True(len(conda.DownloadLink()) > 10)
-}
-
-func TestCanCreateDownloadTarget(t *testing.T) {
-	must_be, _ := hamlet.Specifications(t)
-
-	must_be.True(len(conda.DownloadTarget()) > 10)
+	must_be.True(len(conda.MicromambaLink()) > 10)
 }

@@ -1,12 +1,14 @@
 package conda
 
 import (
+	"os"
+
+	"github.com/robocorp/rcc/cloud"
 	"github.com/robocorp/rcc/common"
-	"github.com/robocorp/rcc/shell"
 )
 
-func MustConda() bool {
-	return HasConda() || (ValidateLocations() && (DoDownload() || DoDownload() || DoDownload()) && DoInstall())
+func MustMicromamba() bool {
+	return HasMicroMamba() || ((DoDownload() || DoDownload() || DoDownload()) && DoInstall())
 }
 
 func DoDownload() bool {
@@ -14,16 +16,16 @@ func DoDownload() bool {
 		defer common.Stopwatch("Download done in").Report()
 	}
 
-	common.Log("Downloading Miniconda, this may take awhile ...")
+	common.Log("Downloading micromamba, this may take awhile ...")
 
-	err := DownloadConda()
+	err := DownloadMicromamba()
 	if err != nil {
 		common.Error("Download", err)
+		os.Remove(BinMicromamba())
 		return false
-	} else {
-		common.Log("Verify checksum from https://docs.conda.io/en/latest/miniconda.html")
-		return true
 	}
+	cloud.BackgroundMetric(common.ControllerIdentity(), "rcc.micromamba.download", common.Version)
+	return true
 }
 
 func DoInstall() bool {
@@ -31,18 +33,13 @@ func DoInstall() bool {
 		defer common.Stopwatch("Installation done in").Report()
 	}
 
-	if !ValidateLocations() {
-		return false
-	}
+	common.Log("Making micromamba executable ...")
 
-	common.Log("Installing Miniconda, this may take awhile ...")
-
-	install := InstallCommand()
-	common.Debug("Running: %v", install)
-	_, err := shell.New(CondaEnvironment(), ".", install...).Transparent()
+	err := os.Chmod(BinMicromamba(), 0o755)
 	if err != nil {
 		common.Error("Install", err)
 		return false
 	}
+	cloud.BackgroundMetric(common.ControllerIdentity(), "rcc.micromamba.install", common.Version)
 	return true
 }
