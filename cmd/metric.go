@@ -26,7 +26,7 @@ var metricCmd = &cobra.Command{
 		if !xviper.CanTrack() {
 			pretty.Exit(1, "Tracking is disabled. Quitting.")
 		}
-		cloud.SendMetric(metricType, metricName, metricValue)
+		cloud.BackgroundMetric(metricType, metricName, metricValue)
 		pretty.Exit(0, "OK")
 	},
 }

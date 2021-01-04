@@ -14,11 +14,14 @@ func ExitProtection() {
 		exit, ok := status.(common.ExitCode)
 		if ok {
 			exit.ShowMessage()
+			cloud.WaitTelemetry()
 			os.Exit(exit.Code)
 		}
-		cloud.SendMetric(common.ControllerIdentity(), "rcc.panic.origin", cmd.Origin())
+		cloud.BackgroundMetric(common.ControllerIdentity(), "rcc.panic.origin", cmd.Origin())
+		cloud.WaitTelemetry()
 		panic(status)
 	}
+	cloud.WaitTelemetry()
 }
 
 func main() {

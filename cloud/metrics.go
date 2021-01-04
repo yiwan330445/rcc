@@ -3,10 +3,15 @@ package cloud
 import (
 	"fmt"
 	"net/url"
+	"sync"
 	"time"
 
 	"github.com/robocorp/rcc/common"
 	"github.com/robocorp/rcc/xviper"
+)
+
+var (
+	telemetryBarrier = sync.WaitGroup{}
 )
 
 const (
@@ -15,6 +20,9 @@ const (
 )
 
 func sendMetric(kind, name, value string) {
+	defer func() {
+		telemetryBarrier.Done()
+	}()
 	client, err := NewClient(metricsHost)
 	if err != nil {
 		common.Debug("ERROR: %v", err)
@@ -26,13 +34,16 @@ func sendMetric(kind, name, value string) {
 	client.Put(client.NewRequest(url))
 }
 
-func SendMetric(kind, name, value string) {
-	common.Debug("DEBUG: SendMetric kind:%v name:%v value:%v send:%v", kind, name, value, xviper.CanTrack())
+func BackgroundMetric(kind, name, value string) {
+	common.Debug("DEBUG: BackgroundMetric kind:%v name:%v value:%v send:%v", kind, name, value, xviper.CanTrack())
 	if xviper.CanTrack() {
-		sendMetric(kind, name, value)
+		telemetryBarrier.Add(1)
+		go sendMetric(kind, name, value)
 	}
 }
 
-func BackgroundMetric(kind, name, value string) {
-	go SendMetric(kind, name, value)
+func WaitTelemetry() {
+	common.Debug("DEBUG: wait telemetry to complete")
+	telemetryBarrier.Wait()
+	common.Debug("DEBUG: telemetry sending completed")
 }
