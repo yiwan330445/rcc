@@ -1,5 +1,9 @@
 # rcc change log
 
+## v7.1.5
+
+- now command `rcc man changelog` shows changelog.md from build moment
+
 ## v7.1.4
 
 - bug fix for background metrics not send when application ends too fast
