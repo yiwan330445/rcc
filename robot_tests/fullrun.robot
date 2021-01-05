@@ -71,8 +71,8 @@ Using and running template example with shell file
 
   Goal        Run task in place.
   Step        build/rcc task run --controller citests -r tmp/fluffy/robot.yaml
-  Must Have   Progress: 0/4
-  Must Have   Progress: 4/4
+  Must Have   Progress: 0/5
+  Must Have   Progress: 5/5
   Must Have   rpaframework
   Must Have   1 critical task, 1 passed, 0 failed
   Must Have   OK.
@@ -83,11 +83,12 @@ Using and running template example with shell file
 
   Goal        Run task in clean temporary directory.
   Step        build/rcc task testrun --controller citests -r tmp/fluffy/robot.yaml
-  Must Have   Progress: 0/4
-  Wont Have   Progress: 1/4
-  Wont Have   Progress: 2/4
-  Wont Have   Progress: 3/4
-  Must Have   Progress: 4/4
+  Must Have   Progress: 0/5
+  Wont Have   Progress: 1/5
+  Wont Have   Progress: 2/5
+  Wont Have   Progress: 3/5
+  Wont Have   Progress: 4/5
+  Must Have   Progress: 5/5
   Must Have   rpaframework
   Must Have   1 critical task, 1 passed, 0 failed
   Must Have   OK.

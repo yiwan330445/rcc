@@ -1,5 +1,9 @@
 # rcc change log
 
+## v8.0.2 (date: 5.1.2021)
+
+- fixing failed robot tests for progress indicators (just tests)
+
 ## v8.0.1 (date: 5.1.2021)
 
 - added separate pip install phase progress step (just visualization)
