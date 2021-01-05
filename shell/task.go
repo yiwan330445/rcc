@@ -5,6 +5,8 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+
+	"github.com/robocorp/rcc/common"
 )
 
 type Task struct {
@@ -39,6 +41,7 @@ func (it *Task) stdout() io.Writer {
 }
 
 func (it *Task) execute(stdin io.Reader, stdout, stderr io.Writer) (int, error) {
+	common.Trace("Execute %q with arguments %q", it.executable, it.args)
 	command := exec.Command(it.executable, it.args...)
 	command.Env = it.environment
 	command.Dir = it.directory

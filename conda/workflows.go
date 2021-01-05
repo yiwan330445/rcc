@@ -163,6 +163,7 @@ func newLiveInternal(yaml, condaYaml, requirementsText, key string, force, fresh
 	if common.DebugFlag {
 		pipCommand = []string{"pip", "install", "--no-color", "--disable-pip-version-check", "--prefer-binary", "--cache-dir", PipCache(), "--find-links", WheelCache(), "--requirement", requirementsText}
 	}
+	common.Log("####  Progress: 3/5  [pip install phase]")
 	common.Debug("===  new live  ---  pip install phase ===")
 	err = LiveExecution(targetFolder, pipCommand...)
 	if err != nil {
@@ -274,9 +275,9 @@ func NewEnvironment(force bool, configurations ...string) (string, error) {
 	freshInstall := templates == 0
 
 	defer func() {
-		common.Log("####  Progress: 4/4  [Done.] [Stats: %d environments, %d requests, %d merges, %d hits, %d dirty, %d misses, %d failures | %s]", templates, requests, merges, hits, dirty, misses, failures, common.Version)
+		common.Log("####  Progress: 5/5  [Done.] [Stats: %d environments, %d requests, %d merges, %d hits, %d dirty, %d misses, %d failures | %s]", templates, requests, merges, hits, dirty, misses, failures, common.Version)
 	}()
-	common.Log("####  Progress: 0/4  [try use existing live same environment?] %v", xviper.TrackingIdentity())
+	common.Log("####  Progress: 0/5  [try use existing live same environment?] %v", xviper.TrackingIdentity())
 
 	xviper.Set("stats.env.request", requests)
 
@@ -305,23 +306,23 @@ func NewEnvironment(force bool, configurations ...string) (string, error) {
 		return liveFolder, nil
 	}
 	if common.Stageonly {
-		common.Log("####  Progress: 1/4  [skipped -- stage only]")
+		common.Log("####  Progress: 1/5  [skipped -- stage only]")
 	} else {
-		common.Log("####  Progress: 1/4  [try clone existing same template to live, key: %v]", key)
+		common.Log("####  Progress: 1/5  [try clone existing same template to live, key: %v]", key)
 		if CloneFromTo(TemplateFrom(key), liveFolder, pathlib.CopyFile) {
 			dirty += 1
 			xviper.Set("stats.env.dirty", dirty)
 			return liveFolder, nil
 		}
 	}
-	common.Log("####  Progress: 2/4  [try create new environment from scratch]")
+	common.Log("####  Progress: 2/5  [try create new environment from scratch]")
 	if newLive(yaml, condaYaml, requirementsText, key, force, freshInstall, finalEnv.PostInstall) {
 		misses += 1
 		xviper.Set("stats.env.miss", misses)
 		if common.Liveonly {
-			common.Log("####  Progress: 3/4  [skipped -- live only]")
+			common.Log("####  Progress: 4/5  [skipped -- live only]")
 		} else {
-			common.Log("####  Progress: 3/4  [backup new environment as template]")
+			common.Log("####  Progress: 4/5  [backup new environment as template]")
 			CloneFromTo(liveFolder, TemplateFrom(key), pathlib.CopyFile)
 		}
 		return liveFolder, nil

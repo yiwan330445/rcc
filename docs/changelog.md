@@ -1,5 +1,10 @@
 # rcc change log
 
+## v8.0.1 (date: 5.1.2021)
+
+- added separate pip install phase progress step (just visualization)
+- now `rcc env cleanup` has option to remove miniconda3 installation
+
 ## v8.0.0 (date: 5.1.2021)
 
 - BREAKING CHANGES

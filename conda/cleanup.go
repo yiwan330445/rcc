@@ -8,6 +8,17 @@ import (
 	"github.com/robocorp/rcc/pathlib"
 )
 
+func doCleanup(fullpath string, dryrun bool) error {
+	if !pathlib.Exists(fullpath) {
+		return nil
+	}
+	if dryrun {
+		common.Log("Would be removing: %s", fullpath)
+		return nil
+	}
+	return os.RemoveAll(fullpath)
+}
+
 func orphanCleanup(dryrun bool) error {
 	orphans := OrphanList()
 	if len(orphans) == 0 {
@@ -67,7 +78,7 @@ func spotlessCleanup(dryrun bool) error {
 	return nil
 }
 
-func Cleanup(daylimit int, dryrun, orphans, all bool) error {
+func Cleanup(daylimit int, dryrun, orphans, all, miniconda bool) error {
 	lockfile := RobocorpLock()
 	locker, err := pathlib.Locker(lockfile, 30000)
 	if err != nil {
@@ -105,7 +116,10 @@ func Cleanup(daylimit int, dryrun, orphans, all bool) error {
 		common.Debug("Removed environment %v.", template)
 	}
 	if orphans {
-		return orphanCleanup(dryrun)
+		err = orphanCleanup(dryrun)
 	}
-	return nil
+	if miniconda && err == nil {
+		err = doCleanup(MinicondaLocation(), dryrun)
+	}
+	return err
 }
