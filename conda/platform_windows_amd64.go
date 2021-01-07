@@ -96,16 +96,6 @@ func IsWindows() bool {
 	return true
 }
 
-func ValidateLocations() bool {
-	checked := map[string]string{
-		"Environment variable 'TMP'":           os.Getenv("TMP"),
-		"Environment variable 'TEMP'":          os.Getenv("TEMP"),
-		"Environment variable 'ROBOCORP_HOME'": os.Getenv("ROBOCORP_HOME"),
-		"Path to 'ROBOCORP_HOME' directory":    RobocorpHome(),
-	}
-	return validateLocations(checked)
-}
-
 func HasLongPathSupport() bool {
 	baseline := []string{RobocorpHome(), "stump"}
 	stumpath := filepath.Join(baseline...)

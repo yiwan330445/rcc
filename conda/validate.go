@@ -1,6 +1,7 @@
 package conda
 
 import (
+	"os"
 	"regexp"
 	"strings"
 
@@ -13,7 +14,7 @@ const (
 )
 
 var (
-	validPathCharacters = regexp.MustCompile("(?i)^[.a-z0-9_:/\\\\]+$")
+	validPathCharacters = regexp.MustCompile("(?i)^[.a-z0-9_:/\\\\~-]+$")
 )
 
 func validateLocations(checked map[string]string) bool {
@@ -24,15 +25,28 @@ func validateLocations(checked map[string]string) bool {
 		}
 		if strings.ContainsAny(value, " \t") {
 			success = false
-			common.Log("%sWARNING!  %s contain spaces. Cannot install miniconda at %v.%s", pretty.Red, name, value, pretty.Reset)
+			common.Log("%sWARNING!  %s contain spaces. Cannot use tooling with path %q.%s", pretty.Red, name, value, pretty.Reset)
 		}
 		if !validPathCharacters.MatchString(value) {
 			success = false
-			common.Log("%sWARNING!  %s contain illegal characters. Cannot install miniconda at %v.%s", pretty.Red, name, value, pretty.Reset)
+			common.Log("%sWARNING!  %s contain illegal characters. Cannot use tooling with path %q.%s", pretty.Red, name, value, pretty.Reset)
 		}
 	}
 	if !success {
-		common.Log("%sERROR!  Cannot install miniconda on your system. See above.%s", pretty.Red, pretty.Reset)
+		common.Log("%sWARNING!  Python pip might not work correctly in your system. See above.%s", pretty.Red, pretty.Reset)
 	}
 	return success
+}
+
+func ValidateLocations() bool {
+	checked := map[string]string{
+		"Environment variable 'TMP'":           os.Getenv("TMP"),
+		"Environment variable 'TEMP'":          os.Getenv("TEMP"),
+		"Environment variable 'ROBOCORP_HOME'": os.Getenv("ROBOCORP_HOME"),
+		"Path to 'ROBOCORP_HOME' directory":    RobocorpHome(),
+	}
+	// 7.1.2021 -- just warnings for now -- JMP:FIXME:JMP later
+	validateLocations(checked)
+	return true
+	// return validateLocations(checked)
 }

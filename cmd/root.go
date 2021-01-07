@@ -102,4 +102,5 @@ func initConfig() {
 	pretty.Setup()
 	common.Trace("CLI command was: %#v", os.Args)
 	common.Debug("Using config file: %v", xviper.ConfigFileUsed())
+	conda.ValidateLocations()
 }

@@ -56,10 +56,6 @@ func HasLongPathSupport() bool {
 	return true
 }
 
-func ValidateLocations() bool {
-	return true
-}
-
 func EnforceLongpathSupport() error {
 	return nil
 }

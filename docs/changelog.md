@@ -1,5 +1,13 @@
 # rcc change log
 
+## v8.0.3 (date: 7.1.2021)
+
+- adding path validation warnings, since they became problem (with pip) now
+  that we moved to use micromamba instead of miniconda
+- also validation pattern update, with added "~" and "-" as valid characters
+- validation is now done on toplevel, so all commands could generate
+  those warnings (but currently they don't break anything yet)
+
 ## v8.0.2 (date: 5.1.2021)
 
 - fixing failed robot tests for progress indicators (just tests)
