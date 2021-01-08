@@ -1,5 +1,10 @@
 # rcc change log
 
+## v8.0.5 (date: 8.1.2021)
+
+- added robot test to validate required changes, which are common/version.go
+  and docs/changelog.md
+
 ## v8.0.4 (date: 8.1.2021)
 
 - now requires micromamba 0.7.7 at least, with version check added
