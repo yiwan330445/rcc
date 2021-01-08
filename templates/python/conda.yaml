@@ -1,11 +1,11 @@
 channels:
   # Define conda channels here. 
-  - defaults
   - conda-forge
+  - defaults
 
 dependencies:
   # Define conda packages here. 
-  # We recommend using packages from the conda-forge channel.
+  # If available, always prefer the conda version of a package, installation will be faster and more efficient.
   # https://anaconda.org/search  
   - python=3.7.5
 
