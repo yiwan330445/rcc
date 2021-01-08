@@ -7,9 +7,12 @@ import (
 	"path/filepath"
 	"regexp"
 	"sort"
+	"strconv"
+	"strings"
 
 	"github.com/robocorp/rcc/common"
 	"github.com/robocorp/rcc/pathlib"
+	"github.com/robocorp/rcc/shell"
 )
 
 const (
@@ -177,8 +180,37 @@ func MambaCache() string {
 	return ExpandPath(filepath.Join(MambaPackages(), "cache"))
 }
 
+func asVersion(text string) (uint64, string) {
+	text = strings.TrimSpace(text)
+	parts := strings.SplitN(text, ".", 4)
+	steps := len(parts)
+	multipliers := []uint64{1000000, 1000, 1}
+	version := uint64(0)
+	for at, multiplier := range multipliers {
+		if steps <= at {
+			break
+		}
+		value, err := strconv.ParseUint(parts[at], 10, 64)
+		if err != nil {
+			break
+		}
+		version += multiplier * value
+	}
+	return version, text
+}
+
 func HasMicroMamba() bool {
-	return pathlib.IsFile(BinMicromamba())
+	if !pathlib.IsFile(BinMicromamba()) {
+		return false
+	}
+	versionText, _, err := shell.New(nil, ".", BinMicromamba(), "--version").CaptureOutput()
+	if err != nil {
+		return false
+	}
+	version, versionText := asVersion(versionText)
+	goodEnough := version >= 7007
+	common.Debug("%q version is %q -> %v (good enough: %v)", BinMicromamba(), versionText, version, goodEnough)
+	return goodEnough
 }
 
 func RobocorpHome() string {

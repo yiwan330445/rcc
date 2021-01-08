@@ -53,6 +53,7 @@ func spotlessCleanup(dryrun bool) error {
 		common.Log("- %v", LiveLocation())
 		common.Log("- %v", PipCache())
 		common.Log("- %v", MambaPackages())
+		common.Log("- %v", BinMicromamba())
 		return nil
 	}
 	err := os.RemoveAll(TemplateLocation())
@@ -75,10 +76,15 @@ func spotlessCleanup(dryrun bool) error {
 		return err
 	}
 	common.Debug("Removed directory %v.", MambaPackages())
+	err = os.Remove(BinMicromamba())
+	if err != nil {
+		return err
+	}
+	common.Debug("Removed executable %v.", BinMicromamba())
 	return nil
 }
 
-func Cleanup(daylimit int, dryrun, orphans, all, miniconda bool) error {
+func Cleanup(daylimit int, dryrun, orphans, all, miniconda, micromamba bool) error {
 	lockfile := RobocorpLock()
 	locker, err := pathlib.Locker(lockfile, 30000)
 	if err != nil {
@@ -120,6 +126,12 @@ func Cleanup(daylimit int, dryrun, orphans, all, miniconda bool) error {
 	}
 	if miniconda && err == nil {
 		err = doCleanup(MinicondaLocation(), dryrun)
+	}
+	if micromamba && err == nil {
+		err = doCleanup(MambaPackages(), dryrun)
+	}
+	if micromamba && err == nil {
+		err = doCleanup(BinMicromamba(), dryrun)
 	}
 	return err
 }
