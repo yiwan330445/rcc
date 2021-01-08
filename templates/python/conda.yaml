@@ -1,8 +1,16 @@
 channels:
+  # Define conda channels here. 
   - defaults
   - conda-forge
+
 dependencies:
+  # Define conda packages here. 
+  # We recommend using packages from the conda-forge channel.
+  # https://anaconda.org/search  
   - python=3.7.5
+
   - pip=20.1
   - pip:
-    - rpaframework==6.*
+    # Define pip packages here. 
+    # https://pypi.org/
+    - rpaframework==7.1.1 # https://rpaframework.org/releasenotes.html
