@@ -1,5 +1,18 @@
 # rcc change log
 
+## v8.0.5 (date: 8.1.2021)
+
+- added robot test to validate required changes, which are common/version.go
+  and docs/changelog.md
+
+## v8.0.4 (date: 8.1.2021)
+
+- now requires micromamba 0.7.7 at least, with version check added
+- micromamba now brings --repodata-ttl, which rcc currently sets for 7 days
+- and touching conda caches is gone because of repodata ttl
+- can now also cleanup micromamba binary and with --all
+- environment validation checks simplified (no more separate space check)
+
 ## v8.0.3 (date: 7.1.2021)
 
 - adding path validation warnings, since they became problem (with pip) now

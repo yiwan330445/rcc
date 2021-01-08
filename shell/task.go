@@ -1,6 +1,7 @@
 package shell
 
 import (
+	"bytes"
 	"io"
 	"os"
 	"os/exec"
@@ -93,4 +94,11 @@ func (it *Task) Observed(sink io.Writer, interactive bool) (int, error) {
 		os.Stdin.Close()
 	}
 	return it.execute(os.Stdin, stdout, stderr)
+}
+
+func (it *Task) CaptureOutput() (string, int, error) {
+	os.Stdin.Close()
+	stdout := bytes.NewBuffer(nil)
+	code, err := it.execute(os.Stdin, stdout, os.Stderr)
+	return stdout.String(), code, err
 }
