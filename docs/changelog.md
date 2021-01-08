@@ -1,5 +1,12 @@
 # rcc change log
 
+## v8.0.6 (date: 8.1.2021)
+
+- Updated to robot templates
+- conda channels in order for `--strict-channel-priority`
+- library versions updated and strict as well (rpaframework v7.1.1)
+- Added basic guides for what to do in conda.yaml for end-users.
+
 ## v8.0.5 (date: 8.1.2021)
 
 - added robot test to validate required changes, which are common/version.go
