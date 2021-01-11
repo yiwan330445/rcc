@@ -54,6 +54,7 @@ func spotlessCleanup(dryrun bool) error {
 		common.Log("- %v", PipCache())
 		common.Log("- %v", MambaPackages())
 		common.Log("- %v", BinMicromamba())
+		common.Log("- %v", RobocorpTempRoot())
 		return nil
 	}
 	err := os.RemoveAll(TemplateLocation())
@@ -81,6 +82,11 @@ func spotlessCleanup(dryrun bool) error {
 		return err
 	}
 	common.Debug("Removed executable %v.", BinMicromamba())
+	err = os.RemoveAll(RobocorpTempRoot())
+	if err != nil {
+		return err
+	}
+	common.Debug("Removed directory %v.", RobocorpTempRoot())
 	return nil
 }
 

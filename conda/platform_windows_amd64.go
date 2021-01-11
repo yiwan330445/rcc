@@ -62,14 +62,9 @@ func ensureHardlinkEnvironmment() (string, error) {
 func CondaEnvironment() []string {
 	env := os.Environ()
 	env = append(env, fmt.Sprintf("MAMBA_ROOT_PREFIX=%s", RobocorpHome()))
-	/*
-		path, err := ensureHardlinkEnvironmment()
-		if err != nil {
-			return nil
-		}
-		env = append(env, fmt.Sprintf("TEMP=%s", path))
-		env = append(env, fmt.Sprintf("TMP=%s", path))
-	*/
+	tempFolder := RobocorpTemp()
+	env = append(env, fmt.Sprintf("TEMP=%s", tempFolder))
+	env = append(env, fmt.Sprintf("TMP=%s", tempFolder))
 	return env
 }
 

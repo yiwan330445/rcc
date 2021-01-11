@@ -114,6 +114,8 @@ Using and running template example with shell file
   Must Have   PYTHONHOME=
   Must Have   PYTHONEXECUTABLE=
   Must Have   PYTHONNOUSERSITE=1
+  Must Have   TEMP=
+  Must Have   TMP=
   Wont Have   ROBOT_ROOT=
   Wont Have   ROBOT_ARTIFACTS=
   Must Have   f0a9e281269b31ea
@@ -135,6 +137,8 @@ Using and running template example with shell file
   Must Have   PYTHONHOME=
   Must Have   PYTHONEXECUTABLE=
   Must Have   PYTHONNOUSERSITE=1
+  Must Have   TEMP=
+  Must Have   TMP=
   Must Have   ROBOT_ROOT=
   Must Have   ROBOT_ARTIFACTS=
   Wont Have   RC_API_SECRET_HOST=

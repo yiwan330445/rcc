@@ -29,6 +29,9 @@ func ExpandPath(entry string) string {
 func CondaEnvironment() []string {
 	env := os.Environ()
 	env = append(env, fmt.Sprintf("MAMBA_ROOT_PREFIX=%s", RobocorpHome()))
+	tempFolder := RobocorpTemp()
+	env = append(env, fmt.Sprintf("TEMP=%s", tempFolder))
+	env = append(env, fmt.Sprintf("TMP=%s", tempFolder))
 	return env
 }
 

@@ -237,6 +237,8 @@ func (it *Activity) ExecutionEnvironment(base Robot, location string, inject []s
 		"PYTHONEXECUTABLE=",
 		"PYTHONNOUSERSITE=1",
 		"ROBOCORP_HOME="+conda.RobocorpHome(),
+		"TEMP="+conda.RobocorpTemp(),
+		"TMP="+conda.RobocorpTemp(),
 		searchPath.AsEnvironmental("PATH"),
 		pythonPath.AsEnvironmental("PYTHONPATH"),
 		fmt.Sprintf("ROBOT_ROOT=%s", it.WorkingDirectory(base)),

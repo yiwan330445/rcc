@@ -1,5 +1,9 @@
 # rcc change log
 
+## v8.0.7 (date: 11.1.2021)
+
+- Now rcc manages TEMP and TMP locations for its subprocesses
+
 ## v8.0.6 (date: 8.1.2021)
 
 - Updated to robot templates

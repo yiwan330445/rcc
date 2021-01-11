@@ -3,6 +3,7 @@ package conda
 import (
 	"crypto/sha256"
 	"fmt"
+	"math/rand"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -20,10 +21,15 @@ const (
 )
 
 var (
-	ignoredPaths = []string{"python", "conda"}
-	pythonPaths  = []string{"resources", "libraries", "tasks", "variables"}
-	hashPattern  = regexp.MustCompile("^[0-9a-f]{16}(?:\\.meta)?$")
+	ignoredPaths     = []string{"python", "conda"}
+	pythonPaths      = []string{"resources", "libraries", "tasks", "variables"}
+	hashPattern      = regexp.MustCompile("^[0-9a-f]{16}(?:\\.meta)?$")
+	randomIdentifier string
 )
+
+func init() {
+	randomIdentifier = fmt.Sprintf("%016x", rand.Uint64()^uint64(os.Getpid()))
+}
 
 func sorted(files []os.FileInfo) {
 	sort.SliceStable(files, func(left, right int) bool {
@@ -163,6 +169,8 @@ func EnvironmentExtensionFor(location string) []string {
 		"PYTHONEXECUTABLE=",
 		"PYTHONNOUSERSITE=1",
 		"ROBOCORP_HOME="+RobocorpHome(),
+		"TEMP="+RobocorpTemp(),
+		"TMP="+RobocorpTemp(),
 		searchPath.AsEnvironmental("PATH"),
 		PythonPath().AsEnvironmental("PYTHONPATH"),
 	)
@@ -203,7 +211,7 @@ func HasMicroMamba() bool {
 	if !pathlib.IsFile(BinMicromamba()) {
 		return false
 	}
-	versionText, _, err := shell.New(nil, ".", BinMicromamba(), "--version").CaptureOutput()
+	versionText, _, err := shell.New(CondaEnvironment(), ".", BinMicromamba(), "--version").CaptureOutput()
 	if err != nil {
 		return false
 	}
@@ -219,6 +227,19 @@ func RobocorpHome() string {
 		return ExpandPath(home)
 	}
 	return ExpandPath(defaultRobocorpLocation)
+}
+
+func RobocorpTempRoot() string {
+	return filepath.Join(RobocorpHome(), "temp")
+}
+
+func RobocorpTemp() string {
+	tempLocation := filepath.Join(RobocorpTempRoot(), randomIdentifier)
+	fullpath, err := pathlib.EnsureDirectory(tempLocation)
+	if err != nil {
+		common.Log("WARNING (%v) -> %v", tempLocation, err)
+	}
+	return fullpath
 }
 
 func BinLocation() string {
