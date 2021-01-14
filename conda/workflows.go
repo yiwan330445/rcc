@@ -136,9 +136,13 @@ func newLive(yaml, condaYaml, requirementsText, key string, force, freshInstall 
 func newLiveInternal(yaml, condaYaml, requirementsText, key string, force, freshInstall bool, postInstall []string) (bool, bool) {
 	targetFolder := LiveFrom(key)
 	common.Debug("Setting up new conda environment using %v to folder %v", condaYaml, targetFolder)
-	command := []string{BinMicromamba(), "create", "--strict-channel-priority", "--repodata-ttl", "604800", "-q", "-y", "-f", condaYaml, "-p", targetFolder}
+	ttl := "57600"
+	if force {
+		ttl = "0"
+	}
+	command := []string{BinMicromamba(), "create", "--retry-with-clean-cache", "--strict-channel-priority", "--repodata-ttl", ttl, "-q", "-y", "-f", condaYaml, "-p", targetFolder}
 	if common.DebugFlag {
-		command = []string{BinMicromamba(), "create", "--strict-channel-priority", "--repodata-ttl", "604800", "-v", "-y", "-f", condaYaml, "-p", targetFolder}
+		command = []string{BinMicromamba(), "create", "--retry-with-clean-cache", "--strict-channel-priority", "--repodata-ttl", ttl, "-v", "-y", "-f", condaYaml, "-p", targetFolder}
 	}
 	observer := make(InstallObserver)
 	common.Debug("===  new live  ---  conda env create phase ===")

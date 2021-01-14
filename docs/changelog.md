@@ -1,5 +1,12 @@
 # rcc change log
 
+## v8.0.8 (date: 15.1.2021)
+
+- now micromamba 0.7.8 is required
+- repodata TTL is reduced to 16 hours, and in case of environment creation
+  failure, fall back to 0 seconds TTL (immediate update)
+- using new --retry-with-clean-cache option in micromamba
+
 ## v8.0.7 (date: 11.1.2021)
 
 - Now rcc manages TEMP and TMP locations for its subprocesses
