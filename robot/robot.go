@@ -219,6 +219,7 @@ func (it *robot) ExecutionEnvironment(taskname, location string, inject []string
 		"PYTHONEXECUTABLE=",
 		"PYTHONNOUSERSITE=1",
 		"ROBOCORP_HOME="+conda.RobocorpHome(),
+		"RCC_ENVIRONMENT_HASH="+common.EnvironmentHash,
 		"TEMP="+conda.RobocorpTemp(),
 		"TMP="+conda.RobocorpTemp(),
 		searchPath.AsEnvironmental("PATH"),

@@ -1,5 +1,17 @@
 # rcc change log
 
+## v9.0.0 (date: 18.1.2021)
+
+- BREAKING CHANGES
+- new cli option `--lease` to request longer lasting environment (1 hour from
+  lease request, and next requests refresh the lease)
+- new environment variable: `RCC_ENVIRONMENT_HASH` for clients to use
+- new command `rcc env unlease` to stop leasing environments
+- this breaks contract of pristine environments in cases where one application
+  has already requested long living lease, and other wants to use environment
+  with exactly same specification (if pristine, it is shared, otherwise it is
+  an error)
+
 ## v8.0.10 (date: 18.1.2021)
 
 - fix: when there is no pip dependencies, do not try to run pip command

@@ -169,6 +169,7 @@ func EnvironmentExtensionFor(location string) []string {
 		"PYTHONEXECUTABLE=",
 		"PYTHONNOUSERSITE=1",
 		"ROBOCORP_HOME="+RobocorpHome(),
+		"RCC_ENVIRONMENT_HASH="+common.EnvironmentHash,
 		"TEMP="+RobocorpTemp(),
 		"TMP="+RobocorpTemp(),
 		searchPath.AsEnvironmental("PATH"),
@@ -247,11 +248,11 @@ func BinLocation() string {
 }
 
 func LiveLocation() string {
-	return filepath.Join(RobocorpHome(), "live")
+	return ensureDirectory(filepath.Join(RobocorpHome(), "live"))
 }
 
 func TemplateLocation() string {
-	return filepath.Join(RobocorpHome(), "base")
+	return ensureDirectory(filepath.Join(RobocorpHome(), "base"))
 }
 
 func RobocorpLock() string {

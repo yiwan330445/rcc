@@ -1,0 +1,12 @@
+tasks:
+  corrupt:
+    shell: pip install pytz
+
+condaConfigFile: conda.yaml
+artifactsDir: output
+PATH:
+  - .
+PYTHONPATH:
+  - .
+ignoreFiles:
+  - .gitignore

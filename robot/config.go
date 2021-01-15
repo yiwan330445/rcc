@@ -9,6 +9,7 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/robocorp/rcc/common"
 	"github.com/robocorp/rcc/conda"
 	"github.com/robocorp/rcc/pathlib"
 
@@ -237,6 +238,7 @@ func (it *Activity) ExecutionEnvironment(base Robot, location string, inject []s
 		"PYTHONEXECUTABLE=",
 		"PYTHONNOUSERSITE=1",
 		"ROBOCORP_HOME="+conda.RobocorpHome(),
+		"RCC_ENVIRONMENT_HASH="+common.EnvironmentHash,
 		"TEMP="+conda.RobocorpTemp(),
 		"TMP="+conda.RobocorpTemp(),
 		searchPath.AsEnvironmental("PATH"),

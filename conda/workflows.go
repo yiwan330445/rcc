@@ -301,6 +301,16 @@ func NewEnvironment(force bool, configurations ...string) (string, error) {
 	defer os.Remove(condaYaml)
 	defer os.Remove(requirementsText)
 
+	common.EnvironmentHash = key
+
+	quickFolder, ok, err := LeaseInterceptor(key)
+	if ok {
+		return quickFolder, nil
+	}
+	if err != nil {
+		return "", err
+	}
+
 	liveFolder := LiveFrom(key)
 	if reuseExistingLive(key) {
 		hits += 1

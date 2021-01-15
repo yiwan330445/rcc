@@ -6,14 +6,16 @@ import (
 )
 
 var (
-	Silent         bool
-	DebugFlag      bool
-	TraceFlag      bool
-	NoCache        bool
-	Liveonly       bool
-	Stageonly      bool
-	StageFolder    string
-	ControllerType string
+	Silent          bool
+	DebugFlag       bool
+	TraceFlag       bool
+	NoCache         bool
+	Liveonly        bool
+	Stageonly       bool
+	StageFolder     string
+	ControllerType  string
+	LeaseContract   string
+	EnvironmentHash string
 )
 
 const (
@@ -45,4 +47,8 @@ func ForceDebug() {
 
 func ControllerIdentity() string {
 	return strings.ToLower(fmt.Sprintf("rcc.%s", ControllerType))
+}
+
+func IsLeaseRequest() bool {
+	return len(LeaseContract) > 0
 }

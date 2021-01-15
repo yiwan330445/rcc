@@ -23,7 +23,7 @@ in human readable form.`,
 			pretty.Exit(1, "No environments available.")
 		}
 		lines := make([]string, 0, len(templates))
-		common.Log("%-25s  %-25s  %s", "Last used", "Last cloned", "Environment")
+		common.Log("%-25s  %-25s  %-16s  %s", "Last used", "Last cloned", "Environment", "Leased duration")
 		for _, template := range templates {
 			cloned := "N/A"
 			used := cloned
@@ -35,7 +35,7 @@ in human readable form.`,
 			if err == nil {
 				used = when.Format(time.RFC3339)
 			}
-			lines = append(lines, fmt.Sprintf("%-25s  %-25s  %s", used, cloned, template))
+			lines = append(lines, fmt.Sprintf("%-25s  %-25s  %-16s  %q %s", used, cloned, template, conda.WhoLeased(template), conda.LeaseExpires(template)))
 		}
 		sort.Strings(lines)
 		for _, line := range lines {
