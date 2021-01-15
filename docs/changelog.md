@@ -1,5 +1,9 @@
 # rcc change log
 
+## v8.0.9 (date: 15.1.2021)
+
+- fix: removing one verbosity flag from micromamba invocation
+
 ## v8.0.8 (date: 15.1.2021)
 
 - now micromamba 0.7.8 is required
