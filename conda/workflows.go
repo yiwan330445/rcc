@@ -154,17 +154,23 @@ func newLiveInternal(yaml, condaYaml, requirementsText, key string, force, fresh
 	if observer.HasFailures(targetFolder) {
 		return false, true
 	}
-	common.Debug("Updating new environment at %v with pip requirements from %v", targetFolder, requirementsText)
-	pipCommand := []string{"pip", "install", "--no-color", "--disable-pip-version-check", "--prefer-binary", "--cache-dir", PipCache(), "--find-links", WheelCache(), "--requirement", requirementsText, "--quiet"}
-	if common.DebugFlag {
-		pipCommand = []string{"pip", "install", "--no-color", "--disable-pip-version-check", "--prefer-binary", "--cache-dir", PipCache(), "--find-links", WheelCache(), "--requirement", requirementsText}
-	}
-	common.Log("####  Progress: 3/5  [pip install phase]")
-	common.Debug("===  new live  ---  pip install phase ===")
-	err = LiveExecution(targetFolder, pipCommand...)
-	if err != nil {
-		common.Error("Pip error", err)
-		return false, false
+	pipCache, wheelCache := PipCache(), WheelCache()
+	size, ok := pathlib.Size(requirementsText)
+	if !ok || size == 0 {
+		common.Log("####  Progress: 3/5  [pip install phase skipped -- no pip dependencies]")
+	} else {
+		common.Log("####  Progress: 3/5  [pip install phase]")
+		common.Debug("Updating new environment at %v with pip requirements from %v (size: %v)", targetFolder, requirementsText, size)
+		pipCommand := []string{"pip", "install", "--no-color", "--disable-pip-version-check", "--prefer-binary", "--cache-dir", pipCache, "--find-links", wheelCache, "--requirement", requirementsText, "--quiet"}
+		if common.DebugFlag {
+			pipCommand = []string{"pip", "install", "--no-color", "--disable-pip-version-check", "--prefer-binary", "--cache-dir", pipCache, "--find-links", wheelCache, "--requirement", requirementsText}
+		}
+		common.Debug("===  new live  ---  pip install phase ===")
+		err = LiveExecution(targetFolder, pipCommand...)
+		if err != nil {
+			common.Error("Pip error", err)
+			return false, false
+		}
 	}
 	if postInstall != nil && len(postInstall) > 0 {
 		common.Debug("===  new live  ---  post install phase ===")

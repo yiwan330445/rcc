@@ -1,5 +1,9 @@
 # rcc change log
 
+## v8.0.10 (date: 18.1.2021)
+
+- fix: when there is no pip dependencies, do not try to run pip command
+
 ## v8.0.9 (date: 15.1.2021)
 
 - fix: removing one verbosity flag from micromamba invocation
