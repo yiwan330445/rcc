@@ -59,7 +59,7 @@ func exportEnvironment(condaYaml []string, packfile, taskName, environment, work
 	var data operations.Token
 
 	if Has(packfile) {
-		config, err = robot.LoadYamlConfiguration(packfile)
+		config, err = robot.LoadRobotYaml(packfile)
 		if err == nil {
 			condaYaml = append(condaYaml, config.CondaConfigFile())
 			task = config.TaskByName(taskName)

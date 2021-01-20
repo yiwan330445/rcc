@@ -1,5 +1,10 @@
 # rcc change log
 
+## v9.0.1 (date: 20.1.2021)
+
+- BREAKING CHANGES
+- removal of legacy "package.yaml" support
+
 ## v9.0.0 (date: 18.1.2021)
 
 - BREAKING CHANGES

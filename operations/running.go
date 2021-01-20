@@ -46,7 +46,7 @@ func PipFreeze(searchPath pathlib.PathParts, directory, outputDir string, enviro
 
 func LoadTaskWithEnvironment(packfile, theTask string, force bool) (bool, robot.Robot, robot.Task, string) {
 	FixRobot(packfile)
-	config, err := robot.LoadYamlConfiguration(packfile)
+	config, err := robot.LoadRobotYaml(packfile)
 	if err != nil {
 		pretty.Exit(1, "Error: %v", err)
 	}

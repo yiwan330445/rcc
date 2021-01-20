@@ -75,15 +75,12 @@ func ensureFilesExecutable(dir string) {
 }
 
 func FixRobot(robotFile string) error {
-	config, err := robot.LoadYamlConfiguration(robotFile)
+	config, err := robot.LoadRobotYaml(robotFile)
 	if err != nil {
 		return err
 	}
-	tasks := config.AvailableTasks()
-	for _, task := range tasks {
-		for _, path := range config.Paths(task) {
-			ensureFilesExecutable(path)
-		}
+	for _, path := range config.Paths() {
+		ensureFilesExecutable(path)
 	}
 	return nil
 }

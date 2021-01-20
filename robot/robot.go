@@ -12,7 +12,6 @@ import (
 	"github.com/robocorp/rcc/common"
 	"github.com/robocorp/rcc/conda"
 	"github.com/robocorp/rcc/pathlib"
-	"github.com/robocorp/rcc/pretty"
 
 	"github.com/google/shlex"
 	"gopkg.in/yaml.v2"
@@ -28,13 +27,12 @@ type Robot interface {
 	RootDirectory() string
 	Validate() (bool, error)
 
-	// compatibility "string" argument (task name)
-	WorkingDirectory(string) string
-	ArtifactDirectory(string) string
-	Paths(string) pathlib.PathParts
-	PythonPaths(string) pathlib.PathParts
-	SearchPath(taskname, location string) pathlib.PathParts
-	ExecutionEnvironment(taskname, location string, inject []string, full bool) []string
+	WorkingDirectory() string
+	ArtifactDirectory() string
+	Paths() pathlib.PathParts
+	PythonPaths() pathlib.PathParts
+	SearchPath(location string) pathlib.PathParts
+	ExecutionEnvironment(location string, inject []string, full bool) []string
 }
 
 type Task interface {
@@ -153,11 +151,11 @@ func (it *robot) CondaConfigFile() string {
 	return filepath.Join(it.Root, it.Conda)
 }
 
-func (it *robot) WorkingDirectory(string) string {
+func (it *robot) WorkingDirectory() string {
 	return it.Root
 }
 
-func (it *robot) ArtifactDirectory(string) string {
+func (it *robot) ArtifactDirectory() string {
 	return filepath.Join(it.Root, it.Artifacts)
 }
 
@@ -177,31 +175,31 @@ func pathBuilder(root string, tails []string) pathlib.PathParts {
 	return pathlib.PathFrom(result...)
 }
 
-func (it *robot) Paths(string) pathlib.PathParts {
+func (it *robot) Paths() pathlib.PathParts {
 	if it == nil {
 		return pathlib.PathFrom()
 	}
 	return pathBuilder(it.Root, it.Path)
 }
 
-func (it *robot) PythonPaths(string) pathlib.PathParts {
+func (it *robot) PythonPaths() pathlib.PathParts {
 	if it == nil {
 		return pathlib.PathFrom()
 	}
 	return pathBuilder(it.Root, it.Pythonpath)
 }
 
-func (it *robot) SearchPath(taskname, location string) pathlib.PathParts {
-	return conda.FindPath(location).Prepend(it.Paths("")...)
+func (it *robot) SearchPath(location string) pathlib.PathParts {
+	return conda.FindPath(location).Prepend(it.Paths()...)
 }
 
-func (it *robot) ExecutionEnvironment(taskname, location string, inject []string, full bool) []string {
+func (it *robot) ExecutionEnvironment(location string, inject []string, full bool) []string {
 	environment := make([]string, 0, 100)
 	if full {
 		environment = append(environment, os.Environ()...)
 	}
 	environment = append(environment, inject...)
-	searchPath := it.SearchPath(taskname, location)
+	searchPath := it.SearchPath(location)
 	python, ok := searchPath.Which("python3", conda.FileExtensions)
 	if !ok {
 		python, ok = searchPath.Which("python", conda.FileExtensions)
@@ -223,34 +221,34 @@ func (it *robot) ExecutionEnvironment(taskname, location string, inject []string
 		"TEMP="+conda.RobocorpTemp(),
 		"TMP="+conda.RobocorpTemp(),
 		searchPath.AsEnvironmental("PATH"),
-		it.PythonPaths("").AsEnvironmental("PYTHONPATH"),
-		fmt.Sprintf("ROBOT_ROOT=%s", it.WorkingDirectory("")),
-		fmt.Sprintf("ROBOT_ARTIFACTS=%s", it.ArtifactDirectory("")),
+		it.PythonPaths().AsEnvironmental("PYTHONPATH"),
+		fmt.Sprintf("ROBOT_ROOT=%s", it.WorkingDirectory()),
+		fmt.Sprintf("ROBOT_ARTIFACTS=%s", it.ArtifactDirectory()),
 	)
 }
 
 func (it *task) WorkingDirectory(robot Robot) string {
-	return robot.WorkingDirectory("")
+	return robot.WorkingDirectory()
 }
 
 func (it *task) ArtifactDirectory(robot Robot) string {
-	return robot.ArtifactDirectory("")
+	return robot.ArtifactDirectory()
 }
 
 func (it *task) SearchPath(robot Robot, location string) pathlib.PathParts {
-	return robot.SearchPath("", location)
+	return robot.SearchPath(location)
 }
 
 func (it *task) Paths(robot Robot) pathlib.PathParts {
-	return robot.Paths("")
+	return robot.Paths()
 }
 
 func (it *task) PythonPaths(robot Robot) pathlib.PathParts {
-	return robot.PythonPaths("")
+	return robot.PythonPaths()
 }
 
 func (it *task) ExecutionEnvironment(robot Robot, location string, inject []string, full bool) []string {
-	return robot.ExecutionEnvironment("", location, inject, full)
+	return robot.ExecutionEnvironment(location, inject, full)
 }
 
 func (it *task) shellCommand() []string {
@@ -293,6 +291,15 @@ func robotFrom(content []byte) (*robot, error) {
 	return &config, nil
 }
 
+func PlainEnvironment(inject []string, full bool) []string {
+	environment := make([]string, 0, 100)
+	if full {
+		environment = append(environment, os.Environ()...)
+	}
+	environment = append(environment, inject...)
+	return environment
+}
+
 func LoadRobotYaml(filename string) (Robot, error) {
 	fullpath, err := filepath.Abs(filename)
 	if err != nil {
@@ -310,22 +317,10 @@ func LoadRobotYaml(filename string) (Robot, error) {
 	return robot, nil
 }
 
-func LoadYamlConfiguration(filename string) (Robot, error) {
-	if strings.HasSuffix(filename, "package.yaml") {
-		common.Log("%sWARNING! Support for 'package.yaml' is deprecated. Upgrade to 'robot.yaml'!%s", pretty.Red, pretty.Reset)
-		return LoadActivityPackage(filename)
-	}
-	return LoadRobotYaml(filename)
-}
-
 func DetectConfigurationName(directory string) string {
 	robot, err := pathlib.FindNamedPath(directory, "robot.yaml")
 	if err == nil && len(robot) > 0 {
 		return robot
 	}
-	robot, err = pathlib.FindNamedPath(directory, "package.yaml")
-	if err == nil && len(robot) > 0 {
-		return robot
-	}
-	return filepath.Join(directory, "package.yaml")
+	return filepath.Join(directory, "robot.yaml")
 }

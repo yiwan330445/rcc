@@ -232,7 +232,7 @@ func Unzip(directory, zipfile string, force, temporary bool) error {
 
 func Zip(directory, zipfile string, ignores []string) error {
 	common.Debug("Wrapping %v into %v ...", directory, zipfile)
-	config, err := robot.LoadYamlConfiguration(robot.DetectConfigurationName(directory))
+	config, err := robot.LoadRobotYaml(robot.DetectConfigurationName(directory))
 	if err != nil {
 		return err
 	}

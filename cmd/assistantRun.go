@@ -78,7 +78,7 @@ var assistantRunCmd = &cobra.Command{
 		reason = "SETUP_FAILURE"
 		targetRobot := robot.DetectConfigurationName(workarea)
 		simple, config, todo, label := operations.LoadTaskWithEnvironment(targetRobot, assistant.TaskName, forceFlag)
-		artifactDir := config.ArtifactDirectory("")
+		artifactDir := config.ArtifactDirectory()
 		if len(copyDirectory) > 0 && len(artifactDir) > 0 {
 			err := os.MkdirAll(copyDirectory, 0o755)
 			if err == nil {
