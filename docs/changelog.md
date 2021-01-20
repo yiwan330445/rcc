@@ -1,5 +1,9 @@
 # rcc change log
 
+## v8.0.11 (date: 20.1.2021)
+
+- fix: conda-forge and default switch on templates
+
 ## v8.0.10 (date: 18.1.2021)
 
 - fix: when there is no pip dependencies, do not try to run pip command
