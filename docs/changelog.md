@@ -1,5 +1,9 @@
 # rcc change log
 
+## v9.2.0 (date: 25.1.2021)
+
+- experiment: carrier PoC
+
 ## v9.1.0 (date: 25.1.2021)
 
 - new command `rcc configure diagnostics` to help identify environment

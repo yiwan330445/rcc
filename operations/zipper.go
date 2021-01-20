@@ -49,11 +49,27 @@ func (it *WriteTarget) Execute() bool {
 }
 
 type unzipper struct {
-	reader *zip.ReadCloser
+	reader *zip.Reader
+	closer io.Closer
 }
 
 func (it *unzipper) Close() {
-	it.reader.Close()
+	it.closer.Close()
+}
+
+func newPayloadUnzipper(filename string) (*unzipper, error) {
+	payloader, err := PayloadReaderAt(filename)
+	if err != nil {
+		return nil, err
+	}
+	reader, err := zip.NewReader(payloader, payloader.Limit())
+	if err != nil {
+		return nil, err
+	}
+	return &unzipper{
+		reader: reader,
+		closer: payloader,
+	}, nil
 }
 
 func newUnzipper(filename string) (*unzipper, error) {
@@ -62,7 +78,8 @@ func newUnzipper(filename string) (*unzipper, error) {
 		return nil, err
 	}
 	return &unzipper{
-		reader: reader,
+		reader: &reader.Reader,
+		closer: reader,
 	}, nil
 }
 
@@ -196,6 +213,38 @@ func defaultIgnores(selfie string) pathlib.Ignore {
 	result = append(result, pathlib.IgnorePattern("tmp/"))
 	result = append(result, pathlib.IgnorePattern("__pycache__"))
 	return pathlib.CompositeIgnore(result...)
+}
+
+func CarrierUnzip(directory, carrier string, force, temporary bool) error {
+	fullpath, err := filepath.Abs(directory)
+	if err != nil {
+		return err
+	}
+	if force {
+		err = pathlib.EnsureDirectoryExists(fullpath)
+	} else {
+		err = pathlib.EnsureEmptyDirectory(fullpath)
+	}
+	if err != nil {
+		return err
+	}
+	unzip, err := newPayloadUnzipper(carrier)
+	if err != nil {
+		return err
+	}
+	defer unzip.Close()
+	err = unzip.Extract(fullpath)
+	if err != nil {
+		return err
+	}
+	if temporary {
+		return nil
+	}
+	err = UpdateRobot(fullpath)
+	if err != nil {
+		return err
+	}
+	return FixDirectory(fullpath)
 }
 
 func Unzip(directory, zipfile string, force, temporary bool) error {
