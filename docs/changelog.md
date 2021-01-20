@@ -1,5 +1,9 @@
 # rcc change log
 
+## v8.0.12 (date: 20.1.2021)
+
+- pipeline (Github Actions) changes, no functionality
+
 ## v8.0.11 (date: 20.1.2021)
 
 - fix: conda-forge and default switch on templates

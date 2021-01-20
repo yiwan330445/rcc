@@ -1,9 +1,10 @@
 name: Rcc
 on:
+    workflow_dispatch:
     push:
         branches:
             - master
-            - maintenance
+            - series8
 
 jobs:
     build:
