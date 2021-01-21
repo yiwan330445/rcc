@@ -1,5 +1,9 @@
 # rcc change log
 
+## v9.0.2 (date: 21.1.2021)
+
+- fix: prevent direct deletion of leased environment
+
 ## v9.0.1 (date: 20.1.2021)
 
 - BREAKING CHANGES

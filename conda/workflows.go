@@ -345,9 +345,13 @@ func NewEnvironment(force bool, configurations ...string) (string, error) {
 	return "", errors.New("Could not create environment.")
 }
 
-func RemoveEnvironment(label string) {
+func RemoveEnvironment(label string) error {
+	if IsLeasedEnvironment(label) {
+		return fmt.Errorf("WARNING: %q is leased by %q and wont be deleted!", label, WhoLeased(label))
+	}
 	removeClone(LiveFrom(label))
 	removeClone(TemplateFrom(label))
+	return nil
 }
 
 func removeClone(location string) {

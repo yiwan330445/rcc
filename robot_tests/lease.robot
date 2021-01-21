@@ -48,8 +48,13 @@ Can operate leased environments
   Step        build/rcc env unlease --lease "second (2)" --hash 8f1d3dc95228edef  1
   Must Have   Error:
 
+  Goal        Cannot delete someone elses leased environment
+  Step        build/rcc env delete 8f1d3dc95228edef  1
+  Must Have   WARNING: "8f1d3dc95228edef" is leased by "taker (1)" and wont be deleted!
+
   Goal        Check listing for taker information (still same)
   Step        build/rcc env list
+  Must Have   8f1d3dc95228edef
   Must Have   "taker (1)"
   Wont Have   "second (2)"
 

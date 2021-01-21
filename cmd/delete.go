@@ -3,6 +3,7 @@ package cmd
 import (
 	"github.com/robocorp/rcc/common"
 	"github.com/robocorp/rcc/conda"
+	"github.com/robocorp/rcc/pretty"
 
 	"github.com/spf13/cobra"
 )
@@ -15,7 +16,10 @@ After deletion, it will not be available anymore.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		for _, label := range args {
 			common.Log("Removing %v", label)
-			conda.RemoveEnvironment(label)
+			err := conda.RemoveEnvironment(label)
+			if err != nil {
+				pretty.Exit(1, "Error: %v", err)
+			}
 		}
 	},
 }
