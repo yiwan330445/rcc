@@ -42,6 +42,8 @@ Help for rcc env new                0    build/rcc env new -h --controller cites
 Help for rcc env variables          0    build/rcc env variables -h --controller citests
 
 Help for rcc configure identity     0    build/rcc configure identity -h --controller citests
+Help for rcc configure diagnostics  0    build/rcc configure diagnostics -h --controller citests
+
 Help for rcc feedback metric        0    build/rcc feedback metric -h --controller citests
 
 Help for rcc man license            0    build/rcc man license -h --controller citests

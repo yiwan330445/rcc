@@ -208,16 +208,21 @@ func asVersion(text string) (uint64, string) {
 	return version, text
 }
 
+func MicromambaVersion() string {
+	versionText, _, err := shell.New(CondaEnvironment(), ".", BinMicromamba(), "--version").CaptureOutput()
+	if err != nil {
+		return err.Error()
+	}
+	_, versionText = asVersion(versionText)
+	return versionText
+}
+
 func HasMicroMamba() bool {
 	if !pathlib.IsFile(BinMicromamba()) {
 		return false
 	}
-	versionText, _, err := shell.New(CondaEnvironment(), ".", BinMicromamba(), "--version").CaptureOutput()
-	if err != nil {
-		return false
-	}
-	version, versionText := asVersion(versionText)
-	goodEnough := version >= 7008
+	version, versionText := asVersion(MicromambaVersion())
+	goodEnough := version >= 7010
 	common.Debug("%q version is %q -> %v (good enough: %v)", BinMicromamba(), versionText, version, goodEnough)
 	return goodEnough
 }

@@ -151,3 +151,6 @@ Using and running template example with shell file
   Step        build/rcc env variables --controller citests --json conda/testdata/conda.yaml --config tmp/alternative.yaml -r tmp/fluffy/robot.yaml -e tmp/fluffy/devdata/env.json
   Must Be Json Response
 
+  Goal        See diagnostics as valid JSON form
+  Step        build/rcc configure diagnostics --json
+  Must Be Json Response

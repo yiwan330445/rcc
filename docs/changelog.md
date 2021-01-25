@@ -1,5 +1,11 @@
 # rcc change log
 
+## v9.1.0 (date: 25.1.2021)
+
+- new command `rcc configure diagnostics` to help identify environment
+  related issues
+- also requiring new version of micromamba, 0.7.10
+
 ## v9.0.2 (date: 21.1.2021)
 
 - fix: prevent direct deletion of leased environment
