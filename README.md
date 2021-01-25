@@ -30,7 +30,7 @@ For detailed instructions, visit [Robocorp RCC documentation](https://robocorp.c
 ### Windows
 
 1. Open the command prompt
-1. Download: `curl -o rcc.exe https://downloads.code.robocorp.com/rcc/latest/windows64/rcc.exe`
+1. Download: `curl -o rcc.exe https://downloads.robocorp.com/rcc/releases/latest/windows64/rcc.exe`
 1. [Add to system path](https://www.architectryan.com/2018/03/17/add-to-the-path-on-windows-10/): Open Start -> `Edit the system environment variables`
 1. Test: `rcc`
 
@@ -46,7 +46,7 @@ Upgrading: `brew upgrade rcc`
 #### Raw download
 
 1. Open the terminal
-1. Download: `curl -o rcc https://downloads.code.robocorp.com/rcc/latest/macos64/rcc`
+1. Download: `curl -o rcc https://downloads.robocorp.com/rcc/releases/latest/macos64/rcc`
 1. Make the downloaded file executable: `chmod a+x rcc`
 1. Add to path: `sudo mv rcc /usr/local/bin/`
 1. Test: `rcc`
@@ -54,18 +54,18 @@ Upgrading: `brew upgrade rcc`
 ### Linux
 
 1. Open the terminal
-1. Download: `curl -o rcc https://downloads.code.robocorp.com/rcc/latest/linux64/rcc`
+1. Download: `curl -o rcc https://downloads.robocorp.com/rcc/releases/latest/linux64/rcc`
 1. Make the downloaded file executable: `chmod a+x rcc`
 1. Add to path: `sudo mv rcc /usr/local/bin/`
 1. Test: `rcc`
 
 ### Direct downloads for signed executables provided by Robocorp
 
-| OS      | Download URL                                                     |
-| ------- | ---------------------------------------------------------------- |
-| Windows | https://downloads.code.robocorp.com/rcc/latest/windows64/rcc.exe |
-| macOS   | https://downloads.code.robocorp.com/rcc/latest/macos64/rcc       |
-| Linux   | https://downloads.code.robocorp.com/rcc/latest/linux64/rcc       |
+| OS      | Download URL                                                         |
+| ------- | -------------------------------------------------------------------- |
+| Windows | https://downloads.robocorp.com/rcc/releases/latest/windows64/rcc.exe |
+| macOS   | https://downloads.robocorp.com/rcc/releases/latest/macos64/rcc       |
+| Linux   | https://downloads.robocorp.com/rcc/releases/latest/linux64/rcc       |
 
 *[EULA for pre-built distribution.](https://cdn.robocorp.com/legal/Robocorp-EULA-v1.0.pdf)*
 
