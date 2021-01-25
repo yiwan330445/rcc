@@ -31,6 +31,9 @@
   with exactly same specification (if pristine, it is shared, otherwise it is
   an error)
 
+## v8.0.12 (date: 18.1.2021)
+- Templates conda -channel ordering reverted pending conda-forge chagnes.
+
 ## v8.0.10 (date: 18.1.2021)
 
 - fix: when there is no pip dependencies, do not try to run pip command
