@@ -75,7 +75,7 @@ func ensureFilesExecutable(dir string) {
 }
 
 func FixRobot(robotFile string) error {
-	config, err := robot.LoadRobotYaml(robotFile)
+	config, err := robot.LoadRobotYaml(robotFile, false)
 	if err != nil {
 		return err
 	}

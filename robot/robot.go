@@ -300,7 +300,7 @@ func PlainEnvironment(inject []string, full bool) []string {
 	return environment
 }
 
-func LoadRobotYaml(filename string) (Robot, error) {
+func LoadRobotYaml(filename string, visible bool) (Robot, error) {
 	fullpath, err := filepath.Abs(filename)
 	if err != nil {
 		return nil, fmt.Errorf("%q: %w", filename, err)
@@ -308,6 +308,9 @@ func LoadRobotYaml(filename string) (Robot, error) {
 	content, err := ioutil.ReadFile(fullpath)
 	if err != nil {
 		return nil, fmt.Errorf("%q: %w", fullpath, err)
+	}
+	if visible {
+		common.Log("%q as robot.yaml is:\n%s", fullpath, string(content))
 	}
 	robot, err := robotFrom(content)
 	if err != nil {

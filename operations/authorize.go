@@ -50,6 +50,14 @@ func (it Token) AsJson() (string, error) {
 	return string(body), nil
 }
 
+func (it Token) FromJson(content []byte) error {
+	err := json.Unmarshal(content, &it)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 type UserInfo struct {
 	User Token `json:"user"`
 	Link Token `json:"request"`

@@ -11,7 +11,7 @@ import (
 func TestCannotReadMissingRobotYaml(t *testing.T) {
 	must, wont := hamlet.Specifications(t)
 
-	sut, err := robot.LoadRobotYaml("testdata/badmissing.yaml")
+	sut, err := robot.LoadRobotYaml("testdata/badmissing.yaml", false)
 	wont.Nil(err)
 	must.Nil(sut)
 }
@@ -19,7 +19,7 @@ func TestCannotReadMissingRobotYaml(t *testing.T) {
 func TestCanReadRealRobotYaml(t *testing.T) {
 	must, wont := hamlet.Specifications(t)
 
-	sut, err := robot.LoadRobotYaml("testdata/robot.yaml")
+	sut, err := robot.LoadRobotYaml("testdata/robot.yaml", false)
 	must.Nil(err)
 	wont.Nil(sut)
 	must.Equal(1, len(sut.IgnoreFiles()))
@@ -44,7 +44,7 @@ func TestCanReadRealRobotYaml(t *testing.T) {
 func TestCanGetShellFormCommand(t *testing.T) {
 	must, wont := hamlet.Specifications(t)
 
-	sut, err := robot.LoadRobotYaml("testdata/robot.yaml")
+	sut, err := robot.LoadRobotYaml("testdata/robot.yaml", false)
 	must.Nil(err)
 	wont.Nil(sut)
 	task := sut.TaskByName("Shell Form Name")
@@ -59,7 +59,7 @@ func TestCanGetShellFormCommand(t *testing.T) {
 func TestCanGetTaskFormCommand(t *testing.T) {
 	must, wont := hamlet.Specifications(t)
 
-	sut, err := robot.LoadRobotYaml("testdata/robot.yaml")
+	sut, err := robot.LoadRobotYaml("testdata/robot.yaml", false)
 	must.Nil(err)
 	wont.Nil(sut)
 	task := sut.TaskByName("Task Form Name")

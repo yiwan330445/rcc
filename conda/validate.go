@@ -15,13 +15,17 @@ var (
 	validPathCharacters = regexp.MustCompile("(?i)^[.a-z0-9_:/\\\\~-]+$")
 )
 
+func ValidLocation(value string) bool {
+	return validPathCharacters.MatchString(value)
+}
+
 func validateLocations(checked map[string]string) bool {
 	success := true
 	for name, value := range checked {
 		if len(value) == 0 {
 			continue
 		}
-		if !validPathCharacters.MatchString(value) {
+		if !ValidLocation(value) {
 			success = false
 			common.Log("%sWARNING!  %s contain illegal characters. Cannot use tooling with path %q.%s", pretty.Yellow, name, value, pretty.Reset)
 		}

@@ -173,7 +173,11 @@ func (it *zipper) Note(err error) {
 }
 
 func (it *zipper) Add(fullpath, relativepath string, details os.FileInfo) {
-	common.Debug("- %v size %v", relativepath, details.Size())
+	if details != nil {
+		common.Debug("- %v size %v", relativepath, details.Size())
+	} else {
+		common.Debug("- %v", relativepath)
+	}
 	source, err := os.Open(fullpath)
 	if err != nil {
 		it.Note(err)
@@ -281,7 +285,7 @@ func Unzip(directory, zipfile string, force, temporary bool) error {
 
 func Zip(directory, zipfile string, ignores []string) error {
 	common.Debug("Wrapping %v into %v ...", directory, zipfile)
-	config, err := robot.LoadRobotYaml(robot.DetectConfigurationName(directory))
+	config, err := robot.LoadRobotYaml(robot.DetectConfigurationName(directory), false)
 	if err != nil {
 		return err
 	}

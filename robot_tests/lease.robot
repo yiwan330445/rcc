@@ -11,6 +11,7 @@ Can operate leased environments
 
   Goal        Check listing for taker information
   Step        build/rcc env list
+  Use STDERR
   Must Have   "taker (1)"
 
   Goal        Others can get same environment
@@ -25,6 +26,7 @@ Can operate leased environments
 
   Goal        Check listing for taker information (still same)
   Step        build/rcc env list
+  Use STDERR
   Must Have   "taker (1)"
   Wont Have   "second (2)"
 
@@ -34,32 +36,38 @@ Can operate leased environments
 
   Goal        Now others cannot get same environment anymore
   Step        build/rcc env variables robot_tests/leasebot/conda.yaml   1
-  Must Have   Environment leased to "taker (1)" is dirty
   Wont Have   RCC_ENVIRONMENT_HASH=8f1d3dc95228edef
   Wont Have   CONDA_DEFAULT_ENV=rcc
+  Use STDERR
+  Must Have   Environment leased to "taker (1)" is dirty
 
   Goal        Cannot share environment, since it is dirty
   Step        build/rcc env variables --lease "second (2)" robot_tests/leasebot/conda.yaml  1
-  Must Have   Cannot get environment "8f1d3dc95228edef" because it is dirty and leased by "taker (1)"
   Wont Have   RCC_ENVIRONMENT_HASH=8f1d3dc95228edef
   Wont Have   CONDA_DEFAULT_ENV=rcc
+  Use STDERR
+  Must Have   Cannot get environment "8f1d3dc95228edef" because it is dirty and leased by "taker (1)"
 
   Goal        Cannot unlease someone elses environment
   Step        build/rcc env unlease --lease "second (2)" --hash 8f1d3dc95228edef  1
+  Use STDERR
   Must Have   Error:
 
   Goal        Cannot delete someone elses leased environment
   Step        build/rcc env delete 8f1d3dc95228edef  1
+  Use STDERR
   Must Have   WARNING: "8f1d3dc95228edef" is leased by "taker (1)" and wont be deleted!
 
   Goal        Check listing for taker information (still same)
   Step        build/rcc env list
+  Use STDERR
   Must Have   8f1d3dc95228edef
   Must Have   "taker (1)"
   Wont Have   "second (2)"
 
   Goal        Lease can be unleased
   Step        build/rcc env unlease --lease "taker (1)" --hash 8f1d3dc95228edef
+  Use STDERR
   Must Have   OK.
 
   Goal        Others can now lease that environment
@@ -69,9 +77,11 @@ Can operate leased environments
 
   Goal        Check listing for taker information (still same)
   Step        build/rcc env list
+  Use STDERR
   Must Have   "second (2)"
   Wont Have   "taker (1)"
 
   Goal        Lease can be unleased
   Step        build/rcc env unlease --lease "second (2)" --hash 8f1d3dc95228edef
+  Use STDERR
   Must Have   OK.

@@ -27,6 +27,7 @@ Using and running template example with shell file
 
   Goal        Send telemetry data to cloud.
   Step        build/rcc feedback metric --controller citests -t test -n rcc.test -v robot.fullrun
+  Use STDERR
   Must Have   OK
 
   Goal        Telemetry tracking can be disabled.
@@ -35,6 +36,7 @@ Using and running template example with shell file
 
   Goal        Show listing of rcc commands.
   Step        build/rcc --controller citests
+  Use STDERR
   Must Have   rcc is environment manager
   Wont Have   missing
 
@@ -52,10 +54,12 @@ Using and running template example with shell file
   Must Have   extended
   Must Have   python
   Must Have   standard
+  Use STDERR
   Must Have   OK.
 
   Goal        Initialize new standard robot into tmp/fluffy folder using force.
   Step        build/rcc robot init --controller citests -t extended -d tmp/fluffy -f
+  Use STDERR
   Must Have   OK.
 
   Goal        There should now be fluffy in robot listing
@@ -66,15 +70,17 @@ Using and running template example with shell file
 
   Goal        Fail to initialize new standard robot into tmp/fluffy without force.
   Step        build/rcc robot init --controller citests -t extended -d tmp/fluffy  2
+  Use STDERR
   Must Have   Error: Directory
   Must Have   fluffy is not empty
 
   Goal        Run task in place.
   Step        build/rcc task run --controller citests -r tmp/fluffy/robot.yaml
+  Must Have   1 critical task, 1 passed, 0 failed
+  Use STDERR
   Must Have   Progress: 0/5
   Must Have   Progress: 5/5
   Must Have   rpaframework
-  Must Have   1 critical task, 1 passed, 0 failed
   Must Have   OK.
   Must Exist  %{ROBOCORP_HOME}/base/
   Must Exist  %{ROBOCORP_HOME}/live/
@@ -83,18 +89,20 @@ Using and running template example with shell file
 
   Goal        Run task in clean temporary directory.
   Step        build/rcc task testrun --controller citests -r tmp/fluffy/robot.yaml
+  Must Have   1 critical task, 1 passed, 0 failed
+  Use STDERR
+  Must Have   rpaframework
   Must Have   Progress: 0/5
   Wont Have   Progress: 1/5
   Wont Have   Progress: 2/5
   Wont Have   Progress: 3/5
   Wont Have   Progress: 4/5
   Must Have   Progress: 5/5
-  Must Have   rpaframework
-  Must Have   1 critical task, 1 passed, 0 failed
   Must Have   OK.
 
   Goal        Merge two different conda.yaml files with conflict fails
   Step        build/rcc env new --controller citests conda/testdata/conda.yaml conda/testdata/other.yaml  1
+  Use STDERR
   Must Have   robotframework=3.1 vs. robotframework=3.2
 
   Goal        Merge two different conda.yaml files with conflict fails

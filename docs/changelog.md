@@ -1,5 +1,13 @@
 # rcc change log
 
+## v9.3.0 (date: 28.1.2021)
+
+- support for applications to submit issue reports thru rcc
+- print "robot.yaml" to logs, to make it visible for support cases
+- diagnostics can now print into a file, and that is used as part
+  of issue reporting
+- added links to diagnostic checks, for user guidance
+
 ## v9.2.0 (date: 25.1.2021)
 
 - experiment: carrier PoC

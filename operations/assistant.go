@@ -147,14 +147,14 @@ func (it *ArtifactPublisher) Publish(fullpath, relativepath string, details os.F
 		common.Log("ERR: did not get correct response postinfo in reply from cloud.")
 		return //err
 	}
-	err = multipartUpload(outcome.Response.PostInfo.Url, outcome.Response.PostInfo.Fields, basename, fullpath)
+	err = MultipartUpload(outcome.Response.PostInfo.Url, outcome.Response.PostInfo.Fields, basename, fullpath)
 	if err != nil {
 		it.ErrorCount += 1
 		common.Error("Assistant/Last", err)
 	}
 }
 
-func multipartUpload(url string, fields map[string]string, basename, fullpath string) error {
+func MultipartUpload(url string, fields map[string]string, basename, fullpath string) error {
 	buffer := new(bytes.Buffer)
 	many := multipart.NewWriter(buffer)
 
