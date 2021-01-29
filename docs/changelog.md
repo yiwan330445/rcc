@@ -1,5 +1,10 @@
 # rcc change log
 
+## v9.3.2 (date: 29.1.2021)
+
+- added environment variables for installation identity, opt-out status as
+  `RCC_INSTALLATION_ID` and `RCC_TRACKING_ALLOWED`
+
 ## v9.3.1 (date: 29.1.2021)
 
 - fix: when environment is leased, temporary folder is will not be recycled

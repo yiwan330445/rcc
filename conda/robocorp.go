@@ -14,6 +14,7 @@ import (
 	"github.com/robocorp/rcc/common"
 	"github.com/robocorp/rcc/pathlib"
 	"github.com/robocorp/rcc/shell"
+	"github.com/robocorp/rcc/xviper"
 )
 
 const (
@@ -170,6 +171,8 @@ func EnvironmentExtensionFor(location string) []string {
 		"PYTHONNOUSERSITE=1",
 		"ROBOCORP_HOME="+RobocorpHome(),
 		"RCC_ENVIRONMENT_HASH="+common.EnvironmentHash,
+		"RCC_INSTALLATION_ID="+xviper.TrackingIdentity(),
+		"RCC_TRACKING_ALLOWED="+fmt.Sprintf("%v", xviper.CanTrack()),
 		"TEMP="+RobocorpTemp(),
 		"TMP="+RobocorpTemp(),
 		searchPath.AsEnvironmental("PATH"),

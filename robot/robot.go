@@ -12,6 +12,7 @@ import (
 	"github.com/robocorp/rcc/common"
 	"github.com/robocorp/rcc/conda"
 	"github.com/robocorp/rcc/pathlib"
+	"github.com/robocorp/rcc/xviper"
 
 	"github.com/google/shlex"
 	"gopkg.in/yaml.v2"
@@ -218,6 +219,8 @@ func (it *robot) ExecutionEnvironment(location string, inject []string, full boo
 		"PYTHONNOUSERSITE=1",
 		"ROBOCORP_HOME="+conda.RobocorpHome(),
 		"RCC_ENVIRONMENT_HASH="+common.EnvironmentHash,
+		"RCC_INSTALLATION_ID="+xviper.TrackingIdentity(),
+		"RCC_TRACKING_ALLOWED="+fmt.Sprintf("%v", xviper.CanTrack()),
 		"TEMP="+conda.RobocorpTemp(),
 		"TMP="+conda.RobocorpTemp(),
 		searchPath.AsEnvironmental("PATH"),

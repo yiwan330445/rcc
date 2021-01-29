@@ -124,6 +124,9 @@ Using and running template example with shell file
   Must Have   PYTHONNOUSERSITE=1
   Must Have   TEMP=
   Must Have   TMP=
+  Must Have   RCC_ENVIRONMENT_HASH=
+  Must Have   RCC_INSTALLATION_ID=
+  Must Have   RCC_TRACKING_ALLOWED=
   Wont Have   ROBOT_ROOT=
   Wont Have   ROBOT_ARTIFACTS=
   Must Have   f0a9e281269b31ea
@@ -147,6 +150,9 @@ Using and running template example with shell file
   Must Have   PYTHONNOUSERSITE=1
   Must Have   TEMP=
   Must Have   TMP=
+  Must Have   RCC_ENVIRONMENT_HASH=
+  Must Have   RCC_INSTALLATION_ID=
+  Must Have   RCC_TRACKING_ALLOWED=
   Must Have   ROBOT_ROOT=
   Must Have   ROBOT_ARTIFACTS=
   Wont Have   RC_API_SECRET_HOST=
