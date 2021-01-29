@@ -45,7 +45,7 @@ func startTempRecycling() {
 }
 
 func markTempForRecycling() {
-	if markedAlready {
+	if common.LeaseEffective || markedAlready {
 		return
 	}
 	markedAlready = true

@@ -57,11 +57,17 @@ func CouldExtendLease(hash string) bool {
 		return false
 	}
 	pathlib.TouchWhen(LeaseFileFrom(hash), time.Now())
+	common.LeaseEffective = true
 	return true
 }
 
 func TakeLease(hash, reason string) error {
-	return writeLeaseFile(hash, reason)
+	err := writeLeaseFile(hash, reason)
+	if err != nil {
+		return err
+	}
+	common.LeaseEffective = true
+	return nil
 }
 
 func DropLease(hash, reason string) error {

@@ -3,6 +3,7 @@ package conda
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 	"time"
 
 	"github.com/robocorp/rcc/common"
@@ -103,6 +104,39 @@ func anyLeasedEnvironment() bool {
 	return false
 }
 
+func cleanupTemp(deadline time.Time, dryrun bool) error {
+	basedir := RobocorpTempRoot()
+	handle, err := os.Open(basedir)
+	if err != nil {
+		return err
+	}
+	entries, err := handle.Readdir(-1)
+	handle.Close()
+	if err != nil {
+		return err
+	}
+	for _, entry := range entries {
+		if entry.ModTime().After(deadline) {
+			continue
+		}
+		fullpath := filepath.Join(basedir, entry.Name())
+		if dryrun {
+			common.Log("Would remove temp %v.", fullpath)
+			continue
+		}
+		if entry.IsDir() {
+			err = os.RemoveAll(fullpath)
+			if err != nil {
+				common.Log("Warning[%q]: %v", fullpath, err)
+			}
+		} else {
+			os.Remove(fullpath)
+		}
+		common.Debug("Removed %v.", fullpath)
+	}
+	return nil
+}
+
 func Cleanup(daylimit int, dryrun, orphans, all, miniconda, micromamba bool) error {
 	lockfile := RobocorpLock()
 	locker, err := pathlib.Locker(lockfile, 30000)
@@ -118,6 +152,7 @@ func Cleanup(daylimit int, dryrun, orphans, all, miniconda, micromamba bool) err
 	}
 
 	deadline := time.Now().Add(-24 * time.Duration(daylimit) * time.Hour)
+	cleanupTemp(deadline, dryrun)
 	for _, template := range TemplateList() {
 		whenLive, err := LastUsed(LiveFrom(template))
 		if err != nil {

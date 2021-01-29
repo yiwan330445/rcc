@@ -12,6 +12,7 @@ var (
 	NoCache         bool
 	Liveonly        bool
 	Stageonly       bool
+	LeaseEffective  bool
 	StageFolder     string
 	ControllerType  string
 	LeaseContract   string

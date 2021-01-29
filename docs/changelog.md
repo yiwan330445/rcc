@@ -1,5 +1,10 @@
 # rcc change log
 
+## v9.3.1 (date: 29.1.2021)
+
+- fix: when environment is leased, temporary folder is will not be recycled
+- cleanup command now cleans also temporary folders based on day limit
+
 ## v9.3.0 (date: 28.1.2021)
 
 - support for applications to submit issue reports thru rcc
