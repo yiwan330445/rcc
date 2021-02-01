@@ -61,11 +61,11 @@ Upgrading: `brew upgrade rcc`
 
 ### Direct downloads for signed executables provided by Robocorp
 
-| OS      | Download URL                                                         |
-| ------- | -------------------------------------------------------------------- |
-| Windows | https://downloads.robocorp.com/rcc/releases/latest/windows64/rcc.exe |
-| macOS   | https://downloads.robocorp.com/rcc/releases/latest/macos64/rcc       |
-| Linux   | https://downloads.robocorp.com/rcc/releases/latest/linux64/rcc       |
+| OS       | Download URL  [latest version info](https://downloads.robocorp.com/rcc/releases/latest/version.txt) |
+| -------- | --------------------------------------------------------------------------------------------------- |
+| Windows  | https://downloads.robocorp.com/rcc/releases/latest/windows64/rcc.exe                                |
+| macOS    | https://downloads.robocorp.com/rcc/releases/latest/macos64/rcc                                      |
+| Linux    | https://downloads.robocorp.com/rcc/releases/latest/linux64/rcc                                      |
 
 *[EULA for pre-built distribution.](https://cdn.robocorp.com/legal/Robocorp-EULA-v1.0.pdf)*
 
