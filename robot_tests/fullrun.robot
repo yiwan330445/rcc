@@ -168,3 +168,13 @@ Using and running template example with shell file
   Goal        See diagnostics as valid JSON form
   Step        build/rcc configure diagnostics --json
   Must Be Json Response
+
+  Goal        Simulate issue report sending with dryrun
+  Step        build/rcc feedback issue --dryrun --report robot_tests/report.json --attachments robot_tests/conda.yaml
+  Must Have   "report":
+  Must Have   "zipfile":
+  Must Have   "installationId":
+  Must Have   "platform":
+  Must Be Json Response
+  Use STDERR
+  Must Have   OK

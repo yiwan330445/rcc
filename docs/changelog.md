@@ -1,5 +1,9 @@
 # rcc change log
 
+## v9.3.3 (date: 1.2.2021)
+
+- adding `--dryrun` option to issue reporting
+
 ## v9.3.2 (date: 29.1.2021)
 
 - added environment variables for installation identity, opt-out status as

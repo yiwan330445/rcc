@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"io/ioutil"
+	"os"
 	"path/filepath"
 	"runtime"
 
@@ -63,7 +64,7 @@ func virtualName(filename string) (string, error) {
 	return fmt.Sprintf("attachments_%s.zip", digest[:16]), nil
 }
 
-func ReportIssue(reportFile string, attachmentsFiles []string) error {
+func ReportIssue(reportFile string, attachmentsFiles []string, dryrun bool) error {
 	cloud.BackgroundMetric(common.ControllerIdentity(), "rcc.submit.issue", common.Version)
 	token, err := loadToken(reportFile)
 	if err != nil {
@@ -93,6 +94,17 @@ func ReportIssue(reportFile string, attachmentsFiles []string) error {
 	issueReport, err := token.AsJson()
 	if err != nil {
 		return err
+	}
+	if dryrun {
+		metaForm := make(Token)
+		metaForm["report"] = token
+		metaForm["zipfile"] = filename
+		report, err := metaForm.AsJson()
+		if err != nil {
+			return err
+		}
+		fmt.Fprintln(os.Stdout, report)
+		return nil
 	}
 	common.Trace(issueReport)
 	client, err := cloud.NewClient(issueHost)
