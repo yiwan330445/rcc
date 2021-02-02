@@ -1,5 +1,11 @@
 # rcc change log
 
+## v9.3.5 (date: 2.2.2021)
+
+- micromamba upgrade to 0.7.12
+- REGRESSION: `rcc task shell` got broken when micromamba was introduced,
+  and this version fixes that
+
 ## v9.3.4 (date: 1.2.2021)
 
 - fix: removing environments now uses rename first and then delete,

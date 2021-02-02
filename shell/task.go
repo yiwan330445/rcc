@@ -81,24 +81,26 @@ func (it *Task) Tee(folder string, interactive bool) (int, error) {
 	defer errfile.Close()
 	stdout := io.MultiWriter(it.stdout(), outfile)
 	stderr := io.MultiWriter(os.Stderr, errfile)
+	var stdin io.Reader = os.Stdin
 	if !interactive {
-		os.Stdin.Close()
+		stdin = bytes.NewReader([]byte{})
 	}
-	return it.execute(os.Stdin, stdout, stderr)
+	return it.execute(stdin, stdout, stderr)
 }
 
 func (it *Task) Observed(sink io.Writer, interactive bool) (int, error) {
 	stdout := io.MultiWriter(it.stdout(), sink)
 	stderr := io.MultiWriter(os.Stderr, sink)
+	var stdin io.Reader = os.Stdin
 	if !interactive {
-		os.Stdin.Close()
+		stdin = bytes.NewReader([]byte{})
 	}
-	return it.execute(os.Stdin, stdout, stderr)
+	return it.execute(stdin, stdout, stderr)
 }
 
 func (it *Task) CaptureOutput() (string, int, error) {
-	os.Stdin.Close()
+	stdin := bytes.NewReader([]byte{})
 	stdout := bytes.NewBuffer(nil)
-	code, err := it.execute(os.Stdin, stdout, os.Stderr)
+	code, err := it.execute(stdin, stdout, os.Stderr)
 	return stdout.String(), code, err
 }
