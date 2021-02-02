@@ -1,5 +1,13 @@
 # rcc change log
 
+## v9.3.4 (date: 1.2.2021)
+
+- fix: removing environments now uses rename first and then delete,
+  to get around windows locked files issue
+- warning: on windows, if environment is somehow locked by some process,
+  this will fail earlier in the process (which is good thing), so be aware
+- minor change on cache statistics representation and calculation
+
 ## v9.3.3 (date: 1.2.2021)
 
 - adding `--dryrun` option to issue reporting

@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
+	"math/rand"
 	"os"
 	"path/filepath"
 	"strings"
@@ -62,17 +63,20 @@ func IsPristine(folder string) bool {
 	return Hexdigest(digest) == meta
 }
 
-func reuseExistingLive(key string) bool {
+func reuseExistingLive(key string) (bool, error) {
 	if common.Stageonly {
-		return false
+		return false, nil
 	}
 	candidate := LiveFrom(key)
 	if IsPristine(candidate) {
 		touchMetafile(candidate)
-		return true
+		return true, nil
 	}
-	removeClone(candidate)
-	return false
+	err := removeClone(candidate)
+	if err != nil {
+		return false, err
+	}
+	return false, nil
 }
 
 func LiveExecution(liveFolder string, command ...string) error {
@@ -117,20 +121,26 @@ func (it InstallObserver) HasFailures(targetFolder string) bool {
 	return false
 }
 
-func newLive(yaml, condaYaml, requirementsText, key string, force, freshInstall bool, postInstall []string) bool {
+func newLive(yaml, condaYaml, requirementsText, key string, force, freshInstall bool, postInstall []string) (bool, error) {
 	targetFolder := LiveFrom(key)
 	common.Debug("===  new live  ---  pre cleanup phase ===")
-	removeClone(targetFolder)
+	err := removeClone(targetFolder)
+	if err != nil {
+		return false, err
+	}
 	common.Debug("===  new live  ---  first try phase ===")
 	success, fatal := newLiveInternal(yaml, condaYaml, requirementsText, key, force, freshInstall, postInstall)
 	if !success && !force && !fatal {
 		common.Debug("===  new live  ---  second try phase ===")
 		common.ForceDebug()
 		common.Log("Retry! First try failed ... now retrying with debug and force options!")
-		removeClone(targetFolder)
+		err = removeClone(targetFolder)
+		if err != nil {
+			return false, err
+		}
 		success, _ = newLiveInternal(yaml, condaYaml, requirementsText, key, true, freshInstall, postInstall)
 	}
-	return success
+	return success, nil
 }
 
 func newLiveInternal(yaml, condaYaml, requirementsText, key string, force, freshInstall bool, postInstall []string) (bool, bool) {
@@ -277,7 +287,8 @@ func NewEnvironment(force bool, configurations ...string) (string, error) {
 	freshInstall := templates == 0
 
 	defer func() {
-		common.Log("####  Progress: 5/5  [Done.] [Stats: %d environments, %d requests, %d merges, %d hits, %d dirty, %d misses, %d failures | %s]", templates, requests, merges, hits, dirty, misses, failures, common.Version)
+		templates = len(TemplateList())
+		common.Log("####  Progress: 5/5  [Done.] [Cache statistics: %d environments, %d requests, %d merges, %d hits, %d dirty, %d misses, %d failures | %s]", templates, requests, merges, hits, dirty, misses, failures, common.Version)
 	}()
 	common.Log("####  Progress: 0/5  [try use existing live same environment?] %v", xviper.TrackingIdentity())
 
@@ -312,7 +323,11 @@ func NewEnvironment(force bool, configurations ...string) (string, error) {
 	}
 
 	liveFolder := LiveFrom(key)
-	if reuseExistingLive(key) {
+	reusable, err := reuseExistingLive(key)
+	if err != nil {
+		return "", err
+	}
+	if reusable {
 		hits += 1
 		xviper.Set("stats.env.hit", hits)
 		return liveFolder, nil
@@ -321,21 +336,32 @@ func NewEnvironment(force bool, configurations ...string) (string, error) {
 		common.Log("####  Progress: 1/5  [skipped -- stage only]")
 	} else {
 		common.Log("####  Progress: 1/5  [try clone existing same template to live, key: %v]", key)
-		if CloneFromTo(TemplateFrom(key), liveFolder, pathlib.CopyFile) {
+		success, err := CloneFromTo(TemplateFrom(key), liveFolder, pathlib.CopyFile)
+		if err != nil {
+			return "", err
+		}
+		if success {
 			dirty += 1
 			xviper.Set("stats.env.dirty", dirty)
 			return liveFolder, nil
 		}
 	}
 	common.Log("####  Progress: 2/5  [try create new environment from scratch]")
-	if newLive(yaml, condaYaml, requirementsText, key, force, freshInstall, finalEnv.PostInstall) {
+	success, err := newLive(yaml, condaYaml, requirementsText, key, force, freshInstall, finalEnv.PostInstall)
+	if err != nil {
+		return "", err
+	}
+	if success {
 		misses += 1
 		xviper.Set("stats.env.miss", misses)
 		if common.Liveonly {
 			common.Log("####  Progress: 4/5  [skipped -- live only]")
 		} else {
 			common.Log("####  Progress: 4/5  [backup new environment as template]")
-			CloneFromTo(liveFolder, TemplateFrom(key), pathlib.CopyFile)
+			_, err = CloneFromTo(liveFolder, TemplateFrom(key), pathlib.CopyFile)
+			if err != nil {
+				return "", err
+			}
 		}
 		return liveFolder, nil
 	}
@@ -349,41 +375,73 @@ func RemoveEnvironment(label string) error {
 	if IsLeasedEnvironment(label) {
 		return fmt.Errorf("WARNING: %q is leased by %q and wont be deleted!", label, WhoLeased(label))
 	}
-	removeClone(LiveFrom(label))
-	removeClone(TemplateFrom(label))
+	err := removeClone(LiveFrom(label))
+	if err != nil {
+		return err
+	}
+	return removeClone(TemplateFrom(label))
+}
+
+func removeClone(location string) error {
+	if !pathlib.IsDir(location) {
+		return nil
+	}
+	randomLocation := fmt.Sprintf("%s.%08X", location, rand.Uint32())
+	common.Debug("Rename/remove %q using %q as random name.", location, randomLocation)
+	err := os.Rename(location, randomLocation)
+	if err != nil {
+		common.Log("Rename %q -> %q failed as: %v!", location, randomLocation, err)
+		return err
+	}
+	err = os.RemoveAll(randomLocation)
+	if err != nil {
+		common.Log("Removal of %q failed as: %v!", randomLocation, err)
+		return err
+	}
+	meta := metafile(location)
+	if pathlib.IsFile(meta) {
+		return os.Remove(meta)
+	}
 	return nil
 }
 
-func removeClone(location string) {
-	os.Remove(metafile(location))
-	os.RemoveAll(location)
-}
-
-func CloneFromTo(source, target string, copier pathlib.Copier) bool {
-	removeClone(target)
+func CloneFromTo(source, target string, copier pathlib.Copier) (bool, error) {
+	err := removeClone(target)
+	if err != nil {
+		return false, err
+	}
 	os.MkdirAll(target, 0755)
 
 	if !IsPristine(source) {
-		removeClone(source)
-		return false
+		err = removeClone(source)
+		if err != nil {
+			return false, fmt.Errorf("Source %q is not pristine! And could not remove: %v", source, err)
+		}
+		return false, nil
 	}
 	expected, err := metaLoad(source)
 	if err != nil {
-		return false
+		return false, nil
 	}
 	success := cloneFolder(source, target, 8, copier)
 	if !success {
-		removeClone(target)
-		return false
+		err = removeClone(target)
+		if err != nil {
+			return false, fmt.Errorf("Cloning %q to %q failed! And cleanup failed: %v", source, target, err)
+		}
+		return false, nil
 	}
 	digest, err := DigestFor(target)
 	if err != nil || Hexdigest(digest) != expected {
-		removeClone(target)
-		return false
+		err = removeClone(target)
+		if err != nil {
+			return false, fmt.Errorf("Target %q does not match source %q! And cleanup failed: %v!", target, source, err)
+		}
+		return false, nil
 	}
 	metaSave(target, expected)
 	touchMetafile(source)
-	return true
+	return true, nil
 }
 
 func cloneFolder(source, target string, workers int, copier pathlib.Copier) bool {

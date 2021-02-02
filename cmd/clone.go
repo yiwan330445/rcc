@@ -17,7 +17,10 @@ var cloneCmd = &cobra.Command{
 		source := cmd.LocalFlags().Lookup("source").Value.String()
 		target := cmd.LocalFlags().Lookup("target").Value.String()
 		defer common.Stopwatch("rcc internal clone lasted").Report()
-		success := conda.CloneFromTo(source, target, pathlib.CopyFile)
+		success, err := conda.CloneFromTo(source, target, pathlib.CopyFile)
+		if err != nil {
+			pretty.Exit(2, "Error: Cloning failed, reason: %v!", err)
+		}
 		if !success {
 			pretty.Exit(1, "Error: Cloning failed.")
 		}
