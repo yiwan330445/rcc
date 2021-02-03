@@ -123,7 +123,7 @@ func SummonEnvironment(filename string) *Environment {
 		}
 	}
 	return &Environment{
-		Channels: []string{"defaults", "conda-forge"},
+		Channels: []string{"conda-forge"},
 		Conda:    []*Dependency{},
 		Pip:      []*Dependency{},
 	}

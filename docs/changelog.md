@@ -1,5 +1,9 @@
 # rcc change log
 
+## v9.3.6 (date: 3.2.2021)
+
+- removing "defaults" channel from robot templates
+
 ## v9.3.5 (date: 2.2.2021)
 
 - micromamba upgrade to 0.7.12
