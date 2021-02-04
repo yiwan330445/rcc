@@ -44,7 +44,7 @@ func CondaPaths(prefix string) []string {
 }
 
 func MicromambaLink() string {
-	return "https://downloads.robocorp.com/micromamba/stable/macos64/micromamba"
+	return "https://downloads.robocorp.com/micromamba/v0.7.12/macos64/micromamba"
 }
 
 func IsPosix() bool {

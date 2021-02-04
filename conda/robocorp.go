@@ -194,6 +194,10 @@ func MambaCache() string {
 
 func asVersion(text string) (uint64, string) {
 	text = strings.TrimSpace(text)
+	multiline := strings.SplitN(text, "\n", 2)
+	if len(multiline) > 0 {
+		text = strings.TrimSpace(multiline[0])
+	}
 	parts := strings.SplitN(text, ".", 4)
 	steps := len(parts)
 	multipliers := []uint64{1000000, 1000, 1}

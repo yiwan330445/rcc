@@ -1,5 +1,11 @@
 # rcc change log
 
+## v9.3.7 (date: 4.2.2021)
+
+- micromamba version printout changed, so rcc now parses new format
+- micromamba is 0.x, so it does not follow semantic versioning yet, so
+  rcc will now "lockstep" versions, with micromamba locked to 0.7.12 now
+
 ## v9.3.6 (date: 3.2.2021)
 
 - removing "defaults" channel from robot templates

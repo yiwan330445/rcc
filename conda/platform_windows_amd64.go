@@ -24,7 +24,7 @@ const (
 )
 
 func MicromambaLink() string {
-	return "https://downloads.robocorp.com/micromamba/stable/windows64/micromamba.exe"
+	return "https://downloads.robocorp.com/micromamba/v0.7.12/windows64/micromamba.exe"
 }
 
 var (
