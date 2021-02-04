@@ -49,7 +49,15 @@ func (it *Task) execute(stdin io.Reader, stdout, stderr io.Writer) (int, error) 
 	command.Stdin = stdin
 	command.Stdout = stdout
 	command.Stderr = stderr
-	err := command.Run()
+	err := command.Start()
+	if err != nil {
+		return -500, err
+	}
+	common.Debug("PID #%d is %q.", command.Process.Pid, command)
+	defer func() {
+		common.Debug("PID #%d finished: %v.", command.Process.Pid, command.ProcessState)
+	}()
+	err = command.Wait()
 	exit, ok := err.(*exec.ExitError)
 	if ok {
 		return exit.ExitCode(), err

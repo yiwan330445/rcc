@@ -1,5 +1,9 @@
 # rcc change log
 
+## v9.3.8 (date: 4.2.2021)
+
+- making started and finished subprocess PIDs visible in --debug level.
+
 ## v9.3.7 (date: 4.2.2021)
 
 - micromamba version printout changed, so rcc now parses new format
