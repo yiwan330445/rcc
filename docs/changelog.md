@@ -1,5 +1,10 @@
 # rcc change log
 
+## v9.3.9 (date: 8.2.2021)
+
+- micromamba cleanup bug fix (got error if micromamba is missing)
+- micromamba download bug fix (killed on MacOS)
+
 ## v9.3.8 (date: 4.2.2021)
 
 - making started and finished subprocess PIDs visible in --debug level.

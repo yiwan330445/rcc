@@ -8,7 +8,26 @@ import (
 
 	"github.com/robocorp/rcc/common"
 	"github.com/robocorp/rcc/pathlib"
+	"github.com/robocorp/rcc/pretty"
 )
+
+func safeRemove(hint, pathling string) {
+	var err error
+	if !pathlib.Exists(pathling) {
+		common.Debug("[%s] Missing %v, not need to remove.", hint, pathling)
+		return
+	}
+	if pathlib.IsDir(pathling) {
+		err = os.RemoveAll(pathling)
+	} else {
+		err = os.Remove(pathling)
+	}
+	if err != nil {
+		pretty.Warning("[%s] %s -> %v", hint, pathling, err)
+	} else {
+		common.Debug("[%s] Removed %v.", hint, pathling)
+	}
+}
 
 func doCleanup(fullpath string, dryrun bool) error {
 	if !pathlib.Exists(fullpath) {
@@ -34,16 +53,7 @@ func orphanCleanup(dryrun bool) error {
 		return nil
 	}
 	for _, orphan := range orphans {
-		var err error
-		if pathlib.IsDir(orphan) {
-			err = os.RemoveAll(orphan)
-		} else {
-			err = os.Remove(orphan)
-		}
-		if err != nil {
-			return err
-		}
-		common.Debug("Removed orphan %v.", orphan)
+		safeRemove("orphan", orphan)
 	}
 	return nil
 }
@@ -62,36 +72,12 @@ func spotlessCleanup(dryrun bool) error {
 		common.Log("- %v", RobocorpTempRoot())
 		return nil
 	}
-	err := os.RemoveAll(TemplateLocation())
-	if err != nil {
-		return err
-	}
-	common.Debug("Removed directory %v.", TemplateLocation())
-	err = os.RemoveAll(LiveLocation())
-	if err != nil {
-		return err
-	}
-	common.Debug("Removed directory %v.", LiveLocation())
-	err = os.RemoveAll(PipCache())
-	if err != nil {
-		return err
-	}
-	common.Debug("Removed directory %v.", PipCache())
-	err = os.RemoveAll(MambaPackages())
-	if err != nil {
-		return err
-	}
-	common.Debug("Removed directory %v.", MambaPackages())
-	err = os.Remove(BinMicromamba())
-	if err != nil {
-		return err
-	}
-	common.Debug("Removed executable %v.", BinMicromamba())
-	err = os.RemoveAll(RobocorpTempRoot())
-	if err != nil {
-		return err
-	}
-	common.Debug("Removed directory %v.", RobocorpTempRoot())
+	safeRemove("cache", TemplateLocation())
+	safeRemove("cache", LiveLocation())
+	safeRemove("cache", PipCache())
+	safeRemove("cache", MambaPackages())
+	safeRemove("temp", RobocorpTempRoot())
+	safeRemove("executable", BinMicromamba())
 	return nil
 }
 

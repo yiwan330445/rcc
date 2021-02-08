@@ -20,6 +20,10 @@ func DownloadMicromamba() error {
 	}
 	defer response.Body.Close()
 
+	if pathlib.Exists(BinMicromamba()) {
+		os.Remove(BinMicromamba())
+	}
+
 	pathlib.EnsureDirectory(filepath.Dir(BinMicromamba()))
 	out, err := os.Create(filename)
 	if err != nil {
