@@ -1,5 +1,11 @@
 # rcc change log
 
+## v9.3.10 (date: 11.2.2021)
+
+- Windows automation made environments dirty by generating comtypes/gen
+  folder. Fix is to ignore that folder.
+- Added some more diagnostics information.
+
 ## v9.3.9 (date: 8.2.2021)
 
 - micromamba cleanup bug fix (got error if micromamba is missing)

@@ -38,6 +38,12 @@ func sorted(files []os.FileInfo) {
 	})
 }
 
+func ignoreDynamicDirectories(folder, entryName string) bool {
+	base := strings.ToLower(filepath.Base(folder))
+	name := strings.ToLower(entryName)
+	return name == "__pycache__" || (name == "gen" && base == "comtypes")
+}
+
 func DigestFor(folder string) ([]byte, error) {
 	handle, err := os.Open(folder)
 	if err != nil {
@@ -52,7 +58,7 @@ func DigestFor(folder string) ([]byte, error) {
 	sorted(entries)
 	for _, entry := range entries {
 		if entry.IsDir() {
-			if entry.Name() == "__pycache__" {
+			if ignoreDynamicDirectories(folder, entry.Name()) {
 				continue
 			}
 			digest, err := DigestFor(filepath.Join(folder, entry.Name()))

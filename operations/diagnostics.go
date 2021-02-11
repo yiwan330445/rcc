@@ -6,8 +6,10 @@ import (
 	"io"
 	"net"
 	"os"
+	"os/user"
 	"runtime"
 	"sort"
+	"time"
 
 	"github.com/robocorp/rcc/cloud"
 	"github.com/robocorp/rcc/common"
@@ -86,6 +88,12 @@ func RunDiagnostics() *DiagnosticStatus {
 	result.Details["installationId"] = xviper.TrackingIdentity()
 	result.Details["os"] = fmt.Sprintf("%s %s", runtime.GOOS, runtime.GOARCH)
 	result.Details["cpus"] = fmt.Sprintf("%d", runtime.NumCPU())
+	result.Details["when"] = time.Now().Format(time.RFC3339 + " (MST)")
+
+	who, err := user.Current()
+	if err == nil {
+		result.Details["uid:gid"] = fmt.Sprintf("%s:%s", who.Uid, who.Gid)
+	}
 
 	// checks
 	result.Checks = append(result.Checks, robocorpHomeCheck())
