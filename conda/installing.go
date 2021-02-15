@@ -2,25 +2,28 @@ package conda
 
 import (
 	"os"
+	"time"
 
 	"github.com/robocorp/rcc/cloud"
 	"github.com/robocorp/rcc/common"
 )
 
 func MustMicromamba() bool {
-	return HasMicroMamba() || ((DoDownload() || DoDownload() || DoDownload()) && DoInstall())
+	return HasMicroMamba() || ((DoDownload(1*time.Millisecond) || DoDownload(1*time.Second) || DoDownload(3*time.Second)) && DoInstall())
 }
 
-func DoDownload() bool {
+func DoDownload(delay time.Duration) bool {
 	if common.DebugFlag {
 		defer common.Stopwatch("Download done in").Report()
 	}
 
 	common.Log("Downloading micromamba, this may take awhile ...")
 
+	time.Sleep(delay)
+
 	err := DownloadMicromamba()
 	if err != nil {
-		common.Error("Download", err)
+		common.Fatal("Download", err)
 		os.Remove(BinMicromamba())
 		return false
 	}
@@ -37,7 +40,7 @@ func DoInstall() bool {
 
 	err := os.Chmod(BinMicromamba(), 0o755)
 	if err != nil {
-		common.Error("Install", err)
+		common.Fatal("Install", err)
 		return false
 	}
 	cloud.BackgroundMetric(common.ControllerIdentity(), "rcc.micromamba.install", common.Version)

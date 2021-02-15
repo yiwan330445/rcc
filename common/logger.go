@@ -15,6 +15,13 @@ func printout(out io.Writer, message string) {
 	fmt.Fprintf(out, "%s%s\n", stamp, message)
 }
 
+func Fatal(context string, err error) {
+	if err != nil {
+		printout(os.Stderr, fmt.Sprintf("Fatal [%s]: %v", context, err))
+		os.Stderr.Sync()
+	}
+}
+
 func Error(context string, err error) {
 	if err != nil {
 		Log("Error [%s]: %v", context, err)

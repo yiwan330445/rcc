@@ -2,6 +2,7 @@ package conda
 
 import (
 	"crypto/sha256"
+	"fmt"
 	"io"
 	"net/http"
 	"os"
@@ -19,6 +20,10 @@ func DownloadMicromamba() error {
 		return err
 	}
 	defer response.Body.Close()
+
+	if response.StatusCode < 200 || response.StatusCode >= 300 {
+		return fmt.Errorf("Downloading %q failed, reason: %q!", url, response.Status)
+	}
 
 	if pathlib.Exists(BinMicromamba()) {
 		os.Remove(BinMicromamba())

@@ -150,9 +150,9 @@ func newLiveInternal(yaml, condaYaml, requirementsText, key string, force, fresh
 	if force {
 		ttl = "0"
 	}
-	command := []string{BinMicromamba(), "create", "--retry-with-clean-cache", "--strict-channel-priority", "--repodata-ttl", ttl, "-q", "-y", "-f", condaYaml, "-p", targetFolder}
+	command := []string{BinMicromamba(), "create", "--extra-safety-checks", "fail", "--retry-with-clean-cache", "--strict-channel-priority", "--repodata-ttl", ttl, "-q", "-y", "-f", condaYaml, "-p", targetFolder}
 	if common.DebugFlag {
-		command = []string{BinMicromamba(), "create", "--retry-with-clean-cache", "--strict-channel-priority", "--repodata-ttl", ttl, "-y", "-f", condaYaml, "-p", targetFolder}
+		command = []string{BinMicromamba(), "create", "--extra-safety-checks", "fail", "--retry-with-clean-cache", "--strict-channel-priority", "--repodata-ttl", ttl, "-y", "-f", condaYaml, "-p", targetFolder}
 	}
 	observer := make(InstallObserver)
 	common.Debug("===  new live  ---  conda env create phase ===")

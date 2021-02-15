@@ -1,5 +1,10 @@
 # rcc change log
 
+## v9.3.11 (date: 15.2.2021)
+
+- micromamba upgrade to 0.7.14
+- made process fail early and visibly, if micromamba download fails
+
 ## v9.3.10 (date: 11.2.2021)
 
 - Windows automation made environments dirty by generating comtypes/gen
