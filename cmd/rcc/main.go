@@ -4,11 +4,13 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"time"
 
 	"github.com/robocorp/rcc/cloud"
 	"github.com/robocorp/rcc/cmd"
 	"github.com/robocorp/rcc/common"
 	"github.com/robocorp/rcc/conda"
+	"github.com/robocorp/rcc/pathlib"
 )
 
 var (
@@ -40,7 +42,11 @@ func startTempRecycling() {
 		return
 	}
 	for _, filename := range found {
-		go os.RemoveAll(filepath.Dir(filename))
+		folder := filepath.Dir(filename)
+		changed, err := pathlib.Modtime(folder)
+		if err == nil && time.Since(changed) > 48*time.Hour {
+			go os.RemoveAll(folder)
+		}
 	}
 }
 

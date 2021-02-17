@@ -1,5 +1,10 @@
 # rcc change log
 
+## v9.3.12 (date: 17.2.2021)
+
+- introduced 48 hour delay to recycling temp folders (since clients depend on
+  having temp around after rcc process is gone); this closes #12
+
 ## v9.3.11 (date: 15.2.2021)
 
 - micromamba upgrade to 0.7.14
