@@ -8,12 +8,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var (
-	fileOption  string
-	robotOption string
-)
-
-var diagnosticsCmd = &cobra.Command{
+var robotDiagnosticsCmd = &cobra.Command{
 	Use:   "diagnostics",
 	Short: "Run system diagnostics to help resolve rcc issues.",
 	Long:  "Run system diagnostics to help resolve rcc issues.",
@@ -21,7 +16,7 @@ var diagnosticsCmd = &cobra.Command{
 		if common.DebugFlag {
 			defer common.Stopwatch("Diagnostic run lasted").Report()
 		}
-		err := operations.PrintDiagnostics(fileOption, robotOption, jsonFlag)
+		err := operations.PrintRobotDiagnostics(robotFile, jsonFlag)
 		if err != nil {
 			pretty.Exit(1, "Error: %v", err)
 		}
@@ -30,8 +25,7 @@ var diagnosticsCmd = &cobra.Command{
 }
 
 func init() {
-	configureCmd.AddCommand(diagnosticsCmd)
-	diagnosticsCmd.Flags().BoolVarP(&jsonFlag, "json", "j", false, "Output in JSON format")
-	diagnosticsCmd.Flags().StringVarP(&fileOption, "file", "f", "", "Save output into a file.")
-	diagnosticsCmd.Flags().StringVarP(&robotOption, "robot", "r", "", "Full path to 'robot.yaml' configuration file. [optional]")
+	robotCmd.AddCommand(robotDiagnosticsCmd)
+	robotDiagnosticsCmd.Flags().BoolVarP(&jsonFlag, "json", "j", false, "Output in JSON format")
+	robotDiagnosticsCmd.Flags().StringVarP(&robotFile, "robot", "r", "robot.yaml", "Full path to the 'robot.yaml' configuration file.")
 }

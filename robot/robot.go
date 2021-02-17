@@ -27,6 +27,7 @@ type Robot interface {
 	CondaConfigFile() string
 	RootDirectory() string
 	Validate() (bool, error)
+	Diagnostics(*common.DiagnosticStatus)
 
 	WorkingDirectory() string
 	ArtifactDirectory() string
@@ -60,6 +61,108 @@ type task struct {
 	Task    string   `yaml:"robotTaskName,omitempty"`
 	Shell   string   `yaml:"shell,omitempty"`
 	Command []string `yaml:"command,omitempty"`
+}
+
+func (it *robot) diagnoseTasks(diagnose common.Diagnoser) {
+	if it.Tasks == nil {
+		diagnose.Fail("", "Missing 'tasks:' from robot.yaml.")
+		return
+	}
+	ok := true
+	if len(it.Tasks) == 0 {
+		diagnose.Fail("", "There must be at least one task defined in 'tasks:' section in robot.yaml.")
+		ok = false
+	} else {
+		diagnose.Ok("Tasks are defined in robot.yaml")
+	}
+	for name, task := range it.Tasks {
+		count := 0
+		if len(task.Task) > 0 {
+			count += 1
+		}
+		if len(task.Shell) > 0 {
+			count += 1
+		}
+		if task.Command != nil && len(task.Command) > 0 {
+			count += 1
+		}
+		if count != 1 {
+			diagnose.Fail("", "In robot.yaml, task '%s' needs exactly one of robotTaskName/shell/command definition!", name)
+			ok = false
+		}
+	}
+	if ok {
+		diagnose.Ok("Each task has exactly one definition.")
+	}
+}
+
+func (it *robot) diagnoseVariousPaths(diagnose common.Diagnoser) {
+	ok := true
+	for _, path := range it.Path {
+		if filepath.IsAbs(path) {
+			diagnose.Fail("", "PATH entry %q seems to be absolute, which makes robot machine dependent.", path)
+			ok = false
+		}
+	}
+	if ok {
+		diagnose.Ok("PATH settings in robot.yaml are ok.")
+	}
+	ok = true
+	for _, path := range it.Pythonpath {
+		if filepath.IsAbs(path) {
+			diagnose.Fail("", "PYTHONPATH entry %q seems to be absolute, which makes robot machine dependent.", path)
+			ok = false
+		}
+	}
+	if ok {
+		diagnose.Ok("PYTHONPATH settings in robot.yaml are ok.")
+	}
+	ok = true
+	if it.Ignored == nil || len(it.Ignored) == 0 {
+		diagnose.Warning("", "No ignoreFiles defined, so everything ends up inside robot.zip file.")
+		ok = false
+	} else {
+		for _, path := range it.Ignored {
+			if filepath.IsAbs(path) {
+				diagnose.Fail("", "ignoreFiles entry %q seems to be absolute, which makes robot machine dependent.", path)
+				ok = false
+			}
+		}
+	}
+	if ok {
+		diagnose.Ok("ignoreFiles settings in robot.yaml are ok.")
+	}
+}
+
+func (it *robot) Diagnostics(target *common.DiagnosticStatus) {
+	diagnose := target.Diagnose("Robot")
+	it.diagnoseTasks(diagnose)
+	it.diagnoseVariousPaths(diagnose)
+	if it.Artifacts == "" {
+		diagnose.Fail("", "In robot.yaml, 'artifactsDir:' is required!")
+	} else {
+		if filepath.IsAbs(it.Artifacts) {
+			diagnose.Fail("", "artifactDir %q seems to be absolute, which makes robot machine dependent.", it.Artifacts)
+		} else {
+			diagnose.Ok("Artifacts directory defined in robot.yaml")
+		}
+	}
+	if it.Conda == "" {
+		diagnose.Ok("In robot.yaml, 'condaConfigFile:' is missing. So this is shell robot.")
+	} else {
+		if filepath.IsAbs(it.Conda) {
+			diagnose.Fail("", "condaConfigFile %q seems to be absolute, which makes robot machine dependent.", it.Artifacts)
+		} else {
+			diagnose.Ok("In robot.yaml, 'condaConfigFile:' is present. So this is python robot.")
+		}
+	}
+	target.Details["robot-use-conda"] = fmt.Sprintf("%v", it.UsesConda())
+	target.Details["robot-conda-file"] = it.CondaConfigFile()
+	target.Details["robot-root-directory"] = it.RootDirectory()
+	target.Details["robot-working-directory"] = it.WorkingDirectory()
+	target.Details["robot-artifact-directory"] = it.ArtifactDirectory()
+	target.Details["robot-paths"] = strings.Join(it.Paths(), ", ")
+	target.Details["robot-python-paths"] = strings.Join(it.PythonPaths(), ", ")
 }
 
 func (it *robot) Validate() (bool, error) {

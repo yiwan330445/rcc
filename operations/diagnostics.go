@@ -1,7 +1,6 @@
 package operations
 
 import (
-	"encoding/json"
 	"fmt"
 	"io"
 	"net"
@@ -15,6 +14,7 @@ import (
 	"github.com/robocorp/rcc/common"
 	"github.com/robocorp/rcc/conda"
 	"github.com/robocorp/rcc/pretty"
+	"github.com/robocorp/rcc/robot"
 	"github.com/robocorp/rcc/xviper"
 )
 
@@ -41,26 +41,6 @@ var (
 	}
 )
 
-type DiagnosticStatus struct {
-	Details map[string]string  `json:"details"`
-	Checks  []*DiagnosticCheck `json:"checks"`
-}
-
-type DiagnosticCheck struct {
-	Type    string `json:"type"`
-	Status  string `json:"status"`
-	Message string `json:"message"`
-	Link    string `json:"url"`
-}
-
-func (it *DiagnosticStatus) AsJson() (string, error) {
-	body, err := json.MarshalIndent(it, "", "  ")
-	if err != nil {
-		return "", err
-	}
-	return string(body), nil
-}
-
 type stringerr func() (string, error)
 
 func justText(source stringerr) string {
@@ -68,10 +48,10 @@ func justText(source stringerr) string {
 	return result
 }
 
-func RunDiagnostics() *DiagnosticStatus {
-	result := &DiagnosticStatus{
+func RunDiagnostics() *common.DiagnosticStatus {
+	result := &common.DiagnosticStatus{
 		Details: make(map[string]string),
-		Checks:  []*DiagnosticCheck{},
+		Checks:  []*common.DiagnosticCheck{},
 	}
 	executable, _ := os.Executable()
 	result.Details["executable"] = executable
@@ -116,16 +96,16 @@ func rccStatusLine() string {
 	return fmt.Sprintf("%d environments, %d requests, %d merges, %d hits, %d dirty, %d misses, %d failures | %s", templates, requests, merges, hits, dirty, misses, failures, xviper.TrackingIdentity())
 }
 
-func longPathSupportCheck() *DiagnosticCheck {
+func longPathSupportCheck() *common.DiagnosticCheck {
 	if conda.HasLongPathSupport() {
-		return &DiagnosticCheck{
+		return &common.DiagnosticCheck{
 			Type:    "OS",
 			Status:  statusOk,
 			Message: "Supports long enough paths.",
 			Link:    supportLongPathUrl,
 		}
 	}
-	return &DiagnosticCheck{
+	return &common.DiagnosticCheck{
 		Type:    "OS",
 		Status:  statusFail,
 		Message: "Does not support long path names!",
@@ -133,16 +113,16 @@ func longPathSupportCheck() *DiagnosticCheck {
 	}
 }
 
-func robocorpHomeCheck() *DiagnosticCheck {
+func robocorpHomeCheck() *common.DiagnosticCheck {
 	if !conda.ValidLocation(conda.RobocorpHome()) {
-		return &DiagnosticCheck{
+		return &common.DiagnosticCheck{
 			Type:    "RPA",
 			Status:  statusFatal,
 			Message: fmt.Sprintf("ROBOCORP_HOME (%s) contains characters that makes RPA fail.", conda.RobocorpHome()),
 			Link:    supportGeneralUrl,
 		}
 	}
-	return &DiagnosticCheck{
+	return &common.DiagnosticCheck{
 		Type:    "RPA",
 		Status:  statusOk,
 		Message: fmt.Sprintf("ROBOCORP_HOME (%s) is good enough.", conda.RobocorpHome()),
@@ -150,17 +130,17 @@ func robocorpHomeCheck() *DiagnosticCheck {
 	}
 }
 
-func dnsLookupCheck(site string) *DiagnosticCheck {
+func dnsLookupCheck(site string) *common.DiagnosticCheck {
 	found, err := net.LookupHost(site)
 	if err != nil {
-		return &DiagnosticCheck{
+		return &common.DiagnosticCheck{
 			Type:    "network",
 			Status:  statusFail,
 			Message: fmt.Sprintf("DNS lookup %s failed: %v", site, err),
 			Link:    supportNetworkUrl,
 		}
 	}
-	return &DiagnosticCheck{
+	return &common.DiagnosticCheck{
 		Type:    "network",
 		Status:  statusOk,
 		Message: fmt.Sprintf("%s found: %v", site, found),
@@ -168,10 +148,10 @@ func dnsLookupCheck(site string) *DiagnosticCheck {
 	}
 }
 
-func canaryDownloadCheck() *DiagnosticCheck {
+func canaryDownloadCheck() *common.DiagnosticCheck {
 	client, err := cloud.NewClient(canaryHost)
 	if err != nil {
-		return &DiagnosticCheck{
+		return &common.DiagnosticCheck{
 			Type:    "network",
 			Status:  statusFail,
 			Message: fmt.Sprintf("%v: %v", canaryHost, err),
@@ -181,14 +161,14 @@ func canaryDownloadCheck() *DiagnosticCheck {
 	request := client.NewRequest(canaryUrl)
 	response := client.Get(request)
 	if response.Status != 200 || string(response.Body) != "Used to testing connections" {
-		return &DiagnosticCheck{
+		return &common.DiagnosticCheck{
 			Type:    "network",
 			Status:  statusFail,
 			Message: fmt.Sprintf("Canary download failed: %d: %s", response.Status, response.Body),
 			Link:    supportNetworkUrl,
 		}
 	}
-	return &DiagnosticCheck{
+	return &common.DiagnosticCheck{
 		Type:    "network",
 		Status:  statusOk,
 		Message: fmt.Sprintf("Canary download successful: %s%s", canaryHost, canaryUrl),
@@ -196,7 +176,7 @@ func canaryDownloadCheck() *DiagnosticCheck {
 	}
 }
 
-func jsonDiagnostics(sink io.Writer, details *DiagnosticStatus) {
+func jsonDiagnostics(sink io.Writer, details *common.DiagnosticStatus) {
 	form, err := details.AsJson()
 	if err != nil {
 		pretty.Exit(1, "Error: %s", err)
@@ -204,7 +184,7 @@ func jsonDiagnostics(sink io.Writer, details *DiagnosticStatus) {
 	fmt.Fprintln(sink, form)
 }
 
-func humaneDiagnostics(sink io.Writer, details *DiagnosticStatus) {
+func humaneDiagnostics(sink io.Writer, details *common.DiagnosticStatus) {
 	fmt.Fprintln(sink, "Diagnostics:")
 	keys := make([]string, 0, len(details.Details))
 	for key, _ := range details.Details {
@@ -213,7 +193,7 @@ func humaneDiagnostics(sink io.Writer, details *DiagnosticStatus) {
 	sort.Strings(keys)
 	for _, key := range keys {
 		value := details.Details[key]
-		fmt.Fprintf(sink, " - %-18s...  %q\n", key, value)
+		fmt.Fprintf(sink, " - %-25s...  %q\n", key, value)
 	}
 	fmt.Fprintln(sink, "")
 	fmt.Fprintln(sink, "Checks:")
@@ -233,17 +213,49 @@ func fileIt(filename string) (io.WriteCloser, error) {
 	return file, nil
 }
 
-func PrintDiagnostics(filename string, json bool) error {
+func PrintDiagnostics(filename, robotfile string, json bool) error {
 	file, err := fileIt(filename)
 	if err != nil {
 		return err
 	}
 	defer file.Close()
 	result := RunDiagnostics()
+	if len(robotfile) > 0 {
+		addRobotDiagnostics(robotfile, result)
+	}
 	if json {
 		jsonDiagnostics(file, result)
 	} else {
 		humaneDiagnostics(file, result)
+	}
+	return nil
+}
+
+func addRobotDiagnostics(robotfile string, target *common.DiagnosticStatus) {
+	config, err := robot.LoadRobotYaml(robotfile, false)
+	diagnose := target.Diagnose("Robot")
+	if err != nil {
+		diagnose.Fail(supportGeneralUrl, "About robot.yaml: %v", err)
+	} else {
+		config.Diagnostics(target)
+	}
+}
+
+func RunRobotDiagnostics(robotfile string) *common.DiagnosticStatus {
+	result := &common.DiagnosticStatus{
+		Details: make(map[string]string),
+		Checks:  []*common.DiagnosticCheck{},
+	}
+	addRobotDiagnostics(robotfile, result)
+	return result
+}
+
+func PrintRobotDiagnostics(robotfile string, json bool) error {
+	result := RunRobotDiagnostics(robotfile)
+	if json {
+		jsonDiagnostics(os.Stdout, result)
+	} else {
+		humaneDiagnostics(os.Stderr, result)
 	}
 	return nil
 }

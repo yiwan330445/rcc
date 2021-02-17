@@ -1,5 +1,12 @@
 # rcc change log
 
+## v9.4.0 (date: 17.2.2021)
+
+- added initial robot diagnostics (just robot.yaml for now)
+- integrated robot diagnostics into configuration diagnostics (optional)
+- integrated robot diagnostics to issue reporting (optional)
+- fix: windows paths were wrong; "bin" to "usr" change
+
 ## v9.3.12 (date: 17.2.2021)
 
 - introduced 48 hour delay to recycling temp folders (since clients depend on

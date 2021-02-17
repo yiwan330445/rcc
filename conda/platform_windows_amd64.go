@@ -19,7 +19,7 @@ const (
 	defaultRobocorpLocation = "%LOCALAPPDATA%\\robocorp"
 	librarySuffix           = "\\Library"
 	scriptSuffix            = "\\Scripts"
-	usrSuffix               = "\\bin"
+	usrSuffix               = "\\usr"
 	binSuffix               = "\\bin"
 )
 

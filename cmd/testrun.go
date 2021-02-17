@@ -87,7 +87,7 @@ func init() {
 
 	testrunCmd.Flags().StringArrayVarP(&ignores, "ignore", "i", []string{}, "File with ignore patterns.")
 	testrunCmd.Flags().StringVarP(&environmentFile, "environment", "e", "", "Full path to the 'env.json' development environment data file.")
-	testrunCmd.Flags().StringVarP(&robotFile, "robot", "r", "robot.yaml", "Full path to the 'robot.yaml' configuration file. (Backward compatibility with 'package.yaml')")
+	testrunCmd.Flags().StringVarP(&robotFile, "robot", "r", "robot.yaml", "Full path to the 'robot.yaml' configuration file.")
 	testrunCmd.Flags().StringVarP(&runTask, "task", "t", "", "Task to run from configuration file.")
 	testrunCmd.Flags().StringVarP(&workspaceId, "workspace", "w", "", "Optional workspace id to get authorization tokens for. OPTIONAL")
 	testrunCmd.Flags().IntVarP(&validityTime, "minutes", "m", 0, "How many minutes the authorization should be valid for. OPTIONAL")

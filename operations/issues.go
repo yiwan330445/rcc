@@ -47,9 +47,9 @@ func createIssueZip(attachmentsFiles []string) (string, error) {
 	return zipfile, nil
 }
 
-func createDiagnosticsReport() (string, error) {
+func createDiagnosticsReport(robotfile string) (string, error) {
 	file := filepath.Join(conda.RobocorpTemp(), "diagnostics.txt")
-	err := PrintDiagnostics(file, false)
+	err := PrintDiagnostics(file, robotfile, false)
 	if err != nil {
 		return "", err
 	}
@@ -64,13 +64,13 @@ func virtualName(filename string) (string, error) {
 	return fmt.Sprintf("attachments_%s.zip", digest[:16]), nil
 }
 
-func ReportIssue(reportFile string, attachmentsFiles []string, dryrun bool) error {
+func ReportIssue(robotFile, reportFile string, attachmentsFiles []string, dryrun bool) error {
 	cloud.BackgroundMetric(common.ControllerIdentity(), "rcc.submit.issue", common.Version)
 	token, err := loadToken(reportFile)
 	if err != nil {
 		return err
 	}
-	diagnostics, err := createDiagnosticsReport()
+	diagnostics, err := createDiagnosticsReport(robotFile)
 	if err == nil {
 		attachmentsFiles = append(attachmentsFiles, diagnostics)
 	}

@@ -90,9 +90,5 @@ func FixDirectory(dir string) error {
 	if pathlib.IsFile(primary) {
 		return FixRobot(primary)
 	}
-	secondary := filepath.Join(dir, "package.yaml")
-	if pathlib.IsFile(secondary) {
-		return FixRobot(secondary)
-	}
 	return nil
 }

@@ -5,8 +5,8 @@ import (
 )
 
 var configureCmd = &cobra.Command{
-	Use:     "configure",
-	Aliases: []string{"conf", "config"},
+	Use:     "configuration",
+	Aliases: []string{"conf", "config", "configure"},
 	Short:   "Group of commands related to `rcc configuration`.",
 	Long:    "Group of commands to configure rcc with your settings.",
 }

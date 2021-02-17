@@ -37,7 +37,7 @@ func init() {
 	taskCmd.AddCommand(shellCmd)
 
 	shellCmd.Flags().StringVarP(&environmentFile, "environment", "e", "", "Full path to the 'env.json' development environment data file.")
-	shellCmd.Flags().StringVarP(&robotFile, "robot", "r", "robot.yaml", "Full path to the 'robot.yaml' configuration file. (With backward compatibility with 'package.yaml')")
+	shellCmd.Flags().StringVarP(&robotFile, "robot", "r", "robot.yaml", "Full path to the 'robot.yaml' configuration file.")
 	shellCmd.Flags().StringVarP(&runTask, "task", "t", "", "Task to configure shell from configuration file.")
 	shellCmd.MarkFlagRequired("config")
 }

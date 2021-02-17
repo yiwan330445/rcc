@@ -74,7 +74,7 @@ func exportEnvironment(condaYaml []string, packfile, taskName, environment, work
 	}
 
 	if len(condaYaml) < 1 {
-		return errors.New("No robot.yaml, package.yaml or conda.yaml files given. Cannot continue.")
+		return errors.New("No robot.yaml, or conda.yaml files given. Cannot continue.")
 	}
 
 	label, err := conda.NewEnvironment(forceFlag, condaYaml...)
@@ -144,7 +144,7 @@ func init() {
 	envCmd.AddCommand(variablesCmd)
 
 	variablesCmd.Flags().StringVarP(&environmentFile, "environment", "e", "", "Full path to 'env.json' development environment data file. <optional>")
-	variablesCmd.Flags().StringVarP(&robotFile, "robot", "r", "robot.yaml", "Full path to 'robot.yaml' configuration file. (Backward compatibility with 'package.yaml')  <optional>")
+	variablesCmd.Flags().StringVarP(&robotFile, "robot", "r", "robot.yaml", "Full path to 'robot.yaml' configuration file. <optional>")
 	variablesCmd.Flags().StringVarP(&runTask, "task", "t", "", "Task to run from configuration file. <optional>")
 	variablesCmd.Flags().StringVarP(&workspaceId, "workspace", "w", "", "Optional workspace id to get authorization tokens for. <optional>")
 	variablesCmd.Flags().IntVarP(&validityTime, "minutes", "m", 0, "How many minutes the authorization should be valid for. <optional>")
