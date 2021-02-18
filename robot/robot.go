@@ -154,6 +154,12 @@ func (it *robot) Diagnostics(target *common.DiagnosticStatus) {
 			diagnose.Fail("", "condaConfigFile %q seems to be absolute, which makes robot machine dependent.", it.Artifacts)
 		} else {
 			diagnose.Ok("In robot.yaml, 'condaConfigFile:' is present. So this is python robot.")
+			condaEnv, err := conda.ReadCondaYaml(it.CondaConfigFile())
+			if err != nil {
+				diagnose.Fail("", "From robot.yaml, loading conda.yaml failed with: %v", err)
+			} else {
+				condaEnv.Diagnostics(target)
+			}
 		}
 	}
 	target.Details["robot-use-conda"] = fmt.Sprintf("%v", it.UsesConda())
@@ -163,6 +169,7 @@ func (it *robot) Diagnostics(target *common.DiagnosticStatus) {
 	target.Details["robot-artifact-directory"] = it.ArtifactDirectory()
 	target.Details["robot-paths"] = strings.Join(it.Paths(), ", ")
 	target.Details["robot-python-paths"] = strings.Join(it.PythonPaths(), ", ")
+
 }
 
 func (it *robot) Validate() (bool, error) {

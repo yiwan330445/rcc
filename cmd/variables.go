@@ -122,13 +122,6 @@ var variablesCmd = &cobra.Command{
 	Short:   "Export environment specific variables as a JSON structure.",
 	Long:    "Export environment specific variables as a JSON structure.",
 	Run: func(cmd *cobra.Command, args []string) {
-		silent := common.Silent
-		common.Silent = true
-
-		defer func() {
-			common.Silent = silent
-		}()
-
 		ok := conda.MustMicromamba()
 		if !ok {
 			pretty.Exit(2, "Could not get micromamba installed.")

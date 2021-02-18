@@ -78,8 +78,9 @@ Using and running template example with shell file
   Step        build/rcc task run --controller citests -r tmp/fluffy/robot.yaml
   Must Have   1 critical task, 1 passed, 0 failed
   Use STDERR
-  Must Have   Progress: 0/5
-  Must Have   Progress: 5/5
+  Must Have   Progress: 0/6
+  Must Have   Progress: 1/6
+  Must Have   Progress: 6/6
   Must Have   rpaframework
   Must Have   OK.
   Must Exist  %{ROBOCORP_HOME}/base/
@@ -92,12 +93,13 @@ Using and running template example with shell file
   Must Have   1 critical task, 1 passed, 0 failed
   Use STDERR
   Must Have   rpaframework
-  Must Have   Progress: 0/5
-  Wont Have   Progress: 1/5
-  Wont Have   Progress: 2/5
-  Wont Have   Progress: 3/5
-  Wont Have   Progress: 4/5
-  Must Have   Progress: 5/5
+  Must Have   Progress: 0/6
+  Must Have   Progress: 1/6
+  Wont Have   Progress: 2/6
+  Wont Have   Progress: 3/6
+  Wont Have   Progress: 4/6
+  Wont Have   Progress: 5/6
+  Must Have   Progress: 6/6
   Must Have   OK.
 
   Goal        Merge two different conda.yaml files with conflict fails

@@ -155,10 +155,10 @@ func newLiveInternal(yaml, condaYaml, requirementsText, key string, force, fresh
 		command = []string{BinMicromamba(), "create", "--extra-safety-checks", "fail", "--retry-with-clean-cache", "--strict-channel-priority", "--repodata-ttl", ttl, "-y", "-f", condaYaml, "-p", targetFolder}
 	}
 	observer := make(InstallObserver)
-	common.Debug("===  new live  ---  conda env create phase ===")
+	common.Debug("===  new live  ---  micromamba create phase ===")
 	code, err := shell.New(CondaEnvironment(), ".", command...).StderrOnly().Observed(observer, false)
 	if err != nil || code != 0 {
-		common.Error("Conda error", err)
+		common.Fatal("Micromamba", err)
 		return false, false
 	}
 	if observer.HasFailures(targetFolder) {
@@ -167,9 +167,9 @@ func newLiveInternal(yaml, condaYaml, requirementsText, key string, force, fresh
 	pipCache, wheelCache := PipCache(), WheelCache()
 	size, ok := pathlib.Size(requirementsText)
 	if !ok || size == 0 {
-		common.Log("####  Progress: 3/5  [pip install phase skipped -- no pip dependencies]")
+		common.Log("####  Progress: 4/6  [pip install phase skipped -- no pip dependencies]")
 	} else {
-		common.Log("####  Progress: 3/5  [pip install phase]")
+		common.Log("####  Progress: 4/6  [pip install phase]")
 		common.Debug("Updating new environment at %v with pip requirements from %v (size: %v)", targetFolder, requirementsText, size)
 		pipCommand := []string{"pip", "install", "--no-color", "--disable-pip-version-check", "--prefer-binary", "--cache-dir", pipCache, "--find-links", wheelCache, "--requirement", requirementsText, "--quiet"}
 		if common.DebugFlag {
@@ -178,7 +178,7 @@ func newLiveInternal(yaml, condaYaml, requirementsText, key string, force, fresh
 		common.Debug("===  new live  ---  pip install phase ===")
 		err = LiveExecution(targetFolder, pipCommand...)
 		if err != nil {
-			common.Error("Pip error", err)
+			common.Fatal("Pip", err)
 			return false, false
 		}
 	}
@@ -187,12 +187,14 @@ func newLiveInternal(yaml, condaYaml, requirementsText, key string, force, fresh
 		for _, script := range postInstall {
 			scriptCommand, err := shlex.Split(script)
 			if err != nil {
+				common.Fatal("post-install", err)
 				common.Log("%sScript '%s' parsing failure: %v%s", pretty.Red, script, err, pretty.Reset)
 				return false, false
 			}
 			common.Log("Running post install script '%s' ...", script)
 			err = LiveExecution(targetFolder, scriptCommand...)
 			if err != nil {
+				common.Fatal("post-install", err)
 				common.Log("%sScript '%s' failure: %v%s", pretty.Red, script, err, pretty.Reset)
 				return false, false
 			}
@@ -208,7 +210,7 @@ func newLiveInternal(yaml, condaYaml, requirementsText, key string, force, fresh
 
 	digest, err := DigestFor(targetFolder)
 	if err != nil {
-		common.Error("Digest", err)
+		common.Fatal("Digest", err)
 		return false, false
 	}
 	return metaSave(targetFolder, Hexdigest(digest)) == nil, false
@@ -288,9 +290,9 @@ func NewEnvironment(force bool, configurations ...string) (string, error) {
 
 	defer func() {
 		templates = len(TemplateList())
-		common.Log("####  Progress: 5/5  [Done.] [Cache statistics: %d environments, %d requests, %d merges, %d hits, %d dirty, %d misses, %d failures | %s]", templates, requests, merges, hits, dirty, misses, failures, common.Version)
+		common.Log("####  Progress: 6/6  [Done.] [Cache statistics: %d environments, %d requests, %d merges, %d hits, %d dirty, %d misses, %d failures | %s]", templates, requests, merges, hits, dirty, misses, failures, common.Version)
 	}()
-	common.Log("####  Progress: 0/5  [try use existing live same environment?] %v", xviper.TrackingIdentity())
+	common.Log("####  Progress: 0/6  [try use existing live same environment?] %v", xviper.TrackingIdentity())
 
 	xviper.Set("stats.env.request", requests)
 
@@ -311,6 +313,7 @@ func NewEnvironment(force bool, configurations ...string) (string, error) {
 	}
 	defer os.Remove(condaYaml)
 	defer os.Remove(requirementsText)
+	common.Log("####  Progress: 1/6  [environment key is: %s]", key)
 
 	common.EnvironmentHash = key
 
@@ -333,9 +336,9 @@ func NewEnvironment(force bool, configurations ...string) (string, error) {
 		return liveFolder, nil
 	}
 	if common.Stageonly {
-		common.Log("####  Progress: 1/5  [skipped -- stage only]")
+		common.Log("####  Progress: 2/6  [skipped -- stage only]")
 	} else {
-		common.Log("####  Progress: 1/5  [try clone existing same template to live, key: %v]", key)
+		common.Log("####  Progress: 2/6  [try clone existing same template to live, key: %v]", key)
 		success, err := CloneFromTo(TemplateFrom(key), liveFolder, pathlib.CopyFile)
 		if err != nil {
 			return "", err
@@ -346,7 +349,7 @@ func NewEnvironment(force bool, configurations ...string) (string, error) {
 			return liveFolder, nil
 		}
 	}
-	common.Log("####  Progress: 2/5  [try create new environment from scratch]")
+	common.Log("####  Progress: 3/6  [try create new environment from scratch]")
 	success, err := newLive(yaml, condaYaml, requirementsText, key, force, freshInstall, finalEnv.PostInstall)
 	if err != nil {
 		return "", err
@@ -355,9 +358,9 @@ func NewEnvironment(force bool, configurations ...string) (string, error) {
 		misses += 1
 		xviper.Set("stats.env.miss", misses)
 		if common.Liveonly {
-			common.Log("####  Progress: 4/5  [skipped -- live only]")
+			common.Log("####  Progress: 5/6  [skipped -- live only]")
 		} else {
-			common.Log("####  Progress: 4/5  [backup new environment as template]")
+			common.Log("####  Progress: 5/6  [backup new environment as template]")
 			_, err = CloneFromTo(liveFolder, TemplateFrom(key), pathlib.CopyFile)
 			if err != nil {
 				return "", err

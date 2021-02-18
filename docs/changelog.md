@@ -1,5 +1,12 @@
 # rcc change log
 
+## v9.4.1 (date: 17.2.2021)
+
+- added conda.yaml diagnostics (initial take)
+- made `rcc env variables` to be not silent anymore
+- log level changes in environment creation
+- env creation workflow has now 6 steps, added identity visibility
+
 ## v9.4.0 (date: 17.2.2021)
 
 - added initial robot diagnostics (just robot.yaml for now)

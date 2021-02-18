@@ -371,6 +371,68 @@ func (it *Environment) AsRequirementsText() string {
 	return strings.Join(lines, Newline)
 }
 
+func (it *Environment) Diagnostics(target *common.DiagnosticStatus) {
+	diagnose := target.Diagnose("Conda")
+	countChannels := len(it.Channels)
+	defaultsPostion := -1
+	floating := false
+	ok := true
+	for index, channel := range it.Channels {
+		if channel == "defaults" {
+			defaultsPostion = index
+			diagnose.Warning("", "Try to avoid defaults channel, and prefer using conda-forge instead.")
+			ok = false
+		}
+	}
+	if defaultsPostion == 0 && countChannels > 1 {
+		diagnose.Warning("", "Try to avoid putting defaults channel as first channel.")
+		ok = false
+	}
+	if ok {
+		diagnose.Ok("Channels in conda.yaml are ok.")
+	}
+	ok = true
+	for _, dependency := range it.Conda {
+		if strings.Contains(dependency.Versions, "*") || len(dependency.Qualifier) == 0 || len(dependency.Versions) == 0 {
+			diagnose.Warning("", "Floating conda dependency %q should be bound to exact version before taking robot into production.", dependency.Original)
+			ok = false
+			floating = true
+		}
+		if len(dependency.Qualifier) > 0 && !(dependency.Qualifier == "==" || dependency.Qualifier == "=") {
+			diagnose.Fail("", "Conda dependency %q must use '==' or '=' for version declaration.", dependency.Original)
+			ok = false
+			floating = true
+		}
+	}
+	if ok {
+		diagnose.Ok("Conda dependencies in conda.yaml are ok.")
+	}
+	ok = true
+	pipCount := len(it.Pip)
+	if pipCount > 0 {
+		diagnose.Warning("", "There is %d pip dependencies. Please, prefer using conda dependencies over pip dependencies.", pipCount)
+		ok = false
+	}
+	for _, dependency := range it.Pip {
+		if strings.Contains(dependency.Versions, "*") || len(dependency.Qualifier) == 0 || len(dependency.Versions) == 0 {
+			diagnose.Warning("", "Floating pip dependency %q should be bound to exact version before taking robot into production.", dependency.Original)
+			ok = false
+			floating = true
+		}
+		if len(dependency.Qualifier) > 0 && dependency.Qualifier != "==" {
+			diagnose.Fail("", "Pip dependency %q must use '==' for version declaration.", dependency.Original)
+			ok = false
+			floating = true
+		}
+	}
+	if ok {
+		diagnose.Ok("Pip dependencies in conda.yaml are ok.")
+	}
+	if floating {
+		diagnose.Warning("", "Floating dependencies in Robocorp Cloud containers will be slow, because floating environments cannot be cached.")
+	}
+}
+
 func CondaYamlFrom(content []byte) (*Environment, error) {
 	result := new(internalEnvironment)
 	err := yaml.Unmarshal(content, result)
