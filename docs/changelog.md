@@ -1,5 +1,9 @@
 # rcc change log
 
+## v9.4.3 (date: 23.2.2021)
+
+- added generic reading and parsing diagnostics for JSON and YAML files
+
 ## v9.4.2 (date: 23.2.2021)
 
 - fix: marked --report flag required in issue reporting

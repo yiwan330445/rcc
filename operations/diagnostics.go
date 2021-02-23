@@ -1,21 +1,27 @@
 package operations
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"net"
 	"os"
 	"os/user"
+	"path/filepath"
 	"runtime"
 	"sort"
+	"strings"
 	"time"
 
 	"github.com/robocorp/rcc/cloud"
 	"github.com/robocorp/rcc/common"
 	"github.com/robocorp/rcc/conda"
+	"github.com/robocorp/rcc/pathlib"
 	"github.com/robocorp/rcc/pretty"
 	"github.com/robocorp/rcc/robot"
 	"github.com/robocorp/rcc/xviper"
+	"gopkg.in/yaml.v1"
 )
 
 const (
@@ -231,6 +237,42 @@ func PrintDiagnostics(filename, robotfile string, json bool) error {
 	return nil
 }
 
+type Unmarshaler func([]byte, interface{}) error
+
+func diagnoseFilesUnmarshal(tool Unmarshaler, label, rootdir string, paths []string, target *common.DiagnosticStatus) {
+	target.Details[fmt.Sprintf("%s-file-count", strings.ToLower(label))] = fmt.Sprintf("%d file(s)", len(paths))
+	diagnose := target.Diagnose(label)
+	var canary interface{}
+	success := true
+	investigated := false
+	for _, tail := range paths {
+		investigated = true
+		fullpath := filepath.Join(rootdir, tail)
+		content, err := ioutil.ReadFile(fullpath)
+		if err != nil {
+			diagnose.Fail(supportGeneralUrl, "Problem reading %s file %q: %v", label, tail, err)
+			success = false
+			continue
+		}
+		err = tool(content, &canary)
+		if err != nil {
+			diagnose.Fail(supportGeneralUrl, "Problem parsing %s file %q: %v", label, tail, err)
+			success = false
+		}
+	}
+	if investigated && success {
+		diagnose.Ok("%s files are readable and can be parsed.", label)
+	}
+}
+
+func addFileDiagnostics(rootdir string, target *common.DiagnosticStatus) {
+	jsons := pathlib.Glob(rootdir, "*.json")
+	diagnoseFilesUnmarshal(json.Unmarshal, "JSON", rootdir, jsons, target)
+	yamls := pathlib.Glob(rootdir, "*.yaml")
+	yamls = append(yamls, pathlib.Glob(rootdir, "*.yml")...)
+	diagnoseFilesUnmarshal(yaml.Unmarshal, "YAML", rootdir, yamls, target)
+}
+
 func addRobotDiagnostics(robotfile string, target *common.DiagnosticStatus) {
 	config, err := robot.LoadRobotYaml(robotfile, false)
 	diagnose := target.Diagnose("Robot")
@@ -239,6 +281,7 @@ func addRobotDiagnostics(robotfile string, target *common.DiagnosticStatus) {
 	} else {
 		config.Diagnostics(target)
 	}
+	addFileDiagnostics(filepath.Dir(robotfile), target)
 }
 
 func RunRobotDiagnostics(robotfile string) *common.DiagnosticStatus {

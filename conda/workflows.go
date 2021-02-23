@@ -203,7 +203,7 @@ func newLiveInternal(yaml, condaYaml, requirementsText, key string, force, fresh
 	common.Debug("===  new live  ---  finalize phase ===")
 
 	markerFile := filepath.Join(targetFolder, "identity.yaml")
-	err = ioutil.WriteFile(markerFile, []byte(yaml), 0o640)
+	err = ioutil.WriteFile(markerFile, []byte(yaml), 0o644)
 	if err != nil {
 		return false, false
 	}
