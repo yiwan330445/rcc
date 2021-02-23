@@ -1,5 +1,10 @@
 # rcc change log
 
+## v9.4.2 (date: 23.2.2021)
+
+- fix: marked --report flag required in issue reporting
+- added account-email to issue report, as backup contact information
+
 ## v9.4.1 (date: 17.2.2021)
 
 - added conda.yaml diagnostics (initial take)

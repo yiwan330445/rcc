@@ -64,7 +64,7 @@ func virtualName(filename string) (string, error) {
 	return fmt.Sprintf("attachments_%s.zip", digest[:16]), nil
 }
 
-func ReportIssue(robotFile, reportFile string, attachmentsFiles []string, dryrun bool) error {
+func ReportIssue(email, robotFile, reportFile string, attachmentsFiles []string, dryrun bool) error {
 	cloud.BackgroundMetric(common.ControllerIdentity(), "rcc.submit.issue", common.Version)
 	token, err := loadToken(reportFile)
 	if err != nil {
@@ -85,6 +85,7 @@ func ReportIssue(robotFile, reportFile string, attachmentsFiles []string, dryrun
 	}
 	installationId := xviper.TrackingIdentity()
 	token["installationId"] = installationId
+	token["account-email"] = email
 	token["fileName"] = shortname
 	token["controller"] = common.ControllerIdentity()
 	_, ok := token["platform"]
