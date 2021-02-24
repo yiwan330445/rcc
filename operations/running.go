@@ -73,6 +73,8 @@ func LoadTaskWithEnvironment(packfile, theTask string, force bool) (bool, robot.
 }
 
 func SelectExecutionModel(runFlags *RunFlags, simple bool, template []string, config robot.Robot, todo robot.Task, label string, interactive bool, extraEnv map[string]string) {
+	common.Timeline("execution starts.")
+	defer common.Timeline("execution done.")
 	if simple {
 		ExecuteSimpleTask(runFlags, template, config, todo, interactive, extraEnv)
 	} else {

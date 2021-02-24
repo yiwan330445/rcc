@@ -1,5 +1,10 @@
 # rcc change log
 
+## v9.4.4 (date: 24.2.2021)
+
+- fix: added panic protection to telemetry sending, this closes #13
+- added initial support for execution timeline tracking
+
 ## v9.4.3 (date: 23.2.2021)
 
 - added generic reading and parsing diagnostics for JSON and YAML files

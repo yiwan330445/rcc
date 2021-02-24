@@ -20,7 +20,12 @@ const (
 )
 
 func sendMetric(kind, name, value string) {
+	common.Timeline("%s:%s = %s", kind, name, value)
 	defer func() {
+		status := recover()
+		if status != nil {
+			common.Debug("Telemetry panic recovered: %v", status)
+		}
 		telemetryBarrier.Done()
 	}()
 	client, err := NewClient(metricsHost)

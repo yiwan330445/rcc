@@ -61,6 +61,8 @@ func markTempForRecycling() {
 }
 
 func main() {
+	common.Timeline("Start.")
+	defer common.EndOfTimeline()
 	go startTempRecycling()
 	defer markTempForRecycling()
 	defer os.Stderr.Sync()
