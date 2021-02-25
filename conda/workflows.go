@@ -52,7 +52,7 @@ func LastUsed(location string) (time.Time, error) {
 }
 
 func IsPristine(folder string) bool {
-	digest, err := DigestFor(folder)
+	digest, err := DigestFor(folder, nil)
 	if err != nil {
 		return false
 	}
@@ -219,7 +219,7 @@ func newLiveInternal(yaml, condaYaml, requirementsText, key string, force, fresh
 		return false, false
 	}
 
-	digest, err := DigestFor(targetFolder)
+	digest, err := DigestFor(targetFolder, nil)
 	if err != nil {
 		common.Fatal("Digest", err)
 		return false, false
@@ -454,7 +454,7 @@ func CloneFromTo(source, target string, copier pathlib.Copier) (bool, error) {
 		}
 		return false, nil
 	}
-	digest, err := DigestFor(target)
+	digest, err := DigestFor(target, nil)
 	if err != nil || Hexdigest(digest) != expected {
 		err = removeClone(target)
 		if err != nil {

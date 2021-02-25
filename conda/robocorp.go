@@ -44,7 +44,7 @@ func ignoreDynamicDirectories(folder, entryName string) bool {
 	return name == "__pycache__" || (name == "gen" && base == "comtypes")
 }
 
-func DigestFor(folder string) ([]byte, error) {
+func DigestFor(folder string, collect map[string]string) ([]byte, error) {
 	handle, err := os.Open(folder)
 	if err != nil {
 		return nil, err
@@ -61,7 +61,7 @@ func DigestFor(folder string) ([]byte, error) {
 			if ignoreDynamicDirectories(folder, entry.Name()) {
 				continue
 			}
-			digest, err := DigestFor(filepath.Join(folder, entry.Name()))
+			digest, err := DigestFor(filepath.Join(folder, entry.Name()), collect)
 			if err != nil {
 				return nil, err
 			}
@@ -72,6 +72,10 @@ func DigestFor(folder string) ([]byte, error) {
 		digester.Write([]byte(repr))
 	}
 	result := digester.Sum([]byte{})
+	if collect != nil {
+		key := fmt.Sprintf("%02x", result)
+		collect[folder] = key
+	}
 	return result, nil
 }
 

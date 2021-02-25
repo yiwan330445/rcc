@@ -3,6 +3,7 @@ package operations
 import (
 	"fmt"
 	"path/filepath"
+	"sort"
 	"strings"
 
 	"github.com/robocorp/rcc/common"
@@ -176,14 +177,115 @@ func ExecuteTask(flags *RunFlags, template []string, config robot.Robot, todo ro
 			environment = append(environment, fmt.Sprintf("%s=%s", key, value))
 		}
 	}
+	before := make(map[string]string)
+	beforeHash, beforeErr := conda.DigestFor(label, before)
 	outputDir := todo.ArtifactDirectory(config)
 	if !common.Silent && !interactive {
 		PipFreeze(searchPath, directory, outputDir, environment)
 	}
 	common.Debug("DEBUG: about to run command - %v", task)
 	_, err = shell.New(environment, directory, task...).Tee(outputDir, interactive)
+	after := make(map[string]string)
+	afterHash, afterErr := conda.DigestFor(label, after)
+	diagnoseLive(label, beforeHash, afterHash, beforeErr, afterErr, before, after)
 	if err != nil {
 		pretty.Exit(9, "Error: %v", err)
 	}
 	pretty.Ok()
+}
+
+func MakeRelativeMap(root string, entries map[string]string) map[string]string {
+	result := make(map[string]string)
+	for key, value := range entries {
+		if !strings.HasPrefix(key, root) {
+			result[key] = value
+			continue
+		}
+		short, err := filepath.Rel(root, key)
+		if err == nil {
+			key = short
+		}
+		result[key] = value
+	}
+	return result
+}
+
+func DirhashDiff(history, future map[string]string, warning bool) {
+	removed := []string{}
+	added := []string{}
+	changed := []string{}
+	for key, value := range history {
+		next, ok := future[key]
+		if !ok {
+			removed = append(removed, key)
+			continue
+		}
+		if value != next {
+			changed = append(changed, key)
+		}
+	}
+	for key, _ := range future {
+		_, ok := history[key]
+		if !ok {
+			added = append(added, key)
+		}
+	}
+	if len(removed)+len(added)+len(changed) == 0 {
+		return
+	}
+	common.Log("----  rcc env diff  ----")
+	sort.Strings(removed)
+	sort.Strings(added)
+	sort.Strings(changed)
+	separate := false
+	for _, folder := range removed {
+		common.Log("- diff: removed %q", folder)
+		separate = true
+	}
+	if len(changed) > 0 {
+		if separate {
+			common.Log("-------")
+			separate = false
+		}
+		for _, folder := range changed {
+			common.Log("- diff: changed %q", folder)
+			separate = true
+		}
+	}
+	if len(added) > 0 {
+		if separate {
+			common.Log("-------")
+			separate = false
+		}
+		for _, folder := range added {
+			common.Log("- diff: added %q", folder)
+			separate = true
+		}
+	}
+	if warning {
+		if separate {
+			common.Log("-------")
+			separate = false
+		}
+		common.Log("Notice: Robot run modified the environment which will slow down the next run.")
+		common.Log("        Please inform the robot developer about this.")
+	}
+	common.Log("----  rcc env diff  ----")
+}
+
+func diagnoseLive(label string, beforeHash, afterHash []byte, beforeErr, afterErr error, beforeDetails, afterDetails map[string]string) {
+	if beforeErr != nil || afterErr != nil {
+		common.Debug("live %q diagnosis failed, before: %v, after: %v", label, beforeErr, afterErr)
+		return
+	}
+	beforeSummary := fmt.Sprintf("%02x", beforeHash)
+	afterSummary := fmt.Sprintf("%02x", afterHash)
+	if beforeSummary == afterSummary {
+		common.Debug("live %q diagnosis: did not change during run [%s]", label, afterSummary)
+		return
+	}
+	common.Debug("live %q diagnosis: corrupted [%s] => [%s]", label, beforeSummary, afterSummary)
+	beforeDetails = MakeRelativeMap(label, beforeDetails)
+	afterDetails = MakeRelativeMap(label, afterDetails)
+	DirhashDiff(beforeDetails, afterDetails, true)
 }

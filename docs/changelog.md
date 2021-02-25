@@ -1,5 +1,10 @@
 # rcc change log
 
+## v9.5.0 (date: 25.2.2021)
+
+- added support for detecting environment corruption
+- now dirhash command can be used to compare environment content
+
 ## v9.4.4 (date: 24.2.2021)
 
 - fix: added panic protection to telemetry sending, this closes #13
