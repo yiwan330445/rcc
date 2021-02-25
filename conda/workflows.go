@@ -341,6 +341,8 @@ func NewEnvironment(force bool, configurations ...string) (string, error) {
 	}
 
 	liveFolder := LiveFrom(key)
+	after := make(map[string]string)
+	afterHash, afterErr := DigestFor(liveFolder, after)
 	reusable, err := reuseExistingLive(key)
 	if err != nil {
 		return "", err
@@ -354,9 +356,15 @@ func NewEnvironment(force bool, configurations ...string) (string, error) {
 		common.Log("####  Progress: 2/6  [skipped -- stage only]")
 		common.Timeline("2/6 stage only.")
 	} else {
+		templateFolder := TemplateFrom(key)
+		if IsPristine(templateFolder) {
+			before := make(map[string]string)
+			beforeHash, beforeErr := DigestFor(templateFolder, before)
+			DiagnoseDirty(templateFolder, liveFolder, beforeHash, afterHash, beforeErr, afterErr, before, after)
+		}
 		common.Log("####  Progress: 2/6  [try clone existing same template to live, key: %v]", key)
 		common.Timeline("2/6 base to live.")
-		success, err := CloneFromTo(TemplateFrom(key), liveFolder, pathlib.CopyFile)
+		success, err := CloneFromTo(templateFolder, liveFolder, pathlib.CopyFile)
 		if err != nil {
 			return "", err
 		}

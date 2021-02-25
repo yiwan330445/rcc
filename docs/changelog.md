@@ -1,5 +1,10 @@
 # rcc change log
 
+## v9.5.1 (date: 25.2.2021)
+
+- now also printing environment differences when live is dirty and base
+  is not, just before restoring live from base
+
 ## v9.5.0 (date: 25.2.2021)
 
 - added support for detecting environment corruption

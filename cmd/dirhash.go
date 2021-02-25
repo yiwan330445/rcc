@@ -8,7 +8,6 @@ import (
 
 	"github.com/robocorp/rcc/common"
 	"github.com/robocorp/rcc/conda"
-	"github.com/robocorp/rcc/operations"
 	"github.com/robocorp/rcc/pretty"
 
 	"github.com/spf13/cobra"
@@ -46,7 +45,7 @@ var dirhashCmd = &cobra.Command{
 				common.Error("dirhash", err)
 				continue
 			}
-			collector = operations.MakeRelativeMap(fullpath, collector)
+			collector = conda.MakeRelativeMap(fullpath, collector)
 			diffMaps = append(diffMaps, collector)
 			result := conda.Hexdigest(digest)
 			common.Log("+ %v %v", result, directory)
@@ -68,7 +67,7 @@ var dirhashCmd = &cobra.Command{
 			pretty.Exit(1, "Diff expects exactly 2 environments, now got %d!", len(diffMaps))
 		}
 		if showDiff {
-			operations.DirhashDiff(diffMaps[0], diffMaps[1], false)
+			conda.DirhashDiff(diffMaps[0], diffMaps[1], false)
 		}
 	},
 }
