@@ -88,7 +88,7 @@ func DirhashDiff(history, future map[string]string, warning bool) {
 	common.Log("----  rcc env diff  ----")
 }
 
-func DiagnoseDirty(beforeLabel, afterLabel string, beforeHash, afterHash []byte, beforeErr, afterErr error, beforeDetails, afterDetails map[string]string) {
+func DiagnoseDirty(beforeLabel, afterLabel string, beforeHash, afterHash []byte, beforeErr, afterErr error, beforeDetails, afterDetails map[string]string, warning bool) {
 	if beforeErr != nil || afterErr != nil {
 		common.Debug("live %q diagnosis failed, before: %v, after: %v", afterLabel, beforeErr, afterErr)
 		return
@@ -102,5 +102,5 @@ func DiagnoseDirty(beforeLabel, afterLabel string, beforeHash, afterHash []byte,
 	common.Debug("live %q diagnosis: corrupted [%s] => [%s]", afterLabel, beforeSummary, afterSummary)
 	beforeDetails = MakeRelativeMap(beforeLabel, beforeDetails)
 	afterDetails = MakeRelativeMap(afterLabel, afterDetails)
-	DirhashDiff(beforeDetails, afterDetails, true)
+	DirhashDiff(beforeDetails, afterDetails, warning)
 }

@@ -1,5 +1,12 @@
 # rcc change log
 
+## v9.5.2 (date: 25.2.2021)
+
+- bug fix: now cloning sources are not removed during --liveonly action,
+  even when that source seems to be invalid
+- changed timeline to use percent (not permilles anymore)
+- minor fix on env diff printout
+
 ## v9.5.1 (date: 25.2.2021)
 
 - now also printing environment differences when live is dirty and base

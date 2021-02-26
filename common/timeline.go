@@ -30,10 +30,11 @@ func timeliner(events chan string, done chan bool) {
 	if TimelineEnabled && death > 0 {
 		history = append(history, &timevent{death, "Now."})
 		Log("----  rcc timeline  ----")
-		Log(" #  1/1000  millis  event")
+		Log(" #  percent  millis  event")
 		for at, event := range history {
 			permille := event.when * 1000 / death
-			Log("%2d:  %4d‰  %6d  %s", at+1, permille, event.when, event.what)
+			percent := float64(permille) / 10.0
+			Log("%2d:  %5.1f%%  %6d  %s", at+1, percent, event.when, event.what)
 		}
 		Log("----  rcc timeline  ----")
 	}

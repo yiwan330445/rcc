@@ -360,7 +360,7 @@ func NewEnvironment(force bool, configurations ...string) (string, error) {
 		if IsPristine(templateFolder) {
 			before := make(map[string]string)
 			beforeHash, beforeErr := DigestFor(templateFolder, before)
-			DiagnoseDirty(templateFolder, liveFolder, beforeHash, afterHash, beforeErr, afterErr, before, after)
+			DiagnoseDirty(templateFolder, liveFolder, beforeHash, afterHash, beforeErr, afterErr, before, after, false)
 		}
 		common.Log("####  Progress: 2/6  [try clone existing same template to live, key: %v]", key)
 		common.Timeline("2/6 base to live.")
@@ -444,9 +444,13 @@ func CloneFromTo(source, target string, copier pathlib.Copier) (bool, error) {
 	os.MkdirAll(target, 0755)
 
 	if !IsPristine(source) {
-		err = removeClone(source)
-		if err != nil {
-			return false, fmt.Errorf("Source %q is not pristine! And could not remove: %v", source, err)
+		if common.Liveonly {
+			common.Debug("Clone source %q is dirty, but wont remove since --liveonly flag.", source)
+		} else {
+			err = removeClone(source)
+			if err != nil {
+				return false, fmt.Errorf("Source %q is not pristine! And could not remove: %v", source, err)
+			}
 		}
 		return false, nil
 	}

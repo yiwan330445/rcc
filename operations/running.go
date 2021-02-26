@@ -186,7 +186,7 @@ func ExecuteTask(flags *RunFlags, template []string, config robot.Robot, todo ro
 	_, err = shell.New(environment, directory, task...).Tee(outputDir, interactive)
 	after := make(map[string]string)
 	afterHash, afterErr := conda.DigestFor(label, after)
-	conda.DiagnoseDirty(label, label, beforeHash, afterHash, beforeErr, afterErr, before, after)
+	conda.DiagnoseDirty(label, label, beforeHash, afterHash, beforeErr, afterErr, before, after, true)
 	if err != nil {
 		pretty.Exit(9, "Error: %v", err)
 	}
