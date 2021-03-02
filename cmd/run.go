@@ -12,8 +12,9 @@ import (
 )
 
 var (
-	rcHosts  = []string{"RC_API_SECRET_HOST", "RC_API_WORKITEM_HOST"}
-	rcTokens = []string{"RC_API_SECRET_TOKEN", "RC_API_WORKITEM_TOKEN"}
+	rcHosts         = []string{"RC_API_SECRET_HOST", "RC_API_WORKITEM_HOST"}
+	rcTokens        = []string{"RC_API_SECRET_TOKEN", "RC_API_WORKITEM_TOKEN"}
+	interactiveFlag bool
 )
 
 var runCmd = &cobra.Command{
@@ -34,7 +35,7 @@ in your own machine.`,
 		defer xviper.RunMinutes().Done()
 		simple, config, todo, label := operations.LoadTaskWithEnvironment(robotFile, runTask, forceFlag)
 		cloud.BackgroundMetric(common.ControllerIdentity(), "rcc.cli.run", common.Version)
-		operations.SelectExecutionModel(captureRunFlags(), simple, todo.Commandline(), config, todo, label, false, nil)
+		operations.SelectExecutionModel(captureRunFlags(), simple, todo.Commandline(), config, todo, label, interactiveFlag, nil)
 	},
 }
 
@@ -59,4 +60,5 @@ func init() {
 	runCmd.Flags().IntVarP(&validityTime, "minutes", "m", 0, "How many minutes the authorization should be valid for. OPTIONAL")
 	runCmd.Flags().StringVarP(&accountName, "account", "", "", "Account used for workspace. OPTIONAL")
 	runCmd.Flags().BoolVarP(&forceFlag, "force", "f", false, "Force conda cache update (only for new environments).")
+	runCmd.Flags().BoolVarP(&interactiveFlag, "interactive", "", false, "Allow robot to be interactive in teminal/command prompt. For development only, not for production!")
 }

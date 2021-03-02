@@ -1,5 +1,10 @@
 # rcc change log
 
+## v9.5.3 (date: 2.3.2021)
+
+- added `--interactive` flag to `rcc task run` command, so that developers
+  can use debuggers and other interactive tools while debugging
+
 ## v9.5.2 (date: 25.2.2021)
 
 - bug fix: now cloning sources are not removed during --liveonly action,
