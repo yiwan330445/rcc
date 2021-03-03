@@ -1,5 +1,9 @@
 # rcc change log
 
+## v9.6.1 (date: 3.3.2021)
+
+- refactored code use common.When as consistent timestamp for current rcc run
+
 ## v9.6.0 (date: 3.3.2021)
 
 - new command `rcc cloud prepare` to support installing assistants on

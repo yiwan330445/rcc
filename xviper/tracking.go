@@ -6,6 +6,8 @@ import (
 	"math/rand"
 	"strings"
 	"time"
+
+	"github.com/robocorp/rcc/common"
 )
 
 const (
@@ -18,7 +20,7 @@ var (
 )
 
 func init() {
-	rand.Seed(time.Now().Unix())
+	rand.Seed(common.When)
 }
 
 func AsGuid(content []byte) string {

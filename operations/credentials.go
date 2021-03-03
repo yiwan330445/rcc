@@ -119,7 +119,7 @@ func (it *account) Cached(name, url string) (string, bool) {
 	if !ok {
 		return "", false
 	}
-	if found.Deadline < time.Now().Unix() {
+	if found.Deadline < common.When {
 		return "", false
 	}
 	return found.Token, true

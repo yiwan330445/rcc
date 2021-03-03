@@ -33,8 +33,7 @@ var testrunCmd = &cobra.Command{
 		}
 		defer xviper.RunMinutes().Done()
 		now := time.Now()
-		marker := now.Unix()
-		zipfile := filepath.Join(os.TempDir(), fmt.Sprintf("testrun%x.zip", marker))
+		zipfile := filepath.Join(os.TempDir(), fmt.Sprintf("testrun%x.zip", common.When))
 		defer os.Remove(zipfile)
 		common.Debug("Using temporary zip file: %v", zipfile)
 		sourceDir := filepath.Dir(robotFile)
@@ -48,7 +47,7 @@ var testrunCmd = &cobra.Command{
 			pretty.Exit(2, "Error: %v", err)
 		}
 		sentinelTime := time.Now()
-		workarea := filepath.Join(os.TempDir(), fmt.Sprintf("workarea%x", marker))
+		workarea := filepath.Join(os.TempDir(), fmt.Sprintf("workarea%x", common.When))
 		defer os.RemoveAll(workarea)
 		common.Debug("Using temporary workarea: %v", workarea)
 		err = operations.Unzip(workarea, zipfile, false, true)

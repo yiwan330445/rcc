@@ -49,14 +49,13 @@ func runCarrier() error {
 	}
 	defer xviper.RunMinutes().Done()
 	now := time.Now()
-	marker := now.Unix()
 	testrunDir := filepath.Join(".", now.Format("2006-01-02_15_04_05"))
 	err = os.MkdirAll(testrunDir, 0o755)
 	if err != nil {
 		return err
 	}
 	sentinelTime := time.Now()
-	workarea := filepath.Join(os.TempDir(), fmt.Sprintf("workarea%x", marker))
+	workarea := filepath.Join(os.TempDir(), fmt.Sprintf("workarea%x", common.When))
 	defer os.RemoveAll(workarea)
 	common.Debug("Using temporary workarea: %v", workarea)
 	carrier, err := operations.FindExecutable()

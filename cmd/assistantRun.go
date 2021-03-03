@@ -30,8 +30,6 @@ var assistantRunCmd = &cobra.Command{
 		if common.DebugFlag {
 			defer common.Stopwatch("Robot Assistant run lasted").Report()
 		}
-		now := time.Now()
-		marker := now.Unix()
 		ok := conda.MustMicromamba()
 		if !ok {
 			pretty.Exit(2, "Could not get micromamba installed.")
@@ -67,7 +65,7 @@ var assistantRunCmd = &cobra.Command{
 		common.Debug("Robot Assistant run-id is %v.", assistant.RunId)
 		common.Debug("With task '%v' from zip %v.", assistant.TaskName, assistant.Zipfile)
 		sentinelTime := time.Now()
-		workarea := filepath.Join(os.TempDir(), fmt.Sprintf("workarea%x", marker))
+		workarea := filepath.Join(os.TempDir(), fmt.Sprintf("workarea%x", common.When))
 		defer os.RemoveAll(workarea)
 		common.Debug("Using temporary workarea: %v", workarea)
 		reason = "UNZIP_FAILURE"

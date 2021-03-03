@@ -7,7 +7,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"strings"
-	"time"
 
 	"github.com/robocorp/rcc/cloud"
 	"github.com/robocorp/rcc/common"
@@ -190,14 +189,13 @@ func AuthorizeClaims(accountName string, claims *Claims) (Token, error) {
 
 func AuthorizeCommand(client cloud.Client, account *account, claims *Claims) (Token, error) {
 	common.Timeline("authorize %s", claims.Name)
-	when := time.Now().Unix()
 	found, ok := account.Cached(claims.Name, claims.Url)
 	if ok {
 		cached := make(Token)
 		cached["endpoint"] = client.Endpoint()
 		cached["requested"] = claims
 		cached["status"] = "200"
-		cached["when"] = when
+		cached["when"] = common.When
 		cached["token"] = found
 		return cached, nil
 	}
@@ -207,7 +205,7 @@ func AuthorizeCommand(client cloud.Client, account *account, claims *Claims) (To
 	}
 	bodyHash := Digest(body)
 	size := len([]byte(body))
-	nonce := fmt.Sprintf("%d", when)
+	nonce := fmt.Sprintf("%d", common.When)
 	signed := HmacSignature(claims, account.Secret, nonce, bodyHash)
 	request := client.NewRequest(claims.Url)
 	request.Headers[contentType] = applicationJson
@@ -227,11 +225,11 @@ func AuthorizeCommand(client cloud.Client, account *account, claims *Claims) (To
 	token["endpoint"] = client.Endpoint()
 	token["requested"] = claims
 	token["status"] = response.Status
-	token["when"] = when
-	account.WasVerified(when)
+	token["when"] = common.When
+	account.WasVerified(common.When)
 	trueToken, ok := token["token"].(string)
 	if ok {
-		deadline := when + int64(3*(claims.ExpiresIn/4))
+		deadline := common.When + int64(3*(claims.ExpiresIn/4))
 		account.CacheToken(claims.Name, claims.Url, trueToken, deadline)
 	}
 	return token, nil
@@ -240,8 +238,7 @@ func AuthorizeCommand(client cloud.Client, account *account, claims *Claims) (To
 func DeleteAccount(client cloud.Client, account *account) error {
 	claims := DeleteClaims()
 	bodyHash := Digest("{}")
-	when := time.Now().Unix()
-	nonce := fmt.Sprintf("%d", when)
+	nonce := fmt.Sprintf("%d", common.When)
 	signed := HmacSignature(claims, account.Secret, nonce, bodyHash)
 	request := client.NewRequest(claims.Url)
 	request.Headers[contentType] = applicationJson
@@ -257,8 +254,7 @@ func DeleteAccount(client cloud.Client, account *account) error {
 func UserinfoCommand(client cloud.Client, account *account) (*UserInfo, error) {
 	claims := VerificationClaims()
 	bodyHash := Digest("{}")
-	when := time.Now().Unix()
-	nonce := fmt.Sprintf("%d", when)
+	nonce := fmt.Sprintf("%d", common.When)
 	signed := HmacSignature(claims, account.Secret, nonce, bodyHash)
 	request := client.NewRequest(claims.Url)
 	request.Headers[contentType] = applicationJson
@@ -277,9 +273,9 @@ func UserinfoCommand(client cloud.Client, account *account) (*UserInfo, error) {
 	link["endpoint"] = client.Endpoint()
 	link["requested"] = claims
 	link["status"] = response.Status
-	link["when"] = when
+	link["when"] = common.When
 	result.Link = link
-	account.WasVerified(when)
+	account.WasVerified(common.When)
 	account.UpdateDetails(result.User)
 	return &result, nil
 }

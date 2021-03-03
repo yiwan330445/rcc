@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"time"
 
 	"github.com/robocorp/rcc/common"
 	"github.com/robocorp/rcc/operations"
@@ -27,7 +26,7 @@ var communityPullCmd = &cobra.Command{
 			defer common.Stopwatch("Pull lasted").Report()
 		}
 
-		zipfile := filepath.Join(os.TempDir(), fmt.Sprintf("pull%x.zip", time.Now().Unix()))
+		zipfile := filepath.Join(os.TempDir(), fmt.Sprintf("pull%x.zip", common.When))
 		defer os.Remove(zipfile)
 		common.Debug("Using temporary zipfile at %v", zipfile)
 

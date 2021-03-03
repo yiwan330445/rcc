@@ -315,9 +315,8 @@ func NewEnvironment(force bool, configurations ...string) (string, error) {
 		xviper.Set("stats.env.merges", merges)
 	}
 
-	marker := time.Now().Unix()
-	condaYaml := filepath.Join(os.TempDir(), fmt.Sprintf("conda_%x.yaml", marker))
-	requirementsText := filepath.Join(os.TempDir(), fmt.Sprintf("require_%x.txt", marker))
+	condaYaml := filepath.Join(os.TempDir(), fmt.Sprintf("conda_%x.yaml", common.When))
+	requirementsText := filepath.Join(os.TempDir(), fmt.Sprintf("require_%x.txt", common.When))
 	common.Debug("Using temporary conda.yaml file: %v and requirement.txt file: %v", condaYaml, requirementsText)
 	key, yaml, finalEnv, err := temporaryConfig(condaYaml, requirementsText, true, configurations...)
 	if err != nil {

@@ -4,7 +4,8 @@ import (
 	"os"
 	"path/filepath"
 	"sort"
-	"time"
+
+	"github.com/robocorp/rcc/common"
 )
 
 func UpdateRobot(directory string) error {
@@ -17,22 +18,21 @@ func UpdateRobot(directory string) error {
 		return err
 	}
 	defer cache.Save()
-	now := time.Now().Unix()
 	robot, ok := cache.Robots[fullpath]
 	if !ok {
 		robot = &Folder{
 			Path:    fullpath,
-			Created: now,
-			Updated: now,
+			Created: common.When,
+			Updated: common.When,
 			Deleted: 0,
 		}
 		cache.Robots[fullpath] = robot
 	}
 	stat, err := os.Stat(fullpath)
 	if err != nil || !stat.IsDir() {
-		robot.Deleted = now
+		robot.Deleted = common.When
 	}
-	robot.Updated = now
+	robot.Updated = common.When
 	return nil
 }
 
@@ -50,12 +50,11 @@ func detectDeadRobots() bool {
 	if err != nil {
 		return false
 	}
-	now := time.Now().Unix()
 	changed := false
 	for _, robot := range cache.Robots {
 		stat, err := os.Stat(robot.Path)
 		if err != nil || !stat.IsDir() {
-			robot.Deleted = now
+			robot.Deleted = common.When
 			changed = true
 			continue
 		}

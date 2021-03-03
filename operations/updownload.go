@@ -7,7 +7,6 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
-	"time"
 
 	"github.com/robocorp/rcc/cloud"
 	"github.com/robocorp/rcc/common"
@@ -166,7 +165,7 @@ func SummonRobotZipfile(client cloud.Client, account *account, workspaceId, robo
 	if ok {
 		return found, nil
 	}
-	zipfile := filepath.Join(os.TempDir(), fmt.Sprintf("summon%x.zip", time.Now().Unix()))
+	zipfile := filepath.Join(os.TempDir(), fmt.Sprintf("summon%x.zip", common.When))
 	err := DownloadCommand(client, account, workspaceId, robotId, zipfile, common.DebugFlag)
 	if err != nil {
 		return "", err
