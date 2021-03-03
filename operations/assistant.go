@@ -254,6 +254,7 @@ func BackgroundAssistantHeartbeat(cancel chan bool, client cloud.Client, account
 }
 
 func BeatAssistantRun(client cloud.Client, account *account, workspaceId, assistantId, runId string, beat int) error {
+	common.Timeline("send assistant heartbeat")
 	credentials, err := summonAssistantToken(client, account, workspaceId)
 	if err != nil {
 		return err
@@ -274,6 +275,7 @@ func BeatAssistantRun(client cloud.Client, account *account, workspaceId, assist
 }
 
 func StopAssistantRun(client cloud.Client, account *account, workspaceId, assistantId, runId, status, reason string) error {
+	common.Timeline("stop assistant run: %s", assistantId)
 	credentials, err := summonAssistantToken(client, account, workspaceId)
 	if err != nil {
 		return err
@@ -295,6 +297,7 @@ func StopAssistantRun(client cloud.Client, account *account, workspaceId, assist
 }
 
 func StartAssistantRun(client cloud.Client, account *account, workspaceId, assistantId string) (*AssistantRobot, error) {
+	common.Timeline("start assistant run: %q", assistantId)
 	credentials, err := summonAssistantToken(client, account, workspaceId)
 	if err != nil {
 		return nil, err

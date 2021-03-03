@@ -25,3 +25,10 @@ func Exit(code int, format string, rest ...interface{}) {
 	}
 	common.Exit(code, niceform, rest...)
 }
+
+// Guard watches, that only truthful shall pass. Otherwise exits with code and details.
+func Guard(truth bool, code int, format string, rest ...interface{}) {
+	if !truth {
+		Exit(code, format, rest...)
+	}
+}

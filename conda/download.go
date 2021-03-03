@@ -13,6 +13,7 @@ import (
 )
 
 func DownloadMicromamba() error {
+	common.Timeline("downloading micromamba")
 	url := MicromambaLink()
 	filename := BinMicromamba()
 	response, err := http.Get(url)

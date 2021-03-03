@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/robocorp/rcc/cloud"
+	"github.com/robocorp/rcc/common"
 )
 
 const (
@@ -188,6 +189,7 @@ func AuthorizeClaims(accountName string, claims *Claims) (Token, error) {
 }
 
 func AuthorizeCommand(client cloud.Client, account *account, claims *Claims) (Token, error) {
+	common.Timeline("authorize %s", claims.Name)
 	when := time.Now().Unix()
 	found, ok := account.Cached(claims.Name, claims.Url)
 	if ok {

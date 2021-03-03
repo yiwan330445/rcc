@@ -1,5 +1,11 @@
 # rcc change log
 
+## v9.6.0 (date: 3.3.2021)
+
+- new command `rcc cloud prepare` to support installing assistants on
+  local computer for faster startup time
+- added more timeline entries on relevant parts
+
 ## v9.5.4 (date: 2.3.2021)
 
 - Updated rpaframework to version 7.6.0 in templates

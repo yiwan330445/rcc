@@ -136,6 +136,7 @@ func UploadCommand(client cloud.Client, account *account, workspaceId, robotId, 
 }
 
 func DownloadCommand(client cloud.Client, account *account, workspaceId, robotId, zipfile string, debug bool) error {
+	common.Timeline("download started: %s", zipfile)
 	token, err := summonRobotToken(client, account, workspaceId)
 	if err != nil {
 		return err

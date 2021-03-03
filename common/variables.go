@@ -3,6 +3,7 @@ package common
 import (
 	"fmt"
 	"strings"
+	"time"
 )
 
 var (
@@ -17,11 +18,16 @@ var (
 	ControllerType  string
 	LeaseContract   string
 	EnvironmentHash string
+	When            int64
 )
 
 const (
 	DefaultEndpoint = "https://api.eu1.robocloud.eu/"
 )
+
+func init() {
+	When = time.Now().Unix()
+}
 
 func UnifyVerbosityFlags() {
 	if Silent {

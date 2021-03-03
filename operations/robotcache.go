@@ -17,6 +17,7 @@ var (
 )
 
 func CacheRobot(filename string) error {
+	common.Timeline("caching robot: %s", filename)
 	fullpath, err := filepath.Abs(filename)
 	if err != nil {
 		return err

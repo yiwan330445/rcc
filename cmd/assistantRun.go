@@ -93,6 +93,7 @@ var assistantRunCmd = &cobra.Command{
 			cloud.BackgroundMetric(common.ControllerIdentity(), "rcc.assistant.run.timeline.uploaded", elapser.String())
 		}()
 		defer func() {
+			common.Timeline("publish artifacts")
 			publisher := operations.ArtifactPublisher{
 				Client:          client,
 				ArtifactPostURL: assistant.ArtifactURL,
