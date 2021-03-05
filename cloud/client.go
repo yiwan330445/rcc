@@ -6,7 +6,6 @@ import (
 	"io/ioutil"
 	"net/http"
 	"strings"
-	"time"
 
 	"github.com/robocorp/rcc/common"
 	"github.com/robocorp/rcc/xviper"
@@ -30,7 +29,7 @@ type Response struct {
 	Status  int
 	Err     error
 	Body    []byte
-	Elapsed time.Duration
+	Elapsed common.Duration
 }
 
 type Client interface {
@@ -71,14 +70,13 @@ func (it *internalClient) Endpoint() string {
 }
 
 func (it *internalClient) does(method string, request *Request) *Response {
+	stopwatch := common.Stopwatch("stopwatch")
 	response := new(Response)
-	started := time.Now()
 	url := it.Endpoint() + request.Url
 	common.Trace("Doing %s %s", method, url)
 	defer func() {
-		elapsed := time.Now().Sub(started)
-		response.Elapsed = elapsed
-		common.Trace("%s %s took %v", method, url, elapsed)
+		response.Elapsed = stopwatch.Elapsed()
+		common.Trace("%s %s took %s", method, url, response.Elapsed)
 	}()
 	httpRequest, err := http.NewRequest(method, url, request.Body)
 	if err != nil {

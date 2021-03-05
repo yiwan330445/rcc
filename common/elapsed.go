@@ -10,6 +10,20 @@ type stopwatch struct {
 	started time.Time
 }
 
+type Duration time.Duration
+
+func (it Duration) Truncate(granularity time.Duration) Duration {
+	return Duration(time.Duration(it).Truncate(granularity))
+}
+
+func (it Duration) Milliseconds() int64 {
+	return time.Duration(it).Milliseconds()
+}
+
+func (it Duration) String() string {
+	return fmt.Sprintf("%5.3f", float64(it.Milliseconds())/1000.0)
+}
+
 func Stopwatch(form string, details ...interface{}) *stopwatch {
 	message := fmt.Sprintf(form, details...)
 	return &stopwatch{
@@ -19,18 +33,22 @@ func Stopwatch(form string, details ...interface{}) *stopwatch {
 }
 
 func (it *stopwatch) String() string {
-	elapsed := time.Now().Sub(it.started)
+	elapsed := it.Elapsed().Truncate(time.Millisecond)
 	return fmt.Sprintf("%v", elapsed)
 }
 
-func (it *stopwatch) Log() time.Duration {
-	elapsed := time.Now().Sub(it.started)
+func (it *stopwatch) Elapsed() Duration {
+	return Duration(time.Since(it.started))
+}
+
+func (it *stopwatch) Log() Duration {
+	elapsed := it.Elapsed()
 	Log("%v %v", it.message, elapsed)
 	return elapsed
 }
 
-func (it *stopwatch) Report() time.Duration {
-	elapsed := time.Now().Sub(it.started)
+func (it *stopwatch) Report() Duration {
+	elapsed := it.Elapsed()
 	Log("%v %v", it.message, elapsed)
 	return elapsed
 }

@@ -101,6 +101,7 @@ func initConfig() {
 	common.UnifyStageHandling()
 
 	pretty.Setup()
+	common.Timeline("%q", os.Args)
 	common.Trace("CLI command was: %#v", os.Args)
 	common.Debug("Using config file: %v", xviper.ConfigFileUsed())
 	conda.ValidateLocations()

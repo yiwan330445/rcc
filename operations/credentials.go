@@ -122,6 +122,7 @@ func (it *account) Cached(name, url string) (string, bool) {
 	if found.Deadline < common.When {
 		return "", false
 	}
+	common.Timeline("cached token: %s", name)
 	return found.Token, true
 }
 

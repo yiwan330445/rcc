@@ -13,6 +13,6 @@ func TestCanUseStopwatch(t *testing.T) {
 
 	sut := common.Stopwatch("hello")
 	wont_be.Nil(sut)
-	limit := time.Duration(10) * time.Millisecond
+	limit := common.Duration(10 * time.Millisecond)
 	must_be.True(sut.Report() < limit)
 }

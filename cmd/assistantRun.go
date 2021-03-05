@@ -44,7 +44,7 @@ var assistantRunCmd = &cobra.Command{
 			pretty.Exit(2, "Could not create client for endpoint: %v, reason: %v", account.Endpoint, err)
 		}
 		reason = "START_FAILURE"
-		cloud.BackgroundMetric(common.ControllerIdentity(), "rcc.assistant.run.start", elapser.String())
+		cloud.BackgroundMetric(common.ControllerIdentity(), "rcc.assistant.run.start", elapser.Elapsed().String())
 		defer func() {
 			cloud.BackgroundMetric(common.ControllerIdentity(), "rcc.assistant.run.stop", reason)
 		}()
@@ -88,7 +88,7 @@ var assistantRunCmd = &cobra.Command{
 		}
 
 		defer func() {
-			cloud.BackgroundMetric(common.ControllerIdentity(), "rcc.assistant.run.timeline.uploaded", elapser.String())
+			cloud.BackgroundMetric(common.ControllerIdentity(), "rcc.assistant.run.timeline.uploaded", elapser.Elapsed().String())
 		}()
 		defer func() {
 			common.Timeline("publish artifacts")
@@ -105,9 +105,9 @@ var assistantRunCmd = &cobra.Command{
 			}
 		}()
 
-		cloud.BackgroundMetric(common.ControllerIdentity(), "rcc.assistant.run.timeline.setup", elapser.String())
+		cloud.BackgroundMetric(common.ControllerIdentity(), "rcc.assistant.run.timeline.setup", elapser.Elapsed().String())
 		defer func() {
-			cloud.BackgroundMetric(common.ControllerIdentity(), "rcc.assistant.run.timeline.executed", elapser.String())
+			cloud.BackgroundMetric(common.ControllerIdentity(), "rcc.assistant.run.timeline.executed", elapser.Elapsed().String())
 		}()
 		reason = "ROBOT_FAILURE"
 		operations.SelectExecutionModel(captureRunFlags(), simple, todo.Commandline(), config, todo, label, false, assistant.Environment)

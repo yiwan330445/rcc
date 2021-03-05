@@ -188,7 +188,6 @@ func AuthorizeClaims(accountName string, claims *Claims) (Token, error) {
 }
 
 func AuthorizeCommand(client cloud.Client, account *account, claims *Claims) (Token, error) {
-	common.Timeline("authorize %s", claims.Name)
 	found, ok := account.Cached(claims.Name, claims.Url)
 	if ok {
 		cached := make(Token)
@@ -199,6 +198,7 @@ func AuthorizeCommand(client cloud.Client, account *account, claims *Claims) (To
 		cached["token"] = found
 		return cached, nil
 	}
+	common.Timeline("authorize claim: %s (request)", claims.Name)
 	body, err := claims.AsJson()
 	if err != nil {
 		return nil, err

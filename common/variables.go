@@ -19,6 +19,7 @@ var (
 	LeaseContract   string
 	EnvironmentHash string
 	When            int64
+	Clock           *stopwatch
 )
 
 const (
@@ -26,7 +27,8 @@ const (
 )
 
 func init() {
-	When = time.Now().Unix()
+	Clock = &stopwatch{"Clock", time.Now()}
+	When = Clock.started.Unix()
 }
 
 func UnifyVerbosityFlags() {

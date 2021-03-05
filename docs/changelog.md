@@ -1,5 +1,9 @@
 # rcc change log
 
+## v9.6.2 (date: 5.3.2021)
+
+- fix for time formats used in timeline, some metrics, and stopwatch
+
 ## v9.6.1 (date: 3.3.2021)
 
 - refactored code use common.When as consistent timestamp for current rcc run

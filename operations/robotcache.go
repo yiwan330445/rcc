@@ -17,7 +17,6 @@ var (
 )
 
 func CacheRobot(filename string) error {
-	common.Timeline("caching robot: %s", filename)
 	fullpath, err := filepath.Abs(filename)
 	if err != nil {
 		return err
@@ -26,6 +25,7 @@ func CacheRobot(filename string) error {
 	if err != nil {
 		return err
 	}
+	common.Timeline("caching robot: %s -> %s", filename, digest)
 	common.Debug("Digest for %v is %v.", fullpath, digest)
 	_, exists := LookupRobot(digest)
 	if exists {
