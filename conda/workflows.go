@@ -176,7 +176,7 @@ func newLiveInternal(yaml, condaYaml, requirementsText, key string, force, fresh
 		planWriter.Close()
 		os.Remove(planfile)
 	}()
-	fmt.Fprintf(planWriter, "---  installation plan %q %s [force: %v, fresh: %v]  ---\n\n", key, time.Now().Format(time.RFC3339), force, freshInstall)
+	fmt.Fprintf(planWriter, "---  installation plan %q %s [force: %v, fresh: %v| rcc %s]  ---\n\n", key, time.Now().Format(time.RFC3339), force, freshInstall, common.Version)
 	stopwatch := common.Stopwatch("installation plan")
 	fmt.Fprintf(planWriter, "---  plan blueprint @%ss  ---\n\n", stopwatch)
 	fmt.Fprintf(planWriter, "%s\n", yaml)
@@ -186,9 +186,9 @@ func newLiveInternal(yaml, condaYaml, requirementsText, key string, force, fresh
 	if force {
 		ttl = "0"
 	}
-	command := []string{BinMicromamba(), "create", "--extra-safety-checks", "fail", "--retry-with-clean-cache", "--strict-channel-priority", "--repodata-ttl", ttl, "-q", "-y", "-f", condaYaml, "-p", targetFolder}
+	command := []string{BinMicromamba(), "create", "--always-copy", "--safety-checks", "enabled", "--extra-safety-checks", "fail", "--retry-with-clean-cache", "--strict-channel-priority", "--repodata-ttl", ttl, "-q", "-y", "-f", condaYaml, "-p", targetFolder}
 	if true || common.DebugFlag {
-		command = []string{BinMicromamba(), "create", "--extra-safety-checks", "fail", "--retry-with-clean-cache", "--strict-channel-priority", "--repodata-ttl", ttl, "-y", "-f", condaYaml, "-p", targetFolder}
+		command = []string{BinMicromamba(), "create", "--always-copy", "--safety-checks", "enabled", "--extra-safety-checks", "fail", "--retry-with-clean-cache", "--strict-channel-priority", "--repodata-ttl", ttl, "-y", "-f", condaYaml, "-p", targetFolder}
 	}
 	observer := make(InstallObserver)
 	common.Debug("===  new live  ---  micromamba create phase ===")

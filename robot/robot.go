@@ -318,7 +318,7 @@ func (it *robot) ExecutionEnvironment(location string, inject []string, full boo
 	if ok {
 		environment = append(environment, "PYTHON_EXE="+python)
 	}
-	return append(environment,
+	environment = append(environment,
 		"CONDA_DEFAULT_ENV=rcc",
 		"CONDA_PREFIX="+location,
 		"CONDA_PROMPT_MODIFIER=(rcc) ",
@@ -338,6 +338,8 @@ func (it *robot) ExecutionEnvironment(location string, inject []string, full boo
 		fmt.Sprintf("ROBOT_ROOT=%s", it.WorkingDirectory()),
 		fmt.Sprintf("ROBOT_ARTIFACTS=%s", it.ArtifactDirectory()),
 	)
+	environment = append(environment, conda.LoadActivationEnvironment(location)...)
+	return environment
 }
 
 func (it *task) WorkingDirectory(robot Robot) string {

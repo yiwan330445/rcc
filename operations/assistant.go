@@ -285,6 +285,7 @@ func StopAssistantRun(client cloud.Client, account *account, workspaceId, assist
 	token["error"] = reason
 	request := client.NewRequest(fmt.Sprintf(stopAssistantApi, workspaceId, assistantId, runId))
 	request.Headers[authorization] = WorkspaceToken(credentials)
+	request.Headers[contentType] = applicationJson
 	blob, err := json.Marshal(token)
 	if err == nil {
 		request.Body = bytes.NewReader(blob)
@@ -308,6 +309,7 @@ func StartAssistantRun(client cloud.Client, account *account, workspaceId, assis
 	}
 	request := client.NewRequest(fmt.Sprintf(startAssistantApi, workspaceId, assistantId))
 	request.Headers[authorization] = WorkspaceToken(credentials)
+	request.Headers[contentType] = applicationJson
 	request.Body, err = key.RequestBody(nil)
 	if err != nil {
 		return nil, err

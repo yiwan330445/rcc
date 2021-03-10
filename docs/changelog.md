@@ -1,5 +1,11 @@
 # rcc change log
 
+## v9.7.1 (date: 10.3.2021)
+
+- fixes/improvements to activation and installation plan
+- added missing content type to assistant requests
+- micromamba upgrade to 0.8.0
+
 ## v9.7.0 (date: 10.3.2021)
 
 - conda environments are now activated once on creation, and variables go

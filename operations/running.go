@@ -182,7 +182,6 @@ func ExecuteTask(flags *RunFlags, template []string, config robot.Robot, todo ro
 	if !common.Silent && !interactive {
 		PipFreeze(searchPath, directory, outputDir, environment)
 	}
-	environment = append(environment, conda.LoadActivationEnvironment(label)...)
 	common.Debug("DEBUG: about to run command - %v", task)
 	_, err = shell.New(environment, directory, task...).Tee(outputDir, interactive)
 	after := make(map[string]string)

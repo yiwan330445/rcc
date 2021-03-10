@@ -170,7 +170,7 @@ func EnvironmentExtensionFor(location string) []string {
 	if ok {
 		environment = append(environment, "PYTHON_EXE="+python)
 	}
-	return append(environment,
+	environment = append(environment,
 		"CONDA_DEFAULT_ENV=rcc",
 		"CONDA_PREFIX="+location,
 		"CONDA_PROMPT_MODIFIER=(rcc) ",
@@ -188,6 +188,8 @@ func EnvironmentExtensionFor(location string) []string {
 		searchPath.AsEnvironmental("PATH"),
 		PythonPath().AsEnvironmental("PYTHONPATH"),
 	)
+	environment = append(environment, LoadActivationEnvironment(location)...)
+	return environment
 }
 
 func EnvironmentFor(location string) []string {
@@ -239,7 +241,7 @@ func HasMicroMamba() bool {
 		return false
 	}
 	version, versionText := asVersion(MicromambaVersion())
-	goodEnough := version >= 7014
+	goodEnough := version >= 8000
 	common.Debug("%q version is %q -> %v (good enough: %v)", BinMicromamba(), versionText, version, goodEnough)
 	return goodEnough
 }

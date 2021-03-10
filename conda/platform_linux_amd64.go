@@ -25,7 +25,7 @@ var (
 )
 
 func MicromambaLink() string {
-	return "https://downloads.robocorp.com/micromamba/v0.7.14/linux64/micromamba"
+	return "https://downloads.robocorp.com/micromamba/v0.8.0/linux64/micromamba"
 }
 
 func ExpandPath(entry string) string {
