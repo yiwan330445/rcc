@@ -10,6 +10,13 @@ const (
 	Newline                 = "\n"
 	defaultRobocorpLocation = "$HOME/.robocorp"
 	binSuffix               = "/bin"
+	activateScript          = `#!/bin/bash
+
+export MAMBA_ROOT_PREFIX={{.Robocorphome}}
+eval "$({{.Micromamba}} shell activate -s bash -p {{.Live}})"
+{{.Rcc}} internal env -l after
+`
+	commandSuffix = ".sh"
 )
 
 var (

@@ -173,7 +173,7 @@ func EnvironmentExtensionFor(location string) []string {
 	return append(environment,
 		"CONDA_DEFAULT_ENV=rcc",
 		"CONDA_PREFIX="+location,
-		"CONDA_PROMPT_MODIFIER=(rcc)",
+		"CONDA_PROMPT_MODIFIER=(rcc) ",
 		"CONDA_SHLVL=1",
 		"PYTHONHOME=",
 		"PYTHONSTARTUP=",

@@ -4,6 +4,7 @@ import (
 	"crypto/sha256"
 	"errors"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"math/rand"
 	"os"
@@ -79,17 +80,35 @@ func reuseExistingLive(key string) (bool, error) {
 	return false, nil
 }
 
-func LiveExecution(liveFolder string, command ...string) error {
+func livePrepare(liveFolder string, command ...string) (*shell.Task, error) {
 	searchPath := FindPath(liveFolder)
 	commandName := command[0]
 	task, ok := searchPath.Which(commandName, FileExtensions)
 	if !ok {
-		return fmt.Errorf("Cannot find command: %v", commandName)
+		return nil, fmt.Errorf("Cannot find command: %v", commandName)
 	}
 	common.Debug("Using %v as command %v.", task, commandName)
 	command[0] = task
 	environment := EnvironmentFor(liveFolder)
-	_, err := shell.New(environment, ".", command...).StderrOnly().Transparent()
+	return shell.New(environment, ".", command...), nil
+}
+
+func LiveCapture(liveFolder string, command ...string) (string, int, error) {
+	task, err := livePrepare(liveFolder, command...)
+	if err != nil {
+		return "", 9999, err
+	}
+	return task.CaptureOutput()
+}
+
+func LiveExecution(sink *os.File, liveFolder string, command ...string) error {
+	defer sink.Sync()
+	fmt.Fprintf(sink, "Command %q at %q:\n", command, liveFolder)
+	task, err := livePrepare(liveFolder, command...)
+	if err != nil {
+		return err
+	}
+	_, err = task.Tracked(sink, false)
 	return err
 }
 
@@ -148,19 +167,35 @@ func newLive(yaml, condaYaml, requirementsText, key string, force, freshInstall 
 
 func newLiveInternal(yaml, condaYaml, requirementsText, key string, force, freshInstall bool, postInstall []string) (bool, bool) {
 	targetFolder := LiveFrom(key)
+	planfile := fmt.Sprintf("%s.plan", targetFolder)
+	planWriter, err := os.OpenFile(planfile, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0o600)
+	if err != nil {
+		return false, false
+	}
+	defer func() {
+		planWriter.Close()
+		os.Remove(planfile)
+	}()
+	fmt.Fprintf(planWriter, "---  installation plan %q %s [force: %v, fresh: %v]  ---\n\n", key, time.Now().Format(time.RFC3339), force, freshInstall)
+	stopwatch := common.Stopwatch("installation plan")
+	fmt.Fprintf(planWriter, "---  plan blueprint @%ss  ---\n\n", stopwatch)
+	fmt.Fprintf(planWriter, "%s\n", yaml)
+
 	common.Debug("Setting up new conda environment using %v to folder %v", condaYaml, targetFolder)
 	ttl := "57600"
 	if force {
 		ttl = "0"
 	}
 	command := []string{BinMicromamba(), "create", "--extra-safety-checks", "fail", "--retry-with-clean-cache", "--strict-channel-priority", "--repodata-ttl", ttl, "-q", "-y", "-f", condaYaml, "-p", targetFolder}
-	if common.DebugFlag {
+	if true || common.DebugFlag {
 		command = []string{BinMicromamba(), "create", "--extra-safety-checks", "fail", "--retry-with-clean-cache", "--strict-channel-priority", "--repodata-ttl", ttl, "-y", "-f", condaYaml, "-p", targetFolder}
 	}
 	observer := make(InstallObserver)
 	common.Debug("===  new live  ---  micromamba create phase ===")
 	common.Timeline("Micromamba start.")
-	code, err := shell.New(CondaEnvironment(), ".", command...).StderrOnly().Observed(observer, false)
+	fmt.Fprintf(planWriter, "\n---  micromamba plan @%ss  ---\n\n", stopwatch)
+	tee := io.MultiWriter(observer, planWriter)
+	code, err := shell.New(CondaEnvironment(), ".", command...).Tracked(tee, false)
 	if err != nil || code != 0 {
 		common.Timeline("micromamba fail.")
 		common.Fatal("Micromamba", err)
@@ -170,6 +205,7 @@ func newLiveInternal(yaml, condaYaml, requirementsText, key string, force, fresh
 	if observer.HasFailures(targetFolder) {
 		return false, true
 	}
+	fmt.Fprintf(planWriter, "\n---  pip plan @%ss  ---\n\n", stopwatch)
 	pipCache, wheelCache := PipCache(), WheelCache()
 	size, ok := pathlib.Size(requirementsText)
 	if !ok || size == 0 {
@@ -180,11 +216,11 @@ func newLiveInternal(yaml, condaYaml, requirementsText, key string, force, fresh
 		common.Timeline("4/6 pip install start.")
 		common.Debug("Updating new environment at %v with pip requirements from %v (size: %v)", targetFolder, requirementsText, size)
 		pipCommand := []string{"pip", "install", "--no-color", "--disable-pip-version-check", "--prefer-binary", "--cache-dir", pipCache, "--find-links", wheelCache, "--requirement", requirementsText, "--quiet"}
-		if common.DebugFlag {
+		if true || common.DebugFlag {
 			pipCommand = []string{"pip", "install", "--no-color", "--disable-pip-version-check", "--prefer-binary", "--cache-dir", pipCache, "--find-links", wheelCache, "--requirement", requirementsText}
 		}
 		common.Debug("===  new live  ---  pip install phase ===")
-		err = LiveExecution(targetFolder, pipCommand...)
+		err = LiveExecution(planWriter, targetFolder, pipCommand...)
 		if err != nil {
 			common.Timeline("pip fail.")
 			common.Fatal("Pip", err)
@@ -192,6 +228,7 @@ func newLiveInternal(yaml, condaYaml, requirementsText, key string, force, fresh
 		}
 		common.Timeline("pip done.")
 	}
+	fmt.Fprintf(planWriter, "\n---  post install plan @%ss  ---\n\n", stopwatch)
 	if postInstall != nil && len(postInstall) > 0 {
 		common.Timeline("post install.")
 		common.Debug("===  new live  ---  post install phase ===")
@@ -202,8 +239,8 @@ func newLiveInternal(yaml, condaYaml, requirementsText, key string, force, fresh
 				common.Log("%sScript '%s' parsing failure: %v%s", pretty.Red, script, err, pretty.Reset)
 				return false, false
 			}
-			common.Log("Running post install script '%s' ...", script)
-			err = LiveExecution(targetFolder, scriptCommand...)
+			common.Debug("Running post install script '%s' ...", script)
+			err = LiveExecution(planWriter, targetFolder, scriptCommand...)
 			if err != nil {
 				common.Fatal("post-install", err)
 				common.Log("%sScript '%s' failure: %v%s", pretty.Red, script, err, pretty.Reset)
@@ -211,6 +248,21 @@ func newLiveInternal(yaml, condaYaml, requirementsText, key string, force, fresh
 			}
 		}
 	}
+	common.Debug("===  new live  ---  activate phase ===")
+	fmt.Fprintf(planWriter, "\n---  activation plan @%ss  ---\n\n", stopwatch)
+	err = Activate(planWriter, targetFolder)
+	if err != nil {
+		common.Log("%sActivation failure: %v%s", pretty.Yellow, err, pretty.Reset)
+	}
+	for _, line := range LoadActivationEnvironment(targetFolder) {
+		fmt.Fprintf(planWriter, "%s\n", line)
+	}
+	fmt.Fprintf(planWriter, "\n---  installation plan complete @%ss  ---\n\n", stopwatch)
+	planWriter.Sync()
+	planWriter.Close()
+	finalplan := filepath.Join(targetFolder, "rcc_plan.log")
+	os.Rename(planfile, finalplan)
+	common.Log("%sInstallation plan is: %v%s", pretty.Yellow, finalplan, pretty.Reset)
 	common.Debug("===  new live  ---  finalize phase ===")
 
 	markerFile := filepath.Join(targetFolder, "identity.yaml")

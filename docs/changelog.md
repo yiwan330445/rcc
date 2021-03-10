@@ -1,5 +1,13 @@
 # rcc change log
 
+## v9.7.0 (date: 10.3.2021)
+
+- conda environments are now activated once on creation, and variables go
+  with environment, as `rcc_activate.json`
+- there is also now new "installation plan" file inside environment, called
+  `rcc_plan.log` which contains events that lead to activation
+- normal runs are now more silent, since details are moved into "plan" file
+
 ## v9.6.2 (date: 5.3.2021)
 
 - fix for time formats used in timeline, some metrics, and stopwatch

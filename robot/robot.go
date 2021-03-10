@@ -321,7 +321,7 @@ func (it *robot) ExecutionEnvironment(location string, inject []string, full boo
 	return append(environment,
 		"CONDA_DEFAULT_ENV=rcc",
 		"CONDA_PREFIX="+location,
-		"CONDA_PROMPT_MODIFIER=(rcc)",
+		"CONDA_PROMPT_MODIFIER=(rcc) ",
 		"CONDA_SHLVL=1",
 		"PYTHONHOME=",
 		"PYTHONSTARTUP=",

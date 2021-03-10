@@ -21,6 +21,11 @@ const (
 	scriptSuffix            = "\\Scripts"
 	usrSuffix               = "\\usr"
 	binSuffix               = "\\bin"
+	activateScript          = "@echo off\n" +
+		"set MAMBA_ROOT_PREFIX=\"{{.Robocorphome}}\"\n" +
+		"for /f \"tokens=* usebackq\" %%a in ( `call \"{{.Robocorphome}}\\bin\\micromamba.exe\" shell -s cmd.exe activate -p \"{{.Live}}\"` ) do ( call \"%%a\" )\n" +
+		"call \"{{.Rcc}}\" internal env -l after\n"
+	commandSuffix = ".cmd"
 )
 
 func MicromambaLink() string {

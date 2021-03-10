@@ -106,6 +106,14 @@ func (it *Task) Observed(sink io.Writer, interactive bool) (int, error) {
 	return it.execute(stdin, stdout, stderr)
 }
 
+func (it *Task) Tracked(sink io.Writer, interactive bool) (int, error) {
+	var stdin io.Reader = os.Stdin
+	if !interactive {
+		stdin = bytes.NewReader([]byte{})
+	}
+	return it.execute(stdin, sink, sink)
+}
+
 func (it *Task) CaptureOutput() (string, int, error) {
 	stdin := bytes.NewReader([]byte{})
 	stdout := bytes.NewBuffer(nil)
