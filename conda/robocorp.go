@@ -342,3 +342,8 @@ func OrphanList() []string {
 	result = append(result, orphansFrom(LiveLocation())...)
 	return result
 }
+
+func InstallationPlan(hash string) (string, bool) {
+	finalplan := filepath.Join(LiveFrom(hash), "rcc_plan.log")
+	return finalplan, pathlib.IsFile(finalplan)
+}

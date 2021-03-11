@@ -47,13 +47,13 @@ func createIssueZip(attachmentsFiles []string) (string, error) {
 	return zipfile, nil
 }
 
-func createDiagnosticsReport(robotfile string) (string, error) {
+func createDiagnosticsReport(robotfile string) (string, *common.DiagnosticStatus, error) {
 	file := filepath.Join(conda.RobocorpTemp(), "diagnostics.txt")
-	err := PrintDiagnostics(file, robotfile, false)
+	diagnostics, err := ProduceDiagnostics(file, robotfile, false)
 	if err != nil {
-		return "", err
+		return "", nil, err
 	}
-	return file, nil
+	return file, diagnostics, nil
 }
 
 func virtualName(filename string) (string, error) {
@@ -70,9 +70,13 @@ func ReportIssue(email, robotFile, reportFile string, attachmentsFiles []string,
 	if err != nil {
 		return err
 	}
-	diagnostics, err := createDiagnosticsReport(robotFile)
+	diagnostics, data, err := createDiagnosticsReport(robotFile)
 	if err == nil {
 		attachmentsFiles = append(attachmentsFiles, diagnostics)
+	}
+	plan, ok := data.Details["robot-conda-plan"]
+	if ok {
+		attachmentsFiles = append(attachmentsFiles, plan)
 	}
 	attachmentsFiles = append(attachmentsFiles, reportFile)
 	filename, err := createIssueZip(attachmentsFiles)
@@ -88,7 +92,7 @@ func ReportIssue(email, robotFile, reportFile string, attachmentsFiles []string,
 	token["account-email"] = email
 	token["fileName"] = shortname
 	token["controller"] = common.ControllerIdentity()
-	_, ok := token["platform"]
+	_, ok = token["platform"]
 	if !ok {
 		token["platform"] = fmt.Sprintf("%s %s", runtime.GOOS, runtime.GOARCH)
 	}

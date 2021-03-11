@@ -260,7 +260,7 @@ func newLiveInternal(yaml, condaYaml, requirementsText, key string, force, fresh
 	fmt.Fprintf(planWriter, "\n---  installation plan complete @%ss  ---\n\n", stopwatch)
 	planWriter.Sync()
 	planWriter.Close()
-	finalplan := filepath.Join(targetFolder, "rcc_plan.log")
+	finalplan, _ := InstallationPlan(key)
 	os.Rename(planfile, finalplan)
 	common.Log("%sInstallation plan is: %v%s", pretty.Yellow, finalplan, pretty.Reset)
 	common.Debug("===  new live  ---  finalize phase ===")
@@ -301,11 +301,11 @@ func temporaryConfig(condaYaml, requirementsText string, save bool, filenames ..
 	if err != nil {
 		return "", "", nil, err
 	}
-	common.Log("FINAL union conda environment descriptior:\n---\n%v---", yaml)
 	hash := shortDigest(yaml)
 	if !save {
 		return hash, yaml, right, nil
 	}
+	common.Log("FINAL union conda environment descriptior:\n---\n%v---", yaml)
 	err = right.SaveAsRequirements(requirementsText)
 	if err != nil {
 		return "", "", nil, err
@@ -451,6 +451,18 @@ func NewEnvironment(force bool, configurations ...string) (string, error) {
 	failures += 1
 	xviper.Set("stats.env.failures", failures)
 	return "", errors.New("Could not create environment.")
+}
+
+func FindEnvironment(prefix string) []string {
+	prefix = strings.ToLower(prefix)
+	livelist := LiveList()
+	result := make([]string, 0, len(livelist))
+	for _, entry := range livelist {
+		if strings.HasPrefix(entry, prefix) {
+			result = append(result, entry)
+		}
+	}
+	return result
 }
 
 func RemoveEnvironment(label string) error {

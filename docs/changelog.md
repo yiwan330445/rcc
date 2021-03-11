@@ -1,5 +1,12 @@
 # rcc change log
 
+## v9.7.2 (date: 11.3.2021)
+
+- adding visibility of installation plans in environment listing
+- added --json support to environment listing including installation plan file
+- added command `rcc env plan` to show installation plans for environment
+- installation plan is now also part of robot diagnostics, if available
+
 ## v9.7.1 (date: 10.3.2021)
 
 - fixes/improvements to activation and installation plan

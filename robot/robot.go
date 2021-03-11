@@ -25,6 +25,7 @@ type Robot interface {
 	TaskByName(string) Task
 	UsesConda() bool
 	CondaConfigFile() string
+	CondaHash() string
 	RootDirectory() string
 	Validate() (bool, error)
 	Diagnostics(*common.DiagnosticStatus)
@@ -164,6 +165,11 @@ func (it *robot) Diagnostics(target *common.DiagnosticStatus) {
 	}
 	target.Details["robot-use-conda"] = fmt.Sprintf("%v", it.UsesConda())
 	target.Details["robot-conda-file"] = it.CondaConfigFile()
+	target.Details["robot-conda-hash"] = it.CondaHash()
+	plan, ok := conda.InstallationPlan(it.CondaHash())
+	if ok {
+		target.Details["robot-conda-plan"] = plan
+	}
 	target.Details["robot-root-directory"] = it.RootDirectory()
 	target.Details["robot-working-directory"] = it.WorkingDirectory()
 	target.Details["robot-artifact-directory"] = it.ArtifactDirectory()
@@ -260,6 +266,14 @@ func (it *robot) UsesConda() bool {
 
 func (it *robot) CondaConfigFile() string {
 	return filepath.Join(it.Root, it.Conda)
+}
+
+func (it *robot) CondaHash() string {
+	result, err := conda.CalculateComboHash(filepath.Join(it.Root, it.Conda))
+	if err != nil {
+		return ""
+	}
+	return result
 }
 
 func (it *robot) WorkingDirectory() string {

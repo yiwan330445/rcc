@@ -107,9 +107,14 @@ Using and running template example with shell file
   Use STDERR
   Must Have   robotframework=3.1 vs. robotframework=3.2
 
-  Goal        Merge two different conda.yaml files with conflict fails
+  Goal        Merge two different conda.yaml files without conflict passes
   Step        build/rcc env new --controller citests conda/testdata/other.yaml conda/testdata/third.yaml --silent
   Must Have   786f01e87dc8d6e6
+
+  Goal        Can list environments as JSON
+  Step        build/rcc env list --controller citests --json
+  Must Have   786f01e87dc8d6e6
+  Must Be Json Response
 
   Goal        See variables from specific environment without robot.yaml knowledge
   Step        build/rcc env variables --controller citests conda/testdata/conda.yaml

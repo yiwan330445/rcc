@@ -21,7 +21,7 @@ var diagnosticsCmd = &cobra.Command{
 		if common.DebugFlag {
 			defer common.Stopwatch("Diagnostic run lasted").Report()
 		}
-		err := operations.PrintDiagnostics(fileOption, robotOption, jsonFlag)
+		_, err := operations.ProduceDiagnostics(fileOption, robotOption, jsonFlag)
 		if err != nil {
 			pretty.Exit(1, "Error: %v", err)
 		}

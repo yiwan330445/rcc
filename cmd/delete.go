@@ -14,11 +14,11 @@ var deleteCmd = &cobra.Command{
 	Long: `Delete the given virtual environment from existence.
 After deletion, it will not be available anymore.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		for _, label := range args {
-			common.Log("Removing %v", label)
-			err := conda.RemoveEnvironment(label)
-			if err != nil {
-				pretty.Exit(1, "Error: %v", err)
+		for _, prefix := range args {
+			for _, label := range conda.FindEnvironment(prefix) {
+				common.Log("Removing %v", label)
+				err := conda.RemoveEnvironment(label)
+				pretty.Guard(err == nil, 1, "Error: %v", err)
 			}
 		}
 	},

@@ -219,10 +219,10 @@ func fileIt(filename string) (io.WriteCloser, error) {
 	return file, nil
 }
 
-func PrintDiagnostics(filename, robotfile string, json bool) error {
+func ProduceDiagnostics(filename, robotfile string, json bool) (*common.DiagnosticStatus, error) {
 	file, err := fileIt(filename)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	defer file.Close()
 	result := RunDiagnostics()
@@ -234,7 +234,7 @@ func PrintDiagnostics(filename, robotfile string, json bool) error {
 	} else {
 		humaneDiagnostics(file, result)
 	}
-	return nil
+	return result, nil
 }
 
 type Unmarshaler func([]byte, interface{}) error
