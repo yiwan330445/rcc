@@ -305,7 +305,7 @@ func temporaryConfig(condaYaml, requirementsText string, save bool, filenames ..
 	if !save {
 		return hash, yaml, right, nil
 	}
-	common.Log("FINAL union conda environment descriptior:\n---\n%v---", yaml)
+	common.Log("FINAL union conda environment descriptor:\n---\n%v---", yaml)
 	err = right.SaveAsRequirements(requirementsText)
 	if err != nil {
 		return "", "", nil, err
