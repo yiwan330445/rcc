@@ -1,5 +1,14 @@
 # rcc change log
 
+## v9.7.3 (date: 16.3.2021)
+
+- upgrading micromamba dependency to 0.8.2 version
+- added .robot, .csv, .yaml, .yml, and .json in non-executable fileset
+- also added "dot" files as non-executable
+- added timestamp update to copyfile functionality
+- added toplevel --tag option to allow semantic tagging for client
+  applications to indicate meaning of rcc execution call
+
 ## v9.7.2 (date: 11.3.2021)
 
 - adding visibility of installation plans in environment listing

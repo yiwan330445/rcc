@@ -29,7 +29,7 @@ const (
 )
 
 func MicromambaLink() string {
-	return "https://downloads.robocorp.com/micromamba/v0.8.0/windows64/micromamba.exe"
+	return "https://downloads.robocorp.com/micromamba/v0.8.2/windows64/micromamba.exe"
 }
 
 var (

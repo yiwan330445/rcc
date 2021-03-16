@@ -41,7 +41,13 @@ func RestoreFile(source, target string, overwrite bool) error {
 }
 
 func CopyFile(source, target string, overwrite bool) error {
-	return copyFile(source, target, overwrite, io.Copy)
+	mark, err := Modtime(source)
+	if err != nil {
+		return err
+	}
+	err = copyFile(source, target, overwrite, io.Copy)
+	TouchWhen(target, mark)
+	return err
 }
 
 func copyFile(source, target string, overwrite bool, copier copyfunc) error {

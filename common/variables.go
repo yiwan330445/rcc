@@ -18,6 +18,7 @@ var (
 	ControllerType  string
 	LeaseContract   string
 	EnvironmentHash string
+	SemanticTag     string
 	When            int64
 	Clock           *stopwatch
 )

@@ -21,6 +21,11 @@ func init() {
 	nonExecutableExtensions[".txt"] = true
 	nonExecutableExtensions[".htm"] = true
 	nonExecutableExtensions[".html"] = true
+	nonExecutableExtensions[".csv"] = true
+	nonExecutableExtensions[".yml"] = true
+	nonExecutableExtensions[".yaml"] = true
+	nonExecutableExtensions[".json"] = true
+	nonExecutableExtensions[".robot"] = true
 }
 
 func ToUnix(content []byte) []byte {
@@ -43,7 +48,7 @@ func fixShellFile(fullpath string) {
 func makeExecutable(fullpath string, file os.FileInfo) {
 	extension := strings.ToLower(filepath.Ext(file.Name()))
 	ignore, ok := nonExecutableExtensions[extension]
-	if ok && ignore || file.Mode() == 0o755 {
+	if ok && ignore || file.Mode() == 0o755 || strings.HasPrefix(file.Name(), ".") {
 		return
 	}
 	os.Chmod(fullpath, 0o755)
