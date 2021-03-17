@@ -1,5 +1,10 @@
 # rcc change log
 
+## v9.7.4 (date: 17.3.2021)
+
+- typo fix pull request from jaukia
+- added micromamba --no-rc flag
+
 ## v9.7.3 (date: 16.3.2021)
 
 - upgrading micromamba dependency to 0.8.2 version
