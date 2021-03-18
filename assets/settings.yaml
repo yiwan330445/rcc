@@ -1,0 +1,39 @@
+endpoints:
+  cloud-api: https://api.eu1.robocorp.com
+  cloud-linking: https://id.robocorp.com
+  pypi: https://pypi.org/simple/
+  conda: https://repo.anaconda.org
+  downloads: https://downloads.robocorp.com
+  docs: https://robocorp.com/docs/
+  telemetry: https://telemetry.robocorp.com
+  issues: https://telemetry.robocorp.com
+  portal: https://robocorp.com/portal/
+  robot-pull: https://github.com
+
+proxies:
+  http:
+  https:
+
+autoupdates:
+  assistant: https://downloads.robocorp.com/assistant/releases
+  workforce-agent: https://downloads.robocorp.com/agent/releases
+  lab: https://downloads.code.robocorp.com/lab/installer
+
+certificates:
+  ignore-ssl-verification: false
+  root-location:
+
+logs:
+  level: debug
+  root-location: "%localappdata%\\robocorp\\logs"
+
+business-data:
+  root-location: "%HOMEDRIVE%%HOMEPATH%\\Documents"
+
+branding:
+  logo: https://downloads.robocorp.com/company/press-kit/logos/robocorp-logo-black.svg
+  theme-color: FF0000
+
+meta:
+  source: builtin
+  version: 2021.03

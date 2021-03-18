@@ -195,6 +195,18 @@ func (it *zipper) Add(fullpath, relativepath string, details os.FileInfo) {
 	}
 }
 
+func (it *zipper) AddBlob(relativepath string, blob []byte) {
+	target, err := it.writer.Create(relativepath)
+	if err != nil {
+		it.Note(err)
+		return
+	}
+	_, err = target.Write(blob)
+	if err != nil {
+		it.Note(err)
+	}
+}
+
 func (it *zipper) Close() {
 	err := it.writer.Close()
 	if err != nil {

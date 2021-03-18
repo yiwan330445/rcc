@@ -1,5 +1,12 @@
 # rcc change log
 
+## v9.8.0 (date: 18.3.2021)
+
+- ALPHA level pre-release with settings.yaml (do not use, unless you know
+  what you are doing)
+- started to moved some of hardcoded things into settings.yaml (not used yet)
+- minor assistant upload fix, where one error case was not marked as error
+
 ## v9.7.4 (date: 17.3.2021)
 
 - typo fix pull request from jaukia

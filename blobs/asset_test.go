@@ -14,6 +14,7 @@ func TestCanSeeBaseZipAsset(t *testing.T) {
 	must_be.Panic(func() { blobs.MustAsset("assets/missing.zip") })
 	wont_be.Panic(func() { blobs.MustAsset("assets/standard.zip") })
 	wont_be.Panic(func() { blobs.MustAsset("assets/python.zip") })
+	wont_be.Panic(func() { blobs.MustAsset("assets/settings.yaml") })
 
 	_, err := blobs.Asset("assets/missing.zip")
 	wont_be.Nil(err)

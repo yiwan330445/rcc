@@ -44,6 +44,17 @@ func createIssueZip(attachmentsFiles []string) (string, error) {
 		niceName := fmt.Sprintf("%x_%s", index+1, filepath.Base(attachment))
 		zipper.Add(attachment, niceName, nil)
 	}
+	// getting settings.yaml is optional, it should not break issue reporting
+	config, err := SummonSettings()
+	if err != nil {
+		return zipfile, nil
+	}
+	blob, err := config.AsYaml()
+	if err != nil {
+		return zipfile, nil
+	}
+	niceName := fmt.Sprintf("%x_settings.yaml", len(attachmentsFiles)+1)
+	zipper.AddBlob(niceName, blob)
 	return zipfile, nil
 }
 

@@ -30,7 +30,7 @@ task :assets do
     puts "Directory #{directory} => #{assetname}"
     sh "cd #{directory} && zip -ryqD9 #{assetname} ."
   end
-  sh "$HOME/go/bin/go-bindata -o blobs/assets.go -pkg blobs assets/*.zip assets/man/* docs/changelog.md"
+  sh "$HOME/go/bin/go-bindata -o blobs/assets.go -pkg blobs assets/*.yaml assets/*.zip assets/man/* docs/changelog.md"
 end
 
 task :support do

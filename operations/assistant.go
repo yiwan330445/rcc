@@ -127,6 +127,7 @@ func (it *ArtifactPublisher) Publish(fullpath, relativepath string, details os.F
 		return //err
 	}
 	if response.Status < 200 || 299 < response.Status {
+		it.ErrorCount += 1
 		common.Log("ERR: status code %v", response.Status)
 		return //err
 	}
