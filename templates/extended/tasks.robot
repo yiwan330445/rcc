@@ -1,7 +1,7 @@
 *** Settings ***
 Documentation   Template robot main suite.
 Resource        keywords.robot
-Library         Library.py
+Library         MyLibrary
 Variables       variables.py
 
 
