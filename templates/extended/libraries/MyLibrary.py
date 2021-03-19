@@ -1,7 +1,7 @@
 from robot.api import logger
 
 
-class Library:
+class MyLibrary:
     """Give this library a proper name and document it."""
 
     def example_python_keyword(self):
