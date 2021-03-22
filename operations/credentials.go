@@ -216,7 +216,7 @@ func loadAccount(label string) *account {
 func createEphemeralAccount(parts []string) *account {
 	cloud.BackgroundMetric(common.ControllerIdentity(), "rcc.account.ephemeral", common.Version)
 	common.NoCache = true
-	endpoint := common.DefaultEndpoint
+	endpoint := common.Settings.DefaultEndpoint()
 	if len(parts[3]) > 0 {
 		endpoint = parts[3]
 	}

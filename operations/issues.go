@@ -16,8 +16,7 @@ import (
 )
 
 const (
-	issueHost = `https://telemetry.robocorp.com`
-	issueUrl  = `/diagnostics-v1/issue`
+	issueUrl = `/diagnostics-v1/issue`
 )
 
 func loadToken(reportFile string) (Token, error) {
@@ -76,6 +75,10 @@ func virtualName(filename string) (string, error) {
 }
 
 func ReportIssue(email, robotFile, reportFile string, attachmentsFiles []string, dryrun bool) error {
+	issueHost := common.Settings.IssuesURL()
+	if len(issueHost) == 0 {
+		return nil
+	}
 	cloud.BackgroundMetric(common.ControllerIdentity(), "rcc.submit.issue", common.Version)
 	token, err := loadToken(reportFile)
 	if err != nil {

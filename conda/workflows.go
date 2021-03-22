@@ -186,16 +186,14 @@ func newLiveInternal(yaml, condaYaml, requirementsText, key string, force, fresh
 	if force {
 		ttl = "0"
 	}
-	command := []string{BinMicromamba(), "create", "--always-copy", "--no-rc", "--safety-checks", "enabled", "--extra-safety-checks", "fail", "--retry-with-clean-cache", "--strict-channel-priority", "--repodata-ttl", ttl, "-q", "-y", "-f", condaYaml, "-p", targetFolder}
-	if true || common.DebugFlag {
-		command = []string{BinMicromamba(), "create", "--always-copy", "--no-rc", "--safety-checks", "enabled", "--extra-safety-checks", "fail", "--retry-with-clean-cache", "--strict-channel-priority", "--repodata-ttl", ttl, "-y", "-f", condaYaml, "-p", targetFolder}
-	}
+	mambaCommand := common.NewCommander(BinMicromamba(), "create", "--always-copy", "--no-rc", "--safety-checks", "enabled", "--extra-safety-checks", "fail", "--retry-with-clean-cache", "--strict-channel-priority", "--repodata-ttl", ttl, "-q", "-y", "-f", condaYaml, "-p", targetFolder)
+	//mambaCommand.Option("--channel", common.Settings.CondaURL())
 	observer := make(InstallObserver)
 	common.Debug("===  new live  ---  micromamba create phase ===")
 	common.Timeline("Micromamba start.")
 	fmt.Fprintf(planWriter, "\n---  micromamba plan @%ss  ---\n\n", stopwatch)
 	tee := io.MultiWriter(observer, planWriter)
-	code, err := shell.New(CondaEnvironment(), ".", command...).Tracked(tee, false)
+	code, err := shell.New(CondaEnvironment(), ".", mambaCommand.CLI()...).Tracked(tee, false)
 	if err != nil || code != 0 {
 		common.Timeline("micromamba fail.")
 		common.Fatal("Micromamba", err)
@@ -215,12 +213,10 @@ func newLiveInternal(yaml, condaYaml, requirementsText, key string, force, fresh
 		common.Log("####  Progress: 4/6  [pip install phase]")
 		common.Timeline("4/6 pip install start.")
 		common.Debug("Updating new environment at %v with pip requirements from %v (size: %v)", targetFolder, requirementsText, size)
-		pipCommand := []string{"pip", "install", "--no-color", "--disable-pip-version-check", "--prefer-binary", "--cache-dir", pipCache, "--find-links", wheelCache, "--requirement", requirementsText, "--quiet"}
-		if true || common.DebugFlag {
-			pipCommand = []string{"pip", "install", "--no-color", "--disable-pip-version-check", "--prefer-binary", "--cache-dir", pipCache, "--find-links", wheelCache, "--requirement", requirementsText}
-		}
+		pipCommand := common.NewCommander("pip", "install", "--no-color", "--disable-pip-version-check", "--prefer-binary", "--cache-dir", pipCache, "--find-links", wheelCache, "--requirement", requirementsText, "--quiet")
+		pipCommand.Option("--index-url", common.Settings.PypiURL())
 		common.Debug("===  new live  ---  pip install phase ===")
-		err = LiveExecution(planWriter, targetFolder, pipCommand...)
+		err = LiveExecution(planWriter, targetFolder, pipCommand.CLI()...)
 		if err != nil {
 			common.Timeline("pip fail.")
 			common.Fatal("Pip", err)

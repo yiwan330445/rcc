@@ -36,7 +36,7 @@ func Decoded(content string) ([]byte, error) {
 }
 
 func GenerateEphemeralKey() (*EncryptionV1, error) {
-	key, err := rsa.GenerateKey(rand.Reader, 4096)
+	key, err := rsa.GenerateKey(rand.Reader, 2048)
 	if err != nil {
 		return nil, err
 	}

@@ -52,6 +52,14 @@ func (it *DiagnosticStatus) Diagnose(kind string) Diagnoser {
 	}
 }
 
+func (it *DiagnosticStatus) Counts() (fatal, fail, warning, ok int) {
+	result := make(map[string]int)
+	for _, check := range it.Checks {
+		result[check.Status] += 1
+	}
+	return result[StatusFatal], result[StatusFail], result[StatusWarning], result[StatusOk]
+}
+
 func (it *DiagnosticStatus) AsJson() (string, error) {
 	body, err := json.MarshalIndent(it, "", "  ")
 	if err != nil {

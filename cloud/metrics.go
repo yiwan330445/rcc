@@ -16,10 +16,9 @@ var (
 
 const (
 	trackingUrl = `/metric-v1/%v/%v/%v/%v/%v`
-	metricsHost = `https://telemetry.robocorp.com`
 )
 
-func sendMetric(kind, name, value string) {
+func sendMetric(metricsHost, kind, name, value string) {
 	common.Timeline("%s:%s = %s", kind, name, value)
 	defer func() {
 		status := recover()
@@ -40,10 +39,14 @@ func sendMetric(kind, name, value string) {
 }
 
 func BackgroundMetric(kind, name, value string) {
+	metricsHost := common.Settings.TelemetryURL()
+	if len(metricsHost) == 0 {
+		return
+	}
 	common.Debug("DEBUG: BackgroundMetric kind:%v name:%v value:%v send:%v", kind, name, value, xviper.CanTrack())
 	if xviper.CanTrack() {
 		telemetryBarrier.Add(1)
-		go sendMetric(kind, name, value)
+		go sendMetric(metricsHost, kind, name, value)
 	}
 }
 

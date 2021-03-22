@@ -1,7 +1,6 @@
 package operations
 
 import (
-	"fmt"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -16,6 +15,7 @@ import (
 
 var (
 	cachedSettings *settings.Settings
+	Settings       gateway
 )
 
 func cacheSettings(result *settings.Settings) (*settings.Settings, error) {
@@ -63,27 +63,61 @@ func SummonSettings() (*settings.Settings, error) {
 	return cacheSettings(config.Source(source))
 }
 
-func DefaultEndpoint() (string, error) {
-	config, err := SummonSettings()
-	if err != nil {
-		return "", err
-	}
-	endpoints := config.Endpoints
-	if endpoints == nil {
-		return "", fmt.Errorf("Brokens settings: all endpoints are missing!")
-	}
-	return "", nil
-}
-
 func CriticalEnvironmentSettingsCheck() {
-	return
-	// JIPPO:FIXME:JIPPO -- continue here
 	config, err := SummonSettings()
 	pretty.Guard(err == nil, 80, "Aborting! Could not even get setting, reason: %v", err)
 	result := &common.DiagnosticStatus{
 		Details: make(map[string]string),
 		Checks:  []*common.DiagnosticCheck{},
 	}
-	config.Diagnostics(result)
-	humaneDiagnostics(os.Stderr, result)
+	config.CriticalEnvironmentDiagnostics(result)
+	diagnose := result.Diagnose("Settings")
+	if HasCustomSettings() {
+		diagnose.Ok("Uses custom settings at %q.", SettingsFileLocation())
+	} else {
+		diagnose.Ok("Uses builtin settings.")
+	}
+	fatal, fail, _, _ := result.Counts()
+	if (fatal + fail) > 0 {
+		humaneDiagnostics(os.Stderr, result)
+		pretty.Guard(false, 111, "\nBroken settings.yaml. Cannot continue!")
+	}
+}
+
+type gateway bool
+
+func (it gateway) Endpoints() *settings.Endpoints {
+	config, err := SummonSettings()
+	pretty.Guard(err == nil, 111, "Could not get settings, reason: %v", err)
+	pretty.Guard(config.Endpoints != nil, 111, "settings.yaml: endpoints are missing")
+	return config.Endpoints
+}
+
+func (it gateway) DefaultEndpoint() string {
+	return it.Endpoints().CloudApi
+}
+
+func (it gateway) IssuesURL() string {
+	return it.Endpoints().Issues
+}
+
+func (it gateway) TelemetryURL() string {
+	return it.Endpoints().Telemetry
+}
+
+func (it gateway) PypiURL() string {
+	return it.Endpoints().Pypi
+}
+
+func (it gateway) CondaURL() string {
+	return it.Endpoints().Conda
+}
+
+func (it gateway) DownloadsURL() string {
+	return it.Endpoints().Downloads
+}
+
+func init() {
+	Settings = gateway(true)
+	common.Settings = Settings
 }

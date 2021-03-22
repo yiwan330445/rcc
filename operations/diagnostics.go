@@ -25,7 +25,6 @@ import (
 )
 
 const (
-	canaryHost         = `https://downloads.robocorp.com`
 	canaryUrl          = `/canary.txt`
 	supportLongPathUrl = `https://robocorp.com/docs/troubleshooting/windows-long-path`
 	supportNetworkUrl  = `https://robocorp.com/docs/troubleshooting/firewall-and-proxies`
@@ -155,12 +154,12 @@ func dnsLookupCheck(site string) *common.DiagnosticCheck {
 }
 
 func canaryDownloadCheck() *common.DiagnosticCheck {
-	client, err := cloud.NewClient(canaryHost)
+	client, err := cloud.NewClient(common.Settings.DownloadsURL())
 	if err != nil {
 		return &common.DiagnosticCheck{
 			Type:    "network",
 			Status:  statusFail,
-			Message: fmt.Sprintf("%v: %v", canaryHost, err),
+			Message: fmt.Sprintf("%v: %v", common.Settings.DownloadsURL(), err),
 			Link:    supportNetworkUrl,
 		}
 	}
@@ -177,7 +176,7 @@ func canaryDownloadCheck() *common.DiagnosticCheck {
 	return &common.DiagnosticCheck{
 		Type:    "network",
 		Status:  statusOk,
-		Message: fmt.Sprintf("Canary download successful: %s%s", canaryHost, canaryUrl),
+		Message: fmt.Sprintf("Canary download successful: %s%s", common.Settings.DownloadsURL(), canaryUrl),
 		Link:    supportNetworkUrl,
 	}
 }

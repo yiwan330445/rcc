@@ -45,7 +45,7 @@ var credentialsCmd = &cobra.Command{
 		}
 		endpoint = endpointUrl
 		if len(endpoint) == 0 {
-			endpoint = common.DefaultEndpoint
+			endpoint = common.Settings.DefaultEndpoint()
 		}
 		https, err := cloud.EnsureHttps(endpoint)
 		if err != nil {

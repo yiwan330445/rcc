@@ -1,5 +1,13 @@
 # rcc change log
 
+## v9.8.1 (date: 22.3.2021)
+
+- ALPHA level pre-release (do not use, unless you know what you are doing)
+- now some parts of settings are used from settings.yaml
+- settings.yaml is now critical part of rcc, so diagnostics also contains it
+- also from now, problems in settings.yaml may make rcc to fail
+- changed ephemeral key size to 2048, which should be good enough
+
 ## v9.8.0 (date: 18.3.2021)
 
 - ALPHA level pre-release with settings.yaml (do not use, unless you know

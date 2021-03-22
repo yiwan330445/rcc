@@ -2,9 +2,15 @@ package settings
 
 import (
 	"encoding/json"
+	"net/url"
+	"strings"
 
 	"github.com/robocorp/rcc/common"
 	"gopkg.in/yaml.v1"
+)
+
+const (
+	httpsPrefix = `https://`
 )
 
 type StringMap map[string]string
@@ -52,6 +58,40 @@ func (it *Settings) AsJson() ([]byte, error) {
 	return content, nil
 }
 
+func diagnoseUrl(link, label string, diagnose common.Diagnoser, correct bool) bool {
+	if len(link) == 0 {
+		diagnose.Fatal("", "required %q URL is missing.", label)
+		return false
+	}
+	if !strings.HasPrefix(link, httpsPrefix) {
+		diagnose.Fatal("", "%q URL %q is does not start with %q prefix.", label, link, httpsPrefix)
+		return false
+	}
+	_, err := url.Parse(link)
+	if err != nil {
+		diagnose.Fatal("", "%q URL %q cannot be parsed, reason %v.", label, link, err)
+		return false
+	}
+	return correct
+}
+
+func (it *Settings) CriticalEnvironmentDiagnostics(target *common.DiagnosticStatus) {
+	diagnose := target.Diagnose("settings.yaml")
+	correct := true
+	if it.Endpoints == nil {
+		diagnose.Fatal("", "endpoints section is totally missing")
+		correct = false
+	} else {
+		correct = diagnoseUrl(it.Endpoints.CloudApi, "endpoints/cloud-api", diagnose, correct)
+		correct = diagnoseUrl(it.Endpoints.Conda, "endpoints/conda", diagnose, correct)
+		correct = diagnoseUrl(it.Endpoints.Pypi, "endpoints/pypi", diagnose, correct)
+		correct = diagnoseUrl(it.Endpoints.Downloads, "endpoints/downloads", diagnose, correct)
+	}
+	if correct {
+		diagnose.Ok("Toplevel settings are ok.")
+	}
+}
+
 func (it *Settings) Diagnostics(target *common.DiagnosticStatus) {
 	diagnose := target.Diagnose("Settings")
 	correct := true
@@ -64,6 +104,7 @@ func (it *Settings) Diagnostics(target *common.DiagnosticStatus) {
 		correct = false
 	}
 	if it.Endpoints == nil {
+		diagnose.Warning("", "settings.yaml: endpoints section is totally missing")
 		correct = false
 	}
 	if it.Logs == nil {

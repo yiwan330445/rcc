@@ -21,11 +21,17 @@ var (
 	SemanticTag     string
 	When            int64
 	Clock           *stopwatch
+	Settings        SettingsHold
 )
 
-const (
-	DefaultEndpoint = "https://api.eu1.robocloud.eu/"
-)
+type SettingsHold interface {
+	DefaultEndpoint() string
+	TelemetryURL() string
+	IssuesURL() string
+	PypiURL() string
+	CondaURL() string
+	DownloadsURL() string
+}
 
 func init() {
 	Clock = &stopwatch{"Clock", time.Now()}

@@ -20,7 +20,7 @@ func TestCanGetEphemeralDefaultEndpointAccountByName(t *testing.T) {
 	wont_be.Nil(sut)
 	must_be.Equal("Ephemeral", sut.Account)
 	must_be.Equal("1111", sut.Identifier)
-	must_be.Equal(common.DefaultEndpoint, sut.Endpoint)
+	must_be.Equal(common.Settings.DefaultEndpoint(), sut.Endpoint)
 	must_be.Equal("000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000", sut.Secret)
 	wont_be.True(sut.Default)
 }
