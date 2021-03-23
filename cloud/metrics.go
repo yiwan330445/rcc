@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/robocorp/rcc/common"
+	"github.com/robocorp/rcc/settings"
 	"github.com/robocorp/rcc/xviper"
 )
 
@@ -39,7 +40,7 @@ func sendMetric(metricsHost, kind, name, value string) {
 }
 
 func BackgroundMetric(kind, name, value string) {
-	metricsHost := common.Settings.TelemetryURL()
+	metricsHost := settings.Global.TelemetryURL()
 	if len(metricsHost) == 0 {
 		return
 	}

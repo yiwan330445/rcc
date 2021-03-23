@@ -17,6 +17,7 @@ import (
 	"github.com/robocorp/rcc/common"
 	"github.com/robocorp/rcc/pathlib"
 	"github.com/robocorp/rcc/pretty"
+	"github.com/robocorp/rcc/settings"
 	"github.com/robocorp/rcc/shell"
 	"github.com/robocorp/rcc/xviper"
 )
@@ -26,7 +27,7 @@ func Hexdigest(raw []byte) string {
 }
 
 func metafile(folder string) string {
-	return ExpandPath(folder + ".meta")
+	return common.ExpandPath(folder + ".meta")
 }
 
 func metaLoad(location string) (string, error) {
@@ -132,7 +133,7 @@ func (it InstallObserver) HasFailures(targetFolder string) bool {
 	if it["safetyerror"] && it["corrupted"] && len(it) > 2 {
 		cloud.BackgroundMetric(common.ControllerIdentity(), "rcc.env.creation.failure", common.Version)
 		removeClone(targetFolder)
-		location := filepath.Join(RobocorpHome(), "pkgs")
+		location := filepath.Join(common.RobocorpHome(), "pkgs")
 		common.Log("%sWARNING! Conda environment is unstable, see above error.%s", pretty.Red, pretty.Reset)
 		common.Log("%sWARNING! To fix it, try to remove directory: %v%s", pretty.Red, location, pretty.Reset)
 		return true
@@ -187,7 +188,7 @@ func newLiveInternal(yaml, condaYaml, requirementsText, key string, force, fresh
 		ttl = "0"
 	}
 	mambaCommand := common.NewCommander(BinMicromamba(), "create", "--always-copy", "--no-rc", "--safety-checks", "enabled", "--extra-safety-checks", "fail", "--retry-with-clean-cache", "--strict-channel-priority", "--repodata-ttl", ttl, "-q", "-y", "-f", condaYaml, "-p", targetFolder)
-	//mambaCommand.Option("--channel", common.Settings.CondaURL())
+	//mambaCommand.Option("--channel", settings.Global.CondaURL())
 	observer := make(InstallObserver)
 	common.Debug("===  new live  ---  micromamba create phase ===")
 	common.Timeline("Micromamba start.")
@@ -204,7 +205,7 @@ func newLiveInternal(yaml, condaYaml, requirementsText, key string, force, fresh
 		return false, true
 	}
 	fmt.Fprintf(planWriter, "\n---  pip plan @%ss  ---\n\n", stopwatch)
-	pipCache, wheelCache := PipCache(), WheelCache()
+	pipCache, wheelCache := common.PipCache(), common.WheelCache()
 	size, ok := pathlib.Size(requirementsText)
 	if !ok || size == 0 {
 		common.Log("####  Progress: 4/6  [pip install phase skipped -- no pip dependencies]")
@@ -214,7 +215,7 @@ func newLiveInternal(yaml, condaYaml, requirementsText, key string, force, fresh
 		common.Timeline("4/6 pip install start.")
 		common.Debug("Updating new environment at %v with pip requirements from %v (size: %v)", targetFolder, requirementsText, size)
 		pipCommand := common.NewCommander("pip", "install", "--no-color", "--disable-pip-version-check", "--prefer-binary", "--cache-dir", pipCache, "--find-links", wheelCache, "--requirement", requirementsText, "--quiet")
-		pipCommand.Option("--index-url", common.Settings.PypiURL())
+		pipCommand.Option("--index-url", settings.Global.PypiURL())
 		common.Debug("===  new live  ---  pip install phase ===")
 		err = LiveExecution(planWriter, targetFolder, pipCommand.CLI()...)
 		if err != nil {

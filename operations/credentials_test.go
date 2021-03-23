@@ -6,9 +6,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/robocorp/rcc/common"
 	"github.com/robocorp/rcc/hamlet"
 	"github.com/robocorp/rcc/operations"
+	"github.com/robocorp/rcc/settings"
 	"github.com/robocorp/rcc/xviper"
 )
 
@@ -20,7 +20,7 @@ func TestCanGetEphemeralDefaultEndpointAccountByName(t *testing.T) {
 	wont_be.Nil(sut)
 	must_be.Equal("Ephemeral", sut.Account)
 	must_be.Equal("1111", sut.Identifier)
-	must_be.Equal(common.Settings.DefaultEndpoint(), sut.Endpoint)
+	must_be.Equal(settings.Global.DefaultEndpoint(), sut.Endpoint)
 	must_be.Equal("000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000", sut.Secret)
 	wont_be.True(sut.Default)
 }

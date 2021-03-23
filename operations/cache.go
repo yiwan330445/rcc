@@ -5,7 +5,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/robocorp/rcc/conda"
+	"github.com/robocorp/rcc/common"
 	"github.com/robocorp/rcc/pathlib"
 	"github.com/robocorp/rcc/xviper"
 
@@ -53,7 +53,7 @@ func cacheLocation() string {
 	if len(reference) > 0 {
 		return filepath.Join(filepath.Dir(reference), "rcccache.yaml")
 	} else {
-		return filepath.Join(conda.RobocorpHome(), "rcccache.yaml")
+		return filepath.Join(common.RobocorpHome(), "rcccache.yaml")
 	}
 }
 

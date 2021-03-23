@@ -12,6 +12,7 @@ import (
 	"github.com/robocorp/rcc/common"
 	"github.com/robocorp/rcc/conda"
 	"github.com/robocorp/rcc/pathlib"
+	"github.com/robocorp/rcc/settings"
 	"github.com/robocorp/rcc/xviper"
 )
 
@@ -44,7 +45,7 @@ func createIssueZip(attachmentsFiles []string) (string, error) {
 		zipper.Add(attachment, niceName, nil)
 	}
 	// getting settings.yaml is optional, it should not break issue reporting
-	config, err := SummonSettings()
+	config, err := settings.SummonSettings()
 	if err != nil {
 		return zipfile, nil
 	}
@@ -75,7 +76,7 @@ func virtualName(filename string) (string, error) {
 }
 
 func ReportIssue(email, robotFile, reportFile string, attachmentsFiles []string, dryrun bool) error {
-	issueHost := common.Settings.IssuesURL()
+	issueHost := settings.Global.IssuesURL()
 	if len(issueHost) == 0 {
 		return nil
 	}

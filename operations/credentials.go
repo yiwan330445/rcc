@@ -10,6 +10,7 @@ import (
 
 	"github.com/robocorp/rcc/cloud"
 	"github.com/robocorp/rcc/common"
+	"github.com/robocorp/rcc/settings"
 	"github.com/robocorp/rcc/xviper"
 )
 
@@ -216,7 +217,7 @@ func loadAccount(label string) *account {
 func createEphemeralAccount(parts []string) *account {
 	cloud.BackgroundMetric(common.ControllerIdentity(), "rcc.account.ephemeral", common.Version)
 	common.NoCache = true
-	endpoint := common.Settings.DefaultEndpoint()
+	endpoint := settings.Global.DefaultEndpoint()
 	if len(parts[3]) > 0 {
 		endpoint = parts[3]
 	}

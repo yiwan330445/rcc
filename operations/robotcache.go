@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"github.com/robocorp/rcc/common"
-	"github.com/robocorp/rcc/conda"
 	"github.com/robocorp/rcc/pathlib"
 )
 
@@ -50,7 +49,7 @@ func CacheRobot(filename string) error {
 }
 
 func cacheRobotFilename(digest string) string {
-	return filepath.Join(conda.RobotCache(), digest+".zip")
+	return filepath.Join(common.RobotCache(), digest+".zip")
 }
 
 func LookupRobot(digest string) (string, bool) {
@@ -73,7 +72,7 @@ func CleanupOldestRobot() {
 func OldestRobot() (string, time.Time) {
 	oldest, stamp := "", time.Now()
 	deadline := time.Now().Add(-35 * 24 * time.Hour)
-	pathlib.Walk(conda.RobotCache(), pathlib.IgnoreNewer(deadline).Ignore, func(full, relative string, details os.FileInfo) {
+	pathlib.Walk(common.RobotCache(), pathlib.IgnoreNewer(deadline).Ignore, func(full, relative string, details os.FileInfo) {
 		if zipPattern.MatchString(details.Name()) && details.ModTime().Before(stamp) {
 			oldest, stamp = full, details.ModTime()
 		}

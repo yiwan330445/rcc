@@ -2,8 +2,14 @@ package common
 
 import (
 	"fmt"
+	"os"
+	"path/filepath"
 	"strings"
 	"time"
+)
+
+const (
+	ROBOCORP_HOME_VARIABLE = `ROBOCORP_HOME`
 )
 
 var (
@@ -21,21 +27,48 @@ var (
 	SemanticTag     string
 	When            int64
 	Clock           *stopwatch
-	Settings        SettingsHold
 )
-
-type SettingsHold interface {
-	DefaultEndpoint() string
-	TelemetryURL() string
-	IssuesURL() string
-	PypiURL() string
-	CondaURL() string
-	DownloadsURL() string
-}
 
 func init() {
 	Clock = &stopwatch{"Clock", time.Now()}
 	When = Clock.started.Unix()
+}
+
+func RobocorpHome() string {
+	home := os.Getenv(ROBOCORP_HOME_VARIABLE)
+	if len(home) > 0 {
+		return ExpandPath(home)
+	}
+	return ExpandPath(defaultRobocorpLocation)
+}
+
+func ensureDirectory(name string) string {
+	os.MkdirAll(name, 0o750)
+	return name
+}
+
+func BinLocation() string {
+	return ensureDirectory(filepath.Join(RobocorpHome(), "bin"))
+}
+
+func LiveLocation() string {
+	return ensureDirectory(filepath.Join(RobocorpHome(), "live"))
+}
+
+func TemplateLocation() string {
+	return ensureDirectory(filepath.Join(RobocorpHome(), "base"))
+}
+
+func PipCache() string {
+	return ensureDirectory(filepath.Join(RobocorpHome(), "pipcache"))
+}
+
+func WheelCache() string {
+	return ensureDirectory(filepath.Join(RobocorpHome(), "wheels"))
+}
+
+func RobotCache() string {
+	return ensureDirectory(filepath.Join(RobocorpHome(), "robots"))
 }
 
 func UnifyVerbosityFlags() {

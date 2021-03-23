@@ -1,24 +1,24 @@
-package operations
+package settings
 
 import (
+	"fmt"
+	"io"
 	"io/ioutil"
 	"os"
 	"path/filepath"
 
 	"github.com/robocorp/rcc/blobs"
 	"github.com/robocorp/rcc/common"
-	"github.com/robocorp/rcc/conda"
 	"github.com/robocorp/rcc/pathlib"
 	"github.com/robocorp/rcc/pretty"
-	"github.com/robocorp/rcc/settings"
 )
 
 var (
-	cachedSettings *settings.Settings
-	Settings       gateway
+	cachedSettings *Settings
+	Global         gateway
 )
 
-func cacheSettings(result *settings.Settings) (*settings.Settings, error) {
+func cacheSettings(result *Settings) (*Settings, error) {
 	if result != nil {
 		cachedSettings = result
 	}
@@ -26,7 +26,7 @@ func cacheSettings(result *settings.Settings) (*settings.Settings, error) {
 }
 
 func SettingsFileLocation() string {
-	return filepath.Join(conda.RobocorpHome(), "settings.yaml")
+	return filepath.Join(common.RobocorpHome(), "settings.yaml")
 }
 
 func HasCustomSettings() bool {
@@ -48,7 +48,7 @@ func rawSettings() (content []byte, location string, err error) {
 	}
 }
 
-func SummonSettings() (*settings.Settings, error) {
+func SummonSettings() (*Settings, error) {
 	if cachedSettings != nil {
 		return cachedSettings, nil
 	}
@@ -56,11 +56,18 @@ func SummonSettings() (*settings.Settings, error) {
 	if err != nil {
 		return nil, err
 	}
-	config, err := settings.FromBytes(content)
+	config, err := FromBytes(content)
 	if err != nil {
 		return nil, err
 	}
 	return cacheSettings(config.Source(source))
+}
+
+func showDiagnosticsChecks(sink io.Writer, details *common.DiagnosticStatus) {
+	fmt.Fprintln(sink, "Checks:")
+	for _, check := range details.Checks {
+		fmt.Fprintf(sink, " - %-8s %-8s %s\n", check.Type, check.Status, check.Message)
+	}
 }
 
 func CriticalEnvironmentSettingsCheck() {
@@ -79,14 +86,14 @@ func CriticalEnvironmentSettingsCheck() {
 	}
 	fatal, fail, _, _ := result.Counts()
 	if (fatal + fail) > 0 {
-		humaneDiagnostics(os.Stderr, result)
+		showDiagnosticsChecks(os.Stderr, result)
 		pretty.Guard(false, 111, "\nBroken settings.yaml. Cannot continue!")
 	}
 }
 
 type gateway bool
 
-func (it gateway) Endpoints() *settings.Endpoints {
+func (it gateway) Endpoints() *Endpoints {
 	config, err := SummonSettings()
 	pretty.Guard(err == nil, 111, "Could not get settings, reason: %v", err)
 	pretty.Guard(config.Endpoints != nil, 111, "settings.yaml: endpoints are missing")
@@ -117,7 +124,10 @@ func (it gateway) DownloadsURL() string {
 	return it.Endpoints().Downloads
 }
 
+func (it gateway) Hostnames() []string {
+	return it.Endpoints().Hosts()
+}
+
 func init() {
-	Settings = gateway(true)
-	common.Settings = Settings
+	Global = gateway(true)
 }

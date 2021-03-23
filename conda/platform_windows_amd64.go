@@ -4,24 +4,23 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"regexp"
 
 	"golang.org/x/sys/windows/registry"
 
 	"github.com/robocorp/rcc/common"
 	"github.com/robocorp/rcc/pretty"
+	"github.com/robocorp/rcc/settings"
 	"github.com/robocorp/rcc/shell"
 )
 
 const (
-	mingwSuffix             = "\\mingw-w64"
-	Newline                 = "\r\n"
-	defaultRobocorpLocation = "%LOCALAPPDATA%\\robocorp"
-	librarySuffix           = "\\Library"
-	scriptSuffix            = "\\Scripts"
-	usrSuffix               = "\\usr"
-	binSuffix               = "\\bin"
-	activateScript          = "@echo off\n" +
+	mingwSuffix    = "\\mingw-w64"
+	Newline        = "\r\n"
+	librarySuffix  = "\\Library"
+	scriptSuffix   = "\\Scripts"
+	usrSuffix      = "\\usr"
+	binSuffix      = "\\bin"
+	activateScript = "@echo off\n" +
 		"set MAMBA_ROOT_PREFIX=\"{{.Robocorphome}}\"\n" +
 		"for /f \"tokens=* usebackq\" %%a in ( `call \"{{.Robocorphome}}\\bin\\micromamba.exe\" shell -s cmd.exe activate -p \"{{.Live}}\"` ) do ( call \"%%a\" )\n" +
 		"call \"{{.Rcc}}\" internal env -l after\n"
@@ -29,36 +28,13 @@ const (
 )
 
 func MicromambaLink() string {
-	return "https://downloads.robocorp.com/micromamba/v0.8.2/windows64/micromamba.exe"
+	return settings.Global.DownloadsURL() + "/micromamba/v0.8.2/windows64/micromamba.exe"
 }
 
 var (
-	Shell           = []string{"cmd.exe", "/K"}
-	variablePattern = regexp.MustCompile("%[a-zA-Z]+%")
-	FileExtensions  = []string{".exe", ".com", ".bat", ".cmd", ""}
+	Shell          = []string{"cmd.exe", "/K"}
+	FileExtensions = []string{".exe", ".com", ".bat", ".cmd", ""}
 )
-
-func fromEnvironment(form string) string {
-	replacement, ok := os.LookupEnv(form[1 : len(form)-1])
-	if ok {
-		return replacement
-	}
-	replacement, ok = os.LookupEnv(form)
-	if ok {
-		return replacement
-	}
-	return form
-}
-
-func ExpandPath(entry string) string {
-	intermediate := os.ExpandEnv(entry)
-	intermediate = variablePattern.ReplaceAllStringFunc(intermediate, fromEnvironment)
-	result, err := filepath.Abs(intermediate)
-	if err != nil {
-		return intermediate
-	}
-	return result
-}
 
 func ensureHardlinkEnvironmment() (string, error) {
 	return "", fmt.Errorf("Not implemented yet!")
@@ -66,7 +42,7 @@ func ensureHardlinkEnvironmment() (string, error) {
 
 func CondaEnvironment() []string {
 	env := os.Environ()
-	env = append(env, fmt.Sprintf("MAMBA_ROOT_PREFIX=%s", RobocorpHome()))
+	env = append(env, fmt.Sprintf("MAMBA_ROOT_PREFIX=%s", common.RobocorpHome()))
 	tempFolder := RobocorpTemp()
 	env = append(env, fmt.Sprintf("TEMP=%s", tempFolder))
 	env = append(env, fmt.Sprintf("TMP=%s", tempFolder))
@@ -74,7 +50,7 @@ func CondaEnvironment() []string {
 }
 
 func BinMicromamba() string {
-	return ExpandPath(filepath.Join(BinLocation(), "micromamba.exe"))
+	return common.ExpandPath(filepath.Join(common.BinLocation(), "micromamba.exe"))
 }
 
 func CondaPaths(prefix string) []string {
@@ -88,16 +64,12 @@ func CondaPaths(prefix string) []string {
 	}
 }
 
-func IsPosix() bool {
-	return false
-}
-
 func IsWindows() bool {
 	return true
 }
 
 func HasLongPathSupport() bool {
-	baseline := []string{RobocorpHome(), "stump"}
+	baseline := []string{common.RobocorpHome(), "stump"}
 	stumpath := filepath.Join(baseline...)
 	defer os.RemoveAll(stumpath)
 

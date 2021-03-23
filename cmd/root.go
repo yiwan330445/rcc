@@ -95,7 +95,7 @@ func initConfig() {
 	if cfgFile != "" {
 		xviper.SetConfigFile(cfgFile)
 	} else {
-		xviper.SetConfigFile(filepath.Join(conda.RobocorpHome(), "rcc.yaml"))
+		xviper.SetConfigFile(filepath.Join(common.RobocorpHome(), "rcc.yaml"))
 	}
 
 	common.UnifyVerbosityFlags()

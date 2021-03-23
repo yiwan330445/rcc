@@ -20,6 +20,7 @@ import (
 	"github.com/robocorp/rcc/pathlib"
 	"github.com/robocorp/rcc/pretty"
 	"github.com/robocorp/rcc/robot"
+	"github.com/robocorp/rcc/settings"
 	"github.com/robocorp/rcc/xviper"
 	"gopkg.in/yaml.v1"
 )
@@ -33,17 +34,6 @@ const (
 	statusWarning      = `warning`
 	statusFail         = `fail`
 	statusFatal        = `fatal`
-)
-
-var (
-	checkedHosts = []string{
-		`api.eu1.robocloud.eu`,
-		`downloads.robocorp.com`,
-		`pypi.org`,
-		`conda.anaconda.org`,
-		`github.com`,
-		`files.pythonhosted.org`,
-	}
 )
 
 type stringerr func() (string, error)
@@ -63,7 +53,7 @@ func RunDiagnostics() *common.DiagnosticStatus {
 	result.Details["rcc"] = common.Version
 	result.Details["stats"] = rccStatusLine()
 	result.Details["micromamba"] = conda.MicromambaVersion()
-	result.Details["ROBOCORP_HOME"] = conda.RobocorpHome()
+	result.Details["ROBOCORP_HOME"] = common.RobocorpHome()
 	result.Details["user-cache-dir"] = justText(os.UserCacheDir)
 	result.Details["user-config-dir"] = justText(os.UserConfigDir)
 	result.Details["user-home-dir"] = justText(os.UserHomeDir)
@@ -83,7 +73,7 @@ func RunDiagnostics() *common.DiagnosticStatus {
 	// checks
 	result.Checks = append(result.Checks, robocorpHomeCheck())
 	result.Checks = append(result.Checks, longPathSupportCheck())
-	for _, host := range checkedHosts {
+	for _, host := range settings.Global.Hostnames() {
 		result.Checks = append(result.Checks, dnsLookupCheck(host))
 	}
 	result.Checks = append(result.Checks, canaryDownloadCheck())
@@ -119,18 +109,18 @@ func longPathSupportCheck() *common.DiagnosticCheck {
 }
 
 func robocorpHomeCheck() *common.DiagnosticCheck {
-	if !conda.ValidLocation(conda.RobocorpHome()) {
+	if !conda.ValidLocation(common.RobocorpHome()) {
 		return &common.DiagnosticCheck{
 			Type:    "RPA",
 			Status:  statusFatal,
-			Message: fmt.Sprintf("ROBOCORP_HOME (%s) contains characters that makes RPA fail.", conda.RobocorpHome()),
+			Message: fmt.Sprintf("ROBOCORP_HOME (%s) contains characters that makes RPA fail.", common.RobocorpHome()),
 			Link:    supportGeneralUrl,
 		}
 	}
 	return &common.DiagnosticCheck{
 		Type:    "RPA",
 		Status:  statusOk,
-		Message: fmt.Sprintf("ROBOCORP_HOME (%s) is good enough.", conda.RobocorpHome()),
+		Message: fmt.Sprintf("ROBOCORP_HOME (%s) is good enough.", common.RobocorpHome()),
 		Link:    supportGeneralUrl,
 	}
 }
@@ -141,7 +131,7 @@ func dnsLookupCheck(site string) *common.DiagnosticCheck {
 		return &common.DiagnosticCheck{
 			Type:    "network",
 			Status:  statusFail,
-			Message: fmt.Sprintf("DNS lookup %s failed: %v", site, err),
+			Message: fmt.Sprintf("DNS lookup %q failed: %v", site, err),
 			Link:    supportNetworkUrl,
 		}
 	}
@@ -154,12 +144,12 @@ func dnsLookupCheck(site string) *common.DiagnosticCheck {
 }
 
 func canaryDownloadCheck() *common.DiagnosticCheck {
-	client, err := cloud.NewClient(common.Settings.DownloadsURL())
+	client, err := cloud.NewClient(settings.Global.DownloadsURL())
 	if err != nil {
 		return &common.DiagnosticCheck{
 			Type:    "network",
 			Status:  statusFail,
-			Message: fmt.Sprintf("%v: %v", common.Settings.DownloadsURL(), err),
+			Message: fmt.Sprintf("%v: %v", settings.Global.DownloadsURL(), err),
 			Link:    supportNetworkUrl,
 		}
 	}
@@ -176,7 +166,7 @@ func canaryDownloadCheck() *common.DiagnosticCheck {
 	return &common.DiagnosticCheck{
 		Type:    "network",
 		Status:  statusOk,
-		Message: fmt.Sprintf("Canary download successful: %s%s", common.Settings.DownloadsURL(), canaryUrl),
+		Message: fmt.Sprintf("Canary download successful: %s%s", settings.Global.DownloadsURL(), canaryUrl),
 		Link:    supportNetworkUrl,
 	}
 }

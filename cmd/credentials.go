@@ -7,6 +7,7 @@ import (
 	"github.com/robocorp/rcc/common"
 	"github.com/robocorp/rcc/operations"
 	"github.com/robocorp/rcc/pretty"
+	"github.com/robocorp/rcc/settings"
 
 	"github.com/spf13/cobra"
 )
@@ -45,7 +46,7 @@ var credentialsCmd = &cobra.Command{
 		}
 		endpoint = endpointUrl
 		if len(endpoint) == 0 {
-			endpoint = common.Settings.DefaultEndpoint()
+			endpoint = settings.Global.DefaultEndpoint()
 		}
 		https, err := cloud.EnsureHttps(endpoint)
 		if err != nil {

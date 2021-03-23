@@ -1,5 +1,11 @@
 # rcc change log
 
+## v9.8.2 (date: 23.3.2021)
+
+- ALPHA level pre-release (do not use, unless you know what you are doing)
+- reorganizing some code to allow better use of settings.yaml
+- more values from settings.yaml are now used
+
 ## v9.8.1 (date: 22.3.2021)
 
 - ALPHA level pre-release (do not use, unless you know what you are doing)

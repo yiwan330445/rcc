@@ -3,6 +3,7 @@ package conda_test
 import (
 	"testing"
 
+	"github.com/robocorp/rcc/common"
 	"github.com/robocorp/rcc/conda"
 	"github.com/robocorp/rcc/hamlet"
 )
@@ -13,7 +14,7 @@ func TestExpandingPath(t *testing.T) {
 	}
 	_, wont_be := hamlet.Specifications(t)
 
-	wont_be.Equal("$HOME/bin", conda.ExpandPath("$HOME/bin"))
+	wont_be.Equal("$HOME/bin", common.ExpandPath("$HOME/bin"))
 }
 
 func TestCondaPathSetup(t *testing.T) {
@@ -31,8 +32,7 @@ func TestFlagsAreCorrectlySet(t *testing.T) {
 	if conda.IsWindows() {
 		t.Skip("Not a windows test.")
 	}
-	must_be, wont_be := hamlet.Specifications(t)
+	_, wont_be := hamlet.Specifications(t)
 
 	wont_be.True(conda.IsWindows())
-	must_be.True(conda.IsPosix())
 }

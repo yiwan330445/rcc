@@ -4,13 +4,15 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+
+	"github.com/robocorp/rcc/common"
+	"github.com/robocorp/rcc/settings"
 )
 
 const (
-	Newline                 = "\n"
-	defaultRobocorpLocation = "$HOME/.robocorp"
-	binSuffix               = "/bin"
-	activateScript          = `#!/bin/bash
+	Newline        = "\n"
+	binSuffix      = "/bin"
+	activateScript = `#!/bin/bash
 
 export MAMBA_ROOT_PREFIX={{.Robocorphome}}
 eval "$({{.Micromamba}} shell activate -s bash -p {{.Live}})"
@@ -24,18 +26,9 @@ var (
 	FileExtensions = []string{"", ".sh"}
 )
 
-func ExpandPath(entry string) string {
-	intermediate := os.ExpandEnv(entry)
-	result, err := filepath.Abs(intermediate)
-	if err != nil {
-		return intermediate
-	}
-	return result
-}
-
 func CondaEnvironment() []string {
 	env := os.Environ()
-	env = append(env, fmt.Sprintf("MAMBA_ROOT_PREFIX=%s", RobocorpHome()))
+	env = append(env, fmt.Sprintf("MAMBA_ROOT_PREFIX=%s", common.RobocorpHome()))
 	tempFolder := RobocorpTemp()
 	env = append(env, fmt.Sprintf("TEMP=%s", tempFolder))
 	env = append(env, fmt.Sprintf("TMP=%s", tempFolder))
@@ -43,7 +36,7 @@ func CondaEnvironment() []string {
 }
 
 func BinMicromamba() string {
-	return ExpandPath(filepath.Join(BinLocation(), "micromamba"))
+	return common.ExpandPath(filepath.Join(common.BinLocation(), "micromamba"))
 }
 
 func CondaPaths(prefix string) []string {
@@ -51,11 +44,7 @@ func CondaPaths(prefix string) []string {
 }
 
 func MicromambaLink() string {
-	return "https://downloads.robocorp.com/micromamba/v0.8.2/macos64/micromamba"
-}
-
-func IsPosix() bool {
-	return true
+	return settings.Global.DownloadsURL() + "/micromamba/v0.8.2/macos64/micromamba"
 }
 
 func IsWindows() bool {

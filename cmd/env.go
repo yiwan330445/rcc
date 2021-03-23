@@ -2,7 +2,7 @@ package cmd
 
 import (
 	"github.com/robocorp/rcc/common"
-	"github.com/robocorp/rcc/operations"
+	"github.com/robocorp/rcc/settings"
 	"github.com/spf13/cobra"
 )
 
@@ -13,7 +13,7 @@ var envCmd = &cobra.Command{
 	Long: `This "env" command set is for managing virtual environments,
 used in task context locally.`,
 	PersistentPreRun: func(cmd *cobra.Command, args []string) {
-		operations.CriticalEnvironmentSettingsCheck()
+		settings.CriticalEnvironmentSettingsCheck()
 	},
 }
 

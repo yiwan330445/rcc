@@ -341,7 +341,7 @@ func (it *robot) ExecutionEnvironment(location string, inject []string, full boo
 		"PYTHONSTARTUP=",
 		"PYTHONEXECUTABLE=",
 		"PYTHONNOUSERSITE=1",
-		"ROBOCORP_HOME="+conda.RobocorpHome(),
+		"ROBOCORP_HOME="+common.RobocorpHome(),
 		"RCC_ENVIRONMENT_HASH="+common.EnvironmentHash,
 		"RCC_INSTALLATION_ID="+xviper.TrackingIdentity(),
 		"RCC_TRACKING_ALLOWED="+fmt.Sprintf("%v", xviper.CanTrack()),

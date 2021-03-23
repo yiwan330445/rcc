@@ -62,7 +62,7 @@ func createScript(targetFolder string) (string, error) {
 	}
 	details := make(map[string]string)
 	details["Rcc"] = BinRcc()
-	details["Robocorphome"] = RobocorpHome()
+	details["Robocorphome"] = common.RobocorpHome()
 	details["Micromamba"] = BinMicromamba()
 	details["Live"] = targetFolder
 	buffer := bytes.NewBuffer(nil)

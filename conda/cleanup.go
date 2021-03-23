@@ -64,17 +64,17 @@ func spotlessCleanup(dryrun bool) error {
 	}
 	if dryrun {
 		common.Log("Would be removing:")
-		common.Log("- %v", TemplateLocation())
-		common.Log("- %v", LiveLocation())
-		common.Log("- %v", PipCache())
+		common.Log("- %v", common.TemplateLocation())
+		common.Log("- %v", common.LiveLocation())
+		common.Log("- %v", common.PipCache())
 		common.Log("- %v", MambaPackages())
 		common.Log("- %v", BinMicromamba())
 		common.Log("- %v", RobocorpTempRoot())
 		return nil
 	}
-	safeRemove("cache", TemplateLocation())
-	safeRemove("cache", LiveLocation())
-	safeRemove("cache", PipCache())
+	safeRemove("cache", common.TemplateLocation())
+	safeRemove("cache", common.LiveLocation())
+	safeRemove("cache", common.PipCache())
 	safeRemove("cache", MambaPackages())
 	safeRemove("temp", RobocorpTempRoot())
 	safeRemove("executable", BinMicromamba())

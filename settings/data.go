@@ -3,6 +3,7 @@ package settings
 import (
 	"encoding/json"
 	"net/url"
+	"sort"
 	"strings"
 
 	"github.com/robocorp/rcc/common"
@@ -129,8 +130,8 @@ type BusinessData struct {
 }
 
 type Certificates struct {
-	IgnoreVerification bool   `yaml:"ignore-ssl-verification" json:"ignore-ssl-verification"`
-	RootLocation       string `yaml:"root-location" json:"root-location"`
+	VerifySsl    bool   `yaml:"verify-ssl" json:"verify-ssl"`
+	RootLocation string `yaml:"root-location" json:"root-location"`
 }
 
 type Endpoints struct {
@@ -142,8 +143,44 @@ type Endpoints struct {
 	Issues       string `yaml:"issues" json:"issues"`
 	Portal       string `yaml:"portal" json:"portal"`
 	Pypi         string `yaml:"pypi" json:"pypi"`
+	PypiFiles    string `yaml:"pypi-files" json:"pypi-files"`
+	PypiTrusted  string `yaml:"pypi-trusted" json:"pypi-trusted"`
 	RobotPull    string `yaml:"robot-pull" json:"robot-pull"`
 	Telemetry    string `yaml:"telemetry" json:"telemetry"`
+}
+
+func hostFromUrl(link string, collector map[string]bool) {
+	if len(link) == 0 {
+		return
+	}
+	parsed, err := url.Parse(link)
+	if err != nil {
+		return
+	}
+	parts := strings.SplitN(parsed.Host, ":", 2)
+	collector[parts[0]] = true
+}
+
+func (it *Endpoints) Hosts() []string {
+	collector := make(map[string]bool)
+	hostFromUrl(it.CloudApi, collector)
+	hostFromUrl(it.CloudLinking, collector)
+	hostFromUrl(it.Conda, collector)
+	hostFromUrl(it.Docs, collector)
+	hostFromUrl(it.Downloads, collector)
+	hostFromUrl(it.Issues, collector)
+	hostFromUrl(it.Portal, collector)
+	hostFromUrl(it.Pypi, collector)
+	hostFromUrl(it.PypiFiles, collector)
+	hostFromUrl(it.PypiTrusted, collector)
+	hostFromUrl(it.RobotPull, collector)
+	hostFromUrl(it.Telemetry, collector)
+	result := make([]string, 0, len(collector))
+	for key, _ := range collector {
+		result = append(result, key)
+	}
+	sort.Strings(result)
+	return result
 }
 
 type Logs struct {

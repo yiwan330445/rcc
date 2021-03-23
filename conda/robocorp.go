@@ -17,10 +17,6 @@ import (
 	"github.com/robocorp/rcc/xviper"
 )
 
-const (
-	ROBOCORP_HOME_VARIABLE = `ROBOCORP_HOME`
-)
-
 var (
 	ignoredPaths     = []string{"python", "conda"}
 	pythonPaths      = []string{"resources", "libraries", "tasks", "variables"}
@@ -100,7 +96,7 @@ func hasMetafile(basedir, subdir string) bool {
 
 func dirnamesFrom(location string) []string {
 	result := make([]string, 0, 20)
-	handle, err := os.Open(ExpandPath(location))
+	handle, err := os.Open(common.ExpandPath(location))
 	if err != nil {
 		common.Error("Warning", err)
 		return result
@@ -123,7 +119,7 @@ func dirnamesFrom(location string) []string {
 
 func orphansFrom(location string) []string {
 	result := make([]string, 0, 20)
-	handle, err := os.Open(ExpandPath(location))
+	handle, err := os.Open(common.ExpandPath(location))
 	if err != nil {
 		common.Error("Warning", err)
 		return result
@@ -179,7 +175,7 @@ func EnvironmentExtensionFor(location string) []string {
 		"PYTHONSTARTUP=",
 		"PYTHONEXECUTABLE=",
 		"PYTHONNOUSERSITE=1",
-		"ROBOCORP_HOME="+RobocorpHome(),
+		"ROBOCORP_HOME="+common.RobocorpHome(),
 		"RCC_ENVIRONMENT_HASH="+common.EnvironmentHash,
 		"RCC_INSTALLATION_ID="+xviper.TrackingIdentity(),
 		"RCC_TRACKING_ALLOWED="+fmt.Sprintf("%v", xviper.CanTrack()),
@@ -197,11 +193,11 @@ func EnvironmentFor(location string) []string {
 }
 
 func MambaPackages() string {
-	return ExpandPath(filepath.Join(RobocorpHome(), "pkgs"))
+	return common.ExpandPath(filepath.Join(common.RobocorpHome(), "pkgs"))
 }
 
 func MambaCache() string {
-	return ExpandPath(filepath.Join(MambaPackages(), "cache"))
+	return common.ExpandPath(filepath.Join(MambaPackages(), "cache"))
 }
 
 func asVersion(text string) (uint64, string) {
@@ -246,16 +242,8 @@ func HasMicroMamba() bool {
 	return goodEnough
 }
 
-func RobocorpHome() string {
-	home := os.Getenv(ROBOCORP_HOME_VARIABLE)
-	if len(home) > 0 {
-		return ExpandPath(home)
-	}
-	return ExpandPath(defaultRobocorpLocation)
-}
-
 func RobocorpTempRoot() string {
-	return filepath.Join(RobocorpHome(), "temp")
+	return filepath.Join(common.RobocorpHome(), "temp")
 }
 
 func RobocorpTemp() string {
@@ -267,46 +255,17 @@ func RobocorpTemp() string {
 	return fullpath
 }
 
-func BinLocation() string {
-	return filepath.Join(RobocorpHome(), "bin")
-}
-
-func LiveLocation() string {
-	return ensureDirectory(filepath.Join(RobocorpHome(), "live"))
-}
-
-func TemplateLocation() string {
-	return ensureDirectory(filepath.Join(RobocorpHome(), "base"))
-}
-
 func RobocorpLock() string {
-	return fmt.Sprintf("%s.lck", LiveLocation())
+	return fmt.Sprintf("%s.lck", common.LiveLocation())
 }
 
 func MinicondaLocation() string {
 	// Legacy function, but must remain until cleanup is done
-	return filepath.Join(RobocorpHome(), "miniconda3")
-}
-
-func ensureDirectory(name string) string {
-	pathlib.EnsureDirectoryExists(name)
-	return name
-}
-
-func PipCache() string {
-	return ensureDirectory(filepath.Join(RobocorpHome(), "pipcache"))
-}
-
-func WheelCache() string {
-	return ensureDirectory(filepath.Join(RobocorpHome(), "wheels"))
-}
-
-func RobotCache() string {
-	return ensureDirectory(filepath.Join(RobocorpHome(), "robots"))
+	return filepath.Join(common.RobocorpHome(), "miniconda3")
 }
 
 func LocalChannel() (string, bool) {
-	basefolder := filepath.Join(RobocorpHome(), "channel")
+	basefolder := filepath.Join(common.RobocorpHome(), "channel")
 	fullpath := filepath.Join(basefolder, "channeldata.json")
 	stats, err := os.Stat(fullpath)
 	if err != nil {
@@ -319,27 +278,27 @@ func LocalChannel() (string, bool) {
 }
 
 func TemplateFrom(hash string) string {
-	return filepath.Join(TemplateLocation(), hash)
+	return filepath.Join(common.TemplateLocation(), hash)
 }
 
 func LiveFrom(hash string) string {
 	if common.Stageonly {
 		return common.StageFolder
 	}
-	return ExpandPath(filepath.Join(LiveLocation(), hash))
+	return common.ExpandPath(filepath.Join(common.LiveLocation(), hash))
 }
 
 func TemplateList() []string {
-	return dirnamesFrom(TemplateLocation())
+	return dirnamesFrom(common.TemplateLocation())
 }
 
 func LiveList() []string {
-	return dirnamesFrom(LiveLocation())
+	return dirnamesFrom(common.LiveLocation())
 }
 
 func OrphanList() []string {
-	result := orphansFrom(TemplateLocation())
-	result = append(result, orphansFrom(LiveLocation())...)
+	result := orphansFrom(common.TemplateLocation())
+	result = append(result, orphansFrom(common.LiveLocation())...)
 	return result
 }
 

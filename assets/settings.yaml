@@ -2,6 +2,8 @@ endpoints:
   cloud-api: https://api.eu1.robocorp.com/
   cloud-linking: https://id.robocorp.com
   pypi: https://pypi.org/simple/
+  pypi-files: https://files.pythonhosted.org
+  pypi-trusted:
   conda: https://repo.anaconda.org
   downloads: https://downloads.robocorp.com
   docs: https://robocorp.com/docs/
@@ -20,11 +22,11 @@ autoupdates:
   lab: https://downloads.code.robocorp.com/lab/installer
 
 certificates:
-  ignore-ssl-verification: false
+  verify-ssl: true
   root-location:
 
 logs:
-  level: debug
+  level: normal
   root-location: "%localappdata%\\robocorp\\logs"
 
 business-data:
