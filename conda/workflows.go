@@ -188,7 +188,7 @@ func newLiveInternal(yaml, condaYaml, requirementsText, key string, force, fresh
 		ttl = "0"
 	}
 	mambaCommand := common.NewCommander(BinMicromamba(), "create", "--always-copy", "--no-rc", "--safety-checks", "enabled", "--extra-safety-checks", "fail", "--retry-with-clean-cache", "--strict-channel-priority", "--repodata-ttl", ttl, "-q", "-y", "-f", condaYaml, "-p", targetFolder)
-	//mambaCommand.Option("--channel", settings.Global.CondaURL())
+	mambaCommand.Option("--channel-alias", settings.Global.CondaURL())
 	observer := make(InstallObserver)
 	common.Debug("===  new live  ---  micromamba create phase ===")
 	common.Timeline("Micromamba start.")

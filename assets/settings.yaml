@@ -1,36 +1,27 @@
 endpoints:
   cloud-api: https://api.eu1.robocorp.com/
   cloud-linking: https://id.robocorp.com
-  pypi: https://pypi.org/simple/
-  pypi-files: https://files.pythonhosted.org
-  pypi-trusted:
-  conda: https://repo.anaconda.org
+  pypi: # https://pypi.org/simple/
+  pypi-trusted: # https://pypi.org/simple/
+  conda: # https://repo.anaconda.org
   downloads: https://downloads.robocorp.com
   docs: https://robocorp.com/docs/
   telemetry: https://telemetry.robocorp.com
   issues: https://telemetry.robocorp.com
-  portal: https://robocorp.com/portal/
-  robot-pull: https://github.com
 
-proxies:
-  http:
-  https:
+diagnostics-hosts:
+  - files.pythonhosted.org
+  - github.com
+  - repo.anaconda.org
+  - pypi.org
 
 autoupdates:
   assistant: https://downloads.robocorp.com/assistant/releases
-  workforce-agent: https://downloads.robocorp.com/agent/releases
+  workforce-agent: https://downloads.robocorp.com/workforce-agent/releases
   lab: https://downloads.code.robocorp.com/lab/installer
 
 certificates:
   verify-ssl: true
-  root-location:
-
-logs:
-  level: normal
-  root-location: "%localappdata%\\robocorp\\logs"
-
-business-data:
-  root-location: "%HOMEDRIVE%%HOMEPATH%\\Documents"
 
 branding:
   logo: https://downloads.robocorp.com/company/press-kit/logos/robocorp-logo-black.svg

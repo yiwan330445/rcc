@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/robocorp/rcc/common"
+	"github.com/robocorp/rcc/settings"
 	"github.com/robocorp/rcc/xviper"
 )
 
@@ -57,7 +58,7 @@ func NewClient(endpoint string) (Client, error) {
 	}
 	return &internalClient{
 		endpoint: https,
-		client:   &http.Client{},
+		client:   &http.Client{Transport: settings.Global.ConfiguredHttpTransport()},
 	}, nil
 }
 

@@ -10,6 +10,7 @@ import (
 	"strings"
 
 	"github.com/robocorp/rcc/common"
+	"github.com/robocorp/rcc/settings"
 )
 
 const (
@@ -46,7 +47,8 @@ func CommunityLocation(name, branch string) string {
 }
 
 func DownloadCommunityRobot(url, filename string) error {
-	response, err := http.Get(url)
+	client := &http.Client{Transport: settings.Global.ConfiguredHttpTransport()}
+	response, err := client.Get(url)
 	if err != nil {
 		return err
 	}

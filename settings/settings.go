@@ -1,9 +1,11 @@
 package settings
 
 import (
+	"crypto/tls"
 	"fmt"
 	"io"
 	"io/ioutil"
+	"net/http"
 	"os"
 	"path/filepath"
 
@@ -14,6 +16,7 @@ import (
 )
 
 var (
+	httpTransport  *http.Transport
 	cachedSettings *Settings
 	Global         gateway
 )
@@ -125,9 +128,24 @@ func (it gateway) DownloadsURL() string {
 }
 
 func (it gateway) Hostnames() []string {
-	return it.Endpoints().Hosts()
+	config, err := SummonSettings()
+	pretty.Guard(err == nil, 111, "Could not get settings, reason: %v", err)
+	return config.Hostnames()
+}
+
+func (it gateway) ConfiguredHttpTransport() *http.Transport {
+	return httpTransport
 }
 
 func init() {
+	verifySsl := true
 	Global = gateway(true)
+	httpTransport = http.DefaultTransport.(*http.Transport).Clone()
+	settings, err := SummonSettings()
+	if err == nil && settings.Certificates != nil {
+		verifySsl = settings.Certificates.VerifySsl
+	}
+	if !verifySsl {
+		httpTransport.TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
+	}
 }

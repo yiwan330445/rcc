@@ -19,9 +19,9 @@ type StringMap map[string]string
 type Settings struct {
 	Autoupdates  StringMap     `yaml:"autoupdates" json:"autoupdates"`
 	Branding     StringMap     `yaml:"branding" json:"branding"`
-	BusinessData *BusinessData `yaml:"business-data" json:"business-data"`
 	Certificates *Certificates `yaml:"certificates" json:"certificates"`
 	Endpoints    *Endpoints    `yaml:"endpoints" json:"endpoints"`
+	Hosts        []string      `yaml:"diagnostics-hosts" json:"diagnostics-hosts"`
 	Logs         *Logs         `yaml:"logs" json:"logs"`
 	Meta         *Meta         `yaml:"meta" json:"meta"`
 	Proxies      *Proxies      `yaml:"proxies" json:"proxies"`
@@ -49,6 +49,26 @@ func (it *Settings) Source(filename string) *Settings {
 		it.Meta.Source = filename
 	}
 	return it
+}
+
+func (it *Settings) Hostnames() []string {
+	collector := make(map[string]bool)
+	if it.Endpoints != nil {
+		for _, name := range it.Endpoints.Hostnames() {
+			collector[name] = true
+		}
+	}
+	if it.Hosts != nil {
+		for _, name := range it.Hosts {
+			collector[name] = true
+		}
+	}
+	result := make([]string, 0, len(collector))
+	for key, _ := range collector {
+		result = append(result, key)
+	}
+	sort.Strings(result)
+	return result
 }
 
 func (it *Settings) AsJson() ([]byte, error) {
@@ -84,8 +104,6 @@ func (it *Settings) CriticalEnvironmentDiagnostics(target *common.DiagnosticStat
 		correct = false
 	} else {
 		correct = diagnoseUrl(it.Endpoints.CloudApi, "endpoints/cloud-api", diagnose, correct)
-		correct = diagnoseUrl(it.Endpoints.Conda, "endpoints/conda", diagnose, correct)
-		correct = diagnoseUrl(it.Endpoints.Pypi, "endpoints/pypi", diagnose, correct)
 		correct = diagnoseUrl(it.Endpoints.Downloads, "endpoints/downloads", diagnose, correct)
 	}
 	if correct {
@@ -96,10 +114,6 @@ func (it *Settings) CriticalEnvironmentDiagnostics(target *common.DiagnosticStat
 func (it *Settings) Diagnostics(target *common.DiagnosticStatus) {
 	diagnose := target.Diagnose("Settings")
 	correct := true
-	if it.BusinessData == nil {
-		diagnose.Warning("", "settings.yaml: business-data section is totally missing")
-		correct = false
-	}
 	if it.Certificates == nil {
 		diagnose.Warning("", "settings.yaml: certificates section is totally missing")
 		correct = false
@@ -125,10 +139,6 @@ func (it *Settings) Diagnostics(target *common.DiagnosticStatus) {
 	}
 }
 
-type BusinessData struct {
-	RootLocation string `yaml:"root-location" json:"root-location"`
-}
-
 type Certificates struct {
 	VerifySsl    bool   `yaml:"verify-ssl" json:"verify-ssl"`
 	RootLocation string `yaml:"root-location" json:"root-location"`
@@ -138,14 +148,12 @@ type Endpoints struct {
 	CloudApi     string `yaml:"cloud-api" json:"cloud-api"`
 	CloudLinking string `yaml:"cloud-linking" json:"cloud-linking"`
 	Conda        string `yaml:"conda" json:"conda"`
-	Docs         string `yaml:"docs" json:"docs"`
 	Downloads    string `yaml:"downloads" json:"downloads"`
 	Issues       string `yaml:"issues" json:"issues"`
 	Portal       string `yaml:"portal" json:"portal"`
 	Pypi         string `yaml:"pypi" json:"pypi"`
 	PypiFiles    string `yaml:"pypi-files" json:"pypi-files"`
 	PypiTrusted  string `yaml:"pypi-trusted" json:"pypi-trusted"`
-	RobotPull    string `yaml:"robot-pull" json:"robot-pull"`
 	Telemetry    string `yaml:"telemetry" json:"telemetry"`
 }
 
@@ -161,19 +169,17 @@ func hostFromUrl(link string, collector map[string]bool) {
 	collector[parts[0]] = true
 }
 
-func (it *Endpoints) Hosts() []string {
+func (it *Endpoints) Hostnames() []string {
 	collector := make(map[string]bool)
 	hostFromUrl(it.CloudApi, collector)
 	hostFromUrl(it.CloudLinking, collector)
 	hostFromUrl(it.Conda, collector)
-	hostFromUrl(it.Docs, collector)
 	hostFromUrl(it.Downloads, collector)
 	hostFromUrl(it.Issues, collector)
 	hostFromUrl(it.Portal, collector)
 	hostFromUrl(it.Pypi, collector)
 	hostFromUrl(it.PypiFiles, collector)
 	hostFromUrl(it.PypiTrusted, collector)
-	hostFromUrl(it.RobotPull, collector)
 	hostFromUrl(it.Telemetry, collector)
 	result := make([]string, 0, len(collector))
 	for key, _ := range collector {

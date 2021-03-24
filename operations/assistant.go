@@ -18,6 +18,7 @@ import (
 	"github.com/robocorp/rcc/cloud"
 	"github.com/robocorp/rcc/common"
 	"github.com/robocorp/rcc/pathlib"
+	"github.com/robocorp/rcc/settings"
 )
 
 const (
@@ -188,7 +189,7 @@ func MultipartUpload(url string, fields map[string]string, basename, fullpath st
 		return err
 	}
 	request.Header.Add("Content-Type", many.FormDataContentType())
-	client := &http.Client{}
+	client := &http.Client{Transport: settings.Global.ConfiguredHttpTransport()}
 	response, err := client.Do(request)
 	if err != nil {
 		return err

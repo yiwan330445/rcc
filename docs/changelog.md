@@ -1,5 +1,11 @@
 # rcc change log
 
+## v9.8.3 (date: 24.3.2021)
+
+- can configure all rcc operations not to verify correct SSL certificate
+  (please note, doing this is insecure and allows man-in-the-middle attacks)
+- applied reviewed changes to what is actually in settings.yaml file
+
 ## v9.8.2 (date: 23.3.2021)
 
 - ALPHA level pre-release (do not use, unless you know what you are doing)
