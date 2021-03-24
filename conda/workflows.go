@@ -175,6 +175,10 @@ func newLiveInternal(yaml, condaYaml, requirementsText, key string, force, fresh
 	}
 	defer func() {
 		planWriter.Close()
+		content, err := ioutil.ReadFile(planfile)
+		if err == nil {
+			common.Log("%s", string(content))
+		}
 		os.Remove(planfile)
 	}()
 	fmt.Fprintf(planWriter, "---  installation plan %q %s [force: %v, fresh: %v| rcc %s]  ---\n\n", key, time.Now().Format(time.RFC3339), force, freshInstall, common.Version)
@@ -214,7 +218,7 @@ func newLiveInternal(yaml, condaYaml, requirementsText, key string, force, fresh
 		common.Log("####  Progress: 4/6  [pip install phase]")
 		common.Timeline("4/6 pip install start.")
 		common.Debug("Updating new environment at %v with pip requirements from %v (size: %v)", targetFolder, requirementsText, size)
-		pipCommand := common.NewCommander("pip", "install", "--no-color", "--disable-pip-version-check", "--prefer-binary", "--cache-dir", pipCache, "--find-links", wheelCache, "--requirement", requirementsText, "--quiet")
+		pipCommand := common.NewCommander("pip", "install", "--no-color", "--disable-pip-version-check", "--prefer-binary", "--cache-dir", pipCache, "--find-links", wheelCache, "--requirement", requirementsText)
 		pipCommand.Option("--index-url", settings.Global.PypiURL())
 		common.Debug("===  new live  ---  pip install phase ===")
 		err = LiveExecution(planWriter, targetFolder, pipCommand.CLI()...)

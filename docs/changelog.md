@@ -1,5 +1,10 @@
 # rcc change log
 
+## v9.8.4 (date: 24.3.2021)
+
+- fix for pip made too silent on this v9.8.x series
+- and also in failure cases, print out full installation plan
+
 ## v9.8.3 (date: 24.3.2021)
 
 - can configure all rcc operations not to verify correct SSL certificate
