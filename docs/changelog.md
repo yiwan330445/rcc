@@ -1,5 +1,10 @@
 # rcc change log
 
+## v9.8.6 (date: 25.3.2021)
+
+- settings.yaml cleanup
+- fixed robot tests for 9.8.5 template changes
+
 ## v9.8.5 (date: 24.3.2021)
 
 - Robot templates updated: Rpaframework updated to v9.1.0

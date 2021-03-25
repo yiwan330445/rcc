@@ -1,11 +1,11 @@
 endpoints:
-  cloud-api: https://api.eu1.robocorp.com/
+  cloud-api: https://api.eu1.robocorp.com
   cloud-linking: https://id.robocorp.com
-  pypi: # https://pypi.org/simple/
-  pypi-trusted: # https://pypi.org/simple/
+  pypi: # https://pypi.org/simple
+  pypi-trusted: # https://pypi.org
   conda: # https://repo.anaconda.org
   downloads: https://downloads.robocorp.com
-  docs: https://robocorp.com/docs/
+  docs: https://robocorp.com/docs
   telemetry: https://telemetry.robocorp.com
   issues: https://telemetry.robocorp.com
 

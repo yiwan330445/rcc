@@ -75,8 +75,8 @@ Using and running template example with shell file
   Must Have   fluffy is not empty
 
   Goal        Run task in place.
-  Step        build/rcc task run --controller citests -r tmp/fluffy/robot.yaml
-  Must Have   1 critical task, 1 passed, 0 failed
+  Step        build/rcc task run --task "Run Example task" --controller citests -r tmp/fluffy/robot.yaml
+  Must Have   1 task, 1 passed, 0 failed
   Use STDERR
   Must Have   Progress: 0/6
   Must Have   Progress: 1/6
@@ -89,8 +89,8 @@ Using and running template example with shell file
   Must Exist  %{ROBOCORP_HOME}/pipcache/
 
   Goal        Run task in clean temporary directory.
-  Step        build/rcc task testrun --controller citests -r tmp/fluffy/robot.yaml
-  Must Have   1 critical task, 1 passed, 0 failed
+  Step        build/rcc task testrun --task "Run Example task" --controller citests -r tmp/fluffy/robot.yaml
+  Must Have   1 task, 1 passed, 0 failed
   Use STDERR
   Must Have   rpaframework
   Must Have   Progress: 0/6
@@ -143,7 +143,7 @@ Using and running template example with shell file
   Must Be Json Response
 
   Goal        See variables from specific environment with robot.yaml knowledge
-  Step        build/rcc env variables --controller citests conda/testdata/conda.yaml --config tmp/alternative.yaml -r tmp/fluffy/robot.yaml -e tmp/fluffy/devdata/env.json
+  Step        build/rcc env variables --task "Run Example task" --controller citests conda/testdata/conda.yaml --config tmp/alternative.yaml -r tmp/fluffy/robot.yaml -e tmp/fluffy/devdata/env.json
   Must Have   ROBOCORP_HOME=
   Must Have   PYTHON_EXE=
   Must Have   CONDA_DEFAULT_ENV=rcc
@@ -169,7 +169,7 @@ Using and running template example with shell file
   Wont Have   RC_WORKSPACE_ID=
 
   Goal        See variables from specific environment with robot.yaml knowledge in JSON form
-  Step        build/rcc env variables --controller citests --json conda/testdata/conda.yaml --config tmp/alternative.yaml -r tmp/fluffy/robot.yaml -e tmp/fluffy/devdata/env.json
+  Step        build/rcc env variables --task "Run Example task" --controller citests --json conda/testdata/conda.yaml --config tmp/alternative.yaml -r tmp/fluffy/robot.yaml -e tmp/fluffy/devdata/env.json
   Must Be Json Response
 
   Goal        See diagnostics as valid JSON form
