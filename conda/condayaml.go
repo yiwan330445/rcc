@@ -223,7 +223,9 @@ func pushPip(target *Environment, dependencies []*Dependency) error {
 
 func (it *Environment) Merge(right *Environment) (*Environment, error) {
 	result := new(Environment)
-	result.Name = it.Name + "+" + right.Name
+	if len(it.Name) > 0 || len(right.Name) > 0 {
+		result.Name = it.Name + "+" + right.Name
+	}
 
 	seenChannels := make(map[string]bool)
 	result.Channels = addItem(seenChannels, it.Channels, result.Channels)

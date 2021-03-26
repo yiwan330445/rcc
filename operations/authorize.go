@@ -124,7 +124,7 @@ func RobotClaims(seconds int, workspace string) *Claims {
 
 func RunClaims(seconds int, workspace string) *Claims {
 	result := NewClaims("Run", fmt.Sprintf(WorkspaceApi, workspace), seconds)
-	result.Capabilities.Add("secret", true, true, false)
+	result.Capabilities.Add("secret", true, true, true)
 	result.Capabilities.Add("artifact", false, false, true)
 	result.Capabilities.Add("livedata", false, true, true)
 	result.Capabilities.Add("workitemdata", false, true, true)

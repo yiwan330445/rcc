@@ -1,5 +1,12 @@
 # rcc change log
 
+## v9.8.7 (date: 26.3.2021)
+
+- more finalization of settings.yaml change
+- made micromamba less quiet on environment building
+- secrets now have write access enabled in rcc authorization requests
+- if merged conda.yaml files do not have names, merge result wont have either
+
 ## v9.8.6 (date: 25.3.2021)
 
 - settings.yaml cleanup

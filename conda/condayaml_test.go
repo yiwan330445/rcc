@@ -98,7 +98,7 @@ func TestCanMergeTwoEnvironments(t *testing.T) {
 	sut, err := left.Merge(right)
 	must_be.Nil(err)
 	wont_be.Nil(sut)
-	must_be.Equal("+", sut.Name)
+	must_be.Equal("", sut.Name)
 	must_be.Equal(2, len(sut.Channels))
 	must_be.Equal(4, len(sut.Conda))
 	must_be.Equal(1, len(sut.Pip))

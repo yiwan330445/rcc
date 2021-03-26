@@ -16,4 +16,7 @@ func TestCanCallEntropyFunction(t *testing.T) {
 
 	wont_be.Nil(settings.Global)
 	must_be.True(len(settings.Global.Hostnames()) > 1)
+
+	must_be.Equal("https://robocorp.com/docs/hello.html", settings.Global.DocsLink("hello.html"))
+	must_be.Equal("https://robocorp.com/docs/products/manual.html", settings.Global.DocsLink("products/manual.html"))
 }

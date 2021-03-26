@@ -191,7 +191,7 @@ func newLiveInternal(yaml, condaYaml, requirementsText, key string, force, fresh
 	if force {
 		ttl = "0"
 	}
-	mambaCommand := common.NewCommander(BinMicromamba(), "create", "--always-copy", "--no-rc", "--safety-checks", "enabled", "--extra-safety-checks", "fail", "--retry-with-clean-cache", "--strict-channel-priority", "--repodata-ttl", ttl, "-q", "-y", "-f", condaYaml, "-p", targetFolder)
+	mambaCommand := common.NewCommander(BinMicromamba(), "create", "--always-copy", "--no-rc", "--safety-checks", "enabled", "--extra-safety-checks", "fail", "--retry-with-clean-cache", "--strict-channel-priority", "--repodata-ttl", ttl, "-y", "-f", condaYaml, "-p", targetFolder)
 	mambaCommand.Option("--channel-alias", settings.Global.CondaURL())
 	observer := make(InstallObserver)
 	common.Debug("===  new live  ---  micromamba create phase ===")
@@ -220,6 +220,7 @@ func newLiveInternal(yaml, condaYaml, requirementsText, key string, force, fresh
 		common.Debug("Updating new environment at %v with pip requirements from %v (size: %v)", targetFolder, requirementsText, size)
 		pipCommand := common.NewCommander("pip", "install", "--no-color", "--disable-pip-version-check", "--prefer-binary", "--cache-dir", pipCache, "--find-links", wheelCache, "--requirement", requirementsText)
 		pipCommand.Option("--index-url", settings.Global.PypiURL())
+		pipCommand.Option("--trusted-host", settings.Global.PypiTrustedHost())
 		common.Debug("===  new live  ---  pip install phase ===")
 		err = LiveExecution(planWriter, targetFolder, pipCommand.CLI()...)
 		if err != nil {

@@ -110,7 +110,7 @@ func TestCanCreateRunClaims(t *testing.T) {
 	must_be, wont_be := hamlet.Specifications(t)
 
 	setup := operations.NewClaims("Run", "https://some.com", 88)
-	setup.Capabilities.Add("secret", true, true, false)
+	setup.Capabilities.Add("secret", true, true, true)
 	setup.Capabilities.Add("artifact", false, false, true)
 	setup.Capabilities.Add("livedata", false, true, true)
 	setup.Capabilities.Add("workitemdata", false, true, true)

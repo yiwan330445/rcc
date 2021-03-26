@@ -47,7 +47,11 @@ func (it *config) Save() {
 	defer locker.Release()
 	defer os.Remove(it.Lockfile)
 
-	it.Viper.WriteConfigAs(it.Filename)
+	err = it.Viper.WriteConfigAs(it.Filename)
+	if err != nil {
+		common.Log("FATAL: could not write %v, reason %v; ignored.", it.Filename, err)
+		return
+	}
 	when, err := pathlib.Modtime(it.Filename)
 	if err == nil {
 		it.Timestamp = when

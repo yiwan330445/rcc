@@ -22,9 +22,7 @@ type Settings struct {
 	Certificates *Certificates `yaml:"certificates" json:"certificates"`
 	Endpoints    *Endpoints    `yaml:"endpoints" json:"endpoints"`
 	Hosts        []string      `yaml:"diagnostics-hosts" json:"diagnostics-hosts"`
-	Logs         *Logs         `yaml:"logs" json:"logs"`
 	Meta         *Meta         `yaml:"meta" json:"meta"`
-	Proxies      *Proxies      `yaml:"proxies" json:"proxies"`
 }
 
 func FromBytes(raw []byte) (*Settings, error) {
@@ -121,17 +119,25 @@ func (it *Settings) Diagnostics(target *common.DiagnosticStatus) {
 	if it.Endpoints == nil {
 		diagnose.Warning("", "settings.yaml: endpoints section is totally missing")
 		correct = false
-	}
-	if it.Logs == nil {
-		diagnose.Warning("", "settings.yaml: logs section is totally missing")
-		correct = false
+	} else {
+		correct = diagnoseUrl(it.Endpoints.CloudApi, "endpoints/cloud-api", diagnose, correct)
+		correct = diagnoseUrl(it.Endpoints.CloudLinking, "endpoints/cloud-linking", diagnose, correct)
+		correct = diagnoseUrl(it.Endpoints.Docs, "endpoints/docs", diagnose, correct)
+		correct = diagnoseUrl(it.Endpoints.Issues, "endpoints/issues", diagnose, correct)
+		correct = diagnoseUrl(it.Endpoints.Telemetry, "endpoints/telemetry", diagnose, correct)
+		correct = diagnoseUrl(it.Endpoints.Downloads, "endpoints/downloads", diagnose, correct)
+		if len(it.Endpoints.Conda) > 0 {
+			correct = diagnoseUrl(it.Endpoints.Conda, "endpoints/conda", diagnose, correct)
+		}
+		if len(it.Endpoints.Pypi) > 0 {
+			correct = diagnoseUrl(it.Endpoints.Pypi, "endpoints/pypi", diagnose, correct)
+		}
+		if len(it.Endpoints.PypiTrusted) > 0 {
+			correct = diagnoseUrl(it.Endpoints.PypiTrusted, "endpoints/pypi-trusted", diagnose, correct)
+		}
 	}
 	if it.Meta == nil {
 		diagnose.Warning("", "settings.yaml: meta section is totally missing")
-		correct = false
-	}
-	if it.Proxies == nil {
-		diagnose.Warning("", "settings.yaml: proxies section is totally missing")
 		correct = false
 	}
 	if correct {
@@ -140,33 +146,38 @@ func (it *Settings) Diagnostics(target *common.DiagnosticStatus) {
 }
 
 type Certificates struct {
-	VerifySsl    bool   `yaml:"verify-ssl" json:"verify-ssl"`
-	RootLocation string `yaml:"root-location" json:"root-location"`
+	VerifySsl bool `yaml:"verify-ssl" json:"verify-ssl"`
 }
 
 type Endpoints struct {
 	CloudApi     string `yaml:"cloud-api" json:"cloud-api"`
 	CloudLinking string `yaml:"cloud-linking" json:"cloud-linking"`
 	Conda        string `yaml:"conda" json:"conda"`
+	Docs         string `yaml:"docs" json:"docs"`
 	Downloads    string `yaml:"downloads" json:"downloads"`
 	Issues       string `yaml:"issues" json:"issues"`
-	Portal       string `yaml:"portal" json:"portal"`
 	Pypi         string `yaml:"pypi" json:"pypi"`
-	PypiFiles    string `yaml:"pypi-files" json:"pypi-files"`
 	PypiTrusted  string `yaml:"pypi-trusted" json:"pypi-trusted"`
 	Telemetry    string `yaml:"telemetry" json:"telemetry"`
 }
 
-func hostFromUrl(link string, collector map[string]bool) {
+func justHostAndPort(link string) string {
 	if len(link) == 0 {
-		return
+		return ""
 	}
 	parsed, err := url.Parse(link)
 	if err != nil {
-		return
+		return ""
 	}
-	parts := strings.SplitN(parsed.Host, ":", 2)
-	collector[parts[0]] = true
+	return parsed.Host
+}
+
+func hostFromUrl(link string, collector map[string]bool) {
+	host := justHostAndPort(link)
+	if len(host) > 0 {
+		parts := strings.SplitN(host, ":", 2)
+		collector[parts[0]] = true
+	}
 }
 
 func (it *Endpoints) Hostnames() []string {
@@ -174,11 +185,10 @@ func (it *Endpoints) Hostnames() []string {
 	hostFromUrl(it.CloudApi, collector)
 	hostFromUrl(it.CloudLinking, collector)
 	hostFromUrl(it.Conda, collector)
+	hostFromUrl(it.Docs, collector)
 	hostFromUrl(it.Downloads, collector)
 	hostFromUrl(it.Issues, collector)
-	hostFromUrl(it.Portal, collector)
 	hostFromUrl(it.Pypi, collector)
-	hostFromUrl(it.PypiFiles, collector)
 	hostFromUrl(it.PypiTrusted, collector)
 	hostFromUrl(it.Telemetry, collector)
 	result := make([]string, 0, len(collector))
@@ -189,17 +199,7 @@ func (it *Endpoints) Hostnames() []string {
 	return result
 }
 
-type Logs struct {
-	Level        string `yaml:"level" json:"level"`
-	RootLocation string `yaml:"root-location" json:"root-location"`
-}
-
 type Meta struct {
 	Source  string `yaml:"source" json:"source"`
 	Version string `yaml:"version" json:"version"`
-}
-
-type Proxies struct {
-	Http  string `yaml:"http" json:"http"`
-	Https string `yaml:"https" json:"https"`
 }

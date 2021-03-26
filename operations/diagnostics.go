@@ -26,14 +26,17 @@ import (
 )
 
 const (
-	canaryUrl          = `/canary.txt`
-	supportLongPathUrl = `https://robocorp.com/docs/troubleshooting/windows-long-path`
-	supportNetworkUrl  = `https://robocorp.com/docs/troubleshooting/firewall-and-proxies`
-	supportGeneralUrl  = `https://robocorp.com/docs/troubleshooting`
-	statusOk           = `ok`
-	statusWarning      = `warning`
-	statusFail         = `fail`
-	statusFatal        = `fatal`
+	canaryUrl     = `/canary.txt`
+	statusOk      = `ok`
+	statusWarning = `warning`
+	statusFail    = `fail`
+	statusFatal   = `fatal`
+)
+
+var (
+	supportLongPathUrl = settings.Global.DocsLink("troubleshooting/windows-long-path")
+	supportNetworkUrl  = settings.Global.DocsLink("troubleshooting/firewall-and-proxies")
+	supportGeneralUrl  = settings.Global.DocsLink("troubleshooting")
 )
 
 type stringerr func() (string, error)
@@ -144,12 +147,12 @@ func dnsLookupCheck(site string) *common.DiagnosticCheck {
 }
 
 func canaryDownloadCheck() *common.DiagnosticCheck {
-	client, err := cloud.NewClient(settings.Global.DownloadsURL())
+	client, err := cloud.NewClient(settings.Global.DownloadsLink(""))
 	if err != nil {
 		return &common.DiagnosticCheck{
 			Type:    "network",
 			Status:  statusFail,
-			Message: fmt.Sprintf("%v: %v", settings.Global.DownloadsURL(), err),
+			Message: fmt.Sprintf("%v: %v", settings.Global.DownloadsLink(""), err),
 			Link:    supportNetworkUrl,
 		}
 	}
@@ -166,7 +169,7 @@ func canaryDownloadCheck() *common.DiagnosticCheck {
 	return &common.DiagnosticCheck{
 		Type:    "network",
 		Status:  statusOk,
-		Message: fmt.Sprintf("Canary download successful: %s%s", settings.Global.DownloadsURL(), canaryUrl),
+		Message: fmt.Sprintf("Canary download successful: %s", settings.Global.DownloadsLink(canaryUrl)),
 		Link:    supportNetworkUrl,
 	}
 }
@@ -218,6 +221,7 @@ func ProduceDiagnostics(filename, robotfile string, json bool) (*common.Diagnost
 	if len(robotfile) > 0 {
 		addRobotDiagnostics(robotfile, result)
 	}
+	settings.Global.Diagnostics(result)
 	if json {
 		jsonDiagnostics(file, result)
 	} else {

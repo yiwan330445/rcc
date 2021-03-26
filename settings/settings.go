@@ -6,6 +6,7 @@ import (
 	"io"
 	"io/ioutil"
 	"net/http"
+	"net/url"
 	"os"
 	"path/filepath"
 
@@ -94,7 +95,25 @@ func CriticalEnvironmentSettingsCheck() {
 	}
 }
 
+func resolveLink(link, page string) string {
+	docs, err := url.Parse(link)
+	if err != nil {
+		return page
+	}
+	local, err := url.Parse(page)
+	if err != nil {
+		return page
+	}
+	return docs.ResolveReference(local).String()
+}
+
 type gateway bool
+
+func (it gateway) Diagnostics(target *common.DiagnosticStatus) {
+	config, err := SummonSettings()
+	pretty.Guard(err == nil, 111, "Could not get settings, reason: %v", err)
+	config.Diagnostics(target)
+}
 
 func (it gateway) Endpoints() *Endpoints {
 	config, err := SummonSettings()
@@ -119,12 +138,20 @@ func (it gateway) PypiURL() string {
 	return it.Endpoints().Pypi
 }
 
+func (it gateway) PypiTrustedHost() string {
+	return justHostAndPort(it.Endpoints().PypiTrusted)
+}
+
 func (it gateway) CondaURL() string {
 	return it.Endpoints().Conda
 }
 
-func (it gateway) DownloadsURL() string {
-	return it.Endpoints().Downloads
+func (it gateway) DownloadsLink(resource string) string {
+	return resolveLink(it.Endpoints().Downloads, resource)
+}
+
+func (it gateway) DocsLink(page string) string {
+	return resolveLink(it.Endpoints().Docs, page)
 }
 
 func (it gateway) Hostnames() []string {
