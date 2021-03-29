@@ -122,6 +122,7 @@ func (it *Settings) Diagnostics(target *common.DiagnosticStatus) {
 	} else {
 		correct = diagnoseUrl(it.Endpoints.CloudApi, "endpoints/cloud-api", diagnose, correct)
 		correct = diagnoseUrl(it.Endpoints.CloudLinking, "endpoints/cloud-linking", diagnose, correct)
+		correct = diagnoseUrl(it.Endpoints.CloudUi, "endpoints/cloud-ui", diagnose, correct)
 		correct = diagnoseUrl(it.Endpoints.Docs, "endpoints/docs", diagnose, correct)
 		correct = diagnoseUrl(it.Endpoints.Issues, "endpoints/issues", diagnose, correct)
 		correct = diagnoseUrl(it.Endpoints.Telemetry, "endpoints/telemetry", diagnose, correct)
@@ -152,6 +153,7 @@ type Certificates struct {
 type Endpoints struct {
 	CloudApi     string `yaml:"cloud-api" json:"cloud-api"`
 	CloudLinking string `yaml:"cloud-linking" json:"cloud-linking"`
+	CloudUi      string `yaml:"cloud-ui" json:"cloud-ui"`
 	Conda        string `yaml:"conda" json:"conda"`
 	Docs         string `yaml:"docs" json:"docs"`
 	Downloads    string `yaml:"downloads" json:"downloads"`
@@ -184,6 +186,7 @@ func (it *Endpoints) Hostnames() []string {
 	collector := make(map[string]bool)
 	hostFromUrl(it.CloudApi, collector)
 	hostFromUrl(it.CloudLinking, collector)
+	hostFromUrl(it.CloudUi, collector)
 	hostFromUrl(it.Conda, collector)
 	hostFromUrl(it.Docs, collector)
 	hostFromUrl(it.Downloads, collector)
