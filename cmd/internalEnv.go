@@ -20,7 +20,7 @@ var internalEnvCmd = &cobra.Command{
 		values := make(map[string]string)
 		for _, entry := range os.Environ() {
 			parts := strings.SplitN(entry, "=", 2)
-			if len(parts) == 2 {
+			if len(parts) == 2 && len(parts[0]) > 0 {
 				values[parts[0]] = parts[1]
 			}
 		}

@@ -24,6 +24,7 @@ type RunFlags struct {
 	ValidityTime    int
 	EnvironmentFile string
 	RobotYaml       string
+	Assistant       bool
 }
 
 func PipFreeze(searchPath pathlib.PathParts, directory, outputDir string, environment []string) bool {
@@ -73,8 +74,8 @@ func LoadTaskWithEnvironment(packfile, theTask string, force bool) (bool, robot.
 }
 
 func SelectExecutionModel(runFlags *RunFlags, simple bool, template []string, config robot.Robot, todo robot.Task, label string, interactive bool, extraEnv map[string]string) {
-	common.Timeline("execution starts.")
-	defer common.Timeline("execution done.")
+	common.Timeline("robot execution starts (simple=%v).", simple)
+	defer common.Timeline("robot execution done.")
 	if simple {
 		ExecuteSimpleTask(runFlags, template, config, todo, interactive, extraEnv)
 	} else {
@@ -150,7 +151,7 @@ func ExecuteTask(flags *RunFlags, template []string, config robot.Robot, todo ro
 		pretty.Exit(7, "Error: %v", err)
 	}
 	var data Token
-	if len(flags.WorkspaceId) > 0 {
+	if !flags.Assistant && len(flags.WorkspaceId) > 0 {
 		claims := RunClaims(flags.ValidityTime*60, flags.WorkspaceId)
 		data, err = AuthorizeClaims(flags.AccountName, claims)
 	}
@@ -179,7 +180,7 @@ func ExecuteTask(flags *RunFlags, template []string, config robot.Robot, todo ro
 	before := make(map[string]string)
 	beforeHash, beforeErr := conda.DigestFor(label, before)
 	outputDir := todo.ArtifactDirectory(config)
-	if !common.Silent && !interactive {
+	if !flags.Assistant && !common.Silent && !interactive {
 		PipFreeze(searchPath, directory, outputDir, environment)
 	}
 	common.Debug("DEBUG: about to run command - %v", task)

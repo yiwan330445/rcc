@@ -265,6 +265,7 @@ func BeatAssistantRun(client cloud.Client, account *account, workspaceId, assist
 	token["seq"] = beat
 	request := client.NewRequest(fmt.Sprintf(beatAssistantApi, workspaceId, assistantId, runId))
 	request.Headers[authorization] = WorkspaceToken(credentials)
+	request.Headers[contentType] = applicationJson
 	blob, err := json.Marshal(token)
 	if err == nil {
 		request.Body = bytes.NewReader(blob)
@@ -299,13 +300,18 @@ func StopAssistantRun(client cloud.Client, account *account, workspaceId, assist
 	return nil
 }
 
-func StartAssistantRun(client cloud.Client, account *account, workspaceId, assistantId string) (*AssistantRobot, error) {
+func StartAssistantRun(client cloud.Client, account *account, workspaceId, assistantId string, ecc bool) (*AssistantRobot, error) {
 	common.Timeline("start assistant run: %q", assistantId)
 	credentials, err := summonAssistantToken(client, account, workspaceId)
 	if err != nil {
 		return nil, err
 	}
-	key, err := GenerateEphemeralKey()
+	var key Ephemeral
+	if ecc {
+		key, err = GenerateEphemeralEccKey()
+	} else {
+		key, err = GenerateEphemeralKey()
+	}
 	if err != nil {
 		return nil, err
 	}

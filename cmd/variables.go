@@ -23,6 +23,9 @@ func asSimpleMap(line string) map[string]string {
 	if len(parts) != 2 {
 		return nil
 	}
+	if len(parts[0]) == 0 {
+		return nil
+	}
 	result := make(map[string]string)
 	result["key"] = parts[0]
 	result["value"] = parts[1]

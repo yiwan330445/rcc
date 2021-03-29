@@ -35,17 +35,18 @@ in your own machine.`,
 		defer xviper.RunMinutes().Done()
 		simple, config, todo, label := operations.LoadTaskWithEnvironment(robotFile, runTask, forceFlag)
 		cloud.BackgroundMetric(common.ControllerIdentity(), "rcc.cli.run", common.Version)
-		operations.SelectExecutionModel(captureRunFlags(), simple, todo.Commandline(), config, todo, label, interactiveFlag, nil)
+		operations.SelectExecutionModel(captureRunFlags(false), simple, todo.Commandline(), config, todo, label, interactiveFlag, nil)
 	},
 }
 
-func captureRunFlags() *operations.RunFlags {
+func captureRunFlags(assistant bool) *operations.RunFlags {
 	return &operations.RunFlags{
 		AccountName:     AccountName(),
 		WorkspaceId:     workspaceId,
 		ValidityTime:    validityTime,
 		EnvironmentFile: environmentFile,
 		RobotYaml:       robotFile,
+		Assistant:       assistant,
 	}
 }
 

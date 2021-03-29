@@ -1,5 +1,15 @@
 # rcc change log
 
+## v9.8.8 (date: 30.3.2021)
+
+- mixed fixes and experiments edition
+- ignoring empty variable names on environment dumps, closes #17
+- added some missing content types to web requests
+- added experimental ephemeral ECC implementation
+- more common timeline markers added
+- will not list pip dependencies on assistant runs
+- will not ask cloud for runtime authorization (bug fix)
+
 ## v9.8.7 (date: 26.3.2021)
 
 - more finalization of settings.yaml change

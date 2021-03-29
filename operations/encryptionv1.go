@@ -14,7 +14,14 @@ import (
 	"errors"
 	"fmt"
 	"io"
+
+	"github.com/robocorp/rcc/common"
 )
+
+type Ephemeral interface {
+	RequestBody(interface{}) (io.Reader, error)
+	Decode([]byte) ([]byte, error)
+}
 
 type EncryptionKeys struct {
 	Iv              string `json:"iv"`
@@ -35,20 +42,14 @@ func Decoded(content string) ([]byte, error) {
 	return base64.StdEncoding.DecodeString(content)
 }
 
-func GenerateEphemeralKey() (*EncryptionV1, error) {
+func GenerateEphemeralKey() (Ephemeral, error) {
+	common.Timeline("start ephemeral key generation")
+	defer common.Timeline("done ephemeral key generation")
 	key, err := rsa.GenerateKey(rand.Reader, 2048)
 	if err != nil {
 		return nil, err
 	}
 	return &EncryptionV1{key}, nil
-}
-
-func (it *EncryptionV1) PublicDER() string {
-	public, ok := it.Public().(*rsa.PublicKey)
-	if !ok {
-		return ""
-	}
-	return base64.StdEncoding.EncodeToString(x509.MarshalPKCS1PublicKey(public))
 }
 
 func (it *EncryptionV1) PublicPEM() string {

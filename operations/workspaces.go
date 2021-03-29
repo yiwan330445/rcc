@@ -144,6 +144,7 @@ func NewRobotCommand(client cloud.Client, account *account, workspace, robotName
 	}
 	request := client.NewRequest(fmt.Sprintf(newRobotApi, workspace))
 	request.Headers[authorization] = BearerToken(credentials)
+	request.Headers[contentType] = applicationJson
 	request.Body = strings.NewReader(body)
 	response := client.Post(request)
 	if response.Status != 200 {

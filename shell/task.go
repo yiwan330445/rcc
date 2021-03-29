@@ -53,6 +53,7 @@ func (it *Task) execute(stdin io.Reader, stdout, stderr io.Writer) (int, error) 
 	if err != nil {
 		return -500, err
 	}
+	common.Timeline("exec %q started", it.executable)
 	common.Debug("PID #%d is %q.", command.Process.Pid, command)
 	defer func() {
 		common.Debug("PID #%d finished: %v.", command.Process.Pid, command.ProcessState)

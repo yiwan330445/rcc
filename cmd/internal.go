@@ -14,4 +14,5 @@ var internalCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(internalCmd)
+	internalCmd.PersistentFlags().StringVarP(&wskey, "wskey", "", "", "Cloud API workspace key (authorization).")
 }

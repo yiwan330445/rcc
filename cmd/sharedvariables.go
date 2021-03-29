@@ -32,5 +32,6 @@ var (
 	templateName    string
 	validityTime    int
 	workspaceId     string
+	wskey           string
 	zipfile         string
 )

@@ -29,7 +29,7 @@ command within that environment.`,
 		if simple {
 			pretty.Exit(1, "Cannot do shell for simple execution model.")
 		}
-		operations.ExecuteTask(captureRunFlags(), conda.Shell, config, todo, label, true, nil)
+		operations.ExecuteTask(captureRunFlags(false), conda.Shell, config, todo, label, true, nil)
 	},
 }
 
