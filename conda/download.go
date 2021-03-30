@@ -18,7 +18,12 @@ func DownloadMicromamba() error {
 	url := MicromambaLink()
 	filename := BinMicromamba()
 	client := &http.Client{Transport: settings.Global.ConfiguredHttpTransport()}
-	response, err := client.Get(url)
+	request, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return err
+	}
+	request.Header.Add("Accept", "application/octet-stream")
+	response, err := client.Do(request)
 	if err != nil {
 		return err
 	}

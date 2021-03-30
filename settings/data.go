@@ -94,6 +94,14 @@ func diagnoseUrl(link, label string, diagnose common.Diagnoser, correct bool) bo
 	return correct
 }
 
+func diagnoseOptionalUrl(link, label string, diagnose common.Diagnoser, correct bool) bool {
+	if len(strings.TrimSpace(link)) == 0 {
+		return correct
+	} else {
+		return diagnoseUrl(link, label, diagnose, correct)
+	}
+}
+
 func (it *Settings) CriticalEnvironmentDiagnostics(target *common.DiagnosticStatus) {
 	diagnose := target.Diagnose("settings.yaml")
 	correct := true
@@ -121,21 +129,16 @@ func (it *Settings) Diagnostics(target *common.DiagnosticStatus) {
 		correct = false
 	} else {
 		correct = diagnoseUrl(it.Endpoints.CloudApi, "endpoints/cloud-api", diagnose, correct)
-		correct = diagnoseUrl(it.Endpoints.CloudLinking, "endpoints/cloud-linking", diagnose, correct)
-		correct = diagnoseUrl(it.Endpoints.CloudUi, "endpoints/cloud-ui", diagnose, correct)
-		correct = diagnoseUrl(it.Endpoints.Docs, "endpoints/docs", diagnose, correct)
-		correct = diagnoseUrl(it.Endpoints.Issues, "endpoints/issues", diagnose, correct)
-		correct = diagnoseUrl(it.Endpoints.Telemetry, "endpoints/telemetry", diagnose, correct)
 		correct = diagnoseUrl(it.Endpoints.Downloads, "endpoints/downloads", diagnose, correct)
-		if len(it.Endpoints.Conda) > 0 {
-			correct = diagnoseUrl(it.Endpoints.Conda, "endpoints/conda", diagnose, correct)
-		}
-		if len(it.Endpoints.Pypi) > 0 {
-			correct = diagnoseUrl(it.Endpoints.Pypi, "endpoints/pypi", diagnose, correct)
-		}
-		if len(it.Endpoints.PypiTrusted) > 0 {
-			correct = diagnoseUrl(it.Endpoints.PypiTrusted, "endpoints/pypi-trusted", diagnose, correct)
-		}
+
+		correct = diagnoseOptionalUrl(it.Endpoints.CloudUi, "endpoints/cloud-ui", diagnose, correct)
+		correct = diagnoseOptionalUrl(it.Endpoints.CloudLinking, "endpoints/cloud-linking", diagnose, correct)
+		correct = diagnoseOptionalUrl(it.Endpoints.Issues, "endpoints/issues", diagnose, correct)
+		correct = diagnoseOptionalUrl(it.Endpoints.Telemetry, "endpoints/telemetry", diagnose, correct)
+		correct = diagnoseOptionalUrl(it.Endpoints.Docs, "endpoints/docs", diagnose, correct)
+		correct = diagnoseOptionalUrl(it.Endpoints.Conda, "endpoints/conda", diagnose, correct)
+		correct = diagnoseOptionalUrl(it.Endpoints.Pypi, "endpoints/pypi", diagnose, correct)
+		correct = diagnoseOptionalUrl(it.Endpoints.PypiTrusted, "endpoints/pypi-trusted", diagnose, correct)
 	}
 	if it.Meta == nil {
 		diagnose.Warning("", "settings.yaml: meta section is totally missing")

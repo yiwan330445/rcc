@@ -1,5 +1,10 @@
 # rcc change log
 
+## v9.8.11 (date: 30.3.2021)
+
+- added Accept header to micromamba download command
+- made some URL diagnostics optional, if they are left empty
+
 ## v9.8.10 (date: 30.3.2021)
 
 - fix: no more panics when directly writing to settings.yaml
