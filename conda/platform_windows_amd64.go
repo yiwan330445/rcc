@@ -81,6 +81,7 @@ func HasLongPathSupport() bool {
 	code, err := shell.New(nil, ".", "cmd.exe", "/c", "mkdir", fullpath).Transparent()
 	common.Trace("Checking long path support with MKDIR '%v' (%d characters) -> %v [%v] {%d}", fullpath, len(fullpath), err == nil, err, code)
 	if err != nil {
+		longPathSupportArticle := settings.Global.DocsLink("product-manuals/robocorp-lab/troubleshooting#windows-has-to-have-long-filenames-support-on")
 		common.Log("%sWARNING!  Long path support failed. Reason: %v.%s", pretty.Red, err, pretty.Reset)
 		common.Log("%sWARNING!  See %v for more details.%s", pretty.Red, longPathSupportArticle, pretty.Reset)
 		return false

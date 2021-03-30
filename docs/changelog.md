@@ -1,5 +1,9 @@
 # rcc change log
 
+## v9.8.10 (date: 30.3.2021)
+
+- fix: no more panics when directly writing to settings.yaml
+
 ## v9.8.9 (date: 29.3.2021)
 
 - added `cloud-ui` to settings.yaml

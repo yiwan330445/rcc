@@ -33,12 +33,6 @@ const (
 	statusFatal   = `fatal`
 )
 
-var (
-	supportLongPathUrl = settings.Global.DocsLink("troubleshooting/windows-long-path")
-	supportNetworkUrl  = settings.Global.DocsLink("troubleshooting/firewall-and-proxies")
-	supportGeneralUrl  = settings.Global.DocsLink("troubleshooting")
-)
-
 type stringerr func() (string, error)
 
 func justText(source stringerr) string {
@@ -95,6 +89,7 @@ func rccStatusLine() string {
 }
 
 func longPathSupportCheck() *common.DiagnosticCheck {
+	supportLongPathUrl := settings.Global.DocsLink("troubleshooting/windows-long-path")
 	if conda.HasLongPathSupport() {
 		return &common.DiagnosticCheck{
 			Type:    "OS",
@@ -112,6 +107,7 @@ func longPathSupportCheck() *common.DiagnosticCheck {
 }
 
 func robocorpHomeCheck() *common.DiagnosticCheck {
+	supportGeneralUrl := settings.Global.DocsLink("troubleshooting")
 	if !conda.ValidLocation(common.RobocorpHome()) {
 		return &common.DiagnosticCheck{
 			Type:    "RPA",
@@ -129,6 +125,7 @@ func robocorpHomeCheck() *common.DiagnosticCheck {
 }
 
 func dnsLookupCheck(site string) *common.DiagnosticCheck {
+	supportNetworkUrl := settings.Global.DocsLink("troubleshooting/firewall-and-proxies")
 	found, err := net.LookupHost(site)
 	if err != nil {
 		return &common.DiagnosticCheck{
@@ -147,6 +144,7 @@ func dnsLookupCheck(site string) *common.DiagnosticCheck {
 }
 
 func canaryDownloadCheck() *common.DiagnosticCheck {
+	supportNetworkUrl := settings.Global.DocsLink("troubleshooting/firewall-and-proxies")
 	client, err := cloud.NewClient(settings.Global.DownloadsLink(""))
 	if err != nil {
 		return &common.DiagnosticCheck{
@@ -233,6 +231,7 @@ func ProduceDiagnostics(filename, robotfile string, json bool) (*common.Diagnost
 type Unmarshaler func([]byte, interface{}) error
 
 func diagnoseFilesUnmarshal(tool Unmarshaler, label, rootdir string, paths []string, target *common.DiagnosticStatus) {
+	supportGeneralUrl := settings.Global.DocsLink("troubleshooting")
 	target.Details[fmt.Sprintf("%s-file-count", strings.ToLower(label))] = fmt.Sprintf("%d file(s)", len(paths))
 	diagnose := target.Diagnose(label)
 	var canary interface{}
@@ -267,6 +266,7 @@ func addFileDiagnostics(rootdir string, target *common.DiagnosticStatus) {
 }
 
 func addRobotDiagnostics(robotfile string, target *common.DiagnosticStatus) {
+	supportGeneralUrl := settings.Global.DocsLink("troubleshooting")
 	config, err := robot.LoadRobotYaml(robotfile, false)
 	diagnose := target.Diagnose("Robot")
 	if err != nil {

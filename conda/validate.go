@@ -5,12 +5,10 @@ import (
 
 	"github.com/robocorp/rcc/common"
 	"github.com/robocorp/rcc/pretty"
-	"github.com/robocorp/rcc/settings"
 )
 
 var (
-	longPathSupportArticle = settings.Global.DocsLink("product-manuals/robocorp-lab/troubleshooting#windows-has-to-have-long-filenames-support-on")
-	validPathCharacters    = regexp.MustCompile("(?i)^[.a-z0-9_:/\\\\~-]+$")
+	validPathCharacters = regexp.MustCompile("(?i)^[.a-z0-9_:/\\\\~-]+$")
 )
 
 func ValidLocation(value string) bool {
