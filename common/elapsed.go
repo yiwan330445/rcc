@@ -41,6 +41,12 @@ func (it *stopwatch) Elapsed() Duration {
 	return Duration(time.Since(it.started))
 }
 
+func (it *stopwatch) Debug() Duration {
+	elapsed := it.Elapsed()
+	Debug("%v %v", it.message, elapsed)
+	return elapsed
+}
+
 func (it *stopwatch) Log() Duration {
 	elapsed := it.Elapsed()
 	Log("%v %v", it.message, elapsed)

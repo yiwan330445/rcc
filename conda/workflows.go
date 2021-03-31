@@ -303,7 +303,7 @@ func temporaryConfig(condaYaml, requirementsText string, save bool, filenames ..
 	if err != nil {
 		return "", "", nil, err
 	}
-	hash := shortDigest(yaml)
+	hash := ShortDigest(yaml)
 	if !save {
 		return hash, yaml, right, nil
 	}
@@ -317,7 +317,7 @@ func temporaryConfig(condaYaml, requirementsText string, save bool, filenames ..
 	return hash, yaml, right, err
 }
 
-func shortDigest(content string) string {
+func ShortDigest(content string) string {
 	digester := sha256.New()
 	digester.Write([]byte(content))
 	result := Hexdigest(digester.Sum(nil))

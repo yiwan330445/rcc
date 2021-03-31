@@ -1,5 +1,10 @@
 # rcc change log
 
+## v9.9.0 (date: 31.3.2021)
+
+- added holotree as part of source code (but not as integrated part yet)
+- added new internal command: holotree
+
 ## v9.8.11 (date: 30.3.2021)
 
 - added Accept header to micromamba download command

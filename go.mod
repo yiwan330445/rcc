@@ -3,6 +3,7 @@ module github.com/robocorp/rcc
 go 1.14
 
 require (
+	github.com/dchest/siphash v1.2.2 // indirect
 	github.com/fsnotify/fsnotify v1.4.9 // indirect
 	github.com/go-bindata/go-bindata v3.1.2+incompatible // indirect
 	github.com/google/shlex v0.0.0-20191202100458-e7afc7fbc510

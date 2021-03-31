@@ -12,6 +12,14 @@ func Exists(pathname string) bool {
 	return !os.IsNotExist(err)
 }
 
+func Abs(path string) (string, error) {
+	fullpath, err := filepath.Abs(path)
+	if err != nil {
+		return "", err
+	}
+	return filepath.Clean(fullpath), nil
+}
+
 func IsDir(pathname string) bool {
 	stat, err := os.Stat(pathname)
 	if err != nil {
