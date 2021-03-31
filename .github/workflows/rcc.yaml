@@ -1,5 +1,7 @@
 name: Rcc
 on:
+    workflow_dispatch:
+        # enables manual triggering
     push:
         branches:
             - master
@@ -12,7 +14,7 @@ jobs:
         steps:
             - uses: actions/setup-go@v2
               with:
-                  go-version: '1.15.x'
+                  go-version: '1.16.x'
             - uses: actions/setup-ruby@v1
               with:
                   ruby-version: '2.5'
@@ -30,6 +32,9 @@ jobs:
             matrix:
                 os: ['ubuntu']
         steps:
+            - uses: actions/setup-go@v2
+              with:
+                  go-version: '1.16.x'
             - uses: actions/setup-ruby@v1
               with:
                   ruby-version: '2.5'
