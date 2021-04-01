@@ -19,9 +19,11 @@ var (
 	holotreeBlueprint []byte
 	holotreeProfiled  string
 	holotreeSpace     string
+	holotreeForce     bool
+	holotreeJson      bool
 )
 
-var holotreeCmd = &cobra.Command{
+var internalHolotreeCmd = &cobra.Command{
 	Use:     "holotree conda.yaml+",
 	Aliases: []string{"htfs"},
 	Short:   "Do holotree operations.",
@@ -64,21 +66,6 @@ var holotreeCmd = &cobra.Command{
 		err = os.RemoveAll(tree.Stage())
 		pretty.Guard(err == nil, 3, "Failed to clean stage, reason %v.", err)
 
-		common.Debug("Holotree stage is %q.", tree.Stage())
-		exists := tree.HasBlueprint(holotreeBlueprint)
-		common.Debug("Has blueprint environment: %v", exists)
-
-		if !exists {
-			identityfile := filepath.Join(tree.Stage(), "identity.yaml")
-			err = ioutil.WriteFile(identityfile, holotreeBlueprint, 0o640)
-			pretty.Guard(err == nil, 3, "Failed to save %q, reason %v.", identityfile, err)
-			label, err := conda.NewEnvironment(false, identityfile)
-			pretty.Guard(err == nil, 3, "Failed to create environment, reason %v.", err)
-			common.Debug("Label: %q", label)
-		}
-
-		anywork.Scale(17)
-
 		profiling := false
 		if holotreeProfiled != "" {
 			sink, err := os.Create(holotreeProfiled)
@@ -89,7 +76,22 @@ var holotreeCmd = &cobra.Command{
 			profiling = true
 		}
 
-		if !exists {
+		common.Debug("Holotree stage is %q.", tree.Stage())
+		exists := tree.HasBlueprint(holotreeBlueprint)
+		common.Debug("Has blueprint environment: %v", exists)
+
+		if holotreeForce || !exists {
+			identityfile := filepath.Join(tree.Stage(), "identity.yaml")
+			err = ioutil.WriteFile(identityfile, holotreeBlueprint, 0o640)
+			pretty.Guard(err == nil, 3, "Failed to save %q, reason %v.", identityfile, err)
+			label, err := conda.NewEnvironment(holotreeForce, identityfile)
+			pretty.Guard(err == nil, 3, "Failed to create environment, reason %v.", err)
+			common.Debug("Label: %q", label)
+		}
+
+		anywork.Scale(17)
+
+		if holotreeForce || !exists {
 			err := tree.Record(holotreeBlueprint)
 			pretty.Guard(err == nil, 7, "Failed to record blueprint %q, reason: %v", string(holotreeBlueprint), err)
 		}
@@ -99,13 +101,21 @@ var holotreeCmd = &cobra.Command{
 		if profiling {
 			pprof.StopCPUProfile()
 		}
-		fmt.Fprintln(os.Stdout, path)
+		fmt.Fprintln(os.Stderr, path)
+		env := conda.EnvironmentExtensionFor(path)
+		if holotreeJson {
+			asJson(env)
+		} else {
+			asExportedText(env)
+		}
 	},
 }
 
 func init() {
-	internalCmd.AddCommand(holotreeCmd)
-	holotreeCmd.Flags().StringVar(&holotreeSpace, "space", "", "Client specific name to identify this environment.")
-	holotreeCmd.MarkFlagRequired("space")
-	holotreeCmd.Flags().StringVar(&holotreeProfiled, "profile", "", "Filename to save profiling information.")
+	internalCmd.AddCommand(internalHolotreeCmd)
+	internalHolotreeCmd.Flags().StringVar(&holotreeSpace, "space", "", "Client specific name to identify this environment.")
+	internalHolotreeCmd.MarkFlagRequired("space")
+	internalHolotreeCmd.Flags().StringVar(&holotreeProfiled, "profile", "", "Filename to save profiling information.")
+	internalHolotreeCmd.Flags().BoolVar(&holotreeForce, "force", false, "Force environment creation with refresh.")
+	internalHolotreeCmd.Flags().BoolVar(&holotreeJson, "json", false, "Show environment as JSON.")
 }

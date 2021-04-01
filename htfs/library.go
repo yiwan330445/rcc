@@ -70,6 +70,7 @@ func (it *hololib) Stage() string {
 func (it *hololib) Record(blueprint []byte) error {
 	defer common.Stopwatch("Holotree recording took:").Debug()
 	key := textual(sipit(blueprint), 0)
+	common.Timeline("holotree record start %s", key)
 	fs, err := NewRoot(it.Stage())
 	if err != nil {
 		return err
@@ -85,6 +86,7 @@ func (it *hololib) Record(blueprint []byte) error {
 	}
 	score := &stats{}
 	err = fs.Treetop(ScheduleLifters(it, score))
+	defer common.Timeline("- new %d/%d", score.dirty, score.total)
 	common.Debug("Holotree new workload: %d/%d\n", score.dirty, score.total)
 	if err != nil {
 		return err
@@ -104,6 +106,7 @@ func (it *hololib) HasBlueprint(blueprint []byte) bool {
 func (it *hololib) Restore(blueprint, client, tag []byte) (string, error) {
 	defer common.Stopwatch("Holotree restore took:").Debug()
 	key := textual(sipit(blueprint), 0)
+	common.Timeline("holotree restore start %s", key)
 	prefix := textual(sipit(client), 9)
 	suffix := textual(sipit(tag), 8)
 	name := prefix + "_" + suffix
@@ -126,6 +129,7 @@ func (it *hololib) Restore(blueprint, client, tag []byte) (string, error) {
 	}
 	score := &stats{}
 	fs.AllDirs(RestoreDirectory(it, fs, score))
+	defer common.Timeline("- dirty %d/%d", score.dirty, score.total)
 	common.Debug("Holotree dirty workload: %d/%d\n", score.dirty, score.total)
 	return where, nil
 }

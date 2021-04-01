@@ -1,5 +1,9 @@
 # rcc change log
 
+## v9.9.2 (date: 1.4.2021)
+
+- more holotree integration work to get it more experimentable
+
 ## v9.9.1 (date: 31.3.2021)
 
 - Github Actions upgrade to use Go 1.16 for rcc compilation

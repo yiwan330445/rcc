@@ -48,6 +48,16 @@ func asJson(items []string) error {
 	return nil
 }
 
+func asExportedText(items []string) {
+	prefix := ""
+	if !conda.IsWindows() {
+		prefix = "export "
+	}
+	for _, line := range items {
+		common.Stdout("%s%s\n", prefix, line)
+	}
+}
+
 func asText(items []string) {
 	for _, line := range items {
 		common.Stdout("%s\n", line)
