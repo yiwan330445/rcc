@@ -69,6 +69,22 @@ Upgrading: `brew upgrade rcc`
 
 *[EULA for pre-built distribution.](https://cdn.robocorp.com/legal/Robocorp-EULA-v1.0.pdf)*
 
+## Bleeding edge (or specific versions)
+
+If you want to live on the edge, and do not worry about little unstability, following table gives pattern for downloading specific versions of rcc.
+
+Or if you want stability and live on specific version of rcc, these patterns also apply.
+
+And you can find versions and details from [change log](/docs/changelog.md) file.
+
+| OS       | Download URL (replace 0.0.0 with version you want to experiment with) |
+| -------- | --------------------------------------------------------------------- |
+| Windows  | https://downloads.robocorp.com/rcc/releases/v0.0.0/windows64/rcc.exe  |
+| macOS    | https://downloads.robocorp.com/rcc/releases/v0.0.0/macos64/rcc        |
+| Linux    | https://downloads.robocorp.com/rcc/releases/v0.0.0/linux64/rcc        |
+
+*[EULA for pre-built distribution.](https://cdn.robocorp.com/legal/Robocorp-EULA-v1.0.pdf)*
+
 ## Documentation
 
 Visit [https://robocorp.com/docs](https://robocorp.com/docs) to view the full documentation on the full Robocorp stack.

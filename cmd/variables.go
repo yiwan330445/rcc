@@ -49,18 +49,12 @@ func asJson(items []string) error {
 }
 
 func asExportedText(items []string) {
-	prefix := ""
-	if !conda.IsWindows() {
-		prefix = "export "
+	prefix := "export"
+	if conda.IsWindows() {
+		prefix = "SET"
 	}
 	for _, line := range items {
-		common.Stdout("%s%s\n", prefix, line)
-	}
-}
-
-func asText(items []string) {
-	for _, line := range items {
-		common.Stdout("%s\n", line)
+		common.Stdout("%s %s\n", prefix, line)
 	}
 }
 
@@ -125,7 +119,7 @@ func exportEnvironment(condaYaml []string, packfile, taskName, environment, work
 		return asJson(env)
 	}
 
-	asText(env)
+	asExportedText(env)
 	return nil
 }
 

@@ -1,5 +1,11 @@
 # rcc change log
 
+## v9.9.3 (date: 1.4.2021)
+
+- added export/SET prefix to `rcc env variables` command
+- updated README.md with patterns to version numbered releases
+- known bug: holotree does not work correctly yet -- DO NOT USE
+
 ## v9.9.2 (date: 1.4.2021)
 
 - more holotree integration work to get it more experimentable
