@@ -27,7 +27,7 @@ var (
 )
 
 func MicromambaLink() string {
-	return settings.Global.DownloadsLink("micromamba/v0.8.2/linux64/micromamba")
+	return settings.Global.DownloadsLink("micromamba/v0.9.2/linux64/micromamba")
 }
 
 func CondaEnvironment() []string {

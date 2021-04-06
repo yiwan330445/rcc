@@ -1,5 +1,9 @@
 # rcc change log
 
+## v9.9.5 (date: 30.3.2021)
+
+- micromamba upgrade to version 0.9.2
+
 ## v9.9.4 (date: 6.4.2021)
 
 - fix for holotree change detection when switching blueprints
