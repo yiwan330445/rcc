@@ -79,7 +79,9 @@ func (it *hololib) Record(blueprint []byte) error {
 	if err != nil {
 		return err
 	}
+	common.Timeline("holotree (re)locator start")
 	fs.AllFiles(Locator(it.Identity()))
+	common.Timeline("holotree (re)locator done")
 	err = fs.SaveAs(filepath.Join(it.basedir, "hololib", "catalog", key))
 	if err != nil {
 		return err
@@ -88,10 +90,7 @@ func (it *hololib) Record(blueprint []byte) error {
 	err = fs.Treetop(ScheduleLifters(it, score))
 	defer common.Timeline("- new %d/%d", score.dirty, score.total)
 	common.Debug("Holotree new workload: %d/%d\n", score.dirty, score.total)
-	if err != nil {
-		return err
-	}
-	return os.RemoveAll(it.Stage())
+	return err
 }
 
 func (it *hololib) CatalogPath(key string) string {
@@ -110,6 +109,16 @@ func (it *hololib) Restore(blueprint, client, tag []byte) (string, error) {
 	prefix := textual(sipit(client), 9)
 	suffix := textual(sipit(tag), 8)
 	name := prefix + "_" + suffix
+	metafile := filepath.Join(it.basedir, "holotree", fmt.Sprintf("%s.meta", name))
+	targetdir := filepath.Join(it.basedir, "holotree", name)
+	currentstate := make(map[string]string)
+	shadow, err := NewRoot(targetdir)
+	if err == nil {
+		err = shadow.LoadFrom(metafile)
+	}
+	if err == nil {
+		shadow.Treetop(DigestRecorder(currentstate))
+	}
 	fs, err := NewRoot(it.Stage())
 	if err != nil {
 		return "", err
@@ -118,8 +127,7 @@ func (it *hololib) Restore(blueprint, client, tag []byte) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	where := filepath.Join(it.basedir, "holotree", name)
-	err = fs.Relocate(where)
+	err = fs.Relocate(targetdir)
 	if err != nil {
 		return "", err
 	}
@@ -128,10 +136,14 @@ func (it *hololib) Restore(blueprint, client, tag []byte) (string, error) {
 		return "", err
 	}
 	score := &stats{}
-	fs.AllDirs(RestoreDirectory(it, fs, score))
+	fs.AllDirs(RestoreDirectory(it, fs, currentstate, score))
 	defer common.Timeline("- dirty %d/%d", score.dirty, score.total)
 	common.Debug("Holotree dirty workload: %d/%d\n", score.dirty, score.total)
-	return where, nil
+	err = fs.SaveAs(metafile)
+	if err != nil {
+		return "", err
+	}
+	return targetdir, nil
 }
 
 func sipit(key []byte) uint64 {

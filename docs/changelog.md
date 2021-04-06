@@ -1,5 +1,9 @@
 # rcc change log
 
+## v9.9.4 (date: 6.4.2021)
+
+- fix for holotree change detection when switching blueprints
+
 ## v9.9.3 (date: 1.4.2021)
 
 - added export/SET prefix to `rcc env variables` command

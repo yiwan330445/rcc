@@ -13,6 +13,20 @@ import (
 	"github.com/robocorp/rcc/trollhash"
 )
 
+func DigestRecorder(target map[string]string) Treetop {
+	var tool Treetop
+	tool = func(path string, it *Dir) error {
+		for name, subdir := range it.Dirs {
+			tool(filepath.Join(path, name), subdir)
+		}
+		for name, file := range it.Files {
+			target[filepath.Join(path, name)] = file.Digest
+		}
+		return nil
+	}
+	return tool
+}
+
 func Locator(seek string) Filetask {
 	return func(fullpath string, details *File) anywork.Work {
 		return func() {
@@ -158,7 +172,7 @@ func RemoveDirectory(dirname string) anywork.Work {
 	}
 }
 
-func RestoreDirectory(library Library, fs *Root, stats *stats) Dirtask {
+func RestoreDirectory(library Library, fs *Root, current map[string]string, stats *stats) Dirtask {
 	return func(path string, it *Dir) anywork.Work {
 		return func() {
 			source, err := os.Open(path)
@@ -196,7 +210,9 @@ func RestoreDirectory(library Library, fs *Root, stats *stats) Dirtask {
 					//fmt.Println("Extra file, remove:", directpath)
 					continue
 				}
-				ok = found.Match(info)
+				shadow, ok := current[directpath]
+				golden := !ok || found.Digest == shadow
+				ok = golden && found.Match(info)
 				stats.Dirty(!ok)
 				if !ok {
 					directory := library.Location(found.Digest)
