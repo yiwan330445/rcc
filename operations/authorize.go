@@ -174,7 +174,7 @@ func HmacSignature(claims *Claims, secret, nonce, bodyHash string) string {
 func AuthorizeClaims(accountName string, claims *Claims) (Token, error) {
 	account := AccountByName(accountName)
 	if account == nil {
-		return nil, fmt.Errorf("Could not find account by name: %s", accountName)
+		return nil, fmt.Errorf("Could not find account by name: %q", accountName)
 	}
 	client, err := cloud.NewClient(account.Endpoint)
 	if err != nil {

@@ -1,6 +1,18 @@
 # rcc change log
 
-## v9.9.5 (date: 30.3.2021)
+## v9.9.6 (date: 8.4.2021)
+
+- holotree note: in this series 9, holotree will remain experimental and
+  will not be used for production yet
+- added separate `holotree` subtree in command structure (it is not internal
+  anymore, but still hidden)
+- partial implementations of holotree variables and bootstrap commands
+- settings.yaml version 2021.04 update: now there is separate section
+  for templates
+- profiling option `--pprof` is now global level option
+- improved error message when rcc is not configured yet
+
+## v9.9.5 (date: 6.4.2021)
 
 - micromamba upgrade to version 0.9.2
 

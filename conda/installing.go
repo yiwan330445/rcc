@@ -21,7 +21,7 @@ func DoDownload(delay time.Duration) bool {
 
 	time.Sleep(delay)
 
-	err := DownloadMicromamba()
+	err := cloud.Download(MicromambaLink(), BinMicromamba())
 	if err != nil {
 		common.Fatal("Download", err)
 		os.Remove(BinMicromamba())

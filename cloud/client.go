@@ -1,13 +1,17 @@
 package cloud
 
 import (
+	"crypto/sha256"
 	"fmt"
 	"io"
 	"io/ioutil"
 	"net/http"
+	"os"
+	"path/filepath"
 	"strings"
 
 	"github.com/robocorp/rcc/common"
+	"github.com/robocorp/rcc/pathlib"
 	"github.com/robocorp/rcc/settings"
 	"github.com/robocorp/rcc/xviper"
 )
@@ -140,4 +144,56 @@ func (it *internalClient) Put(request *Request) *Response {
 
 func (it *internalClient) Delete(request *Request) *Response {
 	return it.does("DELETE", request)
+}
+
+func Download(url, filename string) error {
+	common.Timeline("start %s download", filename)
+	defer common.Timeline("done %s download", filename)
+
+	if pathlib.Exists(filename) {
+		err := os.Remove(filename)
+		if err != nil {
+			return err
+		}
+	}
+
+	client := &http.Client{Transport: settings.Global.ConfiguredHttpTransport()}
+	request, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return err
+	}
+	request.Header.Add("Accept", "application/octet-stream")
+	response, err := client.Do(request)
+	if err != nil {
+		return err
+	}
+	defer response.Body.Close()
+
+	if response.StatusCode < 200 || response.StatusCode >= 300 {
+		return fmt.Errorf("Downloading %q failed, reason: %q!", url, response.Status)
+	}
+
+	pathlib.EnsureDirectory(filepath.Dir(filename))
+	out, err := os.Create(filename)
+	if err != nil {
+		return err
+	}
+	defer out.Close()
+
+	digest := sha256.New()
+	many := io.MultiWriter(out, digest)
+
+	common.Debug("Downloading %s <%s> -> %s", url, response.Status, filename)
+
+	_, err = io.Copy(many, response.Body)
+	if err != nil {
+		return err
+	}
+
+	err = out.Sync()
+	if err != nil {
+		return err
+	}
+
+	return common.Debug("%q SHA256 sum: %02x", filename, digest.Sum(nil))
 }

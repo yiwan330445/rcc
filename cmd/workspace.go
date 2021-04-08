@@ -21,7 +21,7 @@ var workspaceCmd = &cobra.Command{
 		}
 		account := operations.AccountByName(AccountName())
 		if account == nil {
-			pretty.Exit(1, "Could not find account by name: %v", AccountName())
+			pretty.Exit(1, "Could not find account by name: %q", AccountName())
 		}
 		client, err := cloud.NewClient(account.Endpoint)
 		if err != nil {

@@ -278,7 +278,7 @@ func LocalChannel() (string, bool) {
 }
 
 func TemplateFrom(hash string) string {
-	return filepath.Join(common.TemplateLocation(), hash)
+	return filepath.Join(common.BaseLocation(), hash)
 }
 
 func LiveFrom(hash string) string {
@@ -289,7 +289,7 @@ func LiveFrom(hash string) string {
 }
 
 func TemplateList() []string {
-	return dirnamesFrom(common.TemplateLocation())
+	return dirnamesFrom(common.BaseLocation())
 }
 
 func LiveList() []string {
@@ -297,7 +297,7 @@ func LiveList() []string {
 }
 
 func OrphanList() []string {
-	result := orphansFrom(common.TemplateLocation())
+	result := orphansFrom(common.BaseLocation())
 	result = append(result, orphansFrom(common.LiveLocation())...)
 	return result
 }

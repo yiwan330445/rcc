@@ -47,6 +47,10 @@ func ensureDirectory(name string) string {
 	return name
 }
 
+func TemplateLocation() string {
+	return ensureDirectory(filepath.Join(RobocorpHome(), "templates"))
+}
+
 func BinLocation() string {
 	return ensureDirectory(filepath.Join(RobocorpHome(), "bin"))
 }
@@ -55,7 +59,7 @@ func LiveLocation() string {
 	return ensureDirectory(filepath.Join(RobocorpHome(), "live"))
 }
 
-func TemplateLocation() string {
+func BaseLocation() string {
 	return ensureDirectory(filepath.Join(RobocorpHome(), "base"))
 }
 

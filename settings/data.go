@@ -17,12 +17,13 @@ const (
 type StringMap map[string]string
 
 type Settings struct {
-	Autoupdates  StringMap     `yaml:"autoupdates" json:"autoupdates"`
-	Branding     StringMap     `yaml:"branding" json:"branding"`
-	Certificates *Certificates `yaml:"certificates" json:"certificates"`
-	Endpoints    *Endpoints    `yaml:"endpoints" json:"endpoints"`
-	Hosts        []string      `yaml:"diagnostics-hosts" json:"diagnostics-hosts"`
-	Meta         *Meta         `yaml:"meta" json:"meta"`
+	Autoupdates  StringMap         `yaml:"autoupdates" json:"autoupdates"`
+	Branding     StringMap         `yaml:"branding" json:"branding"`
+	Certificates *Certificates     `yaml:"certificates" json:"certificates"`
+	Endpoints    *Endpoints        `yaml:"endpoints" json:"endpoints"`
+	Hosts        []string          `yaml:"diagnostics-hosts" json:"diagnostics-hosts"`
+	Templates    map[string]string `yaml:"templates" json:"templates"`
+	Meta         *Meta             `yaml:"meta" json:"meta"`
 }
 
 func FromBytes(raw []byte) (*Settings, error) {

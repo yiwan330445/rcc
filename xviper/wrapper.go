@@ -110,6 +110,10 @@ func runner(todo <-chan command) {
 	}
 }
 
+func IsAvailable() bool {
+	return len(AllKeys()) > 0
+}
+
 func SetConfigFile(in string) {
 	pipeline <- func(core *config) {
 		core.Reset(in)

@@ -45,7 +45,12 @@ func init() {
 	go timeliner(pipe, done)
 }
 
+func IgnoreAllPanics() {
+	recover()
+}
+
 func Timeline(form string, details ...interface{}) {
+	defer IgnoreAllPanics()
 	pipe <- fmt.Sprintf(form, details...)
 }
 

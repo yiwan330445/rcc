@@ -35,7 +35,7 @@ var e2eeCmd = &cobra.Command{
 
 func version1encryption(args []string) {
 	account := operations.AccountByName(AccountName())
-	pretty.Guard(account != nil, 1, "Could not find account by name: %v", AccountName())
+	pretty.Guard(account != nil, 1, "Could not find account by name: %q", AccountName())
 
 	client, err := cloud.NewClient(account.Endpoint)
 	pretty.Guard(err == nil, 2, "Could not create client for endpoint: %v, reason: %v", account.Endpoint, err)
@@ -58,7 +58,7 @@ func version1encryption(args []string) {
 
 func version2encryption(args []string) {
 	account := operations.AccountByName(AccountName())
-	pretty.Guard(account != nil, 1, "Could not find account by name: %v", AccountName())
+	pretty.Guard(account != nil, 1, "Could not find account by name: %q", AccountName())
 
 	client, err := cloud.NewClient(account.Endpoint)
 	pretty.Guard(err == nil, 2, "Could not create client for endpoint: %v, reason: %v", account.Endpoint, err)

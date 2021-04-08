@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"runtime/pprof"
 	"strings"
 
 	"github.com/robocorp/rcc/common"
@@ -13,6 +14,11 @@ import (
 	"github.com/robocorp/rcc/xviper"
 
 	"github.com/spf13/cobra"
+)
+
+var (
+	profilefile string
+	profiling   *os.File
 )
 
 func toplevelCommands(parent *cobra.Command) {
@@ -68,14 +74,22 @@ func Origin() string {
 }
 
 func Execute() {
-	if err := rootCmd.Execute(); err != nil {
-		pretty.Exit(1, "Error: [rcc %v] %v", common.Version, err)
-	}
+	defer func() {
+		if profiling != nil {
+			pprof.StopCPUProfile()
+			profiling.Sync()
+			profiling.Close()
+		}
+	}()
+
+	err := rootCmd.Execute()
+	pretty.Guard(err == nil, 1, "Error: [rcc %v] %v", common.Version, err)
 }
 
 func init() {
 	cobra.OnInitialize(initConfig)
 
+	rootCmd.PersistentFlags().StringVar(&profilefile, "pprof", "", "Filename to save profiling information.")
 	rootCmd.PersistentFlags().StringVar(&common.ControllerType, "controller", "user", "internal, DO NOT USE (unless you know what you are doing)")
 	rootCmd.PersistentFlags().StringVar(&common.SemanticTag, "tag", "transient", "semantic reason/context, why are you invoking rcc")
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $ROBOCORP/rcc.yaml)")
@@ -92,6 +106,13 @@ func init() {
 }
 
 func initConfig() {
+	if profilefile != "" {
+		sink, err := os.Create(profilefile)
+		pretty.Guard(err == nil, 5, "Failed to create profile file %q, reason %v.", profilefile, err)
+		err = pprof.StartCPUProfile(sink)
+		pretty.Guard(err == nil, 6, "Failed to start CPU profile, reason %v.", err)
+		profiling = sink
+	}
 	if cfgFile != "" {
 		xviper.SetConfigFile(cfgFile)
 	} else {

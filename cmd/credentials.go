@@ -68,7 +68,7 @@ var credentialsCmd = &cobra.Command{
 func localDelete(accountName string) {
 	account := operations.AccountByName(accountName)
 	if account == nil {
-		pretty.Exit(1, "Could not find account by name: %v", accountName)
+		pretty.Exit(1, "Could not find account by name: %q", accountName)
 	}
 	err := account.Delete()
 	if err != nil {

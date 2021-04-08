@@ -10,6 +10,7 @@ import (
 
 	"github.com/robocorp/rcc/cloud"
 	"github.com/robocorp/rcc/common"
+	"github.com/robocorp/rcc/pretty"
 	"github.com/robocorp/rcc/settings"
 	"github.com/robocorp/rcc/xviper"
 )
@@ -82,6 +83,10 @@ func VerifyAccounts(force bool) {
 		}
 		UserinfoCommand(client, entry)
 	}
+}
+
+func (it *account) IsValid() bool {
+	return len(it.Endpoint) > 0 && len(it.Account) > 0
 }
 
 func (it *account) CacheKey() string {
@@ -237,11 +242,12 @@ func AccountByName(label string) *account {
 	if dynamic != nil {
 		return createEphemeralAccount(dynamic)
 	}
+	pretty.Guard(xviper.IsAvailable(), 1, "This rcc is not configured yet. Please, fix that first.")
 	if len(label) == 0 {
 		label = DefaultAccountName()
 	}
 	found := loadAccount(label)
-	if found.Account == label {
+	if found.Account == label && found.IsValid() {
 		return found
 	}
 	return nil
