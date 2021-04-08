@@ -1,5 +1,10 @@
 # rcc change log
 
+## v9.9.7 (date: 8.4.2021)
+
+- now `rcc holotree bootstrap` can only download templates with `--quick`
+  flag, or otherwise also prepare environment based on that template
+
 ## v9.9.6 (date: 8.4.2021)
 
 - holotree note: in this series 9, holotree will remain experimental and
