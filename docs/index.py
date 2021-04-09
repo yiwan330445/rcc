@@ -53,8 +53,9 @@ TAG_PATTERN = re.compile(r'^(v[0-9.]+)\D*$')
 
 DIRECTORY = pathlib.Path(__file__).parent.absolute()
 CHANGELOG = DIRECTORY.joinpath('changelog.md')
+REPO_ROOT = DIRECTORY.parent.absolute()
 
-TAGLISTING = "git tag --list --sort='-taggerdate'"
+TAGLISTING = f"git -C {REPO_ROOT} tag --list --sort='-taggerdate'"
 
 def sh(command):
     task = subprocess.Popen([command], shell=True, stderr=subprocess.STDOUT, stdout=subprocess.PIPE)

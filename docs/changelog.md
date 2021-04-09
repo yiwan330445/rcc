@@ -1,5 +1,9 @@
 # rcc change log
 
+## v9.9.9 (date: 9.4.2021)
+
+- fixed index.py utility tool to work in correct repository
+
 ## v9.9.8 (date: 9.4.2021)
 
 - skip environment bootstrap when there is no conda.yaml used
