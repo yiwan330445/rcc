@@ -22,7 +22,7 @@ jobs:
             - name: What
               run: rake what
             - name: Building
-              run: rake build
+              run: rake clean build
 
     robot:
         name: Robot
@@ -47,7 +47,7 @@ jobs:
             - name: What
               run: rake what
             - name: Testing
-              run: rake robot
+              run: rake clean robot
             - uses: actions/upload-artifact@v1
               if: success() || failure()
               with:

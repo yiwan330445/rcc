@@ -1,5 +1,10 @@
 # rcc change log
 
+## v9.9.8 (date: 9.4.2021)
+
+- skip environment bootstrap when there is no conda.yaml used
+- added index.py utility tool for generating index.html for S3
+
 ## v9.9.7 (date: 8.4.2021)
 
 - now `rcc holotree bootstrap` can only download templates with `--quick`
@@ -39,7 +44,7 @@
 
 - Github Actions upgrade to use Go 1.16 for rcc compilation
 
-## v9.9.0 (date: 31.3.2021)
+## v9.9.0 (date: 31.3.2021) broken
 
 - added holotree as part of source code (but not as integrated part yet)
 - added new internal command: holotree

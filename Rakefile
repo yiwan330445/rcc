@@ -33,6 +33,10 @@ task :assets do
   sh "$HOME/go/bin/go-bindata -o blobs/assets.go -pkg blobs assets/*.yaml assets/*.zip assets/man/* docs/changelog.md"
 end
 
+task :clean do
+  sh 'rm -rf build/'
+end
+
 task :support do
   sh 'mkdir -p tmp build/linux64 build/macos64 build/windows64'
 end
@@ -81,12 +85,16 @@ task :robot => :local do
 end
 
 desc 'Build commands to linux, macos, and windows.'
-task :build => [:tooling, :version_txt, :linux64, :macos64, :windows64] do
+task :build => [:tooling, :version_txt, :index_html, :linux64, :macos64, :windows64] do
   sh 'ls -l $(find build -type f)'
 end
 
 def version
   `sed -n -e '/Version/{s/^.*\`v//;s/\`$//p}' common/version.go`.strip
+end
+
+task :index_html => :support do
+  sh 'docs/index.py > build/index.html'
 end
 
 task :version_txt => :support do

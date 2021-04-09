@@ -10,6 +10,18 @@ import (
 	"github.com/robocorp/rcc/fail"
 )
 
+func RecordCondaEnvironment(condafile string, force bool) (lib Library, err error) {
+	defer fail.Around(&err)
+
+	right, err := conda.ReadCondaYaml(condafile)
+	fail.On(err != nil, "Could not load environmet config %q, reason: %w", condafile, err)
+
+	content, err := right.AsYaml()
+	fail.On(err != nil, "YAML error with %q, reason: %w", condafile, err)
+
+	return RecordEnvironment([]byte(content), force)
+}
+
 func RecordEnvironment(blueprint []byte, force bool) (lib Library, err error) {
 	defer fail.Around(&err)
 

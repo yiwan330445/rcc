@@ -30,13 +30,11 @@ func updateEnvironments(robots []string) {
 		targetRobot := robot.DetectConfigurationName(workarea)
 		config, err := robot.LoadRobotYaml(targetRobot, false)
 		pretty.Guard(err == nil, 2, "Could not load robot config %q, reason: %w", targetRobot, err)
+		if !config.UsesConda() {
+			continue
+		}
 		condafile := config.CondaConfigFile()
-		right, err := conda.ReadCondaYaml(condafile)
-		pretty.Guard(err == nil, 2, "Could not load environmet config %q, reason: %w", condafile, err)
-		content, err := right.AsYaml()
-		pretty.Guard(err == nil, 2, "YAML error: %v", err)
-		holotreeBlueprint := []byte(content)
-		_, err = htfs.RecordEnvironment(holotreeBlueprint, false)
+		_, err = htfs.RecordCondaEnvironment(condafile, false)
 		pretty.Guard(err == nil, 2, "Holotree recording error: %v", err)
 	}
 }
