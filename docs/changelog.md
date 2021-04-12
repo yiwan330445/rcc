@@ -1,5 +1,10 @@
 # rcc change log
 
+## v9.9.10 (date: 12.4.2021)
+
+- removed index.py utility, since better place is on other repo, and it
+  was mistake to put it here
+
 ## v9.9.9 (date: 9.4.2021)
 
 - fixed index.py utility tool to work in correct repository

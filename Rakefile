@@ -85,16 +85,12 @@ task :robot => :local do
 end
 
 desc 'Build commands to linux, macos, and windows.'
-task :build => [:tooling, :version_txt, :index_html, :linux64, :macos64, :windows64] do
+task :build => [:tooling, :version_txt, :linux64, :macos64, :windows64] do
   sh 'ls -l $(find build -type f)'
 end
 
 def version
   `sed -n -e '/Version/{s/^.*\`v//;s/\`$//p}' common/version.go`.strip
-end
-
-task :index_html => :support do
-  sh 'docs/index.py > build/index.html'
 end
 
 task :version_txt => :support do
