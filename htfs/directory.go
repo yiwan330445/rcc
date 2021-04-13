@@ -33,10 +33,13 @@ type Dirtask func(string, *Dir) anywork.Work
 type Treetop func(string, *Dir) error
 
 type Root struct {
-	Identity string `json:"identity"`
-	Path     string `json:"path"`
-	Lifted   bool   `json:"lifted"`
-	Tree     *Dir   `json:"tree"`
+	Identity   string `json:"identity"`
+	Path       string `json:"path"`
+	Controller string `json:"controller"`
+	Space      string `json:"space"`
+	Blueprint  string `json:"blueprint"`
+	Lifted     bool   `json:"lifted"`
+	Tree       *Dir   `json:"tree"`
 }
 
 func NewRoot(path string) (*Root, error) {

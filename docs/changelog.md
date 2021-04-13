@@ -1,5 +1,9 @@
 # rcc change log
 
+## v9.9.11 (date: 13.4.2021)
+
+- added support for listing holotree controller spaces
+
 ## v9.9.10 (date: 12.4.2021)
 
 - removed index.py utility, since better place is on other repo, and it

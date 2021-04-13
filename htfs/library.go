@@ -39,6 +39,7 @@ func (it *stats) Dirty(dirty bool) {
 type Library interface {
 	Identity() string
 	Stage() string
+	Spaces() []*Root
 	Record([]byte) error
 	Restore([]byte, []byte, []byte) (string, error)
 	Location(string) string
@@ -50,8 +51,16 @@ type hololib struct {
 	basedir  string
 }
 
+func (it *hololib) HololibDir() string {
+	return filepath.Join(it.basedir, "hololib")
+}
+
+func (it *hololib) HolotreeDir() string {
+	return filepath.Join(it.basedir, "holotree")
+}
+
 func (it *hololib) Location(digest string) string {
-	return filepath.Join(it.basedir, "hololib", "library", digest[:2], digest[2:4], digest[4:6])
+	return filepath.Join(it.HololibDir(), "library", digest[:2], digest[2:4], digest[4:6])
 }
 
 func (it *hololib) Identity() string {
@@ -59,7 +68,7 @@ func (it *hololib) Identity() string {
 }
 
 func (it *hololib) Stage() string {
-	stage := filepath.Join(it.basedir, "holotree", it.Identity())
+	stage := filepath.Join(it.HolotreeDir(), it.Identity())
 	err := os.MkdirAll(stage, 0o755)
 	if err != nil {
 		panic(err)
@@ -82,7 +91,8 @@ func (it *hololib) Record(blueprint []byte) error {
 	common.Timeline("holotree (re)locator start")
 	fs.AllFiles(Locator(it.Identity()))
 	common.Timeline("holotree (re)locator done")
-	err = fs.SaveAs(filepath.Join(it.basedir, "hololib", "catalog", key))
+	fs.Blueprint = key
+	err = fs.SaveAs(filepath.Join(it.HololibDir(), "catalog", key))
 	if err != nil {
 		return err
 	}
@@ -94,12 +104,31 @@ func (it *hololib) Record(blueprint []byte) error {
 }
 
 func (it *hololib) CatalogPath(key string) string {
-	return filepath.Join(it.basedir, "hololib", "catalog", key)
+	return filepath.Join(it.HololibDir(), "catalog", key)
 }
 
 func (it *hololib) HasBlueprint(blueprint []byte) bool {
 	key := textual(sipit(blueprint), 0)
 	return pathlib.IsFile(it.CatalogPath(key))
+}
+
+func (it *hololib) Spaces() []*Root {
+	basedir := it.HolotreeDir()
+	metafiles := pathlib.Glob(basedir, "*.meta")
+	roots := make([]*Root, 0, len(metafiles))
+	for _, metafile := range metafiles {
+		fullpath := filepath.Join(basedir, metafile)
+		root, err := NewRoot(fullpath[:len(fullpath)-5])
+		if err != nil {
+			continue
+		}
+		err = root.LoadFrom(fullpath)
+		if err != nil {
+			continue
+		}
+		roots = append(roots, root)
+	}
+	return roots
 }
 
 func (it *hololib) Restore(blueprint, client, tag []byte) (string, error) {
@@ -109,8 +138,8 @@ func (it *hololib) Restore(blueprint, client, tag []byte) (string, error) {
 	prefix := textual(sipit(client), 9)
 	suffix := textual(sipit(tag), 8)
 	name := prefix + "_" + suffix
-	metafile := filepath.Join(it.basedir, "holotree", fmt.Sprintf("%s.meta", name))
-	targetdir := filepath.Join(it.basedir, "holotree", name)
+	metafile := filepath.Join(it.HolotreeDir(), fmt.Sprintf("%s.meta", name))
+	targetdir := filepath.Join(it.HolotreeDir(), name)
 	currentstate := make(map[string]string)
 	shadow, err := NewRoot(targetdir)
 	if err == nil {
@@ -123,7 +152,7 @@ func (it *hololib) Restore(blueprint, client, tag []byte) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	err = fs.LoadFrom(filepath.Join(it.basedir, "hololib", "catalog", key))
+	err = fs.LoadFrom(filepath.Join(it.HololibDir(), "catalog", key))
 	if err != nil {
 		return "", err
 	}
@@ -139,6 +168,8 @@ func (it *hololib) Restore(blueprint, client, tag []byte) (string, error) {
 	fs.AllDirs(RestoreDirectory(it, fs, currentstate, score))
 	defer common.Timeline("- dirty %d/%d", score.dirty, score.total)
 	common.Debug("Holotree dirty workload: %d/%d\n", score.dirty, score.total)
+	fs.Controller = string(client)
+	fs.Space = string(tag)
 	err = fs.SaveAs(metafile)
 	if err != nil {
 		return "", err

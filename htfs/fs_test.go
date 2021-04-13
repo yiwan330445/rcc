@@ -32,7 +32,7 @@ func TestHTFSspecification(t *testing.T) {
 	wont.Nil(reloaded)
 	before, err := reloaded.AsJson()
 	must.Nil(err)
-	must.True(len(before) < 200)
+	must.True(len(before) < 300)
 	wont.Equal(fs.Path, reloaded.Path)
 
 	must.Nil(reloaded.LoadFrom(filename))
