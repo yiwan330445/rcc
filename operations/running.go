@@ -45,6 +45,19 @@ func PipFreeze(searchPath pathlib.PathParts, directory, outputDir string, enviro
 	return true
 }
 
+func LoadAnyTaskEnvironment(packfile string, force bool) (bool, robot.Robot, robot.Task, string) {
+	FixRobot(packfile)
+	config, err := robot.LoadRobotYaml(packfile, true)
+	if err != nil {
+		pretty.Exit(1, "Error: %v", err)
+	}
+	anytasks := config.AvailableTasks()
+	if len(anytasks) == 0 {
+		pretty.Exit(1, "Could not find tasks from %q.", packfile)
+	}
+	return LoadTaskWithEnvironment(packfile, anytasks[0], force)
+}
+
 func LoadTaskWithEnvironment(packfile, theTask string, force bool) (bool, robot.Robot, robot.Task, string) {
 	FixRobot(packfile)
 	config, err := robot.LoadRobotYaml(packfile, true)

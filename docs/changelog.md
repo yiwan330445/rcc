@@ -1,5 +1,10 @@
 # rcc change log
 
+## v9.9.14 (date: 15.4.2021)
+
+- environment variables conda.yaml ordering fix (from robot.yaml first)
+- task shell does not need task specified anymore
+
 ## v9.9.13 (date: 15.4.2021)
 
 - fixing environment variables bug from below

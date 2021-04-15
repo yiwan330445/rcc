@@ -58,12 +58,14 @@ func asExportedText(items []string) {
 	}
 }
 
-func exportEnvironment(condaYaml []string, packfile, environment, workspace string, validity int, jsonform bool) error {
+func exportEnvironment(userCondaYaml []string, packfile, environment, workspace string, validity int, jsonform bool) error {
 	var err error
 	var config robot.Robot
 	var task robot.Task
 	var extra []string
 	var data operations.Token
+
+	condaYaml := make([]string, 0, len(userCondaYaml)+2)
 
 	if Has(packfile) {
 		config, err = robot.LoadRobotYaml(packfile, false)
@@ -75,6 +77,8 @@ func exportEnvironment(condaYaml []string, packfile, environment, workspace stri
 			}
 		}
 	}
+
+	condaYaml = append(condaYaml, userCondaYaml...)
 
 	if Has(environment) {
 		developmentEnvironment, err := robot.LoadEnvironmentSetup(environmentFile)

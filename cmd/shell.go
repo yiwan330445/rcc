@@ -25,7 +25,7 @@ command within that environment.`,
 		if !ok {
 			pretty.Exit(2, "Could not get micromamba installed.")
 		}
-		simple, config, todo, label := operations.LoadTaskWithEnvironment(robotFile, runTask, forceFlag)
+		simple, config, todo, label := operations.LoadAnyTaskEnvironment(robotFile, forceFlag)
 		if simple {
 			pretty.Exit(1, "Cannot do shell for simple execution model.")
 		}
@@ -38,6 +38,6 @@ func init() {
 
 	shellCmd.Flags().StringVarP(&environmentFile, "environment", "e", "", "Full path to the 'env.json' development environment data file.")
 	shellCmd.Flags().StringVarP(&robotFile, "robot", "r", "robot.yaml", "Full path to the 'robot.yaml' configuration file.")
-	shellCmd.Flags().StringVarP(&runTask, "task", "t", "", "Task to configure shell from configuration file.")
+	shellCmd.Flags().StringVarP(&runTask, "task", "t", "", "Task to configure shell from configuration file. <deprecated, non-functional>")
 	shellCmd.MarkFlagRequired("config")
 }
