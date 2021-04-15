@@ -523,7 +523,7 @@ func CloneFromTo(source, target string, copier pathlib.Copier) (bool, error) {
 	if err != nil {
 		return false, nil
 	}
-	success := cloneFolder(source, target, 8, copier)
+	success := cloneFolder(source, target, 100, copier)
 	if !success {
 		err = removeClone(target)
 		if err != nil {

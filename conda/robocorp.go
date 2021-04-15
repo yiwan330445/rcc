@@ -19,7 +19,6 @@ import (
 
 var (
 	ignoredPaths     = []string{"python", "conda"}
-	pythonPaths      = []string{"resources", "libraries", "tasks", "variables"}
 	hashPattern      = regexp.MustCompile("^[0-9a-f]{16}(?:\\.meta)?$")
 	randomIdentifier string
 )
@@ -152,10 +151,6 @@ func FindPath(environment string) pathlib.PathParts {
 	return target
 }
 
-func PythonPath() pathlib.PathParts {
-	return pathlib.PathFrom(pythonPaths...)
-}
-
 func EnvironmentExtensionFor(location string) []string {
 	environment := make([]string, 0, 20)
 	searchPath := FindPath(location)
@@ -182,7 +177,6 @@ func EnvironmentExtensionFor(location string) []string {
 		"TEMP="+RobocorpTemp(),
 		"TMP="+RobocorpTemp(),
 		searchPath.AsEnvironmental("PATH"),
-		PythonPath().AsEnvironmental("PYTHONPATH"),
 	)
 	environment = append(environment, LoadActivationEnvironment(location)...)
 	return environment

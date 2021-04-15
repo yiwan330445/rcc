@@ -97,7 +97,9 @@ func (it *hololib) Record(blueprint []byte) error {
 		return err
 	}
 	score := &stats{}
+	common.Timeline("holotree lift start")
 	err = fs.Treetop(ScheduleLifters(it, score))
+	common.Timeline("holotree lift done")
 	defer common.Timeline("- new %d/%d", score.dirty, score.total)
 	common.Debug("Holotree new workload: %d/%d\n", score.dirty, score.total)
 	return err
@@ -146,7 +148,9 @@ func (it *hololib) Restore(blueprint, client, tag []byte) (string, error) {
 		err = shadow.LoadFrom(metafile)
 	}
 	if err == nil {
+		common.Timeline("holotree digest start")
 		shadow.Treetop(DigestRecorder(currentstate))
+		common.Timeline("holotree digest done")
 	}
 	fs, err := NewRoot(it.Stage())
 	if err != nil {
@@ -160,12 +164,16 @@ func (it *hololib) Restore(blueprint, client, tag []byte) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	common.Timeline("holotree make branches start")
 	err = fs.Treetop(MakeBranches)
+	common.Timeline("holotree make branches done")
 	if err != nil {
 		return "", err
 	}
 	score := &stats{}
+	common.Timeline("holotree restore start")
 	fs.AllDirs(RestoreDirectory(it, fs, currentstate, score))
+	common.Timeline("holotree restore done")
 	defer common.Timeline("- dirty %d/%d", score.dirty, score.total)
 	common.Debug("Holotree dirty workload: %d/%d\n", score.dirty, score.total)
 	fs.Controller = string(client)

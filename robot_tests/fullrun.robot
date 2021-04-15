@@ -125,7 +125,6 @@ Using and running template example with shell file
   Must Have   CONDA_PROMPT_MODIFIER=(rcc)
   Must Have   CONDA_SHLVL=1
   Must Have   PATH=
-  Must Have   PYTHONPATH=
   Must Have   PYTHONHOME=
   Must Have   PYTHONEXECUTABLE=
   Must Have   PYTHONNOUSERSITE=1
@@ -134,6 +133,7 @@ Using and running template example with shell file
   Must Have   RCC_ENVIRONMENT_HASH=
   Must Have   RCC_INSTALLATION_ID=
   Must Have   RCC_TRACKING_ALLOWED=
+  Wont Have   PYTHONPATH=
   Wont Have   ROBOT_ROOT=
   Wont Have   ROBOT_ARTIFACTS=
   Must Have   f0a9e281269b31ea

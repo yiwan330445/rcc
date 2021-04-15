@@ -1,5 +1,15 @@
 # rcc change log
 
+## v9.9.12 (date: 15.4.2021)
+
+- updated rpaframework to version 9.5.0 in templates
+- added more timeline entries around holotree
+- minor performance related changes for holotree
+- removed default PYTHONPATH settings from "taskless" environment
+- known, remaining bug: on "env variables" command, with robot without default
+  task and without task given in CLI, environment wont have PATH or PYTHONPATH
+  or robot details setup correctly
+
 ## v9.9.11 (date: 13.4.2021)
 
 - added support for listing holotree controller spaces

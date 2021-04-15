@@ -11,6 +11,7 @@ import (
 	"path/filepath"
 
 	"github.com/robocorp/rcc/anywork"
+	"github.com/robocorp/rcc/common"
 	"github.com/robocorp/rcc/pathlib"
 )
 
@@ -88,17 +89,20 @@ func (it *Root) Lift() error {
 
 func (it *Root) Treetop(task Treetop) error {
 	err := task(it.Path, it.Tree)
+	common.Timeline("holotree treetop sync")
 	anywork.Sync()
 	return err
 }
 
 func (it *Root) AllDirs(task Dirtask) {
 	it.Tree.AllDirs(it.Path, task)
+	common.Timeline("holotree dirs sync")
 	anywork.Sync()
 }
 
 func (it *Root) AllFiles(task Filetask) {
 	it.Tree.AllFiles(it.Path, task)
+	common.Timeline("holotree files sync")
 	anywork.Sync()
 }
 
@@ -177,12 +181,7 @@ func (it *Dir) Lift(path string) error {
 		return err
 	}
 	it.Mode = stat.Mode()
-	source, err := os.Open(path)
-	if err != nil {
-		return err
-	}
-	defer source.Close()
-	content, err := source.ReadDir(-1)
+	content, err := os.ReadDir(path)
 	if err != nil {
 		return err
 	}

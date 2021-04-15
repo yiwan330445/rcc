@@ -48,7 +48,7 @@ var holotreeVariablesCmd = &cobra.Command{
 		ok := conda.MustMicromamba()
 		pretty.Guard(ok, 1, "Could not get micromamba installed.")
 
-		anywork.Scale(25)
+		anywork.Scale(200)
 
 		tree, err := htfs.RecordEnvironment(holotreeBlueprint, holotreeForce)
 		pretty.Guard(err == nil, 2, "%w", err)

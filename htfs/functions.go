@@ -116,6 +116,26 @@ func LiftFile(sourcename, sinkname string) anywork.Work {
 	}
 }
 
+func LiftFlatFile(sourcename, sinkname string) anywork.Work {
+	return func() {
+		source, err := os.Open(sourcename)
+		if err != nil {
+			panic(err)
+		}
+		defer source.Close()
+		sink, err := os.Create(sinkname)
+		if err != nil {
+			panic(err)
+		}
+		defer sink.Close()
+		_, err = io.Copy(sink, source)
+		if err != nil {
+			panic(err)
+		}
+		sink.Sync()
+	}
+}
+
 func DropFile(sourcename, sinkname string, details *File, rewrite []byte) anywork.Work {
 	return func() {
 		source, err := os.Open(sourcename)
@@ -134,6 +154,39 @@ func DropFile(sourcename, sinkname string, details *File, rewrite []byte) anywor
 		}
 		defer sink.Close()
 		_, err = io.Copy(sink, reader)
+		if err != nil {
+			panic(err)
+		}
+		sink.Sync()
+		for _, position := range details.Rewrite {
+			_, err = sink.Seek(position, 0)
+			if err != nil {
+				panic(fmt.Sprintf("%v %d", err, position))
+			}
+			_, err = sink.Write(rewrite)
+			if err != nil {
+				panic(err)
+			}
+		}
+		sink.Sync()
+		os.Chmod(sinkname, details.Mode)
+		os.Chtimes(sinkname, motherTime, motherTime)
+	}
+}
+
+func DropFlatFile(sourcename, sinkname string, details *File, rewrite []byte) anywork.Work {
+	return func() {
+		source, err := os.Open(sourcename)
+		if err != nil {
+			panic(err)
+		}
+		defer source.Close()
+		sink, err := os.Create(sinkname)
+		if err != nil {
+			panic(err)
+		}
+		defer sink.Close()
+		_, err = io.Copy(sink, source)
 		if err != nil {
 			panic(err)
 		}
@@ -175,16 +228,10 @@ func RemoveDirectory(dirname string) anywork.Work {
 func RestoreDirectory(library Library, fs *Root, current map[string]string, stats *stats) Dirtask {
 	return func(path string, it *Dir) anywork.Work {
 		return func() {
-			source, err := os.Open(path)
+			content, err := os.ReadDir(path)
 			if err != nil {
 				panic(err)
 			}
-			content, err := source.ReadDir(-1)
-			source.Close()
-			if err != nil {
-				panic(err)
-			}
-			dirs := make(map[string]bool)
 			files := make(map[string]bool)
 			for _, part := range content {
 				directpath := filepath.Join(path, part.Name())
@@ -193,12 +240,10 @@ func RestoreDirectory(library Library, fs *Root, current map[string]string, stat
 					panic(err)
 				}
 				if info.IsDir() {
-					dirs[part.Name()] = true
 					_, ok := it.Dirs[part.Name()]
 					stats.Dirty(!ok)
 					if !ok {
 						anywork.Backlog(RemoveDirectory(directpath))
-						//fmt.Println("Extra dir, remove:", directpath)
 					}
 					continue
 				}
@@ -207,7 +252,6 @@ func RestoreDirectory(library Library, fs *Root, current map[string]string, stat
 				if !ok {
 					stats.Dirty(true)
 					anywork.Backlog(RemoveFile(directpath))
-					//fmt.Println("Extra file, remove:", directpath)
 					continue
 				}
 				shadow, ok := current[directpath]
@@ -218,7 +262,6 @@ func RestoreDirectory(library Library, fs *Root, current map[string]string, stat
 					directory := library.Location(found.Digest)
 					droppath := filepath.Join(directory, found.Digest)
 					anywork.Backlog(DropFile(droppath, directpath, found, fs.Rewrite()))
-					//fmt.Println("Corrupted file, restore:", directpath)
 				}
 			}
 			for name, found := range it.Files {
@@ -229,7 +272,6 @@ func RestoreDirectory(library Library, fs *Root, current map[string]string, stat
 					directory := library.Location(found.Digest)
 					droppath := filepath.Join(directory, found.Digest)
 					anywork.Backlog(DropFile(droppath, directpath, found, fs.Rewrite()))
-					//fmt.Println("Missing file, restore:", directpath)
 				}
 			}
 		}
