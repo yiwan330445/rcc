@@ -58,7 +58,7 @@ func asExportedText(items []string) {
 	}
 }
 
-func exportEnvironment(condaYaml []string, packfile, taskName, environment, workspace string, validity int, jsonform bool) error {
+func exportEnvironment(condaYaml []string, packfile, environment, workspace string, validity int, jsonform bool) error {
 	var err error
 	var config robot.Robot
 	var task robot.Task
@@ -69,7 +69,10 @@ func exportEnvironment(condaYaml []string, packfile, taskName, environment, work
 		config, err = robot.LoadRobotYaml(packfile, false)
 		if err == nil {
 			condaYaml = append(condaYaml, config.CondaConfigFile())
-			task = config.TaskByName(taskName)
+			available := config.AvailableTasks()
+			if len(available) > 0 {
+				task = config.TaskByName(available[0])
+			}
 		}
 	}
 
@@ -133,7 +136,7 @@ var variablesCmd = &cobra.Command{
 		if !ok {
 			pretty.Exit(2, "Could not get micromamba installed.")
 		}
-		err := exportEnvironment(args, robotFile, runTask, environmentFile, workspaceId, validityTime, jsonFlag)
+		err := exportEnvironment(args, robotFile, environmentFile, workspaceId, validityTime, jsonFlag)
 		if err != nil {
 			pretty.Exit(1, "Error: Variable exporting failed because: %v", err)
 		}
@@ -145,7 +148,7 @@ func init() {
 
 	variablesCmd.Flags().StringVarP(&environmentFile, "environment", "e", "", "Full path to 'env.json' development environment data file. <optional>")
 	variablesCmd.Flags().StringVarP(&robotFile, "robot", "r", "robot.yaml", "Full path to 'robot.yaml' configuration file. <optional>")
-	variablesCmd.Flags().StringVarP(&runTask, "task", "t", "", "Task to run from configuration file. <optional>")
+	variablesCmd.Flags().StringVarP(&runTask, "task", "t", "", "Task to run from configuration file. <deprecated, non-functional>")
 	variablesCmd.Flags().StringVarP(&workspaceId, "workspace", "w", "", "Optional workspace id to get authorization tokens for. <optional>")
 	variablesCmd.Flags().IntVarP(&validityTime, "minutes", "m", 0, "How many minutes the authorization should be valid for. <optional>")
 	variablesCmd.Flags().StringVarP(&accountName, "account", "", "", "Account used for workspace. <optional>")

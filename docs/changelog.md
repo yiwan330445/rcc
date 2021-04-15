@@ -1,5 +1,9 @@
 # rcc change log
 
+## v9.9.13 (date: 15.4.2021)
+
+- fixing environment variables bug from below
+
 ## v9.9.12 (date: 15.4.2021)
 
 - updated rpaframework to version 9.5.0 in templates
