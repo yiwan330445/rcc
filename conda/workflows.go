@@ -343,7 +343,6 @@ func NewEnvironment(force bool, configurations ...string) (string, error) {
 		return "", err
 	}
 	defer locker.Release()
-	defer os.Remove(lockfile)
 
 	requests := xviper.GetInt("stats.env.request") + 1
 	hits := xviper.GetInt("stats.env.hit")

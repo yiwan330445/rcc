@@ -131,7 +131,6 @@ func Cleanup(daylimit int, dryrun, orphans, all, miniconda, micromamba bool) err
 		return err
 	}
 	defer locker.Release()
-	defer os.Remove(lockfile)
 
 	if all {
 		return spotlessCleanup(dryrun)

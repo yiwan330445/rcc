@@ -1,5 +1,10 @@
 # rcc change log
 
+## v9.9.15 (date: 19.4.2021)
+
+- bugfix: locking while multiple rcc are doing parallel work should now
+  work better, and not corrupt configuration (so much)
+
 ## v9.9.14 (date: 15.4.2021)
 
 - environment variables conda.yaml ordering fix (from robot.yaml first)

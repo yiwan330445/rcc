@@ -64,7 +64,6 @@ func SummonCache() (*Cache, error) {
 		return nil, err
 	}
 	defer locker.Release()
-	defer os.Remove(cacheLockFile())
 
 	source, err := os.Open(cacheLocation())
 	if err != nil {
@@ -85,7 +84,6 @@ func (it *Cache) Save() error {
 		return err
 	}
 	defer locker.Release()
-	defer os.Remove(cacheLockFile())
 
 	sink, err := os.Create(cacheLocation())
 	if err != nil {
