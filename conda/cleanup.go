@@ -66,12 +66,16 @@ func spotlessCleanup(dryrun bool) error {
 		common.Log("Would be removing:")
 		common.Log("- %v", common.BaseLocation())
 		common.Log("- %v", common.LiveLocation())
+		common.Log("- %v", common.HolotreeLocation())
+		common.Log("- %v", common.HololibLocation())
 		common.Log("- %v", common.PipCache())
 		common.Log("- %v", MambaPackages())
 		common.Log("- %v", BinMicromamba())
 		common.Log("- %v", RobocorpTempRoot())
 		return nil
 	}
+	safeRemove("cache", common.HolotreeLocation())
+	safeRemove("cache", common.HololibLocation())
 	safeRemove("cache", common.BaseLocation())
 	safeRemove("cache", common.LiveLocation())
 	safeRemove("cache", common.PipCache())

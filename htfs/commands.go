@@ -4,6 +4,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/robocorp/rcc/common"
 	"github.com/robocorp/rcc/conda"
@@ -25,7 +26,7 @@ func RecordCondaEnvironment(condafile string, force bool) (lib Library, err erro
 func RecordEnvironment(blueprint []byte, force bool) (lib Library, err error) {
 	defer fail.Around(&err)
 
-	tree, err := New(common.RobocorpHome())
+	tree, err := New()
 	fail.On(err != nil, "Failed to create holotree location, reason %w.", err)
 
 	// following must be setup here
@@ -54,4 +55,30 @@ func RecordEnvironment(blueprint []byte, force bool) (lib Library, err error) {
 		fail.On(err != nil, "Failed to record blueprint %q, reason: %w", string(blueprint), err)
 	}
 	return tree, nil
+}
+
+func FindEnvironment(fragment string) []string {
+	result := make([]string, 0, 10)
+	for directory, _ := range Spacemap() {
+		name := filepath.Base(directory)
+		if strings.Contains(name, fragment) {
+			result = append(result, name)
+		}
+	}
+	return result
+}
+
+func RemoveHolotreeSpace(label string) (err error) {
+	defer fail.Around(&err)
+
+	for directory, metafile := range Spacemap() {
+		name := filepath.Base(directory)
+		if name != label {
+			continue
+		}
+		os.Remove(metafile)
+		err = os.RemoveAll(directory)
+		fail.On(err != nil, "Problem removing %q, reason: %s.", directory, err)
+	}
+	return nil
 }

@@ -13,20 +13,20 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func humaneHolotreeSpaceListing(tree htfs.Library) {
+func humaneHolotreeSpaceListing() {
 	tabbed := tabwriter.NewWriter(os.Stderr, 2, 4, 2, ' ', 0)
 	tabbed.Write([]byte("Identity\tController\tSpace\tBlueprint\tFull path\n"))
 	tabbed.Write([]byte("--------\t----------\t-----\t--------\t---------\n"))
-	for _, space := range tree.Spaces() {
+	for _, space := range htfs.Spaces() {
 		data := fmt.Sprintf("%s\t%s\t%s\t%s\t%s\n", space.Identity, space.Controller, space.Space, space.Blueprint, space.Path)
 		tabbed.Write([]byte(data))
 	}
 	tabbed.Flush()
 }
 
-func jsonicHolotreeSpaceListing(tree htfs.Library) {
+func jsonicHolotreeSpaceListing() {
 	details := make(map[string]map[string]string)
-	for _, space := range tree.Spaces() {
+	for _, space := range htfs.Spaces() {
 		hold, ok := details[space.Identity]
 		if !ok {
 			hold = make(map[string]string)
@@ -56,13 +56,10 @@ var holotreeListCmd = &cobra.Command{
 			defer common.Stopwatch("Holotree list lasted").Report()
 		}
 
-		tree, err := htfs.New(common.RobocorpHome())
-		pretty.Guard(err == nil, 1, "Could not get holotree, reason: %w", err)
-
 		if jsonFlag {
-			jsonicHolotreeSpaceListing(tree)
+			jsonicHolotreeSpaceListing()
 		} else {
-			humaneHolotreeSpaceListing(tree)
+			humaneHolotreeSpaceListing()
 		}
 
 	},

@@ -9,10 +9,11 @@ import (
 )
 
 var deleteCmd = &cobra.Command{
-	Use:   "delete",
+	Use:   "delete <environment prefix>+",
 	Short: "Delete one managed virtual environment.",
 	Long: `Delete the given virtual environment from existence.
 After deletion, it will not be available anymore.`,
+	Args: cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		for _, prefix := range args {
 			for _, label := range conda.FindEnvironment(prefix) {

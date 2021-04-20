@@ -37,9 +37,9 @@ func init() {
 func RobocorpHome() string {
 	home := os.Getenv(ROBOCORP_HOME_VARIABLE)
 	if len(home) > 0 {
-		return ExpandPath(home)
+		return ensureDirectory(ExpandPath(home))
 	}
-	return ExpandPath(defaultRobocorpLocation)
+	return ensureDirectory(ExpandPath(defaultRobocorpLocation))
 }
 
 func ensureDirectory(name string) string {
@@ -61,6 +61,14 @@ func LiveLocation() string {
 
 func BaseLocation() string {
 	return ensureDirectory(filepath.Join(RobocorpHome(), "base"))
+}
+
+func HololibLocation() string {
+	return ensureDirectory(filepath.Join(RobocorpHome(), "hololib"))
+}
+
+func HolotreeLocation() string {
+	return ensureDirectory(filepath.Join(RobocorpHome(), "holotree"))
 }
 
 func PipCache() string {

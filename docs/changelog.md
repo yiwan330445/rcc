@@ -1,5 +1,11 @@
 # rcc change log
 
+## v9.9.16 (date: 20.4.2021)
+
+- added support for deleting holotree controller spaces
+- added holotree and hololib to full environment cleanup
+- added required parameter to `rcc env delete` command also
+
 ## v9.9.15 (date: 19.4.2021)
 
 - bugfix: locking while multiple rcc are doing parallel work should now

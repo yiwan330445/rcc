@@ -39,7 +39,6 @@ func (it *stats) Dirty(dirty bool) {
 type Library interface {
 	Identity() string
 	Stage() string
-	Spaces() []*Root
 	Record([]byte) error
 	Restore([]byte, []byte, []byte) (string, error)
 	Location(string) string
@@ -51,16 +50,8 @@ type hololib struct {
 	basedir  string
 }
 
-func (it *hololib) HololibDir() string {
-	return filepath.Join(it.basedir, "hololib")
-}
-
-func (it *hololib) HolotreeDir() string {
-	return filepath.Join(it.basedir, "holotree")
-}
-
 func (it *hololib) Location(digest string) string {
-	return filepath.Join(it.HololibDir(), "library", digest[:2], digest[2:4], digest[4:6])
+	return filepath.Join(common.HololibLocation(), "library", digest[:2], digest[2:4], digest[4:6])
 }
 
 func (it *hololib) Identity() string {
@@ -68,7 +59,7 @@ func (it *hololib) Identity() string {
 }
 
 func (it *hololib) Stage() string {
-	stage := filepath.Join(it.HolotreeDir(), it.Identity())
+	stage := filepath.Join(common.HolotreeLocation(), it.Identity())
 	err := os.MkdirAll(stage, 0o755)
 	if err != nil {
 		panic(err)
@@ -92,7 +83,7 @@ func (it *hololib) Record(blueprint []byte) error {
 	fs.AllFiles(Locator(it.Identity()))
 	common.Timeline("holotree (re)locator done")
 	fs.Blueprint = key
-	err = fs.SaveAs(filepath.Join(it.HololibDir(), "catalog", key))
+	err = fs.SaveAs(filepath.Join(common.HololibLocation(), "catalog", key))
 	if err != nil {
 		return err
 	}
@@ -106,7 +97,7 @@ func (it *hololib) Record(blueprint []byte) error {
 }
 
 func (it *hololib) CatalogPath(key string) string {
-	return filepath.Join(it.HololibDir(), "catalog", key)
+	return filepath.Join(common.HololibLocation(), "catalog", key)
 }
 
 func (it *hololib) HasBlueprint(blueprint []byte) bool {
@@ -114,17 +105,24 @@ func (it *hololib) HasBlueprint(blueprint []byte) bool {
 	return pathlib.IsFile(it.CatalogPath(key))
 }
 
-func (it *hololib) Spaces() []*Root {
-	basedir := it.HolotreeDir()
-	metafiles := pathlib.Glob(basedir, "*.meta")
-	roots := make([]*Root, 0, len(metafiles))
-	for _, metafile := range metafiles {
+func Spacemap() map[string]string {
+	result := make(map[string]string)
+	basedir := common.HolotreeLocation()
+	for _, metafile := range pathlib.Glob(basedir, "*.meta") {
 		fullpath := filepath.Join(basedir, metafile)
-		root, err := NewRoot(fullpath[:len(fullpath)-5])
+		result[fullpath[:len(fullpath)-5]] = fullpath
+	}
+	return result
+}
+
+func Spaces() []*Root {
+	roots := make([]*Root, 0, 20)
+	for directory, metafile := range Spacemap() {
+		root, err := NewRoot(directory)
 		if err != nil {
 			continue
 		}
-		err = root.LoadFrom(fullpath)
+		err = root.LoadFrom(metafile)
 		if err != nil {
 			continue
 		}
@@ -140,8 +138,8 @@ func (it *hololib) Restore(blueprint, client, tag []byte) (string, error) {
 	prefix := textual(sipit(client), 9)
 	suffix := textual(sipit(tag), 8)
 	name := prefix + "_" + suffix
-	metafile := filepath.Join(it.HolotreeDir(), fmt.Sprintf("%s.meta", name))
-	targetdir := filepath.Join(it.HolotreeDir(), name)
+	metafile := filepath.Join(common.HolotreeLocation(), fmt.Sprintf("%s.meta", name))
+	targetdir := filepath.Join(common.HolotreeLocation(), name)
 	currentstate := make(map[string]string)
 	shadow, err := NewRoot(targetdir)
 	if err == nil {
@@ -156,7 +154,7 @@ func (it *hololib) Restore(blueprint, client, tag []byte) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	err = fs.LoadFrom(filepath.Join(it.HololibDir(), "catalog", key))
+	err = fs.LoadFrom(filepath.Join(common.HololibLocation(), "catalog", key))
 	if err != nil {
 		return "", err
 	}
@@ -208,19 +206,12 @@ func makedirs(prefix string, suffixes ...string) error {
 	return nil
 }
 
-func New(location string) (Library, error) {
-	basedir, err := filepath.Abs(location)
+func New() (Library, error) {
+	err := makedirs(common.HololibLocation(), "library", "catalog")
 	if err != nil {
 		return nil, err
 	}
-	err = makedirs(basedir, "hololib", "holotree")
-	if err != nil {
-		return nil, err
-	}
-	err = makedirs(filepath.Join(basedir, "hololib"), "library", "catalog")
-	if err != nil {
-		return nil, err
-	}
+	basedir := common.RobocorpHome()
 	return &hololib{
 		identity: sipit([]byte(basedir)),
 		basedir:  basedir,
