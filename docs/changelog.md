@@ -1,5 +1,10 @@
 # rcc change log
 
+## v9.9.17 (date: 20.4.2021)
+
+- added environment, workspace, and robot support to holotree variables command
+- also added some robot tests for holotree to verify functionality
+
 ## v9.9.16 (date: 20.4.2021)
 
 - added support for deleting holotree controller spaces

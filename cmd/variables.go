@@ -14,10 +14,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func Has(value string) bool {
-	return len(value) > 0
-}
-
 func asSimpleMap(line string) map[string]string {
 	parts := strings.SplitN(strings.TrimSpace(line), "=", 2)
 	if len(parts) != 2 {
@@ -60,28 +56,13 @@ func asExportedText(items []string) {
 
 func exportEnvironment(userCondaYaml []string, packfile, environment, workspace string, validity int, jsonform bool) error {
 	var err error
-	var config robot.Robot
-	var task robot.Task
 	var extra []string
 	var data operations.Token
 
-	condaYaml := make([]string, 0, len(userCondaYaml)+2)
-
-	if Has(packfile) {
-		config, err = robot.LoadRobotYaml(packfile, false)
-		if err == nil {
-			condaYaml = append(condaYaml, config.CondaConfigFile())
-			available := config.AvailableTasks()
-			if len(available) > 0 {
-				task = config.TaskByName(available[0])
-			}
-		}
-	}
-
-	condaYaml = append(condaYaml, userCondaYaml...)
+	config, condaYaml := robotBlueprints(userCondaYaml, packfile)
 
 	if Has(environment) {
-		developmentEnvironment, err := robot.LoadEnvironmentSetup(environmentFile)
+		developmentEnvironment, err := robot.LoadEnvironmentSetup(environment)
 		if err == nil {
 			extra = developmentEnvironment.AsEnvironment()
 		}
@@ -97,8 +78,8 @@ func exportEnvironment(userCondaYaml []string, packfile, environment, workspace 
 	}
 
 	env := conda.EnvironmentExtensionFor(label)
-	if task != nil {
-		env = task.ExecutionEnvironment(config, label, extra, false)
+	if config != nil {
+		env = config.ExecutionEnvironment(label, extra, false)
 	}
 
 	if Has(workspace) {
