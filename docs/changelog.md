@@ -1,5 +1,10 @@
 # rcc change log
 
+## v9.9.18 (date: 28.4.2021)
+
+- some cleanup on code base
+- changed autoupdate url for Robocorp Lab
+
 ## v9.9.17 (date: 20.4.2021)
 
 - added environment, workspace, and robot support to holotree variables command

@@ -101,7 +101,7 @@ func ExecuteSimpleTask(flags *RunFlags, template []string, config robot.Robot, t
 	task := make([]string, len(template))
 	copy(task, template)
 	searchPath := pathlib.TargetPath()
-	searchPath = searchPath.Prepend(todo.Paths(config)...)
+	searchPath = searchPath.Prepend(config.Paths()...)
 	found, ok := searchPath.Which(task[0], conda.FileExtensions)
 	if !ok {
 		pretty.Exit(6, "Error: Cannot find command: %v", task[0])
@@ -119,7 +119,7 @@ func ExecuteSimpleTask(flags *RunFlags, template []string, config robot.Robot, t
 		pretty.Exit(8, "Error: %v", err)
 	}
 	task[0] = fullpath
-	directory := todo.WorkingDirectory(config)
+	directory := config.WorkingDirectory()
 	environment := robot.PlainEnvironment([]string{searchPath.AsEnvironmental("PATH")}, true)
 	if len(data) > 0 {
 		endpoint := data["endpoint"]
@@ -137,7 +137,7 @@ func ExecuteSimpleTask(flags *RunFlags, template []string, config robot.Robot, t
 			environment = append(environment, fmt.Sprintf("%s=%s", key, value))
 		}
 	}
-	outputDir := todo.ArtifactDirectory(config)
+	outputDir := config.ArtifactDirectory()
 	common.Debug("DEBUG: about to run command - %v", task)
 	_, err = shell.New(environment, directory, task...).Tee(outputDir, interactive)
 	if err != nil {
@@ -154,7 +154,7 @@ func ExecuteTask(flags *RunFlags, template []string, config robot.Robot, todo ro
 	}
 	task := make([]string, len(template))
 	copy(task, template)
-	searchPath := todo.SearchPath(config, label)
+	searchPath := config.SearchPath(label)
 	found, ok := searchPath.Which(task[0], conda.FileExtensions)
 	if !ok {
 		pretty.Exit(6, "Error: Cannot find command: %v", task[0])
@@ -172,8 +172,8 @@ func ExecuteTask(flags *RunFlags, template []string, config robot.Robot, todo ro
 		pretty.Exit(8, "Error: %v", err)
 	}
 	task[0] = fullpath
-	directory := todo.WorkingDirectory(config)
-	environment := todo.ExecutionEnvironment(config, label, developmentEnvironment.AsEnvironment(), true)
+	directory := config.WorkingDirectory()
+	environment := config.ExecutionEnvironment(label, developmentEnvironment.AsEnvironment(), true)
 	if len(data) > 0 {
 		endpoint := data["endpoint"]
 		for _, key := range rcHosts {
@@ -192,7 +192,7 @@ func ExecuteTask(flags *RunFlags, template []string, config robot.Robot, todo ro
 	}
 	before := make(map[string]string)
 	beforeHash, beforeErr := conda.DigestFor(label, before)
-	outputDir := todo.ArtifactDirectory(config)
+	outputDir := config.ArtifactDirectory()
 	if !flags.Assistant && !common.Silent && !interactive {
 		PipFreeze(searchPath, directory, outputDir, environment)
 	}

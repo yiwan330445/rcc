@@ -39,12 +39,6 @@ type Robot interface {
 }
 
 type Task interface {
-	WorkingDirectory(Robot) string
-	ArtifactDirectory(Robot) string
-	Paths(Robot) pathlib.PathParts
-	PythonPaths(Robot) pathlib.PathParts
-	SearchPath(Robot, string) pathlib.PathParts
-	ExecutionEnvironment(robot Robot, location string, inject []string, full bool) []string
 	Commandline() []string
 }
 
@@ -354,30 +348,6 @@ func (it *robot) ExecutionEnvironment(location string, inject []string, full boo
 	)
 	environment = append(environment, conda.LoadActivationEnvironment(location)...)
 	return environment
-}
-
-func (it *task) WorkingDirectory(robot Robot) string {
-	return robot.WorkingDirectory()
-}
-
-func (it *task) ArtifactDirectory(robot Robot) string {
-	return robot.ArtifactDirectory()
-}
-
-func (it *task) SearchPath(robot Robot, location string) pathlib.PathParts {
-	return robot.SearchPath(location)
-}
-
-func (it *task) Paths(robot Robot) pathlib.PathParts {
-	return robot.Paths()
-}
-
-func (it *task) PythonPaths(robot Robot) pathlib.PathParts {
-	return robot.PythonPaths()
-}
-
-func (it *task) ExecutionEnvironment(robot Robot, location string, inject []string, full bool) []string {
-	return robot.ExecutionEnvironment(location, inject, full)
 }
 
 func (it *task) shellCommand() []string {

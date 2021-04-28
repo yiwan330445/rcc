@@ -19,7 +19,7 @@ diagnostics-hosts:
 autoupdates:
   assistant: https://downloads.robocorp.com/assistant/releases/
   workforce-agent: https://downloads.robocorp.com/workforce-agent/releases/
-  lab: https://downloads.code.robocorp.com/lab/installer/
+  lab: https://downloads.robocorp.com/lab/releases/
 
 certificates:
   verify-ssl: true
