@@ -11,7 +11,7 @@ import (
 	"github.com/robocorp/rcc/fail"
 )
 
-func RecordCondaEnvironment(condafile string, force bool) (lib Library, err error) {
+func RecordCondaEnvironment(tree Library, condafile string, force bool) (err error) {
 	defer fail.Around(&err)
 
 	right, err := conda.ReadCondaYaml(condafile)
@@ -20,22 +20,21 @@ func RecordCondaEnvironment(condafile string, force bool) (lib Library, err erro
 	content, err := right.AsYaml()
 	fail.On(err != nil, "YAML error with %q, reason: %w", condafile, err)
 
-	return RecordEnvironment([]byte(content), force)
+	return RecordEnvironment(tree, []byte(content), force)
 }
 
-func RecordEnvironment(blueprint []byte, force bool) (lib Library, err error) {
+func RecordEnvironment(tree Library, blueprint []byte, force bool) (err error) {
 	defer fail.Around(&err)
-
-	tree, err := New()
-	fail.On(err != nil, "Failed to create holotree location, reason %w.", err)
 
 	// following must be setup here
 	common.StageFolder = tree.Stage()
 	common.Stageonly = true
-	common.Liveonly = true
 
 	err = os.RemoveAll(tree.Stage())
-	fail.On(err != nil, "Failed to clean stage, reason %w.", err)
+	fail.On(err != nil, "Failed to clean stage, reason %v.", err)
+
+	err = os.MkdirAll(tree.Stage(), 0o755)
+	fail.On(err != nil, "Failed to create stage, reason %v.", err)
 
 	common.Debug("Holotree stage is %q.", tree.Stage())
 	exists := tree.HasBlueprint(blueprint)
@@ -54,7 +53,7 @@ func RecordEnvironment(blueprint []byte, force bool) (lib Library, err error) {
 		err := tree.Record(blueprint)
 		fail.On(err != nil, "Failed to record blueprint %q, reason: %w", string(blueprint), err)
 	}
-	return tree, nil
+	return nil
 }
 
 func FindEnvironment(fragment string) []string {

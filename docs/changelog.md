@@ -1,5 +1,11 @@
 # rcc change log
 
+## v9.9.19 (date: 29.4.2021)
+
+- refactoring to enable virtual holotree for --liveonly functionality
+- NOTE: leased environments functionality will go away when holotree
+  goes mainstream (and plan for that is rcc series v10)
+
 ## v9.9.18 (date: 28.4.2021)
 
 - some cleanup on code base

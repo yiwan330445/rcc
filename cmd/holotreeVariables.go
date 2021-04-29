@@ -68,11 +68,17 @@ func holotreeExpandEnvironment(userFiles []string, packfile, environment, worksp
 
 	anywork.Scale(200)
 
-	tree, err := htfs.RecordEnvironment(holotreeBlueprint, force)
-	pretty.Guard(err == nil, 6, "%w", err)
+	tree, err := htfs.New()
+	pretty.Guard(err == nil, 6, "%s", err)
+
+	if !tree.HasBlueprint(holotreeBlueprint) && common.Liveonly {
+		tree = htfs.Virtual()
+	}
+	err = htfs.RecordEnvironment(tree, holotreeBlueprint, force)
+	pretty.Guard(err == nil, 7, "%s", err)
 
 	path, err := tree.Restore(holotreeBlueprint, []byte(common.ControllerIdentity()), []byte(space))
-	pretty.Guard(err == nil, 7, "Failed to restore blueprint %q, reason: %v", string(holotreeBlueprint), err)
+	pretty.Guard(err == nil, 8, "Failed to restore blueprint %q, reason: %v", string(holotreeBlueprint), err)
 
 	env := conda.EnvironmentExtensionFor(path)
 	if config != nil {
@@ -82,7 +88,7 @@ func holotreeExpandEnvironment(userFiles []string, packfile, environment, worksp
 	if Has(workspace) {
 		claims := operations.RunClaims(validity*60, workspace)
 		data, err = operations.AuthorizeClaims(AccountName(), claims)
-		pretty.Guard(err == nil, 8, "Failed to get cloud data, reason: %v", err)
+		pretty.Guard(err == nil, 9, "Failed to get cloud data, reason: %v", err)
 	}
 
 	if len(data) > 0 {

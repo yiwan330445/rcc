@@ -13,6 +13,20 @@ import (
 	"github.com/robocorp/rcc/trollhash"
 )
 
+func DigestMapper(target map[string]string) Treetop {
+	var tool Treetop
+	tool = func(path string, it *Dir) error {
+		for name, subdir := range it.Dirs {
+			tool(filepath.Join(path, name), subdir)
+		}
+		for name, file := range it.Files {
+			target[file.Digest] = filepath.Join(path, name)
+		}
+		return nil
+	}
+	return tool
+}
+
 func DigestRecorder(target map[string]string) Treetop {
 	var tool Treetop
 	tool = func(path string, it *Dir) error {
@@ -143,9 +157,14 @@ func DropFile(sourcename, sinkname string, details *File, rewrite []byte) anywor
 			panic(err)
 		}
 		defer source.Close()
-		reader, err := gzip.NewReader(source)
+		var reader io.ReadCloser
+		reader, err = gzip.NewReader(source)
 		if err != nil {
-			panic(err)
+			_, err = source.Seek(0, 0)
+			if err != nil {
+				panic(err)
+			}
+			reader = source
 		}
 		defer reader.Close()
 		sink, err := os.Create(sinkname)
@@ -259,8 +278,7 @@ func RestoreDirectory(library Library, fs *Root, current map[string]string, stat
 				ok = golden && found.Match(info)
 				stats.Dirty(!ok)
 				if !ok {
-					directory := library.Location(found.Digest)
-					droppath := filepath.Join(directory, found.Digest)
+					droppath := library.ExactLocation(found.Digest)
 					anywork.Backlog(DropFile(droppath, directpath, found, fs.Rewrite()))
 				}
 			}
@@ -269,8 +287,7 @@ func RestoreDirectory(library Library, fs *Root, current map[string]string, stat
 				_, seen := files[name]
 				if !seen {
 					stats.Dirty(true)
-					directory := library.Location(found.Digest)
-					droppath := filepath.Join(directory, found.Digest)
+					droppath := library.ExactLocation(found.Digest)
 					anywork.Backlog(DropFile(droppath, directpath, found, fs.Rewrite()))
 				}
 			}

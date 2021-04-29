@@ -83,7 +83,49 @@ Holotree testing flow
   Wont Have   RC_API_SECRET_TOKEN=
   Wont Have   RC_API_WORKITEM_TOKEN=
   Wont Have   RC_WORKSPACE_ID=
+  Use STDERR
+  Wont Have   (virtual)
+  Wont Have   live only
 
   Goal        See variables from specific environment with robot.yaml knowledge in JSON form
   Step        build/rcc holotree variables --space jam --controller citests --json conda/testdata/conda.yaml --config tmp/alternative.yaml -r tmp/holotin/robot.yaml -e tmp/holotin/devdata/env.json
   Must Be Json Response
+  Use STDERR
+  Wont Have   (virtual)
+  Wont Have   live only
+
+  Goal        Liveonly works and uses virtual holotree
+  Step        build/rcc holotree vars --liveonly --space jam --controller citests robot_tests/certificates.yaml --config tmp/alternative.yaml --timeline
+  Must Have   ROBOCORP_HOME=
+  Must Have   PYTHON_EXE=
+  Must Have   CONDA_DEFAULT_ENV=rcc
+  Must Have   CONDA_PREFIX=
+  Must Have   CONDA_PROMPT_MODIFIER=(rcc)
+  Must Have   CONDA_SHLVL=1
+  Must Have   PATH=
+  Must Have   PYTHONHOME=
+  Must Have   PYTHONEXECUTABLE=
+  Must Have   PYTHONNOUSERSITE=1
+  Must Have   TEMP=
+  Must Have   TMP=
+  Must Have   RCC_ENVIRONMENT_HASH=
+  Must Have   RCC_INSTALLATION_ID=
+  Must Have   RCC_TRACKING_ALLOWED=
+  Wont Have   PYTHONPATH=
+  Wont Have   ROBOT_ROOT=
+  Wont Have   ROBOT_ARTIFACTS=
+  Wont Have   RC_API_SECRET_HOST=
+  Wont Have   RC_API_WORKITEM_HOST=
+  Wont Have   RC_API_SECRET_TOKEN=
+  Wont Have   RC_API_WORKITEM_TOKEN=
+  Wont Have   RC_WORKSPACE_ID=
+  Use STDERR
+  Must Have   (virtual)
+  Must Have   live only
+
+  Goal        Liveonly works and uses virtual holotree and can give output in JSON form
+  Step        build/rcc ht vars --liveonly --space jam --controller citests --json robot_tests/certificates.yaml --config tmp/alternative.yaml --timeline
+  Must Be Json Response
+  Use STDERR
+  Must Have   (virtual)
+  Must Have   live only
