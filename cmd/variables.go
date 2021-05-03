@@ -7,6 +7,7 @@ import (
 
 	"github.com/robocorp/rcc/common"
 	"github.com/robocorp/rcc/conda"
+	"github.com/robocorp/rcc/htfs"
 	"github.com/robocorp/rcc/operations"
 	"github.com/robocorp/rcc/pretty"
 	"github.com/robocorp/rcc/robot"
@@ -59,7 +60,7 @@ func exportEnvironment(userCondaYaml []string, packfile, environment, workspace 
 	var extra []string
 	var data operations.Token
 
-	config, condaYaml := robotBlueprints(userCondaYaml, packfile)
+	config, condaYaml := htfs.RobotBlueprints(userCondaYaml, packfile)
 
 	if Has(environment) {
 		developmentEnvironment, err := robot.LoadEnvironmentSetup(environment)

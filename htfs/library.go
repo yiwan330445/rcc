@@ -74,7 +74,7 @@ func (it *hololib) Stage() string {
 
 func (it *hololib) Record(blueprint []byte) error {
 	defer common.Stopwatch("Holotree recording took:").Debug()
-	key := textual(sipit(blueprint), 0)
+	key := BlueprintHash(blueprint)
 	common.Timeline("holotree record start %s", key)
 	fs, err := NewRoot(it.Stage())
 	if err != nil {
@@ -106,8 +106,7 @@ func (it *hololib) CatalogPath(key string) string {
 }
 
 func (it *hololib) HasBlueprint(blueprint []byte) bool {
-	key := textual(sipit(blueprint), 0)
-	return pathlib.IsFile(it.CatalogPath(key))
+	return pathlib.IsFile(it.CatalogPath(BlueprintHash(blueprint)))
 }
 
 func Spacemap() map[string]string {
@@ -138,7 +137,7 @@ func Spaces() []*Root {
 
 func (it *hololib) Restore(blueprint, client, tag []byte) (string, error) {
 	defer common.Stopwatch("Holotree restore took:").Debug()
-	key := textual(sipit(blueprint), 0)
+	key := BlueprintHash(blueprint)
 	common.Timeline("holotree restore start %s", key)
 	prefix := textual(sipit(client), 9)
 	suffix := textual(sipit(tag), 8)
@@ -186,6 +185,10 @@ func (it *hololib) Restore(blueprint, client, tag []byte) (string, error) {
 		return "", err
 	}
 	return targetdir, nil
+}
+
+func BlueprintHash(blueprint []byte) string {
+	return textual(sipit(blueprint), 0)
 }
 
 func sipit(key []byte) uint64 {
@@ -254,7 +257,7 @@ func (it *virtual) Stage() string {
 
 func (it *virtual) Record(blueprint []byte) error {
 	defer common.Stopwatch("Holotree recording took:").Debug()
-	key := textual(sipit(blueprint), 0)
+	key := BlueprintHash(blueprint)
 	common.Timeline("holotree record start %s (virtual)", key)
 	fs, err := NewRoot(it.Stage())
 	if err != nil {
@@ -277,7 +280,7 @@ func (it *virtual) Record(blueprint []byte) error {
 
 func (it *virtual) Restore(blueprint, client, tag []byte) (string, error) {
 	defer common.Stopwatch("Holotree restore took:").Debug()
-	key := textual(sipit(blueprint), 0)
+	key := BlueprintHash(blueprint)
 	common.Timeline("holotree restore start %s (virtual)", key)
 	prefix := textual(sipit(client), 9)
 	suffix := textual(sipit(tag), 8)
@@ -329,5 +332,5 @@ func (it *virtual) Location(key string) string {
 }
 
 func (it *virtual) HasBlueprint(blueprint []byte) bool {
-	return it.key == textual(sipit(blueprint), 0)
+	return it.key == BlueprintHash(blueprint)
 }

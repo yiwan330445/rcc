@@ -1,5 +1,10 @@
 # rcc change log
 
+## v9.9.20 (date: 3.5.2021)
+
+- added blueprint subcommand to holotree hierarchy to query blueprint
+  existence in hololib
+
 ## v9.9.19 (date: 29.4.2021)
 
 - refactoring to enable virtual holotree for --liveonly functionality

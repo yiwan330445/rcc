@@ -20,51 +20,12 @@ var (
 	holotreeJson      bool
 )
 
-func robotBlueprints(userBlueprints []string, packfile string) (robot.Robot, []string) {
-	var err error
-	var config robot.Robot
-
-	blueprints := make([]string, 0, len(userBlueprints)+2)
-
-	if Has(packfile) {
-		config, err = robot.LoadRobotYaml(packfile, false)
-		if err == nil {
-			blueprints = append(blueprints, config.CondaConfigFile())
-		}
-	}
-
-	return config, append(blueprints, userBlueprints...)
-}
-
 func holotreeExpandEnvironment(userFiles []string, packfile, environment, workspace string, validity int, space string, force bool) []string {
-	var left, right *conda.Environment
-	var err error
 	var extra []string
 	var data operations.Token
 
-	config, filenames := robotBlueprints(userFiles, packfile)
-
-	if Has(environment) {
-		developmentEnvironment, err := robot.LoadEnvironmentSetup(environment)
-		if err == nil {
-			extra = developmentEnvironment.AsEnvironment()
-		}
-	}
-
-	for _, filename := range filenames {
-		left = right
-		right, err = conda.ReadCondaYaml(filename)
-		pretty.Guard(err == nil, 2, "Failure: %v", err)
-		if left == nil {
-			continue
-		}
-		right, err = left.Merge(right)
-		pretty.Guard(err == nil, 3, "Failure: %v", err)
-	}
-	pretty.Guard(right != nil, 4, "Missing environment specification(s).")
-	content, err := right.AsYaml()
-	pretty.Guard(err == nil, 5, "YAML error: %v", err)
-	holotreeBlueprint = []byte(content)
+	config, holotreeBlueprint, err := htfs.ComposeFinalBlueprint(userFiles, packfile)
+	pretty.Guard(err == nil, 5, "%s", err)
 
 	anywork.Scale(200)
 
@@ -79,6 +40,13 @@ func holotreeExpandEnvironment(userFiles []string, packfile, environment, worksp
 
 	path, err := tree.Restore(holotreeBlueprint, []byte(common.ControllerIdentity()), []byte(space))
 	pretty.Guard(err == nil, 8, "Failed to restore blueprint %q, reason: %v", string(holotreeBlueprint), err)
+
+	if Has(environment) {
+		developmentEnvironment, err := robot.LoadEnvironmentSetup(environment)
+		if err == nil {
+			extra = developmentEnvironment.AsEnvironment()
+		}
+	}
 
 	env := conda.EnvironmentExtensionFor(path)
 	if config != nil {

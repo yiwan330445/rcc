@@ -9,6 +9,7 @@ import (
 	"github.com/robocorp/rcc/common"
 	"github.com/robocorp/rcc/conda"
 	"github.com/robocorp/rcc/fail"
+	"github.com/robocorp/rcc/robot"
 )
 
 func RecordCondaEnvironment(tree Library, condafile string, force bool) (err error) {
@@ -80,4 +81,43 @@ func RemoveHolotreeSpace(label string) (err error) {
 		fail.On(err != nil, "Problem removing %q, reason: %s.", directory, err)
 	}
 	return nil
+}
+
+func RobotBlueprints(userBlueprints []string, packfile string) (robot.Robot, []string) {
+	var err error
+	var config robot.Robot
+
+	blueprints := make([]string, 0, len(userBlueprints)+2)
+
+	if len(packfile) > 0 {
+		config, err = robot.LoadRobotYaml(packfile, false)
+		if err == nil {
+			blueprints = append(blueprints, config.CondaConfigFile())
+		}
+	}
+
+	return config, append(blueprints, userBlueprints...)
+}
+
+func ComposeFinalBlueprint(userFiles []string, packfile string) (config robot.Robot, blueprint []byte, err error) {
+	defer fail.Around(&err)
+
+	var left, right *conda.Environment
+
+	config, filenames := RobotBlueprints(userFiles, packfile)
+
+	for _, filename := range filenames {
+		left = right
+		right, err = conda.ReadCondaYaml(filename)
+		fail.On(err != nil, "Failure: %v", err)
+		if left == nil {
+			continue
+		}
+		right, err = left.Merge(right)
+		fail.On(err != nil, "Failure: %v", err)
+	}
+	fail.On(right == nil, "Missing environment specification(s).")
+	content, err := right.AsYaml()
+	fail.On(err != nil, "YAML error: %v", err)
+	return config, []byte(content), nil
 }
