@@ -1,5 +1,9 @@
 # rcc change log
 
+## v9.9.21 (date: 4.5.2021)
+
+- documentation fix for toplevel config flag, closes #18
+
 ## v9.9.20 (date: 3.5.2021)
 
 - added blueprint subcommand to holotree hierarchy to query blueprint

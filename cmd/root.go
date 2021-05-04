@@ -92,7 +92,7 @@ func init() {
 	rootCmd.PersistentFlags().StringVar(&profilefile, "pprof", "", "Filename to save profiling information.")
 	rootCmd.PersistentFlags().StringVar(&common.ControllerType, "controller", "user", "internal, DO NOT USE (unless you know what you are doing)")
 	rootCmd.PersistentFlags().StringVar(&common.SemanticTag, "tag", "transient", "semantic reason/context, why are you invoking rcc")
-	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $ROBOCORP/rcc.yaml)")
+	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $ROBOCORP_HOME/rcc.yaml)")
 
 	rootCmd.PersistentFlags().BoolVarP(&common.Silent, "silent", "", false, "be less verbose on output")
 	rootCmd.PersistentFlags().BoolVarP(&common.Liveonly, "liveonly", "", false, "do not create base environment from live ... DANGER! For containers only!")
