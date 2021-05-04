@@ -130,4 +130,5 @@ func init() {
 	assistantRunCmd.MarkFlagRequired("assistant")
 	assistantRunCmd.Flags().StringVarP(&copyDirectory, "copy", "c", "", "Location to copy changed artifacts from run (optional).")
 	assistantRunCmd.Flags().BoolVarP(&useEcc, "ecc", "", false, "DO NOT USE! INTERNAL EXPERIMENT!")
+	assistantRunCmd.Flags().StringVarP(&common.HolotreeSpace, "space", "s", "", "Client specific name to identify this environment.")
 }

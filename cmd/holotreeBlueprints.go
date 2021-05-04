@@ -16,6 +16,8 @@ func holotreeExpandBlueprint(userFiles []string, packfile string) map[string]int
 	_, holotreeBlueprint, err := htfs.ComposeFinalBlueprint(userFiles, packfile)
 	pretty.Guard(err == nil, 5, "%s", err)
 
+	common.Debug("FINAL blueprint:\n%s", string(holotreeBlueprint))
+
 	tree, err := htfs.New()
 	pretty.Guard(err == nil, 6, "%s", err)
 
@@ -26,9 +28,10 @@ func holotreeExpandBlueprint(userFiles []string, packfile string) map[string]int
 }
 
 var holotreeBlueprintCmd = &cobra.Command{
-	Use:   "blueprint conda.yaml+",
-	Short: "Verify that resulting blueprint is in hololibrary.",
-	Long:  "Verify that resulting blueprint is in hololibrary.",
+	Use:     "blueprint conda.yaml+",
+	Short:   "Verify that resulting blueprint is in hololibrary.",
+	Long:    "Verify that resulting blueprint is in hololibrary.",
+	Aliases: []string{"bp"},
 	Run: func(cmd *cobra.Command, args []string) {
 		if common.DebugFlag {
 			defer common.Stopwatch("Holotree blueprints command lasted").Report()

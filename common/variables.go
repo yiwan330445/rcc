@@ -22,6 +22,7 @@ var (
 	LeaseEffective  bool
 	StageFolder     string
 	ControllerType  string
+	HolotreeSpace   string
 	LeaseContract   string
 	EnvironmentHash string
 	SemanticTag     string

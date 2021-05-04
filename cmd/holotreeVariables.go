@@ -2,8 +2,9 @@ package cmd
 
 import (
 	"fmt"
+	"os"
+	"path/filepath"
 
-	"github.com/robocorp/rcc/anywork"
 	"github.com/robocorp/rcc/common"
 	"github.com/robocorp/rcc/conda"
 	"github.com/robocorp/rcc/htfs"
@@ -15,31 +16,23 @@ import (
 
 var (
 	holotreeBlueprint []byte
-	holotreeSpace     string
 	holotreeForce     bool
 	holotreeJson      bool
 )
 
-func holotreeExpandEnvironment(userFiles []string, packfile, environment, workspace string, validity int, space string, force bool) []string {
+func holotreeExpandEnvironment(userFiles []string, packfile, environment, workspace string, validity int, force bool) []string {
 	var extra []string
 	var data operations.Token
 
 	config, holotreeBlueprint, err := htfs.ComposeFinalBlueprint(userFiles, packfile)
 	pretty.Guard(err == nil, 5, "%s", err)
 
-	anywork.Scale(200)
-
-	tree, err := htfs.New()
+	condafile := filepath.Join(conda.RobocorpTemp(), htfs.BlueprintHash(holotreeBlueprint))
+	err = os.WriteFile(condafile, holotreeBlueprint, 0o640)
 	pretty.Guard(err == nil, 6, "%s", err)
 
-	if !tree.HasBlueprint(holotreeBlueprint) && common.Liveonly {
-		tree = htfs.Virtual()
-	}
-	err = htfs.RecordEnvironment(tree, holotreeBlueprint, force)
-	pretty.Guard(err == nil, 7, "%s", err)
-
-	path, err := tree.Restore(holotreeBlueprint, []byte(common.ControllerIdentity()), []byte(space))
-	pretty.Guard(err == nil, 8, "Failed to restore blueprint %q, reason: %v", string(holotreeBlueprint), err)
+	path, err := htfs.NewEnvironment(force, condafile)
+	pretty.Guard(err == nil, 6, "%s", err)
 
 	if Has(environment) {
 		developmentEnvironment, err := robot.LoadEnvironmentSetup(environment)
@@ -87,7 +80,7 @@ var holotreeVariablesCmd = &cobra.Command{
 		ok := conda.MustMicromamba()
 		pretty.Guard(ok, 1, "Could not get micromamba installed.")
 
-		env := holotreeExpandEnvironment(args, robotFile, environmentFile, workspaceId, validityTime, holotreeSpace, holotreeForce)
+		env := holotreeExpandEnvironment(args, robotFile, environmentFile, workspaceId, validityTime, holotreeForce)
 		if holotreeJson {
 			asJson(env)
 		} else {
@@ -104,7 +97,7 @@ func init() {
 	holotreeVariablesCmd.Flags().IntVarP(&validityTime, "minutes", "m", 0, "How many minutes the authorization should be valid for. <optional>")
 	holotreeVariablesCmd.Flags().StringVarP(&accountName, "account", "a", "", "Account used for workspace. <optional>")
 
-	holotreeVariablesCmd.Flags().StringVarP(&holotreeSpace, "space", "s", "", "Client specific name to identify this environment.")
+	holotreeVariablesCmd.Flags().StringVarP(&common.HolotreeSpace, "space", "s", "", "Client specific name to identify this environment.")
 	holotreeVariablesCmd.MarkFlagRequired("space")
 	holotreeVariablesCmd.Flags().BoolVarP(&holotreeForce, "force", "f", false, "Force environment creation with refresh.")
 	holotreeVariablesCmd.Flags().BoolVarP(&holotreeJson, "json", "j", false, "Show environment as JSON.")

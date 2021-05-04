@@ -379,8 +379,8 @@ func NewEnvironment(force bool, configurations ...string) (string, error) {
 	}
 	defer os.Remove(condaYaml)
 	defer os.Remove(requirementsText)
-	common.Log("####  Progress: 1/6  [environment key is: %s]", key)
-	common.Timeline("1/6 key %s.", key)
+	common.Log("####  Progress: 1/6  [environment key is: %s (deprecated)]", key)
+	common.Timeline("1/6 key %s (deprecated).", key)
 
 	common.EnvironmentHash = key
 

@@ -6,11 +6,34 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/robocorp/rcc/anywork"
 	"github.com/robocorp/rcc/common"
 	"github.com/robocorp/rcc/conda"
 	"github.com/robocorp/rcc/fail"
 	"github.com/robocorp/rcc/robot"
 )
+
+func NewEnvironment(force bool, condafile string) (label string, err error) {
+	defer fail.Around(&err)
+
+	_, holotreeBlueprint, err := ComposeFinalBlueprint([]string{condafile}, "")
+	fail.On(err != nil, "%s", err)
+
+	anywork.Scale(200)
+
+	tree, err := New()
+	fail.On(err != nil, "%s", err)
+
+	if !tree.HasBlueprint(holotreeBlueprint) && common.Liveonly {
+		tree = Virtual()
+	}
+	err = RecordEnvironment(tree, holotreeBlueprint, force)
+	fail.On(err != nil, "%s", err)
+
+	path, err := tree.Restore(holotreeBlueprint, []byte(common.ControllerIdentity()), []byte(common.HolotreeSpace))
+	fail.On(err != nil, "Failed to restore blueprint %q, reason: %v", string(holotreeBlueprint), err)
+	return path, nil
+}
 
 func RecordCondaEnvironment(tree Library, condafile string, force bool) (err error) {
 	defer fail.Around(&err)
@@ -30,6 +53,7 @@ func RecordEnvironment(tree Library, blueprint []byte, force bool) (err error) {
 	// following must be setup here
 	common.StageFolder = tree.Stage()
 	common.Stageonly = true
+	common.Liveonly = true
 
 	err = os.RemoveAll(tree.Stage())
 	fail.On(err != nil, "Failed to clean stage, reason %v.", err)
@@ -119,5 +143,5 @@ func ComposeFinalBlueprint(userFiles []string, packfile string) (config robot.Ro
 	fail.On(right == nil, "Missing environment specification(s).")
 	content, err := right.AsYaml()
 	fail.On(err != nil, "YAML error: %v", err)
-	return config, []byte(content), nil
+	return config, []byte(strings.TrimSpace(content)), nil
 }

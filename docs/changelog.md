@@ -1,5 +1,12 @@
 # rcc change log
 
+## v9.10.0 (date: 4.5.2021)
+
+- refactoring code so that runs can be converted to holotree
+- added `--space` option to runs so that they can use holotree
+- holotree blueprint should now be unified form (same hash everywhere)
+- holotree now co-exists with old implementation in backward compatible way
+
 ## v9.9.21 (date: 4.5.2021)
 
 - documentation fix for toplevel config flag, closes #18

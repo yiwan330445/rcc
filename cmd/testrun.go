@@ -92,4 +92,5 @@ func init() {
 	testrunCmd.Flags().IntVarP(&validityTime, "minutes", "m", 0, "How many minutes the authorization should be valid for. OPTIONAL")
 	testrunCmd.Flags().StringVarP(&accountName, "account", "", "", "Account used for workspace. OPTIONAL")
 	testrunCmd.Flags().BoolVarP(&forceFlag, "force", "f", false, "Force conda cache update. (only for new environments)")
+	testrunCmd.Flags().StringVarP(&common.HolotreeSpace, "space", "s", "", "Client specific name to identify this environment.")
 }

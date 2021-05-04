@@ -7,6 +7,7 @@ import (
 
 	"github.com/robocorp/rcc/common"
 	"github.com/robocorp/rcc/conda"
+	"github.com/robocorp/rcc/htfs"
 	"github.com/robocorp/rcc/pathlib"
 	"github.com/robocorp/rcc/pretty"
 	"github.com/robocorp/rcc/robot"
@@ -79,7 +80,12 @@ func LoadTaskWithEnvironment(packfile, theTask string, force bool) (bool, robot.
 		return true, config, todo, ""
 	}
 
-	label, err := conda.NewEnvironment(force, config.CondaConfigFile())
+	var label string
+	if len(common.HolotreeSpace) > 0 {
+		label, err = htfs.NewEnvironment(force, config.CondaConfigFile())
+	} else {
+		label, err = conda.NewEnvironment(force, config.CondaConfigFile())
+	}
 	if err != nil {
 		pretty.Exit(4, "Error: %v", err)
 	}

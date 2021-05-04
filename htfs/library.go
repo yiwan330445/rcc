@@ -88,12 +88,13 @@ func (it *hololib) Record(blueprint []byte) error {
 	fs.AllFiles(Locator(it.Identity()))
 	common.Timeline("holotree (re)locator done")
 	fs.Blueprint = key
-	err = fs.SaveAs(filepath.Join(common.HololibLocation(), "catalog", key))
+	catalog := filepath.Join(common.HololibLocation(), "catalog", key)
+	err = fs.SaveAs(catalog)
 	if err != nil {
 		return err
 	}
 	score := &stats{}
-	common.Timeline("holotree lift start")
+	common.Timeline("holotree lift start %q", catalog)
 	err = fs.Treetop(ScheduleLifters(it, score))
 	common.Timeline("holotree lift done")
 	defer common.Timeline("- new %d/%d", score.dirty, score.total)
