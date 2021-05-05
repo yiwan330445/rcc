@@ -2,23 +2,57 @@ package common
 
 import (
 	"fmt"
-	"io"
 	"os"
+	"sync"
 	"time"
 )
 
-func printout(out io.Writer, message string) {
+var (
+	logsource  = make(logwriters)
+	logbarrier = sync.WaitGroup{}
+)
+
+type logwriter func() (*os.File, string)
+type logwriters chan logwriter
+
+func loggerLoop(writers logwriters) {
 	var stamp string
-	if TraceFlag {
-		stamp = time.Now().Format("02.150405.000 ")
+	line := uint64(0)
+	for {
+		line += 1
+		todo, ok := <-writers
+		if !ok {
+			continue
+		}
+		out, message := todo()
+
+		if TraceFlag {
+			stamp = time.Now().Format("02.150405.000 ")
+		} else if LogLinenumbers {
+			stamp = fmt.Sprintf("%3d ", line)
+		} else {
+			stamp = ""
+		}
+		fmt.Fprintf(out, "%s%s\n", stamp, message)
+		out.Sync()
+		logbarrier.Done()
 	}
-	fmt.Fprintf(out, "%s%s\n", stamp, message)
+}
+
+func init() {
+	go loggerLoop(logsource)
+}
+
+func printout(out *os.File, message string) {
+	logbarrier.Add(1)
+	logsource <- func() (*os.File, string) {
+		return out, message
+	}
 }
 
 func Fatal(context string, err error) {
 	if err != nil {
 		printout(os.Stderr, fmt.Sprintf("Fatal [%s]: %v", context, err))
-		os.Stderr.Sync()
 	}
 }
 
@@ -31,14 +65,12 @@ func Error(context string, err error) {
 func Log(format string, details ...interface{}) {
 	if !Silent {
 		printout(os.Stderr, fmt.Sprintf(format, details...))
-		os.Stderr.Sync()
 	}
 }
 
 func Debug(format string, details ...interface{}) error {
 	if DebugFlag {
 		printout(os.Stderr, fmt.Sprintf(format, details...))
-		os.Stderr.Sync()
 	}
 	return nil
 }
@@ -46,7 +78,6 @@ func Debug(format string, details ...interface{}) error {
 func Trace(format string, details ...interface{}) error {
 	if TraceFlag {
 		printout(os.Stderr, fmt.Sprintf(format, details...))
-		os.Stderr.Sync()
 	}
 	return nil
 }
@@ -54,4 +85,8 @@ func Trace(format string, details ...interface{}) error {
 func Stdout(format string, details ...interface{}) {
 	fmt.Fprintf(os.Stdout, format, details...)
 	os.Stdout.Sync()
+}
+
+func WaitLogs() {
+	logbarrier.Wait()
 }

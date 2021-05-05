@@ -16,6 +16,7 @@ var (
 	Silent          bool
 	DebugFlag       bool
 	TraceFlag       bool
+	LogLinenumbers  bool
 	NoCache         bool
 	Liveonly        bool
 	Stageonly       bool

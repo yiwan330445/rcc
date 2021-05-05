@@ -9,6 +9,7 @@ import (
 
 	"github.com/dchest/siphash"
 	"github.com/robocorp/rcc/common"
+	"github.com/robocorp/rcc/conda"
 	"github.com/robocorp/rcc/pathlib"
 )
 
@@ -107,7 +108,25 @@ func (it *hololib) CatalogPath(key string) string {
 }
 
 func (it *hololib) HasBlueprint(blueprint []byte) bool {
-	return pathlib.IsFile(it.CatalogPath(BlueprintHash(blueprint)))
+	catalog := it.CatalogPath(BlueprintHash(blueprint))
+	tempdir := filepath.Join(conda.RobocorpTemp(), BlueprintHash(blueprint))
+	shadow, err := NewRoot(tempdir)
+	if err != nil {
+		return false
+	}
+	err = shadow.LoadFrom(catalog)
+	if err != nil {
+		common.Debug("Catalog load failed, reason: %v", err)
+		return false
+	}
+	common.Timeline("holotree content check start")
+	err = shadow.Treetop(CatalogCheck(it, shadow))
+	common.Timeline("holotree content check done")
+	if err != nil {
+		common.Debug("Catalog check failed, reason: %v", err)
+		return false
+	}
+	return pathlib.IsFile(catalog)
 }
 
 func Spacemap() map[string]string {

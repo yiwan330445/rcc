@@ -100,6 +100,7 @@ func init() {
 	rootCmd.PersistentFlags().BoolVarP(&pretty.Colorless, "colorless", "", false, "do not use colors in CLI UI")
 	rootCmd.PersistentFlags().BoolVarP(&common.NoCache, "nocache", "", false, "do not use cache for credentials and tokens, always request them from cloud")
 
+	rootCmd.PersistentFlags().BoolVarP(&common.LogLinenumbers, "numbers", "", false, "put line numbers on rcc produced log output")
 	rootCmd.PersistentFlags().BoolVarP(&common.DebugFlag, "debug", "", false, "to get debug output where available (not for production use)")
 	rootCmd.PersistentFlags().BoolVarP(&common.TraceFlag, "trace", "", false, "to get trace output where available (not for production use)")
 	rootCmd.PersistentFlags().BoolVarP(&common.TimelineEnabled, "timeline", "", false, "print timeline at the end of run")

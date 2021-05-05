@@ -25,13 +25,16 @@ func ExitProtection() {
 		if ok {
 			exit.ShowMessage()
 			cloud.WaitTelemetry()
+			common.WaitLogs()
 			os.Exit(exit.Code)
 		}
 		cloud.BackgroundMetric(common.ControllerIdentity(), "rcc.panic.origin", cmd.Origin())
 		cloud.WaitTelemetry()
+		common.WaitLogs()
 		panic(status)
 	}
 	cloud.WaitTelemetry()
+	common.WaitLogs()
 }
 
 func startTempRecycling() {

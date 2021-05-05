@@ -9,9 +9,31 @@ import (
 	"path/filepath"
 
 	"github.com/robocorp/rcc/anywork"
+	"github.com/robocorp/rcc/common"
 	"github.com/robocorp/rcc/pathlib"
 	"github.com/robocorp/rcc/trollhash"
 )
+
+func CatalogCheck(library Library, fs *Root) Treetop {
+	var tool Treetop
+	tool = func(path string, it *Dir) error {
+		for name, file := range it.Files {
+			location := library.ExactLocation(file.Digest)
+			if !pathlib.IsFile(location) {
+				fullpath := filepath.Join(path, name)
+				return fmt.Errorf("Content for %q [%s] is missing!", fullpath, file.Digest)
+			}
+		}
+		for name, subdir := range it.Dirs {
+			err := tool(filepath.Join(path, name), subdir)
+			if err != nil {
+				return err
+			}
+		}
+		return nil
+	}
+	return tool
+}
 
 func DigestMapper(target map[string]string) Treetop {
 	var tool Treetop
@@ -260,17 +282,19 @@ func RestoreDirectory(library Library, fs *Root, current map[string]string, stat
 				}
 				if info.IsDir() {
 					_, ok := it.Dirs[part.Name()]
-					stats.Dirty(!ok)
 					if !ok {
+						common.Debug("* Holotree: remove extra directory %q", directpath)
 						anywork.Backlog(RemoveDirectory(directpath))
 					}
+					stats.Dirty(!ok)
 					continue
 				}
 				files[part.Name()] = true
 				found, ok := it.Files[part.Name()]
 				if !ok {
-					stats.Dirty(true)
+					common.Debug("* Holotree: remove extra file      %q", directpath)
 					anywork.Backlog(RemoveFile(directpath))
+					stats.Dirty(true)
 					continue
 				}
 				shadow, ok := current[directpath]
@@ -278,6 +302,7 @@ func RestoreDirectory(library Library, fs *Root, current map[string]string, stat
 				ok = golden && found.Match(info)
 				stats.Dirty(!ok)
 				if !ok {
+					common.Debug("* Holotree: update changed file    %q", directpath)
 					droppath := library.ExactLocation(found.Digest)
 					anywork.Backlog(DropFile(droppath, directpath, found, fs.Rewrite()))
 				}
@@ -287,6 +312,7 @@ func RestoreDirectory(library Library, fs *Root, current map[string]string, stat
 				_, seen := files[name]
 				if !seen {
 					stats.Dirty(true)
+					common.Debug("* Holotree: add missing file       %q", directpath)
 					droppath := library.ExactLocation(found.Digest)
 					anywork.Backlog(DropFile(droppath, directpath, found, fs.Rewrite()))
 				}

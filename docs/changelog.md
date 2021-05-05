@@ -1,5 +1,14 @@
 # rcc change log
 
+## v9.10.1 (date: 5.5.2021)
+
+- added check for all components owned by catalog, to verify that they all
+  are actually there
+- added debug level logging on environment restoration operations
+- added possibility to have line numbers on rcc produced log output (stderr)
+- rcc log output (stderr) is now synchronized thru a channel
+- made holotree command tree visible on toplevel listing
+
 ## v9.10.0 (date: 4.5.2021)
 
 - refactoring code so that runs can be converted to holotree
