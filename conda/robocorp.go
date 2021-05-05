@@ -170,6 +170,8 @@ func EnvironmentExtensionFor(location string) []string {
 		"PYTHONSTARTUP=",
 		"PYTHONEXECUTABLE=",
 		"PYTHONNOUSERSITE=1",
+		"PYTHONDONTWRITEBYTECODE=x",
+		"PYTHONPYCACHEPREFIX="+RobocorpTemp(),
 		"ROBOCORP_HOME="+common.RobocorpHome(),
 		"RCC_ENVIRONMENT_HASH="+common.EnvironmentHash,
 		"RCC_INSTALLATION_ID="+xviper.TrackingIdentity(),

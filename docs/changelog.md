@@ -1,5 +1,14 @@
 # rcc change log
 
+## v9.10.2 (date: 5.5.2021)
+
+- added metrics to see when there was catalog failure (pre-check related)
+- added PYTHONDONTWRITEBYTECODE=x setting into rcc generated environments,
+  since this will pollute the cache (every compilation produces different file)
+  without much of benefits
+- also added PYTHONPYCACHEPREFIX to point into temporary folder
+- added `--space` flag to `rcc cloud prepare` command
+
 ## v9.10.1 (date: 5.5.2021)
 
 - added check for all components owned by catalog, to verify that they all

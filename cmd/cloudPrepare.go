@@ -8,6 +8,7 @@ import (
 	"github.com/robocorp/rcc/cloud"
 	"github.com/robocorp/rcc/common"
 	"github.com/robocorp/rcc/conda"
+	"github.com/robocorp/rcc/htfs"
 	"github.com/robocorp/rcc/operations"
 	"github.com/robocorp/rcc/pathlib"
 	"github.com/robocorp/rcc/pretty"
@@ -53,8 +54,13 @@ var prepareCloudCmd = &cobra.Command{
 		pretty.Guard(err == nil, 7, "Error: %v", err)
 		pretty.Guard(config.UsesConda(), 0, "Ok.")
 
+		var label string
 		condafile := config.CondaConfigFile()
-		label, err := conda.NewEnvironment(false, condafile)
+		if len(common.HolotreeSpace) > 0 {
+			label, err = htfs.NewEnvironment(false, condafile)
+		} else {
+			label, err = conda.NewEnvironment(false, condafile)
+		}
 		pretty.Guard(err == nil, 8, "Error: %v", err)
 
 		common.Log("Prepared %q.", label)
@@ -68,4 +74,5 @@ func init() {
 	prepareCloudCmd.MarkFlagRequired("workspace")
 	prepareCloudCmd.Flags().StringVarP(&robotId, "robot", "r", "", "The robot id to use as the download source.")
 	prepareCloudCmd.MarkFlagRequired("robot")
+	prepareCloudCmd.Flags().StringVarP(&common.HolotreeSpace, "space", "s", "", "Client specific name to identify this environment.")
 }

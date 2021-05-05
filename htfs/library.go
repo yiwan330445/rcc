@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/dchest/siphash"
+	"github.com/robocorp/rcc/cloud"
 	"github.com/robocorp/rcc/common"
 	"github.com/robocorp/rcc/conda"
 	"github.com/robocorp/rcc/pathlib"
@@ -109,6 +110,9 @@ func (it *hololib) CatalogPath(key string) string {
 
 func (it *hololib) HasBlueprint(blueprint []byte) bool {
 	catalog := it.CatalogPath(BlueprintHash(blueprint))
+	if !pathlib.IsFile(catalog) {
+		return false
+	}
 	tempdir := filepath.Join(conda.RobocorpTemp(), BlueprintHash(blueprint))
 	shadow, err := NewRoot(tempdir)
 	if err != nil {
@@ -123,6 +127,7 @@ func (it *hololib) HasBlueprint(blueprint []byte) bool {
 	err = shadow.Treetop(CatalogCheck(it, shadow))
 	common.Timeline("holotree content check done")
 	if err != nil {
+		cloud.BackgroundMetric(common.ControllerIdentity(), "rcc.holotree.catalog.failure", common.Version)
 		common.Debug("Catalog check failed, reason: %v", err)
 		return false
 	}
