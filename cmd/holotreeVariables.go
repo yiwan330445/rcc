@@ -47,7 +47,7 @@ func holotreeExpandEnvironment(userFiles []string, packfile, environment, worksp
 	}
 
 	if Has(workspace) {
-		claims := operations.RunClaims(validity*60, workspace)
+		claims := operations.RunRobotClaims(validity*60, workspace)
 		data, err = operations.AuthorizeClaims(AccountName(), claims)
 		pretty.Guard(err == nil, 9, "Failed to get cloud data, reason: %v", err)
 	}

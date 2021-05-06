@@ -118,7 +118,7 @@ func ExecuteSimpleTask(flags *RunFlags, template []string, config robot.Robot, t
 	}
 	var data Token
 	if len(flags.WorkspaceId) > 0 {
-		claims := RunClaims(flags.ValidityTime*60, flags.WorkspaceId)
+		claims := RunRobotClaims(flags.ValidityTime*60, flags.WorkspaceId)
 		data, err = AuthorizeClaims(flags.AccountName, claims)
 	}
 	if err != nil {
@@ -171,7 +171,7 @@ func ExecuteTask(flags *RunFlags, template []string, config robot.Robot, todo ro
 	}
 	var data Token
 	if !flags.Assistant && len(flags.WorkspaceId) > 0 {
-		claims := RunClaims(flags.ValidityTime*60, flags.WorkspaceId)
+		claims := RunRobotClaims(flags.ValidityTime*60, flags.WorkspaceId)
 		data, err = AuthorizeClaims(flags.AccountName, claims)
 	}
 	if err != nil {

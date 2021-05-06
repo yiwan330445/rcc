@@ -20,9 +20,9 @@ var authorizeCmd = &cobra.Command{
 		}
 		var claims *operations.Claims
 		if granularity == "user" {
-			claims = operations.WorkspaceTreeClaims(validityTime * 60)
+			claims = operations.ViewWorkspacesClaims(validityTime * 60)
 		} else {
-			claims = operations.RunClaims(validityTime*60, workspaceId)
+			claims = operations.RunRobotClaims(validityTime*60, workspaceId)
 		}
 		data, err := operations.AuthorizeClaims(AccountName(), claims)
 		if err != nil {

@@ -1,5 +1,11 @@
 # rcc change log
 
+## v9.11.0 (date: 6.5.2021)
+
+- started using new capabilitySet feature of cloud authorization
+- added metric for run/robot authorization usage
+- one minor typo fix with "terminal" word
+
 ## v9.10.2 (date: 5.5.2021)
 
 - added metrics to see when there was catalog failure (pre-check related)

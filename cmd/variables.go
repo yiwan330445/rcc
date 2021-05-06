@@ -84,7 +84,7 @@ func exportEnvironment(userCondaYaml []string, packfile, environment, workspace 
 	}
 
 	if Has(workspace) {
-		claims := operations.RunClaims(validity*60, workspace)
+		claims := operations.RunRobotClaims(validity*60, workspace)
 		data, err = operations.AuthorizeClaims(AccountName(), claims)
 	}
 

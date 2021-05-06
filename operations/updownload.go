@@ -33,7 +33,7 @@ func fetchRobotToken(client cloud.Client, account *account, claims *Claims) (str
 }
 
 func summonAssistantToken(client cloud.Client, account *account, workspaceId string) (string, error) {
-	claims := AssistantClaims(30*60, workspaceId)
+	claims := RunAssistantClaims(30*60, workspaceId)
 	token, ok := account.Cached(claims.Name, claims.Url)
 	if ok {
 		return token, nil
@@ -42,7 +42,7 @@ func summonAssistantToken(client cloud.Client, account *account, workspaceId str
 }
 
 func summonRobotToken(client cloud.Client, account *account, workspaceId string) (string, error) {
-	claims := RobotClaims(30*60, workspaceId)
+	claims := EditRobotClaims(30*60, workspaceId)
 	token, ok := account.Cached(claims.Name, claims.Url)
 	if ok {
 		return token, nil

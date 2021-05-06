@@ -29,15 +29,12 @@ const (
 	newline                = "\n"
 )
 
-type Capability map[string]bool
-type Capabilities map[string]Capability
-
 type Claims struct {
-	ExpiresIn    int          `json:"expiresIn,omitempty"`
-	Capabilities Capabilities `json:"capabilities,omitempty"`
-	Method       string       `json:"-"`
-	Url          string       `json:"-"`
-	Name         string       `json:"-"`
+	ExpiresIn     int    `json:"expiresIn,omitempty"`
+	CapabilitySet string `json:"capabilitySet,omitempty"`
+	Method        string `json:"-"`
+	Url           string `json:"-"`
+	Name          string `json:"-"`
 }
 
 type Token map[string]interface{}
@@ -65,11 +62,10 @@ type UserInfo struct {
 
 func NewClaims(name, url string, expires int) *Claims {
 	result := Claims{
-		ExpiresIn:    expires,
-		Capabilities: make(Capabilities),
-		Url:          url,
-		Name:         name,
-		Method:       postMethod,
+		ExpiresIn: expires,
+		Url:       url,
+		Name:      name,
+		Method:    postMethod,
 	}
 	return &result
 }
@@ -96,45 +92,28 @@ func (it *Claims) AsJson() (string, error) {
 	return string(body), nil
 }
 
-func (it Capabilities) Add(name string, list, read, write bool) {
-	capability := make(Capability)
-	capability["list"] = list
-	capability["read"] = read
-	capability["write"] = write
-	it[name] = capability
-}
-
-func ActivityClaims(seconds int, workspace string) *Claims {
-	result := NewClaims("Activity", fmt.Sprintf(WorkspaceApi, workspace), seconds)
-	result.Capabilities.Add("activity", true, true, true)
+func EditRobotClaims(seconds int, workspace string) *Claims {
+	result := NewClaims("EditRobot", fmt.Sprintf(WorkspaceApi, workspace), seconds)
+	result.CapabilitySet = "edit/robot"
 	return result
 }
 
-func AssistantClaims(seconds int, workspace string) *Claims {
-	result := NewClaims("Assistant", fmt.Sprintf(WorkspaceApi, workspace), seconds)
-	result.Capabilities.Add("assistant", true, true, true)
+func RunAssistantClaims(seconds int, workspace string) *Claims {
+	result := NewClaims("RunAssistant", fmt.Sprintf(WorkspaceApi, workspace), seconds)
+	result.CapabilitySet = "run/assistant"
 	return result
 }
 
-func RobotClaims(seconds int, workspace string) *Claims {
-	result := NewClaims("Robot", fmt.Sprintf(WorkspaceApi, workspace), seconds)
-	result.Capabilities.Add("package", true, true, true)
+func RunRobotClaims(seconds int, workspace string) *Claims {
+	result := NewClaims("RunRobot", fmt.Sprintf(WorkspaceApi, workspace), seconds)
+	result.CapabilitySet = "run/robot"
+	cloud.BackgroundMetric(common.ControllerIdentity(), "rcc.capabilityset.runrobot", common.Version)
 	return result
 }
 
-func RunClaims(seconds int, workspace string) *Claims {
-	result := NewClaims("Run", fmt.Sprintf(WorkspaceApi, workspace), seconds)
-	result.Capabilities.Add("secret", true, true, true)
-	result.Capabilities.Add("artifact", false, false, true)
-	result.Capabilities.Add("livedata", false, true, true)
-	result.Capabilities.Add("workitemdata", false, true, true)
-	return result
-}
-
-func WorkspaceTreeClaims(seconds int) *Claims {
-	result := NewClaims("User", UserApi, seconds)
-	result.Capabilities.Add("workspace", true, false, false)
-	result.Capabilities.Add("workspaceTree", true, true, false)
+func ViewWorkspacesClaims(seconds int) *Claims {
+	result := NewClaims("ViewWorkspaces", UserApi, seconds)
+	result.CapabilitySet = "view/workspaces"
 	return result
 }
 

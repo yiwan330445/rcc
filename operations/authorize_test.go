@@ -70,35 +70,23 @@ func TestCanCreateNewClaims(t *testing.T) {
 
 	sut := operations.NewClaims("Mega", "https://some.com", 232)
 	wont_be.Nil(sut)
-	must_be.Equal(len(sut.Capabilities), 0)
-	sut.Capabilities.Add("secret", true, true, false)
-	sut.Capabilities.Add("artifact", false, true, true)
-	sut.Capabilities.Add("livedata", false, true, true)
-	sut.Capabilities.Add("workitemdata", false, true, true)
-	sut.Capabilities.Add("workspace", true, false, false)
-	sut.Capabilities.Add("workspaceTree", true, true, false)
-	sut.Capabilities.Add("package", true, true, true)
-	must_be.Equal(len(sut.Capabilities), 7)
+	sut.CapabilitySet = "run/assistant"
 	output, err := sut.AsJson()
 	must_be.Nil(err)
 	wont_be.Nil(output)
-	must_be.True(strings.Contains(output, "workspaceTree"))
-	must_be.True(strings.Contains(output, "true"))
-	must_be.True(strings.Contains(output, "false"))
-	must_be.True(strings.Contains(output, "list"))
-	must_be.True(strings.Contains(output, "read"))
-	must_be.True(strings.Contains(output, "write"))
+	must_be.True(strings.Contains(output, "capabilitySet"))
+	must_be.True(strings.Contains(output, "run/assistant"))
 }
 
 func TestCanCreateRobotClaims(t *testing.T) {
 	must_be, wont_be := hamlet.Specifications(t)
 
 	setup := operations.NewClaims("Robot", "https://some.com", 60)
-	setup.Capabilities.Add("package", true, true, true)
+	setup.CapabilitySet = "edit/robot"
 	expected, err := setup.AsJson()
 	must_be.Nil(err)
 
-	sut := operations.RobotClaims(60, "99")
+	sut := operations.EditRobotClaims(60, "99")
 	wont_be.Nil(sut)
 	result, err := sut.AsJson()
 	must_be.Nil(err)
@@ -106,18 +94,15 @@ func TestCanCreateRobotClaims(t *testing.T) {
 	must_be.True(strings.Contains(sut.Url, "/workspaces/99/"))
 }
 
-func TestCanCreateRunClaims(t *testing.T) {
+func TestCanCreateRunRobotClaims(t *testing.T) {
 	must_be, wont_be := hamlet.Specifications(t)
 
 	setup := operations.NewClaims("Run", "https://some.com", 88)
-	setup.Capabilities.Add("secret", true, true, true)
-	setup.Capabilities.Add("artifact", false, false, true)
-	setup.Capabilities.Add("livedata", false, true, true)
-	setup.Capabilities.Add("workitemdata", false, true, true)
+	setup.CapabilitySet = "run/robot"
 	expected, err := setup.AsJson()
 	must_be.Nil(err)
 
-	sut := operations.RunClaims(88, "777")
+	sut := operations.RunRobotClaims(88, "777")
 	wont_be.Nil(sut)
 	result, err := sut.AsJson()
 	must_be.Nil(err)
@@ -146,16 +131,15 @@ func TestCanGetVerificationClaims(t *testing.T) {
 	must_be.Equal("GET", sut.Method)
 }
 
-func TestCanCreateWorkspaceTreeClaims(t *testing.T) {
+func TestCanCreateViewWorkspacesClaims(t *testing.T) {
 	must_be, wont_be := hamlet.Specifications(t)
 
 	setup := operations.NewClaims("User", "https://some.com", 49)
-	setup.Capabilities.Add("workspace", true, false, false)
-	setup.Capabilities.Add("workspaceTree", true, true, false)
+	setup.CapabilitySet = "view/workspaces"
 	expected, err := setup.AsJson()
 	must_be.Nil(err)
 
-	sut := operations.WorkspaceTreeClaims(49)
+	sut := operations.ViewWorkspacesClaims(49)
 	wont_be.Nil(sut)
 	result, err := sut.AsJson()
 	must_be.Nil(err)
@@ -171,7 +155,7 @@ func TestCanCallAuthorizeCommand(t *testing.T) {
 	wont_be.Nil(account)
 	first := cloud.Response{Status: 200, Body: []byte("{\"token\":\"foo\",\"expiresIn\":1}")}
 	client := mocks.NewClient(&first)
-	claims := operations.RunClaims(1, "777")
+	claims := operations.RunRobotClaims(1, "777")
 	token, err := operations.AuthorizeCommand(client, account, claims)
 	must_be.Nil(err)
 	wont_be.Nil(token)

@@ -39,7 +39,7 @@ func fetchAnyToken(client cloud.Client, account *account, claims *Claims) (strin
 }
 
 func summonActivityToken(client cloud.Client, account *account, workspace string) (string, error) {
-	claims := ActivityClaims(15*60, workspace)
+	claims := EditRobotClaims(15*60, workspace)
 	token, ok := account.Cached(claims.Name, claims.Url)
 	if ok {
 		return token, nil
@@ -48,7 +48,7 @@ func summonActivityToken(client cloud.Client, account *account, workspace string
 }
 
 func summonWorkspaceToken(client cloud.Client, account *account) (string, error) {
-	claims := WorkspaceTreeClaims(15 * 60)
+	claims := ViewWorkspacesClaims(15 * 60)
 	token, ok := account.Cached(claims.Name, claims.Url)
 	if ok {
 		return token, nil
