@@ -1,5 +1,10 @@
 # rcc change log
 
+## v9.11.1 (date: 7.5.2021)
+
+- new get/robot capabilitySet added into rcc
+- added User-Agent to rcc web requests
+
 ## v9.11.0 (date: 6.5.2021)
 
 - started using new capabilitySet feature of cloud authorization

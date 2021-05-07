@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"time"
 )
@@ -106,6 +107,10 @@ func ForceDebug() {
 	Silent = false
 	DebugFlag = true
 	UnifyVerbosityFlags()
+}
+
+func UserAgent() string {
+	return fmt.Sprintf("rcc/%s (%s %s) %s", Version, runtime.GOOS, runtime.GOARCH, ControllerIdentity())
 }
 
 func ControllerIdentity() string {

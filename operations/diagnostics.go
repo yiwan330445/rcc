@@ -57,6 +57,7 @@ func RunDiagnostics() *common.DiagnosticStatus {
 	result.Details["working-dir"] = justText(os.Getwd)
 	result.Details["tempdir"] = os.TempDir()
 	result.Details["controller"] = common.ControllerIdentity()
+	result.Details["user-agent"] = common.UserAgent()
 	result.Details["installationId"] = xviper.TrackingIdentity()
 	result.Details["os"] = fmt.Sprintf("%s %s", runtime.GOOS, runtime.GOARCH)
 	result.Details["cpus"] = fmt.Sprintf("%d", runtime.NumCPU())

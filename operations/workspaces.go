@@ -38,7 +38,7 @@ func fetchAnyToken(client cloud.Client, account *account, claims *Claims) (strin
 	return "", errors.New("Could not get authorization token.")
 }
 
-func summonActivityToken(client cloud.Client, account *account, workspace string) (string, error) {
+func summonEditRobotToken(client cloud.Client, account *account, workspace string) (string, error) {
 	claims := EditRobotClaims(15*60, workspace)
 	token, ok := account.Cached(claims.Name, claims.Url)
 	if ok {
@@ -132,7 +132,7 @@ func RobotDigestCommand(client cloud.Client, account *account, workspaceId, robo
 }
 
 func NewRobotCommand(client cloud.Client, account *account, workspace, robotName string) (Token, error) {
-	credentials, err := summonActivityToken(client, account, workspace)
+	credentials, err := summonEditRobotToken(client, account, workspace)
 	if err != nil {
 		return nil, err
 	}

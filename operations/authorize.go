@@ -111,6 +111,12 @@ func RunRobotClaims(seconds int, workspace string) *Claims {
 	return result
 }
 
+func GetRobotClaims(seconds int, workspace string) *Claims {
+	result := NewClaims("GetRobot", fmt.Sprintf(WorkspaceApi, workspace), seconds)
+	result.CapabilitySet = "get/robot"
+	return result
+}
+
 func ViewWorkspacesClaims(seconds int) *Claims {
 	result := NewClaims("ViewWorkspaces", UserApi, seconds)
 	result.CapabilitySet = "view/workspaces"

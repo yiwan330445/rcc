@@ -41,8 +41,8 @@ func summonAssistantToken(client cloud.Client, account *account, workspaceId str
 	return fetchRobotToken(client, account, claims)
 }
 
-func summonRobotToken(client cloud.Client, account *account, workspaceId string) (string, error) {
-	claims := EditRobotClaims(30*60, workspaceId)
+func summonGetRobotToken(client cloud.Client, account *account, workspaceId string) (string, error) {
+	claims := GetRobotClaims(30*60, workspaceId)
 	token, ok := account.Cached(claims.Name, claims.Url)
 	if ok {
 		return token, nil
@@ -110,7 +110,7 @@ func getContent(client cloud.Client, awsUrl, zipfile string) error {
 }
 
 func UploadCommand(client cloud.Client, account *account, workspaceId, robotId, zipfile string, debug bool) error {
-	token, err := summonRobotToken(client, account, workspaceId)
+	token, err := summonEditRobotToken(client, account, workspaceId)
 	if err != nil {
 		return err
 	}
@@ -136,7 +136,7 @@ func UploadCommand(client cloud.Client, account *account, workspaceId, robotId, 
 
 func DownloadCommand(client cloud.Client, account *account, workspaceId, robotId, zipfile string, debug bool) error {
 	common.Timeline("download started: %s", zipfile)
-	token, err := summonRobotToken(client, account, workspaceId)
+	token, err := summonGetRobotToken(client, account, workspaceId)
 	if err != nil {
 		return err
 	}

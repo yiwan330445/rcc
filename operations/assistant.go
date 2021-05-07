@@ -189,6 +189,7 @@ func MultipartUpload(url string, fields map[string]string, basename, fullpath st
 		return err
 	}
 	request.Header.Add("Content-Type", many.FormDataContentType())
+	request.Header.Add("User-Agent", common.UserAgent())
 	client := &http.Client{Transport: settings.Global.ConfiguredHttpTransport()}
 	response, err := client.Do(request)
 	if err != nil {
