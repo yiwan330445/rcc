@@ -1,5 +1,10 @@
 # rcc change log
 
+## v9.11.2 (date: 11.5.2021)
+
+- added query cache in front of slow "has blueprint" query (windows)
+- more timeline entries added for timing purposes
+
 ## v9.11.1 (date: 7.5.2021)
 
 - new get/robot capabilitySet added into rcc

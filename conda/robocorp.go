@@ -220,7 +220,7 @@ func asVersion(text string) (uint64, string) {
 }
 
 func MicromambaVersion() string {
-	versionText, _, err := shell.New(CondaEnvironment(), ".", BinMicromamba(), "--version").CaptureOutput()
+	versionText, _, err := shell.New(CondaEnvironment(), ".", BinMicromamba(), "--repodata-ttl", "90000", "--version").CaptureOutput()
 	if err != nil {
 		return err.Error()
 	}
@@ -235,6 +235,7 @@ func HasMicroMamba() bool {
 	version, versionText := asVersion(MicromambaVersion())
 	goodEnough := version >= 9002
 	common.Debug("%q version is %q -> %v (good enough: %v)", BinMicromamba(), versionText, version, goodEnough)
+	common.Timeline("µmamba version is %q (at %q).", versionText, BinMicromamba())
 	return goodEnough
 }
 

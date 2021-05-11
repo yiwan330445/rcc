@@ -49,8 +49,9 @@ type Library interface {
 }
 
 type hololib struct {
-	identity uint64
-	basedir  string
+	identity   uint64
+	basedir    string
+	queryCache map[string]bool
 }
 
 func (it *hololib) Location(digest string) string {
@@ -109,15 +110,27 @@ func (it *hololib) CatalogPath(key string) string {
 }
 
 func (it *hololib) HasBlueprint(blueprint []byte) bool {
-	catalog := it.CatalogPath(BlueprintHash(blueprint))
+	key := BlueprintHash(blueprint)
+	found, ok := it.queryCache[key]
+	if !ok {
+		found = it.queryBlueprint(key)
+		it.queryCache[key] = found
+	}
+	return found
+}
+
+func (it *hololib) queryBlueprint(key string) bool {
+	common.Timeline("holotree blueprint query")
+	catalog := it.CatalogPath(key)
 	if !pathlib.IsFile(catalog) {
 		return false
 	}
-	tempdir := filepath.Join(conda.RobocorpTemp(), BlueprintHash(blueprint))
+	tempdir := filepath.Join(conda.RobocorpTemp(), key)
 	shadow, err := NewRoot(tempdir)
 	if err != nil {
 		return false
 	}
+	common.Timeline("holotree load catalog")
 	err = shadow.LoadFrom(catalog)
 	if err != nil {
 		common.Debug("Catalog load failed, reason: %v", err)
@@ -249,8 +262,9 @@ func New() (Library, error) {
 	}
 	basedir := common.RobocorpHome()
 	return &hololib{
-		identity: sipit([]byte(basedir)),
-		basedir:  basedir,
+		identity:   sipit([]byte(basedir)),
+		basedir:    basedir,
+		queryCache: make(map[string]bool),
 	}, nil
 }
 

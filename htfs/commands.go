@@ -16,6 +16,7 @@ import (
 func NewEnvironment(force bool, condafile string) (label string, err error) {
 	defer fail.Around(&err)
 
+	common.Timeline("new holotree environment")
 	_, holotreeBlueprint, err := ComposeFinalBlueprint([]string{condafile}, "")
 	fail.On(err != nil, "%s", err)
 
@@ -23,9 +24,11 @@ func NewEnvironment(force bool, condafile string) (label string, err error) {
 
 	tree, err := New()
 	fail.On(err != nil, "%s", err)
+	common.Timeline("holotree library created")
 
 	if !tree.HasBlueprint(holotreeBlueprint) && common.Liveonly {
 		tree = Virtual()
+		common.Timeline("downgraded to virtual holotree library")
 	}
 	err = RecordEnvironment(tree, holotreeBlueprint, force)
 	fail.On(err != nil, "%s", err)

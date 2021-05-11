@@ -134,6 +134,8 @@ func (it *Root) SaveAs(filename string) error {
 }
 
 func (it *Root) LoadFrom(filename string) error {
+	common.Timeline("holotree load %q", filename)
+	defer common.Timeline("holotree load done")
 	source, err := os.Open(filename)
 	if err != nil {
 		return err
@@ -146,6 +148,7 @@ func (it *Root) LoadFrom(filename string) error {
 	defer reader.Close()
 	content := bytes.NewBuffer(nil)
 	io.Copy(content, reader)
+	common.Timeline("holotree load unmarshal")
 	return json.Unmarshal(content.Bytes(), &it)
 }
 

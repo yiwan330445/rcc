@@ -60,6 +60,7 @@ func LoadAnyTaskEnvironment(packfile string, force bool) (bool, robot.Robot, rob
 }
 
 func LoadTaskWithEnvironment(packfile, theTask string, force bool) (bool, robot.Robot, robot.Task, string) {
+	common.Timeline("task environment load started")
 	FixRobot(packfile)
 	config, err := robot.LoadRobotYaml(packfile, true)
 	if err != nil {
