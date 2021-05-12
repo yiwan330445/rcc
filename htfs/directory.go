@@ -1,11 +1,9 @@
 package htfs
 
 import (
-	"bytes"
 	"compress/gzip"
 	"encoding/json"
 	"fmt"
-	"io"
 	"io/fs"
 	"os"
 	"path/filepath"
@@ -89,21 +87,23 @@ func (it *Root) Lift() error {
 
 func (it *Root) Treetop(task Treetop) error {
 	err := task(it.Path, it.Tree)
+	if err != nil {
+		return err
+	}
 	common.Timeline("holotree treetop sync")
-	anywork.Sync()
-	return err
+	return anywork.Sync()
 }
 
-func (it *Root) AllDirs(task Dirtask) {
+func (it *Root) AllDirs(task Dirtask) error {
 	it.Tree.AllDirs(it.Path, task)
 	common.Timeline("holotree dirs sync")
-	anywork.Sync()
+	return anywork.Sync()
 }
 
-func (it *Root) AllFiles(task Filetask) {
+func (it *Root) AllFiles(task Filetask) error {
 	it.Tree.AllFiles(it.Path, task)
 	common.Timeline("holotree files sync")
-	anywork.Sync()
+	return anywork.Sync()
 }
 
 func (it *Root) AsJson() ([]byte, error) {
@@ -146,10 +146,8 @@ func (it *Root) LoadFrom(filename string) error {
 		return err
 	}
 	defer reader.Close()
-	content := bytes.NewBuffer(nil)
-	io.Copy(content, reader)
-	common.Timeline("holotree load unmarshal")
-	return json.Unmarshal(content.Bytes(), &it)
+	decoder := json.NewDecoder(reader)
+	return decoder.Decode(&it)
 }
 
 type Dir struct {

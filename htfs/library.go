@@ -88,7 +88,10 @@ func (it *hololib) Record(blueprint []byte) error {
 		return err
 	}
 	common.Timeline("holotree (re)locator start")
-	fs.AllFiles(Locator(it.Identity()))
+	err = fs.AllFiles(Locator(it.Identity()))
+	if err != nil {
+		return err
+	}
 	common.Timeline("holotree (re)locator done")
 	fs.Blueprint = key
 	catalog := filepath.Join(common.HololibLocation(), "catalog", key)
@@ -130,7 +133,6 @@ func (it *hololib) queryBlueprint(key string) bool {
 	if err != nil {
 		return false
 	}
-	common.Timeline("holotree load catalog")
 	err = shadow.LoadFrom(catalog)
 	if err != nil {
 		common.Debug("Catalog load failed, reason: %v", err)
@@ -212,7 +214,10 @@ func (it *hololib) Restore(blueprint, client, tag []byte) (string, error) {
 	}
 	score := &stats{}
 	common.Timeline("holotree restore start")
-	fs.AllDirs(RestoreDirectory(it, fs, currentstate, score))
+	err = fs.AllDirs(RestoreDirectory(it, fs, currentstate, score))
+	if err != nil {
+		return "", err
+	}
 	common.Timeline("holotree restore done")
 	defer common.Timeline("- dirty %d/%d", score.dirty, score.total)
 	common.Debug("Holotree dirty workload: %d/%d\n", score.dirty, score.total)
@@ -307,7 +312,10 @@ func (it *virtual) Record(blueprint []byte) error {
 		return err
 	}
 	common.Timeline("holotree (re)locator start (virtual)")
-	fs.AllFiles(Locator(it.Identity()))
+	err = fs.AllFiles(Locator(it.Identity()))
+	if err != nil {
+		return err
+	}
 	common.Timeline("holotree (re)locator done (virtual)")
 	it.registry = make(map[string]string)
 	fs.Treetop(DigestMapper(it.registry))
@@ -349,7 +357,10 @@ func (it *virtual) Restore(blueprint, client, tag []byte) (string, error) {
 	}
 	score := &stats{}
 	common.Timeline("holotree restore start (virtual)")
-	fs.AllDirs(RestoreDirectory(it, fs, currentstate, score))
+	err = fs.AllDirs(RestoreDirectory(it, fs, currentstate, score))
+	if err != nil {
+		return "", err
+	}
 	common.Timeline("holotree restore done (virtual)")
 	defer common.Timeline("- dirty %d/%d", score.dirty, score.total)
 	common.Debug("Holotree dirty workload: %d/%d\n", score.dirty, score.total)

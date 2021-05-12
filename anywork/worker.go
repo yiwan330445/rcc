@@ -9,16 +9,20 @@ import (
 var (
 	group     *sync.WaitGroup
 	pipeline  WorkQueue
+	failpipe  Failures
+	errcount  Counters
 	headcount uint64
 )
 
 type Work func()
 type WorkQueue chan Work
+type Failures chan string
+type Counters chan uint64
 
 func catcher(title string, identity uint64) {
 	catch := recover()
 	if catch != nil {
-		fmt.Fprintf(os.Stderr, "Recovering %q #%d: %v\n", title, identity, catch)
+		failpipe <- fmt.Sprintf("Recovering %q #%d: %v", title, identity, catch)
 	}
 }
 
@@ -39,11 +43,27 @@ func member(identity uint64) {
 	}
 }
 
+func watcher(failures Failures, counters Counters) {
+	counter := uint64(0)
+	for {
+		select {
+		case fail := <-failures:
+			counter += 1
+			fmt.Fprintln(os.Stderr, fail)
+		case counters <- counter:
+			counter = 0
+		}
+	}
+}
+
 func init() {
 	group = &sync.WaitGroup{}
 	pipeline = make(WorkQueue, 100000)
+	failpipe = make(Failures)
+	errcount = make(Counters)
 	headcount = 1
 	go member(headcount)
+	go watcher(failpipe, errcount)
 }
 
 func Scale(limit uint64) {
@@ -60,11 +80,16 @@ func Backlog(todo Work) {
 	}
 }
 
-func Sync() {
+func Sync() error {
 	group.Wait()
+	count := <-errcount
+	if count > 0 {
+		return fmt.Errorf("There has been %d failures. See messages above.", count)
+	}
+	return nil
 }
 
-func Done() {
+func Done() error {
 	close(pipeline)
-	group.Wait()
+	return Sync()
 }

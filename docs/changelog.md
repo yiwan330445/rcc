@@ -1,5 +1,11 @@
 # rcc change log
 
+## v9.11.3 (date: 12.5.2021)
+
+- adding error signaling on anywork background workers
+- more work on improving slow parts of holotree
+- fixed settings.yaml conda link (conda.anaconda.org reference)
+
 ## v9.11.2 (date: 11.5.2021)
 
 - added query cache in front of slow "has blueprint" query (windows)

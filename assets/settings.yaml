@@ -4,7 +4,7 @@ endpoints:
   cloud-ui: https://cloud.robocorp.com/
   pypi: # https://pypi.org/simple/
   pypi-trusted: # https://pypi.org/
-  conda: # https://repo.anaconda.org/
+  conda: # https://conda.anaconda.org/
   downloads: https://downloads.robocorp.com/
   docs: https://robocorp.com/docs/
   telemetry: https://telemetry.robocorp.com/
@@ -13,7 +13,7 @@ endpoints:
 diagnostics-hosts:
   - files.pythonhosted.org
   - github.com
-  - repo.anaconda.org
+  - conda.anaconda.org
   - pypi.org
 
 autoupdates:
