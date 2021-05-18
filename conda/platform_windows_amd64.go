@@ -21,14 +21,14 @@ const (
 	usrSuffix      = "\\usr"
 	binSuffix      = "\\bin"
 	activateScript = "@echo off\n" +
-		"set MAMBA_ROOT_PREFIX=\"{{.Robocorphome}}\"\n" +
+		"set \"MAMBA_ROOT_PREFIX={{.Robocorphome}}\"\n" +
 		"for /f \"tokens=* usebackq\" %%a in ( `call \"{{.Robocorphome}}\\bin\\micromamba.exe\" shell -s cmd.exe activate -p \"{{.Live}}\"` ) do ( call \"%%a\" )\n" +
 		"call \"{{.Rcc}}\" internal env -l after\n"
 	commandSuffix = ".cmd"
 )
 
 func MicromambaLink() string {
-	return settings.Global.DownloadsLink("micromamba/v0.9.2/windows64/micromamba.exe")
+	return settings.Global.DownloadsLink("micromamba/v0.13.1/windows64/micromamba.exe")
 }
 
 var (

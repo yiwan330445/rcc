@@ -1,5 +1,10 @@
 # rcc change log
 
+## v9.13.0 (date: 18.5.2021)
+
+- micromamba upgrade to version 0.13.1
+- activation script fix for windows environment
+
 ## v9.12.1 (date: 18.5.2021)
 
 - new environment variable `ROBOCORP_OVERRIDE_SYSTEM_REQUIREMENTS` to make
