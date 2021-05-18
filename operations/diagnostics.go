@@ -51,6 +51,8 @@ func RunDiagnostics() *common.DiagnosticStatus {
 	result.Details["stats"] = rccStatusLine()
 	result.Details["micromamba"] = conda.MicromambaVersion()
 	result.Details["ROBOCORP_HOME"] = common.RobocorpHome()
+	result.Details["ROBOCORP_OVERRIDE_SYSTEM_REQUIREMENTS"] = fmt.Sprintf("%v", common.OverrideSystemRequirements())
+	result.Details["RCC_VERBOSE_ENVIRONMENT_BUILDING"] = fmt.Sprintf("%v", common.VerboseEnvironmentBuilding())
 	result.Details["user-cache-dir"] = justText(os.UserCacheDir)
 	result.Details["user-config-dir"] = justText(os.UserConfigDir)
 	result.Details["user-home-dir"] = justText(os.UserHomeDir)
@@ -70,7 +72,9 @@ func RunDiagnostics() *common.DiagnosticStatus {
 
 	// checks
 	result.Checks = append(result.Checks, robocorpHomeCheck())
-	result.Checks = append(result.Checks, longPathSupportCheck())
+	if !common.OverrideSystemRequirements() {
+		result.Checks = append(result.Checks, longPathSupportCheck())
+	}
 	for _, host := range settings.Global.Hostnames() {
 		result.Checks = append(result.Checks, dnsLookupCheck(host))
 	}
@@ -190,7 +194,7 @@ func humaneDiagnostics(sink io.Writer, details *common.DiagnosticStatus) {
 	sort.Strings(keys)
 	for _, key := range keys {
 		value := details.Details[key]
-		fmt.Fprintf(sink, " - %-25s...  %q\n", key, value)
+		fmt.Fprintf(sink, " - %-38s...  %q\n", key, value)
 	}
 	fmt.Fprintln(sink, "")
 	fmt.Fprintln(sink, "Checks:")

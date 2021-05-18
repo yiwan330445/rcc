@@ -1,5 +1,11 @@
 # rcc change log
 
+## v9.12.1 (date: 18.5.2021)
+
+- new environment variable `ROBOCORP_OVERRIDE_SYSTEM_REQUIREMENTS` to make
+  skip those system requirements that some users are willing to try
+- first such thing is "long path support" on some versions of Windows
+
 ## v9.12.0 (date: 18.5.2021)
 
 - new environment variable `RCC_VERBOSE_ENVIRONMENT_BUILDING` to make

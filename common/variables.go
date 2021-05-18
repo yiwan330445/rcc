@@ -10,8 +10,9 @@ import (
 )
 
 const (
-	ROBOCORP_HOME_VARIABLE       = `ROBOCORP_HOME`
-	VERBOSE_ENVIRONMENT_BUILDING = `RCC_VERBOSE_ENVIRONMENT_BUILDING`
+	ROBOCORP_HOME_VARIABLE                = `ROBOCORP_HOME`
+	VERBOSE_ENVIRONMENT_BUILDING          = `RCC_VERBOSE_ENVIRONMENT_BUILDING`
+	ROBOCORP_OVERRIDE_SYSTEM_REQUIREMENTS = `ROBOCORP_OVERRIDE_SYSTEM_REQUIREMENTS`
 )
 
 var (
@@ -49,6 +50,10 @@ func RobocorpHome() string {
 func VerboseEnvironmentBuilding() bool {
 	verbose := len(os.Getenv(VERBOSE_ENVIRONMENT_BUILDING)) > 0
 	return verbose || DebugFlag || TraceFlag
+}
+
+func OverrideSystemRequirements() bool {
+	return len(os.Getenv(ROBOCORP_OVERRIDE_SYSTEM_REQUIREMENTS)) > 0
 }
 
 func ensureDirectory(name string) string {

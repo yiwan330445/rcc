@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"github.com/robocorp/rcc/common"
 	"github.com/robocorp/rcc/conda"
 	"github.com/robocorp/rcc/pretty"
 	"github.com/spf13/cobra"
@@ -15,6 +16,9 @@ var longpathsCmd = &cobra.Command{
 	Short: "Check and enable Windows longpath support",
 	Long:  "Check and enable Windows longpath support",
 	Run: func(cmd *cobra.Command, args []string) {
+		if common.OverrideSystemRequirements() {
+			pretty.Exit(100, "This operation is prevented, because ROBOCORP_OVERRIDE_SYSTEM_REQUIREMENTS is effective!")
+		}
 		var err error
 		if enableLongpaths {
 			err = conda.EnforceLongpathSupport()
