@@ -193,6 +193,7 @@ func newLiveInternal(yaml, condaYaml, requirementsText, key string, force, fresh
 	}
 	mambaCommand := common.NewCommander(BinMicromamba(), "create", "--always-copy", "--no-rc", "--safety-checks", "enabled", "--extra-safety-checks", "--retry-clean-cache", "--strict-channel-priority", "--repodata-ttl", ttl, "-y", "-f", condaYaml, "-p", targetFolder)
 	mambaCommand.Option("--channel-alias", settings.Global.CondaURL())
+	mambaCommand.ConditionalFlag(common.VerboseEnvironmentBuilding(), "--verbose")
 	observer := make(InstallObserver)
 	common.Debug("===  new live  ---  micromamba create phase ===")
 	common.Timeline("Micromamba start.")
@@ -221,6 +222,7 @@ func newLiveInternal(yaml, condaYaml, requirementsText, key string, force, fresh
 		pipCommand := common.NewCommander("pip", "install", "--no-color", "--disable-pip-version-check", "--prefer-binary", "--cache-dir", pipCache, "--find-links", wheelCache, "--requirement", requirementsText)
 		pipCommand.Option("--index-url", settings.Global.PypiURL())
 		pipCommand.Option("--trusted-host", settings.Global.PypiTrustedHost())
+		pipCommand.ConditionalFlag(common.VerboseEnvironmentBuilding(), "--verbose")
 		common.Debug("===  new live  ---  pip install phase ===")
 		err = LiveExecution(planWriter, targetFolder, pipCommand.CLI()...)
 		if err != nil {

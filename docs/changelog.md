@@ -1,5 +1,12 @@
 # rcc change log
 
+## v9.12.0 (date: 18.5.2021)
+
+- new environment variable `RCC_VERBOSE_ENVIRONMENT_BUILDING` to make
+  environment building more verbose
+- with above variable and `--trace` or `--debug` flags, both micromamba
+  and pip are run with more verbosity
+
 ## v9.11.3 (date: 12.5.2021)
 
 - adding error signaling on anywork background workers

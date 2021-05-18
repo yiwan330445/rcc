@@ -10,7 +10,8 @@ import (
 )
 
 const (
-	ROBOCORP_HOME_VARIABLE = `ROBOCORP_HOME`
+	ROBOCORP_HOME_VARIABLE       = `ROBOCORP_HOME`
+	VERBOSE_ENVIRONMENT_BUILDING = `RCC_VERBOSE_ENVIRONMENT_BUILDING`
 )
 
 var (
@@ -43,6 +44,11 @@ func RobocorpHome() string {
 		return ensureDirectory(ExpandPath(home))
 	}
 	return ensureDirectory(ExpandPath(defaultRobocorpLocation))
+}
+
+func VerboseEnvironmentBuilding() bool {
+	verbose := len(os.Getenv(VERBOSE_ENVIRONMENT_BUILDING)) > 0
+	return verbose || DebugFlag || TraceFlag
 }
 
 func ensureDirectory(name string) string {

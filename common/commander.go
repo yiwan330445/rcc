@@ -14,6 +14,13 @@ func (it *Commander) Option(name, value string) *Commander {
 	return it
 }
 
+func (it *Commander) ConditionalFlag(condition bool, name string) *Commander {
+	if condition {
+		it.command = append(it.command, name)
+	}
+	return it
+}
+
 func (it *Commander) CLI() []string {
 	return it.command
 }
