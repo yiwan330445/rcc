@@ -1,5 +1,10 @@
 # rcc change log
 
+## v9.14.0 (date: 19.5.2021)
+
+- added PYTHONPATH diagnostics validation
+- added `--production` flag to diagnostics commands
+
 ## v9.13.0 (date: 18.5.2021)
 
 - micromamba upgrade to version 0.13.1

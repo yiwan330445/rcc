@@ -72,6 +72,7 @@ func RunDiagnostics() *common.DiagnosticStatus {
 
 	// checks
 	result.Checks = append(result.Checks, robocorpHomeCheck())
+	result.Checks = append(result.Checks, pythonPathCheck())
 	if !common.OverrideSystemRequirements() {
 		result.Checks = append(result.Checks, longPathSupportCheck())
 	}
@@ -108,6 +109,25 @@ func longPathSupportCheck() *common.DiagnosticCheck {
 		Status:  statusFail,
 		Message: "Does not support long path names!",
 		Link:    supportLongPathUrl,
+	}
+}
+
+func pythonPathCheck() *common.DiagnosticCheck {
+	supportGeneralUrl := settings.Global.DocsLink("troubleshooting")
+	pythonPath := os.Getenv("PYTHONPATH")
+	if len(pythonPath) > 0 {
+		return &common.DiagnosticCheck{
+			Type:    "OS",
+			Status:  statusWarning,
+			Message: fmt.Sprintf("PYTHONPATH is set to %q. This may cause problems.", pythonPath),
+			Link:    supportGeneralUrl,
+		}
+	}
+	return &common.DiagnosticCheck{
+		Type:    "OS",
+		Status:  statusOk,
+		Message: "PYTHONPATH is not set, which is good.",
+		Link:    supportGeneralUrl,
 	}
 }
 
@@ -214,7 +234,7 @@ func fileIt(filename string) (io.WriteCloser, error) {
 	return file, nil
 }
 
-func ProduceDiagnostics(filename, robotfile string, json bool) (*common.DiagnosticStatus, error) {
+func ProduceDiagnostics(filename, robotfile string, json, production bool) (*common.DiagnosticStatus, error) {
 	file, err := fileIt(filename)
 	if err != nil {
 		return nil, err
@@ -222,7 +242,7 @@ func ProduceDiagnostics(filename, robotfile string, json bool) (*common.Diagnost
 	defer file.Close()
 	result := RunDiagnostics()
 	if len(robotfile) > 0 {
-		addRobotDiagnostics(robotfile, result)
+		addRobotDiagnostics(robotfile, result, production)
 	}
 	settings.Global.Diagnostics(result)
 	if json {
@@ -270,29 +290,29 @@ func addFileDiagnostics(rootdir string, target *common.DiagnosticStatus) {
 	diagnoseFilesUnmarshal(yaml.Unmarshal, "YAML", rootdir, yamls, target)
 }
 
-func addRobotDiagnostics(robotfile string, target *common.DiagnosticStatus) {
+func addRobotDiagnostics(robotfile string, target *common.DiagnosticStatus, production bool) {
 	supportGeneralUrl := settings.Global.DocsLink("troubleshooting")
 	config, err := robot.LoadRobotYaml(robotfile, false)
 	diagnose := target.Diagnose("Robot")
 	if err != nil {
 		diagnose.Fail(supportGeneralUrl, "About robot.yaml: %v", err)
 	} else {
-		config.Diagnostics(target)
+		config.Diagnostics(target, production)
 	}
 	addFileDiagnostics(filepath.Dir(robotfile), target)
 }
 
-func RunRobotDiagnostics(robotfile string) *common.DiagnosticStatus {
+func RunRobotDiagnostics(robotfile string, production bool) *common.DiagnosticStatus {
 	result := &common.DiagnosticStatus{
 		Details: make(map[string]string),
 		Checks:  []*common.DiagnosticCheck{},
 	}
-	addRobotDiagnostics(robotfile, result)
+	addRobotDiagnostics(robotfile, result, production)
 	return result
 }
 
-func PrintRobotDiagnostics(robotfile string, json bool) error {
-	result := RunRobotDiagnostics(robotfile)
+func PrintRobotDiagnostics(robotfile string, json, production bool) error {
+	result := RunRobotDiagnostics(robotfile, production)
 	if json {
 		jsonDiagnostics(os.Stdout, result)
 	} else {

@@ -2,12 +2,13 @@ package cmd
 
 // flags
 var (
-	autoInstall  bool
-	defaultFlag  bool
-	forceFlag    bool
-	listFlag     bool
-	jsonFlag     bool
-	verifiedFlag bool
+	autoInstall    bool
+	defaultFlag    bool
+	forceFlag      bool
+	listFlag       bool
+	jsonFlag       bool
+	productionFlag bool
+	verifiedFlag   bool
 )
 
 // options

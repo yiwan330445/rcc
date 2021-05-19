@@ -16,7 +16,7 @@ var robotDiagnosticsCmd = &cobra.Command{
 		if common.DebugFlag {
 			defer common.Stopwatch("Diagnostic run lasted").Report()
 		}
-		err := operations.PrintRobotDiagnostics(robotFile, jsonFlag)
+		err := operations.PrintRobotDiagnostics(robotFile, jsonFlag, productionFlag)
 		if err != nil {
 			pretty.Exit(1, "Error: %v", err)
 		}
@@ -27,5 +27,6 @@ var robotDiagnosticsCmd = &cobra.Command{
 func init() {
 	robotCmd.AddCommand(robotDiagnosticsCmd)
 	robotDiagnosticsCmd.Flags().BoolVarP(&jsonFlag, "json", "j", false, "Output in JSON format")
+	robotDiagnosticsCmd.Flags().BoolVarP(&productionFlag, "production", "p", false, "Checks for production level robots.")
 	robotDiagnosticsCmd.Flags().StringVarP(&robotFile, "robot", "r", "robot.yaml", "Full path to the 'robot.yaml' configuration file.")
 }

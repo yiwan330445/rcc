@@ -54,6 +54,11 @@ func AsDependency(value string) *Dependency {
 	}
 }
 
+func (it *Dependency) Representation() string {
+	parts := strings.SplitN(strings.ToLower(it.Name), "[", 2)
+	return parts[0]
+}
+
 func (it *Dependency) IsExact() bool {
 	return len(it.Qualifier)+len(it.Versions) > 0
 }
@@ -373,8 +378,13 @@ func (it *Environment) AsRequirementsText() string {
 	return strings.Join(lines, Newline)
 }
 
-func (it *Environment) Diagnostics(target *common.DiagnosticStatus) {
+func (it *Environment) Diagnostics(target *common.DiagnosticStatus, production bool) {
 	diagnose := target.Diagnose("Conda")
+	notice := diagnose.Warning
+	if production {
+		notice = diagnose.Fail
+	}
+	packages := make(map[string]bool)
 	countChannels := len(it.Channels)
 	defaultsPostion := -1
 	floating := false
@@ -390,13 +400,23 @@ func (it *Environment) Diagnostics(target *common.DiagnosticStatus) {
 		diagnose.Warning("", "Try to avoid putting defaults channel as first channel.")
 		ok = false
 	}
+	if countChannels > 1 {
+		diagnose.Warning("", "Try to avoid multiple channel. They may cause problems with code compatibility.")
+		ok = false
+	}
 	if ok {
 		diagnose.Ok("Channels in conda.yaml are ok.")
 	}
 	ok = true
+	condaCount := len(it.Conda)
 	for _, dependency := range it.Conda {
+		presentation := dependency.Representation()
+		if packages[presentation] {
+			notice("", "Dependency %q seems to be duplicate of previous dependency.", dependency.Original)
+		}
+		packages[presentation] = true
 		if strings.Contains(dependency.Versions, "*") || len(dependency.Qualifier) == 0 || len(dependency.Versions) == 0 {
-			diagnose.Warning("", "Floating conda dependency %q should be bound to exact version before taking robot into production.", dependency.Original)
+			notice("", "Floating conda dependency %q should be bound to exact version before taking robot into production.", dependency.Original)
 			ok = false
 			floating = true
 		}
@@ -416,8 +436,13 @@ func (it *Environment) Diagnostics(target *common.DiagnosticStatus) {
 		ok = false
 	}
 	for _, dependency := range it.Pip {
+		presentation := dependency.Representation()
+		if packages[presentation] {
+			notice("", "Dependency %q seems to be duplicate of previous dependency.", dependency.Original)
+		}
+		packages[presentation] = true
 		if strings.Contains(dependency.Versions, "*") || len(dependency.Qualifier) == 0 || len(dependency.Versions) == 0 {
-			diagnose.Warning("", "Floating pip dependency %q should be bound to exact version before taking robot into production.", dependency.Original)
+			notice("", "Floating pip dependency %q should be bound to exact version before taking robot into production.", dependency.Original)
 			ok = false
 			floating = true
 		}
@@ -429,6 +454,11 @@ func (it *Environment) Diagnostics(target *common.DiagnosticStatus) {
 	}
 	if ok {
 		diagnose.Ok("Pip dependencies in conda.yaml are ok.")
+	}
+	totalCount := condaCount + pipCount
+	if totalCount > 10 {
+		diagnose.Warning("", "There are more than 10 dependencies in conda.yaml [conda: %d, pip: %d]. This might cause problems for dependency resolvers.", condaCount, pipCount)
+		diagnose.Warning("", "Too many dependencies might also indicate lack of focus, doing too much, doing it wrong, or missing cleanup step in development process.")
 	}
 	if floating {
 		diagnose.Warning("", "Floating dependencies in Robocorp Cloud containers will be slow, because floating environments cannot be cached.")

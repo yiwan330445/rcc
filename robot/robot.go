@@ -28,7 +28,7 @@ type Robot interface {
 	CondaHash() string
 	RootDirectory() string
 	Validate() (bool, error)
-	Diagnostics(*common.DiagnosticStatus)
+	Diagnostics(*common.DiagnosticStatus, bool)
 
 	WorkingDirectory() string
 	ArtifactDirectory() string
@@ -129,7 +129,7 @@ func (it *robot) diagnoseVariousPaths(diagnose common.Diagnoser) {
 	}
 }
 
-func (it *robot) Diagnostics(target *common.DiagnosticStatus) {
+func (it *robot) Diagnostics(target *common.DiagnosticStatus, production bool) {
 	diagnose := target.Diagnose("Robot")
 	it.diagnoseTasks(diagnose)
 	it.diagnoseVariousPaths(diagnose)
@@ -153,7 +153,7 @@ func (it *robot) Diagnostics(target *common.DiagnosticStatus) {
 			if err != nil {
 				diagnose.Fail("", "From robot.yaml, loading conda.yaml failed with: %v", err)
 			} else {
-				condaEnv.Diagnostics(target)
+				condaEnv.Diagnostics(target, production)
 			}
 		}
 	}
