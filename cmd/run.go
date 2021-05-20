@@ -23,7 +23,6 @@ var runCmd = &cobra.Command{
 	Short:   "Run task in place, to debug current setup.",
 	Long: `Local task run, in place, to see how full run execution works
 in your own machine.`,
-	Args: cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {
 		if common.DebugFlag {
 			defer common.Stopwatch("Task run lasted").Report()
@@ -35,7 +34,9 @@ in your own machine.`,
 		defer xviper.RunMinutes().Done()
 		simple, config, todo, label := operations.LoadTaskWithEnvironment(robotFile, runTask, forceFlag)
 		cloud.BackgroundMetric(common.ControllerIdentity(), "rcc.cli.run", common.Version)
-		operations.SelectExecutionModel(captureRunFlags(false), simple, todo.Commandline(), config, todo, label, interactiveFlag, nil)
+		commandline := todo.Commandline()
+		commandline = append(commandline, args...)
+		operations.SelectExecutionModel(captureRunFlags(false), simple, commandline, config, todo, label, interactiveFlag, nil)
 	},
 }
 

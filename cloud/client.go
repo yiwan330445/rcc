@@ -6,6 +6,7 @@ import (
 	"io"
 	"io/ioutil"
 	"net/http"
+	"net/url"
 	"os"
 	"path/filepath"
 	"strings"
@@ -49,10 +50,17 @@ type Client interface {
 
 func EnsureHttps(endpoint string) (string, error) {
 	nice := strings.TrimRight(strings.TrimSpace(endpoint), "/")
-	if strings.HasPrefix(nice, "https://") {
+	parsed, err := url.Parse(nice)
+	if err != nil {
+		return "", err
+	}
+	if parsed.Host == "127.0.0.1" || strings.HasPrefix(parsed.Host, "127.0.0.1:") {
 		return nice, nil
 	}
-	return "", fmt.Errorf("Endpoint '%s' must start with https:// prefix.", nice)
+	if parsed.Scheme != "https" {
+		return "", fmt.Errorf("Endpoint '%s' must start with https:// prefix.", nice)
+	}
+	return nice, nil
 }
 
 func NewClient(endpoint string) (Client, error) {

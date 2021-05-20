@@ -1,5 +1,13 @@
 # rcc change log
 
+## v9.15.0 (date: 20.5.2021)
+
+- for `task run` and `task testrun` there is now possibility to give additional
+  arguments from commandline, by using `--` separator between normal rcc
+  arguments and those intended for executed robot
+- rcc now considers "http://127.0.0.1" as special case that does not require
+  https
+
 ## v9.14.0 (date: 19.5.2021)
 
 - added PYTHONPATH diagnostics validation

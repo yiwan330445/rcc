@@ -29,3 +29,20 @@ func TestCanCreateClient(t *testing.T) {
 	wont_be.Nil(sut)
 	must_be.Nil(err)
 }
+
+func TestCanEnsureHttps(t *testing.T) {
+	must_be, wont_be := hamlet.Specifications(t)
+
+	_, err := cloud.EnsureHttps("http://some.server.com/endpoint")
+	wont_be.Nil(err)
+
+	incoming := "https://some.server.com/endpoint"
+	output, err := cloud.EnsureHttps(incoming)
+	must_be.Nil(err)
+	must_be.Equal(incoming, output)
+
+	special := "http://127.0.0.1:8192/endpoint"
+	output, err = cloud.EnsureHttps(special)
+	must_be.Nil(err)
+	must_be.Equal(special, output)
+}
