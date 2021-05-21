@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"runtime"
+	"strings"
 	"sync"
 	"time"
 
@@ -94,7 +96,7 @@ func (it *hololib) Record(blueprint []byte) error {
 	}
 	common.Timeline("holotree (re)locator done")
 	fs.Blueprint = key
-	catalog := filepath.Join(common.HololibLocation(), "catalog", key)
+	catalog := it.CatalogPath(key)
 	err = fs.SaveAs(catalog)
 	if err != nil {
 		return err
@@ -109,7 +111,8 @@ func (it *hololib) Record(blueprint []byte) error {
 }
 
 func (it *hololib) CatalogPath(key string) string {
-	return filepath.Join(common.HololibLocation(), "catalog", key)
+	name := fmt.Sprintf("%s.%016x", key, it.identity)
+	return filepath.Join(common.HololibLocation(), "catalog", name)
 }
 
 func (it *hololib) HasBlueprint(blueprint []byte) bool {
@@ -198,7 +201,7 @@ func (it *hololib) Restore(blueprint, client, tag []byte) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	err = fs.LoadFrom(filepath.Join(common.HololibLocation(), "catalog", key))
+	err = fs.LoadFrom(it.CatalogPath(key))
 	if err != nil {
 		return "", err
 	}
@@ -266,8 +269,9 @@ func New() (Library, error) {
 		return nil, err
 	}
 	basedir := common.RobocorpHome()
+	identity := strings.ToLower(fmt.Sprintf("%s %s %q", runtime.GOOS, runtime.GOARCH, basedir))
 	return &hololib{
-		identity:   sipit([]byte(basedir)),
+		identity:   sipit([]byte(identity)),
 		basedir:    basedir,
 		queryCache: make(map[string]bool),
 	}, nil

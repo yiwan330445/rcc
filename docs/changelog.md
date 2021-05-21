@@ -1,5 +1,10 @@
 # rcc change log
 
+## v9.16.0 (date: 21.5.2021)
+
+- catalog extension based on operating system, architecture and directory
+  location
+
 ## v9.15.1 (date: 21.5.2021)
 
 - added images as non-executable files
