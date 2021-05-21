@@ -21,6 +21,7 @@ var (
 	TraceFlag       bool
 	LogLinenumbers  bool
 	NoCache         bool
+	NoOutputCapture bool
 	Liveonly        bool
 	Stageonly       bool
 	LeaseEffective  bool
@@ -48,8 +49,7 @@ func RobocorpHome() string {
 }
 
 func VerboseEnvironmentBuilding() bool {
-	verbose := len(os.Getenv(VERBOSE_ENVIRONMENT_BUILDING)) > 0
-	return verbose || DebugFlag || TraceFlag
+	return len(os.Getenv(VERBOSE_ENVIRONMENT_BUILDING)) > 0
 }
 
 func OverrideSystemRequirements() bool {

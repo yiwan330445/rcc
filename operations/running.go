@@ -38,7 +38,11 @@ func PipFreeze(searchPath pathlib.PathParts, directory, outputDir string, enviro
 		return false
 	}
 	common.Log("Installed pip packages:")
-	_, err = shell.New(environment, directory, fullPip, "freeze", "--all").Tee(outputDir, false)
+	if common.NoOutputCapture {
+		_, err = shell.New(environment, directory, fullPip, "freeze", "--all").Execute(false)
+	} else {
+		_, err = shell.New(environment, directory, fullPip, "freeze", "--all").Tee(outputDir, false)
+	}
 	if err != nil {
 		return false
 	}
@@ -146,7 +150,11 @@ func ExecuteSimpleTask(flags *RunFlags, template []string, config robot.Robot, t
 	}
 	outputDir := config.ArtifactDirectory()
 	common.Debug("DEBUG: about to run command - %v", task)
-	_, err = shell.New(environment, directory, task...).Tee(outputDir, interactive)
+	if common.NoOutputCapture {
+		_, err = shell.New(environment, directory, task...).Execute(interactive)
+	} else {
+		_, err = shell.New(environment, directory, task...).Tee(outputDir, interactive)
+	}
 	if err != nil {
 		pretty.Exit(9, "Error: %v", err)
 	}
@@ -204,7 +212,11 @@ func ExecuteTask(flags *RunFlags, template []string, config robot.Robot, todo ro
 		PipFreeze(searchPath, directory, outputDir, environment)
 	}
 	common.Debug("DEBUG: about to run command - %v", task)
-	_, err = shell.New(environment, directory, task...).Tee(outputDir, interactive)
+	if common.NoOutputCapture {
+		_, err = shell.New(environment, directory, task...).Execute(interactive)
+	} else {
+		_, err = shell.New(environment, directory, task...).Tee(outputDir, interactive)
+	}
 	after := make(map[string]string)
 	afterHash, afterErr := conda.DigestFor(label, after)
 	conda.DiagnoseDirty(label, label, beforeHash, afterHash, beforeErr, afterErr, before, after, true)

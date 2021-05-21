@@ -17,6 +17,12 @@ var (
 )
 
 func init() {
+	nonExecutableExtensions[".svg"] = true
+	nonExecutableExtensions[".bmp"] = true
+	nonExecutableExtensions[".png"] = true
+	nonExecutableExtensions[".gif"] = true
+	nonExecutableExtensions[".jpg"] = true
+	nonExecutableExtensions[".jpeg"] = true
 	nonExecutableExtensions[".md"] = true
 	nonExecutableExtensions[".txt"] = true
 	nonExecutableExtensions[".htm"] = true

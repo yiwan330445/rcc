@@ -1,5 +1,14 @@
 # rcc change log
 
+## v9.15.1 (date: 21.5.2021)
+
+- added images as non-executable files
+- run and testrun commands have new option `--no-outputs` which prevent
+  capture of stderr/stdout into files
+- separated `--trace` and `--debug` flags from `micromamba` and `pip` verbosity
+  introduced in v9.12.0 (it is causing too much output and should be reserved
+  only for `RCC_VERBOSE_ENVIRONMENT_BUILDING` variable
+
 ## v9.15.0 (date: 20.5.2021)
 
 - for `task run` and `task testrun` there is now possibility to give additional

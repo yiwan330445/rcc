@@ -64,4 +64,5 @@ func init() {
 	runCmd.Flags().BoolVarP(&forceFlag, "force", "f", false, "Force conda cache update (only for new environments).")
 	runCmd.Flags().BoolVarP(&interactiveFlag, "interactive", "", false, "Allow robot to be interactive in terminal/command prompt. For development only, not for production!")
 	runCmd.Flags().StringVarP(&common.HolotreeSpace, "space", "s", "", "Client specific name to identify this environment.")
+	runCmd.Flags().BoolVarP(&common.NoOutputCapture, "no-outputs", "", false, "Do not capture stderr/stdout into files.")
 }

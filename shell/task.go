@@ -73,6 +73,14 @@ func (it *Task) Transparent() (int, error) {
 	return it.execute(os.Stdin, it.stdout(), os.Stderr)
 }
 
+func (it *Task) Execute(interactive bool) (int, error) {
+	var stdin io.Reader = os.Stdin
+	if !interactive {
+		stdin = bytes.NewReader([]byte{})
+	}
+	return it.execute(stdin, it.stdout(), os.Stderr)
+}
+
 func (it *Task) Tee(folder string, interactive bool) (int, error) {
 	err := os.MkdirAll(folder, 0755)
 	if err != nil {
