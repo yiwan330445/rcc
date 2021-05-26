@@ -1,10 +1,13 @@
 package htfs
 
 import (
+	"archive/zip"
 	"fmt"
+	"io"
 	"os"
 	"path/filepath"
 	"runtime"
+	"sort"
 	"strings"
 	"sync"
 	"time"
@@ -13,6 +16,7 @@ import (
 	"github.com/robocorp/rcc/cloud"
 	"github.com/robocorp/rcc/common"
 	"github.com/robocorp/rcc/conda"
+	"github.com/robocorp/rcc/fail"
 	"github.com/robocorp/rcc/pathlib"
 )
 
@@ -43,6 +47,7 @@ func (it *stats) Dirty(dirty bool) {
 type Library interface {
 	Identity() string
 	Stage() string
+	Export([]string, string) error
 	Record([]byte) error
 	Restore([]byte, []byte, []byte) (string, error)
 	Location(string) string
@@ -57,11 +62,11 @@ type hololib struct {
 }
 
 func (it *hololib) Location(digest string) string {
-	return filepath.Join(common.HololibLocation(), "library", digest[:2], digest[2:4], digest[4:6])
+	return filepath.Join(common.HololibLibraryLocation(), digest[:2], digest[2:4], digest[4:6])
 }
 
 func (it *hololib) ExactLocation(digest string) string {
-	return filepath.Join(common.HololibLocation(), "library", digest[:2], digest[2:4], digest[4:6], digest)
+	return filepath.Join(common.HololibLibraryLocation(), digest[:2], digest[2:4], digest[4:6], digest)
 }
 
 func (it *hololib) Identity() string {
@@ -75,6 +80,62 @@ func (it *hololib) Stage() string {
 		panic(err)
 	}
 	return stage
+}
+
+type zipseen struct {
+	*zip.Writer
+	seen map[string]bool
+}
+
+func (it zipseen) Add(fullpath, relativepath string) (err error) {
+	defer fail.Around(&err)
+
+	if it.seen[relativepath] {
+		return nil
+	}
+	it.seen[relativepath] = true
+
+	source, err := os.Open(fullpath)
+	fail.On(err != nil, "Could not open: %q -> %v", fullpath, err)
+	defer source.Close()
+	target, err := it.Create(relativepath)
+	fail.On(err != nil, "Could not create: %q -> %v", relativepath, err)
+	_, err = io.Copy(target, source)
+	fail.On(err != nil, "Copy failure: %q -> %q -> %v", fullpath, relativepath, err)
+	return nil
+}
+
+func (it *hololib) Export(catalogs []string, archive string) (err error) {
+	defer fail.Around(&err)
+
+	common.Timeline("holotree export start")
+	defer common.Timeline("holotree export done")
+
+	handle, err := os.Create(archive)
+	fail.On(err != nil, "Could not create archive %q.", archive)
+	writer := zip.NewWriter(handle)
+	defer writer.Close()
+
+	zipper := &zipseen{
+		writer,
+		make(map[string]bool),
+	}
+
+	for _, name := range catalogs {
+		catalog := filepath.Join(common.HololibCatalogLocation(), name)
+		relative, err := filepath.Rel(common.HololibLocation(), catalog)
+		fail.On(err != nil, "Could not get relative location for catalog -> %v.", err)
+		err = zipper.Add(catalog, relative)
+		fail.On(err != nil, "Could not add catalog to zip -> %v.", err)
+
+		fs, err := NewRoot(".")
+		fail.On(err != nil, "Could not create root location -> %v.", err)
+		err = fs.LoadFrom(catalog)
+		fail.On(err != nil, "Could not load catalog from %s -> %v.", catalog, err)
+		err = fs.Treetop(ZipRoot(it, fs, zipper))
+		fail.On(err != nil, "Could not zip catalog %s -> %v.", catalog, err)
+	}
+	return nil
 }
 
 func (it *hololib) Record(blueprint []byte) error {
@@ -112,7 +173,7 @@ func (it *hololib) Record(blueprint []byte) error {
 
 func (it *hololib) CatalogPath(key string) string {
 	name := fmt.Sprintf("%s.%016x", key, it.identity)
-	return filepath.Join(common.HololibLocation(), "catalog", name)
+	return filepath.Join(common.HololibCatalogLocation(), name)
 }
 
 func (it *hololib) HasBlueprint(blueprint []byte) bool {
@@ -150,6 +211,15 @@ func (it *hololib) queryBlueprint(key string) bool {
 		return false
 	}
 	return pathlib.IsFile(catalog)
+}
+
+func Catalogs() []string {
+	result := make([]string, 0, 10)
+	for _, catalog := range pathlib.Glob(common.HololibCatalogLocation(), "[0-9a-f]*.[0-9a-f]*") {
+		result = append(result, catalog)
+	}
+	sort.Strings(result)
+	return result
 }
 
 func Spacemap() map[string]string {
@@ -301,6 +371,10 @@ func (it *virtual) Stage() string {
 		panic(err)
 	}
 	return stage
+}
+
+func (it *virtual) Export([]string, string) error {
+	return fmt.Errorf("Not supported yet on virtual holotree.")
 }
 
 func (it *virtual) Record(blueprint []byte) error {

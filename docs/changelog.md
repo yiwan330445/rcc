@@ -1,5 +1,9 @@
 # rcc change log
 
+## v9.17.0 (date: 26.5.2021)
+
+- added `export` command to holotree [experimental]
+
 ## v9.16.0 (date: 21.5.2021)
 
 - catalog extension based on operating system, architecture and directory

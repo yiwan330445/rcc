@@ -10,6 +10,7 @@ import (
 
 	"github.com/robocorp/rcc/anywork"
 	"github.com/robocorp/rcc/common"
+	"github.com/robocorp/rcc/fail"
 	"github.com/robocorp/rcc/pathlib"
 	"github.com/robocorp/rcc/trollhash"
 )
@@ -319,4 +320,30 @@ func RestoreDirectory(library Library, fs *Root, current map[string]string, stat
 			}
 		}
 	}
+}
+
+type Zipper interface {
+	Add(fullpath, relativepath string) error
+}
+
+func ZipRoot(library Library, fs *Root, sink Zipper) Treetop {
+	var tool Treetop
+	baseline := common.HololibLocation()
+	tool = func(path string, it *Dir) (err error) {
+		defer fail.Around(&err)
+
+		for _, file := range it.Files {
+			location := library.ExactLocation(file.Digest)
+			relative, err := filepath.Rel(baseline, location)
+			fail.On(err != nil, "Relative path error: %s -> %s -> %v", baseline, location, err)
+			err = sink.Add(location, relative)
+			fail.On(err != nil, "%v", err)
+		}
+		for name, subdir := range it.Dirs {
+			err := tool(filepath.Join(path, name), subdir)
+			fail.On(err != nil, "%v", err)
+		}
+		return nil
+	}
+	return tool
 }

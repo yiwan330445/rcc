@@ -81,6 +81,14 @@ func HololibLocation() string {
 	return ensureDirectory(filepath.Join(RobocorpHome(), "hololib"))
 }
 
+func HololibCatalogLocation() string {
+	return ensureDirectory(filepath.Join(HololibLocation(), "catalog"))
+}
+
+func HololibLibraryLocation() string {
+	return ensureDirectory(filepath.Join(HololibLocation(), "library"))
+}
+
 func HolotreeLocation() string {
 	return ensureDirectory(filepath.Join(RobocorpHome(), "holotree"))
 }
