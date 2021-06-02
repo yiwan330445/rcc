@@ -8,7 +8,6 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
-	"runtime"
 	"strings"
 
 	"github.com/robocorp/rcc/anywork"
@@ -54,7 +53,7 @@ func NewRoot(path string) (*Root, error) {
 	return &Root{
 		Identity: basename,
 		Path:     fullpath,
-		Platform: strings.ToLower(fmt.Sprintf("%s %s", runtime.GOOS, runtime.GOARCH)),
+		Platform: Platform(),
 		Lifted:   false,
 		Tree:     newDir(""),
 	}, nil

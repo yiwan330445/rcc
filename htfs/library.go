@@ -184,7 +184,7 @@ func (it *hololib) Record(blueprint []byte) error {
 }
 
 func (it *hololib) CatalogPath(key string) string {
-	name := fmt.Sprintf("%s.%016x", key, it.identity)
+	name := fmt.Sprintf("%s.%s", key, Platform())
 	return filepath.Join(common.HololibCatalogLocation(), name)
 }
 
@@ -227,7 +227,7 @@ func (it *hololib) queryBlueprint(key string) bool {
 
 func Catalogs() []string {
 	result := make([]string, 0, 10)
-	for _, catalog := range pathlib.Glob(common.HololibCatalogLocation(), "[0-9a-f]*.[0-9a-f]*") {
+	for _, catalog := range pathlib.Glob(common.HololibCatalogLocation(), "[0-9a-f]*.*") {
 		result = append(result, catalog)
 	}
 	sort.Strings(result)
@@ -340,7 +340,7 @@ func New() (MutableLibrary, error) {
 		return nil, err
 	}
 	basedir := common.RobocorpHome()
-	identity := strings.ToLower(fmt.Sprintf("%s %s %q", runtime.GOOS, runtime.GOARCH, basedir))
+	identity := strings.ToLower(fmt.Sprintf("%s %s", runtime.GOOS, runtime.GOARCH))
 	return &hololib{
 		identity:   sipit([]byte(identity)),
 		basedir:    basedir,

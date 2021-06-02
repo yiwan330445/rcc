@@ -29,7 +29,7 @@ func ZipLibrary(zipfile string) (Library, error) {
 	for _, entry := range content.File {
 		lookup[entry.Name] = entry
 	}
-	identity := strings.ToLower(fmt.Sprintf("%s %s %q", runtime.GOOS, runtime.GOARCH, common.RobocorpHome()))
+	identity := strings.ToLower(fmt.Sprintf("%s %s", runtime.GOOS, runtime.GOARCH))
 	return &ziplibrary{
 		content:  content,
 		identity: sipit([]byte(identity)),
@@ -69,7 +69,7 @@ func (it *ziplibrary) Open(digest string) (readable io.Reader, closer Closer, er
 }
 
 func (it *ziplibrary) CatalogPath(key string) string {
-	return filepath.Join("catalog", fmt.Sprintf("%s.%016x", key, it.identity))
+	return filepath.Join("catalog", fmt.Sprintf("%s.%s", key, Platform()))
 }
 
 func (it *ziplibrary) Restore(blueprint, client, tag []byte) (result string, err error) {

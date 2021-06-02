@@ -1,6 +1,10 @@
 # rcc change log
 
-## v9.17.1 (date: 2.6.2021)
+## v9.17.2 (date: 2.6.2021)
+
+- fixing broken tests, and taking account changed specifications
+
+## v9.17.1 (date: 2.6.2021) broken
 
 - adding supporting structures for zip based holotree runs [experimental]
 

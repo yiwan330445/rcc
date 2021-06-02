@@ -45,6 +45,8 @@ func TestHTFSspecification(t *testing.T) {
 func TestZipLibrary(t *testing.T) {
 	must, wont := hamlet.Specifications(t)
 
+	must.Equal("linux_amd64", htfs.Platform())
+
 	_, blueprint, err := htfs.ComposeFinalBlueprint([]string{"testdata/simple.yaml"}, "")
 	must.Nil(err)
 	wont.Nil(blueprint)

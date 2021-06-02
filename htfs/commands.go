@@ -1,9 +1,11 @@
 package htfs
 
 import (
+	"fmt"
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"runtime"
 	"strings"
 
 	"github.com/robocorp/rcc/anywork"
@@ -12,6 +14,10 @@ import (
 	"github.com/robocorp/rcc/fail"
 	"github.com/robocorp/rcc/robot"
 )
+
+func Platform() string {
+	return strings.ToLower(fmt.Sprintf("%s_%s", runtime.GOOS, runtime.GOARCH))
+}
 
 func NewEnvironment(force bool, condafile, holozip string) (label string, err error) {
 	defer fail.Around(&err)
