@@ -265,6 +265,7 @@ func CarrierUnzip(directory, carrier string, force, temporary bool) error {
 
 func Unzip(directory, zipfile string, force, temporary bool) error {
 	common.Timeline("unzip %q to %q", zipfile, directory)
+	defer common.Timeline("unzip done")
 	fullpath, err := filepath.Abs(directory)
 	if err != nil {
 		return err
@@ -297,6 +298,8 @@ func Unzip(directory, zipfile string, force, temporary bool) error {
 }
 
 func Zip(directory, zipfile string, ignores []string) error {
+	common.Timeline("zip %q to %q", directory, zipfile)
+	defer common.Timeline("zip done")
 	common.Debug("Wrapping %v into %v ...", directory, zipfile)
 	config, err := robot.LoadRobotYaml(robot.DetectConfigurationName(directory), false)
 	if err != nil {
@@ -313,6 +316,6 @@ func Zip(directory, zipfile string, ignores []string) error {
 		return err
 	}
 	defaults := defaultIgnores(zipfile)
-	pathlib.Walk(directory, pathlib.CompositeIgnore(defaults, ignored), zipper.Add)
+	pathlib.ForceWalk(directory, pathlib.ForceFilename("hololib.zip"), pathlib.CompositeIgnore(defaults, ignored), zipper.Add)
 	return nil
 }

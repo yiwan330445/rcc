@@ -41,3 +41,15 @@ func TestHTFSspecification(t *testing.T) {
 	must.Equal(len(after), len(content))
 	must.Equal(fs.Path, reloaded.Path)
 }
+
+func TestZipLibrary(t *testing.T) {
+	must, wont := hamlet.Specifications(t)
+
+	_, blueprint, err := htfs.ComposeFinalBlueprint([]string{"testdata/simple.yaml"}, "")
+	must.Nil(err)
+	wont.Nil(blueprint)
+	sut, err := htfs.ZipLibrary("testdata/simple.zip")
+	must.Nil(err)
+	wont.Nil(sut)
+	must.True(sut.HasBlueprint(blueprint))
+}

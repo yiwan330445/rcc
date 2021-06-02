@@ -9,6 +9,7 @@ import (
 	"time"
 )
 
+type Forced func(os.FileInfo) bool
 type Ignore func(os.FileInfo) bool
 type Report func(string, string, os.FileInfo)
 
@@ -30,6 +31,16 @@ func IgnoreNothing(_ os.FileInfo) bool {
 
 func IgnoreDirectories(target os.FileInfo) bool {
 	return target.IsDir()
+}
+
+func ForceNothing(_ os.FileInfo) bool {
+	return false
+}
+
+func ForceFilename(filename string) Forced {
+	return func(target os.FileInfo) bool {
+		return !target.IsDir() && target.Name() == filename
+	}
 }
 
 func NoReporting(string, string, os.FileInfo) {
@@ -122,20 +133,20 @@ func folderEntries(directory string) ([]os.FileInfo, error) {
 	return entries, nil
 }
 
-func recursiveWalk(directory, prefix string, ignore Ignore, report Report) error {
+func recursiveWalk(directory, prefix string, force Forced, ignore Ignore, report Report) error {
 	entries, err := folderEntries(directory)
 	if err != nil {
 		return err
 	}
 	sorted(entries)
 	for _, entry := range entries {
-		if ignore(entry) {
+		if !force(entry) && ignore(entry) {
 			continue
 		}
 		nextPrefix := filepath.Join(prefix, entry.Name())
 		entryPath := filepath.Join(directory, entry.Name())
 		if entry.IsDir() {
-			recursiveWalk(entryPath, nextPrefix, ignore, report)
+			recursiveWalk(entryPath, nextPrefix, force, ignore, report)
 		} else {
 			report(entryPath, nextPrefix, entry)
 		}
@@ -143,12 +154,16 @@ func recursiveWalk(directory, prefix string, ignore Ignore, report Report) error
 	return nil
 }
 
-func Walk(directory string, ignore Ignore, report Report) error {
+func ForceWalk(directory string, force Forced, ignore Ignore, report Report) error {
 	fullpath, err := filepath.Abs(directory)
 	if err != nil {
 		return err
 	}
-	return recursiveWalk(fullpath, ".", ignore, report)
+	return recursiveWalk(fullpath, ".", force, ignore, report)
+}
+
+func Walk(directory string, ignore Ignore, report Report) error {
+	return ForceWalk(directory, ForceNothing, ignore, report)
 }
 
 func Glob(directory string, pattern string) []string {
@@ -160,6 +175,6 @@ func Glob(directory string, pattern string) []string {
 	capture := func(_, localpath string, _ os.FileInfo) {
 		result = append(result, localpath)
 	}
-	Walk(directory, ignore, capture)
+	ForceWalk(directory, ForceNothing, ignore, capture)
 	return result
 }

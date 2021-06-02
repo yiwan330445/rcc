@@ -27,6 +27,7 @@ type Robot interface {
 	CondaConfigFile() string
 	CondaHash() string
 	RootDirectory() string
+	Holozip() string
 	Validate() (bool, error)
 	Diagnostics(*common.DiagnosticStatus, bool)
 
@@ -202,6 +203,14 @@ func (it *robot) Validate() (bool, error) {
 
 func (it *robot) RootDirectory() string {
 	return it.Root
+}
+
+func (it *robot) Holozip() string {
+	zippath := filepath.Join(it.Root, "hololib.zip")
+	if pathlib.IsFile(zippath) {
+		return zippath
+	}
+	return ""
 }
 
 func (it *robot) IgnoreFiles() []string {

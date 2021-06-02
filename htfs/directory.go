@@ -4,9 +4,12 @@ import (
 	"compress/gzip"
 	"encoding/json"
 	"fmt"
+	"io"
 	"io/fs"
 	"os"
 	"path/filepath"
+	"runtime"
+	"strings"
 
 	"github.com/robocorp/rcc/anywork"
 	"github.com/robocorp/rcc/common"
@@ -36,6 +39,7 @@ type Root struct {
 	Path       string `json:"path"`
 	Controller string `json:"controller"`
 	Space      string `json:"space"`
+	Platform   string `json:"platform"`
 	Blueprint  string `json:"blueprint"`
 	Lifted     bool   `json:"lifted"`
 	Tree       *Dir   `json:"tree"`
@@ -50,9 +54,18 @@ func NewRoot(path string) (*Root, error) {
 	return &Root{
 		Identity: basename,
 		Path:     fullpath,
+		Platform: strings.ToLower(fmt.Sprintf("%s %s", runtime.GOOS, runtime.GOARCH)),
 		Lifted:   false,
 		Tree:     newDir(""),
 	}, nil
+}
+
+func (it *Root) HolotreeBase() string {
+	return filepath.Dir(it.Path)
+}
+
+func (it *Root) Signature() uint64 {
+	return sipit([]byte(strings.ToLower(fmt.Sprintf("%s %q", it.Platform, it.Path))))
 }
 
 func (it *Root) Rewrite() []byte {
@@ -60,10 +73,9 @@ func (it *Root) Rewrite() []byte {
 }
 
 func (it *Root) Relocate(target string) error {
-	origin := filepath.Dir(it.Path)
 	locate := filepath.Dir(target)
-	if origin != locate {
-		return fmt.Errorf("Base directory mismatch: %q vs %q.", origin, locate)
+	if it.HolotreeBase() != locate {
+		return fmt.Errorf("Base directory mismatch: %q vs %q.", it.HolotreeBase(), locate)
 	}
 	basename := filepath.Base(target)
 	if len(it.Identity) != len(basename) {
@@ -133,6 +145,11 @@ func (it *Root) SaveAs(filename string) error {
 	return nil
 }
 
+func (it *Root) ReadFrom(source io.Reader) error {
+	decoder := json.NewDecoder(source)
+	return decoder.Decode(&it)
+}
+
 func (it *Root) LoadFrom(filename string) error {
 	common.Timeline("holotree load %q", filename)
 	defer common.Timeline("holotree load done")
@@ -146,8 +163,7 @@ func (it *Root) LoadFrom(filename string) error {
 		return err
 	}
 	defer reader.Close()
-	decoder := json.NewDecoder(reader)
-	return decoder.Decode(&it)
+	return it.ReadFrom(reader)
 }
 
 type Dir struct {

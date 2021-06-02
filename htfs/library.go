@@ -44,21 +44,33 @@ func (it *stats) Dirty(dirty bool) {
 	}
 }
 
+type Closer func() error
+
 type Library interface {
-	Identity() string
-	Stage() string
-	Export([]string, string) error
-	Record([]byte) error
-	Restore([]byte, []byte, []byte) (string, error)
-	Location(string) string
-	ExactLocation(string) string
 	HasBlueprint([]byte) bool
+	Open(string) (io.Reader, Closer, error)
+	Restore([]byte, []byte, []byte) (string, error)
+}
+
+type MutableLibrary interface {
+	Library
+
+	Identity() string
+	ExactLocation(string) string
+	Export([]string, string) error
+	Location(string) string
+	Record([]byte) error
+	Stage() string
 }
 
 type hololib struct {
 	identity   uint64
 	basedir    string
 	queryCache map[string]bool
+}
+
+func (it *hololib) Open(digest string) (readable io.Reader, closer Closer, err error) {
+	return delegateOpen(it, digest)
 }
 
 func (it *hololib) Location(digest string) string {
@@ -248,7 +260,8 @@ func Spaces() []*Root {
 	return roots
 }
 
-func (it *hololib) Restore(blueprint, client, tag []byte) (string, error) {
+func (it *hololib) Restore(blueprint, client, tag []byte) (result string, err error) {
+	defer fail.Around(&err)
 	defer common.Stopwatch("Holotree restore took:").Debug()
 	key := BlueprintHash(blueprint)
 	common.Timeline("holotree restore start %s", key)
@@ -268,38 +281,26 @@ func (it *hololib) Restore(blueprint, client, tag []byte) (string, error) {
 		common.Timeline("holotree digest done")
 	}
 	fs, err := NewRoot(it.Stage())
-	if err != nil {
-		return "", err
-	}
+	fail.On(err != nil, "Failed to create stage -> %v", err)
 	err = fs.LoadFrom(it.CatalogPath(key))
-	if err != nil {
-		return "", err
-	}
+	fail.On(err != nil, "Failed to load catalog %s -> %v", it.CatalogPath(key), err)
 	err = fs.Relocate(targetdir)
-	if err != nil {
-		return "", err
-	}
+	fail.On(err != nil, "Failed to relocate %s -> %v", targetdir, err)
 	common.Timeline("holotree make branches start")
 	err = fs.Treetop(MakeBranches)
 	common.Timeline("holotree make branches done")
-	if err != nil {
-		return "", err
-	}
+	fail.On(err != nil, "Failed to make branches -> %v", err)
 	score := &stats{}
 	common.Timeline("holotree restore start")
 	err = fs.AllDirs(RestoreDirectory(it, fs, currentstate, score))
-	if err != nil {
-		return "", err
-	}
+	fail.On(err != nil, "Failed to restore directories -> %v", err)
 	common.Timeline("holotree restore done")
 	defer common.Timeline("- dirty %d/%d", score.dirty, score.total)
 	common.Debug("Holotree dirty workload: %d/%d\n", score.dirty, score.total)
 	fs.Controller = string(client)
 	fs.Space = string(tag)
 	err = fs.SaveAs(metafile)
-	if err != nil {
-		return "", err
-	}
+	fail.On(err != nil, "Failed to save metafile %q -> %v", metafile, err)
 	return targetdir, nil
 }
 
@@ -333,7 +334,7 @@ func makedirs(prefix string, suffixes ...string) error {
 	return nil
 }
 
-func New() (Library, error) {
+func New() (MutableLibrary, error) {
 	err := makedirs(common.HololibLocation(), "library", "catalog")
 	if err != nil {
 		return nil, err
@@ -345,120 +346,4 @@ func New() (Library, error) {
 		basedir:    basedir,
 		queryCache: make(map[string]bool),
 	}, nil
-}
-
-type virtual struct {
-	identity uint64
-	root     *Root
-	registry map[string]string
-	key      string
-}
-
-func Virtual() Library {
-	return &virtual{
-		identity: sipit([]byte(common.RobocorpHome())),
-	}
-}
-
-func (it *virtual) Identity() string {
-	return fmt.Sprintf("v%016xh", it.identity)
-}
-
-func (it *virtual) Stage() string {
-	stage := filepath.Join(common.HolotreeLocation(), it.Identity())
-	err := os.MkdirAll(stage, 0o755)
-	if err != nil {
-		panic(err)
-	}
-	return stage
-}
-
-func (it *virtual) Export([]string, string) error {
-	return fmt.Errorf("Not supported yet on virtual holotree.")
-}
-
-func (it *virtual) Record(blueprint []byte) error {
-	defer common.Stopwatch("Holotree recording took:").Debug()
-	key := BlueprintHash(blueprint)
-	common.Timeline("holotree record start %s (virtual)", key)
-	fs, err := NewRoot(it.Stage())
-	if err != nil {
-		return err
-	}
-	err = fs.Lift()
-	if err != nil {
-		return err
-	}
-	common.Timeline("holotree (re)locator start (virtual)")
-	err = fs.AllFiles(Locator(it.Identity()))
-	if err != nil {
-		return err
-	}
-	common.Timeline("holotree (re)locator done (virtual)")
-	it.registry = make(map[string]string)
-	fs.Treetop(DigestMapper(it.registry))
-	fs.Blueprint = key
-	it.root = fs
-	it.key = key
-	return nil
-}
-
-func (it *virtual) Restore(blueprint, client, tag []byte) (string, error) {
-	defer common.Stopwatch("Holotree restore took:").Debug()
-	key := BlueprintHash(blueprint)
-	common.Timeline("holotree restore start %s (virtual)", key)
-	prefix := textual(sipit(client), 9)
-	suffix := textual(sipit(tag), 8)
-	name := prefix + "_" + suffix
-	metafile := filepath.Join(common.HolotreeLocation(), fmt.Sprintf("%s.meta", name))
-	targetdir := filepath.Join(common.HolotreeLocation(), name)
-	currentstate := make(map[string]string)
-	shadow, err := NewRoot(targetdir)
-	if err == nil {
-		err = shadow.LoadFrom(metafile)
-	}
-	if err == nil {
-		common.Timeline("holotree digest start (virtual)")
-		shadow.Treetop(DigestRecorder(currentstate))
-		common.Timeline("holotree digest done (virtual)")
-	}
-	fs := it.root
-	err = fs.Relocate(targetdir)
-	if err != nil {
-		return "", err
-	}
-	common.Timeline("holotree make branches start (virtual)")
-	err = fs.Treetop(MakeBranches)
-	common.Timeline("holotree make branches done (virtual)")
-	if err != nil {
-		return "", err
-	}
-	score := &stats{}
-	common.Timeline("holotree restore start (virtual)")
-	err = fs.AllDirs(RestoreDirectory(it, fs, currentstate, score))
-	if err != nil {
-		return "", err
-	}
-	common.Timeline("holotree restore done (virtual)")
-	defer common.Timeline("- dirty %d/%d", score.dirty, score.total)
-	common.Debug("Holotree dirty workload: %d/%d\n", score.dirty, score.total)
-	fs.Controller = string(client)
-	fs.Space = string(tag)
-	err = fs.SaveAs(metafile)
-	if err != nil {
-		return "", err
-	}
-	return targetdir, nil
-}
-
-func (it *virtual) ExactLocation(key string) string {
-	return it.registry[key]
-}
-
-func (it *virtual) Location(key string) string {
-	panic("Location is not supported on virtual holotree.")
-}
-
-func (it *virtual) HasBlueprint(blueprint []byte) bool {
-	return it.key == BlueprintHash(blueprint)
 }

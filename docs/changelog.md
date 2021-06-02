@@ -1,5 +1,9 @@
 # rcc change log
 
+## v9.17.1 (date: 2.6.2021)
+
+- adding supporting structures for zip based holotree runs [experimental]
+
 ## v9.17.0 (date: 26.5.2021)
 
 - added `export` command to holotree [experimental]

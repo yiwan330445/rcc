@@ -87,7 +87,7 @@ func LoadTaskWithEnvironment(packfile, theTask string, force bool) (bool, robot.
 
 	var label string
 	if len(common.HolotreeSpace) > 0 {
-		label, err = htfs.NewEnvironment(force, config.CondaConfigFile())
+		label, err = htfs.NewEnvironment(force, config.CondaConfigFile(), config.Holozip())
 	} else {
 		label, err = conda.NewEnvironment(force, config.CondaConfigFile())
 	}

@@ -15,7 +15,7 @@ import (
 	"github.com/robocorp/rcc/trollhash"
 )
 
-func CatalogCheck(library Library, fs *Root) Treetop {
+func CatalogCheck(library MutableLibrary, fs *Root) Treetop {
 	var tool Treetop
 	tool = func(path string, it *Dir) error {
 		for name, file := range it.Files {
@@ -100,7 +100,7 @@ func MakeBranches(path string, it *Dir) error {
 	return os.Chtimes(path, motherTime, motherTime)
 }
 
-func ScheduleLifters(library Library, stats *stats) Treetop {
+func ScheduleLifters(library MutableLibrary, stats *stats) Treetop {
 	var scheduler Treetop
 	scheduler = func(path string, it *Dir) error {
 		for name, subdir := range it.Dirs {
@@ -173,23 +173,13 @@ func LiftFlatFile(sourcename, sinkname string) anywork.Work {
 	}
 }
 
-func DropFile(sourcename, sinkname string, details *File, rewrite []byte) anywork.Work {
+func DropFile(library Library, digest, sinkname string, details *File, rewrite []byte) anywork.Work {
 	return func() {
-		source, err := os.Open(sourcename)
+		reader, closer, err := library.Open(digest)
 		if err != nil {
 			panic(err)
 		}
-		defer source.Close()
-		var reader io.ReadCloser
-		reader, err = gzip.NewReader(source)
-		if err != nil {
-			_, err = source.Seek(0, 0)
-			if err != nil {
-				panic(err)
-			}
-			reader = source
-		}
-		defer reader.Close()
+		defer closer()
 		sink, err := os.Create(sinkname)
 		if err != nil {
 			panic(err)
@@ -304,8 +294,7 @@ func RestoreDirectory(library Library, fs *Root, current map[string]string, stat
 				stats.Dirty(!ok)
 				if !ok {
 					common.Debug("* Holotree: update changed file    %q", directpath)
-					droppath := library.ExactLocation(found.Digest)
-					anywork.Backlog(DropFile(droppath, directpath, found, fs.Rewrite()))
+					anywork.Backlog(DropFile(library, found.Digest, directpath, found, fs.Rewrite()))
 				}
 			}
 			for name, found := range it.Files {
@@ -314,8 +303,7 @@ func RestoreDirectory(library Library, fs *Root, current map[string]string, stat
 				if !seen {
 					stats.Dirty(true)
 					common.Debug("* Holotree: add missing file       %q", directpath)
-					droppath := library.ExactLocation(found.Digest)
-					anywork.Backlog(DropFile(droppath, directpath, found, fs.Rewrite()))
+					anywork.Backlog(DropFile(library, found.Digest, directpath, found, fs.Rewrite()))
 				}
 			}
 		}
@@ -326,7 +314,7 @@ type Zipper interface {
 	Add(fullpath, relativepath string) error
 }
 
-func ZipRoot(library Library, fs *Root, sink Zipper) Treetop {
+func ZipRoot(library MutableLibrary, fs *Root, sink Zipper) Treetop {
 	var tool Treetop
 	baseline := common.HololibLocation()
 	tool = func(path string, it *Dir) (err error) {

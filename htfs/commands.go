@@ -13,8 +13,10 @@ import (
 	"github.com/robocorp/rcc/robot"
 )
 
-func NewEnvironment(force bool, condafile string) (label string, err error) {
+func NewEnvironment(force bool, condafile, holozip string) (label string, err error) {
 	defer fail.Around(&err)
+
+	haszip := len(holozip) > 0
 
 	common.Timeline("new holotree environment")
 	_, holotreeBlueprint, err := ComposeFinalBlueprint([]string{condafile}, "")
@@ -26,19 +28,27 @@ func NewEnvironment(force bool, condafile string) (label string, err error) {
 	fail.On(err != nil, "%s", err)
 	common.Timeline("holotree library created")
 
-	if !tree.HasBlueprint(holotreeBlueprint) && common.Liveonly {
+	if !haszip && !tree.HasBlueprint(holotreeBlueprint) && common.Liveonly {
 		tree = Virtual()
 		common.Timeline("downgraded to virtual holotree library")
 	}
-	err = RecordEnvironment(tree, holotreeBlueprint, force)
-	fail.On(err != nil, "%s", err)
+	var library Library
+	if haszip {
+		library, err = ZipLibrary(holozip)
+		fail.On(err != nil, "Failed to load %q -> %s", holozip, err)
+		common.Timeline("downgraded to holotree zip library")
+	} else {
+		err = RecordEnvironment(tree, holotreeBlueprint, force)
+		fail.On(err != nil, "%s", err)
+		library = tree
+	}
 
-	path, err := tree.Restore(holotreeBlueprint, []byte(common.ControllerIdentity()), []byte(common.HolotreeSpace))
+	path, err := library.Restore(holotreeBlueprint, []byte(common.ControllerIdentity()), []byte(common.HolotreeSpace))
 	fail.On(err != nil, "Failed to restore blueprint %q, reason: %v", string(holotreeBlueprint), err)
 	return path, nil
 }
 
-func RecordCondaEnvironment(tree Library, condafile string, force bool) (err error) {
+func RecordCondaEnvironment(tree MutableLibrary, condafile string, force bool) (err error) {
 	defer fail.Around(&err)
 
 	right, err := conda.ReadCondaYaml(condafile)
@@ -50,7 +60,7 @@ func RecordCondaEnvironment(tree Library, condafile string, force bool) (err err
 	return RecordEnvironment(tree, []byte(content), force)
 }
 
-func RecordEnvironment(tree Library, blueprint []byte, force bool) (err error) {
+func RecordEnvironment(tree MutableLibrary, blueprint []byte, force bool) (err error) {
 	defer fail.Around(&err)
 
 	// following must be setup here

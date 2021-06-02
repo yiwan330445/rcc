@@ -57,7 +57,7 @@ var prepareCloudCmd = &cobra.Command{
 		var label string
 		condafile := config.CondaConfigFile()
 		if len(common.HolotreeSpace) > 0 {
-			label, err = htfs.NewEnvironment(false, condafile)
+			label, err = htfs.NewEnvironment(false, condafile, config.Holozip())
 		} else {
 			label, err = conda.NewEnvironment(false, condafile)
 		}

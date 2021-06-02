@@ -31,7 +31,11 @@ func holotreeExpandEnvironment(userFiles []string, packfile, environment, worksp
 	err = os.WriteFile(condafile, holotreeBlueprint, 0o640)
 	pretty.Guard(err == nil, 6, "%s", err)
 
-	path, err := htfs.NewEnvironment(force, condafile)
+	holozip := ""
+	if config != nil {
+		holozip = config.Holozip()
+	}
+	path, err := htfs.NewEnvironment(force, condafile, holozip)
 	pretty.Guard(err == nil, 6, "%s", err)
 
 	if Has(environment) {
