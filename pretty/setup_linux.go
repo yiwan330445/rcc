@@ -1,6 +1,6 @@
 package pretty
 
-func localSetup() {
+func localSetup(bool) {
 	Iconic = false
 	Disabled = false
 }

@@ -81,6 +81,10 @@ func LoadTaskWithEnvironment(packfile, theTask string, force bool) (bool, robot.
 		pretty.Exit(3, "Error: Could not resolve task to run. Available tasks are: %v", strings.Join(config.AvailableTasks(), ", "))
 	}
 
+	if config.HasHolozip() && !common.UsesHolotree() {
+		pretty.Exit(4, "Error: this robot requires holotree, but no --space was given!")
+	}
+
 	if !config.UsesConda() {
 		return true, config, todo, ""
 	}

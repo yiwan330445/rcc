@@ -81,9 +81,6 @@ var holotreeVariablesCmd = &cobra.Command{
 			defer common.Stopwatch("Holotree variables command lasted").Report()
 		}
 
-		ok := conda.MustMicromamba()
-		pretty.Guard(ok, 1, "Could not get micromamba installed.")
-
 		env := holotreeExpandEnvironment(args, robotFile, environmentFile, workspaceId, validityTime, holotreeForce)
 		if holotreeJson {
 			asJson(env)

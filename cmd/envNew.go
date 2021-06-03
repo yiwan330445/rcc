@@ -19,10 +19,6 @@ end result will be a composite environment.`,
 		if common.DebugFlag {
 			defer common.Stopwatch("New environment creation lasted").Report()
 		}
-		ok := conda.MustMicromamba()
-		if !ok {
-			pretty.Exit(2, "Could not get micromamba installed.")
-		}
 		label, err := conda.NewEnvironment(forceFlag, args...)
 		if err != nil {
 			pretty.Exit(1, "Environment creation failed: %v", err)

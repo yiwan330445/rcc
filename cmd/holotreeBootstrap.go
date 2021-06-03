@@ -7,7 +7,6 @@ import (
 
 	"github.com/robocorp/rcc/cloud"
 	"github.com/robocorp/rcc/common"
-	"github.com/robocorp/rcc/conda"
 	"github.com/robocorp/rcc/htfs"
 	"github.com/robocorp/rcc/operations"
 	"github.com/robocorp/rcc/pretty"
@@ -51,9 +50,6 @@ var holotreeBootstrapCmd = &cobra.Command{
 		if common.DebugFlag {
 			defer common.Stopwatch("Holotree bootstrap lasted").Report()
 		}
-
-		ok := conda.MustMicromamba()
-		pretty.Guard(ok, 1, "Could not get micromamba installed.")
 
 		robots := make([]string, 0, 20)
 		for key, _ := range settings.Global.Templates() {

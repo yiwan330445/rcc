@@ -8,7 +8,6 @@ import (
 
 	"github.com/robocorp/rcc/cloud"
 	"github.com/robocorp/rcc/common"
-	"github.com/robocorp/rcc/conda"
 	"github.com/robocorp/rcc/operations"
 	"github.com/robocorp/rcc/pathlib"
 	"github.com/robocorp/rcc/pretty"
@@ -29,10 +28,6 @@ var assistantRunCmd = &cobra.Command{
 		elapser := common.Stopwatch("Robot Assistant startup lasted")
 		if common.DebugFlag {
 			defer common.Stopwatch("Robot Assistant run lasted").Report()
-		}
-		ok := conda.MustMicromamba()
-		if !ok {
-			pretty.Exit(2, "Could not get micromamba installed.")
 		}
 		defer xviper.RunMinutes().Done()
 		account := operations.AccountByName(AccountName())

@@ -30,7 +30,7 @@ func Setup() {
 	stderr := isatty.IsTerminal(os.Stderr.Fd())
 	Interactive = stdin && stdout && stderr
 
-	localSetup()
+	localSetup(Interactive)
 
 	common.Trace("Interactive mode enabled: %v; colors enabled: %v; icons enabled: %v", Interactive, !Disabled, Iconic)
 	if Interactive && !Disabled && !Colorless {

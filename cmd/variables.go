@@ -118,10 +118,6 @@ var variablesCmd = &cobra.Command{
 	Short:   "Export environment specific variables as a JSON structure.",
 	Long:    "Export environment specific variables as a JSON structure.",
 	Run: func(cmd *cobra.Command, args []string) {
-		ok := conda.MustMicromamba()
-		if !ok {
-			pretty.Exit(2, "Could not get micromamba installed.")
-		}
 		err := exportEnvironment(args, robotFile, environmentFile, workspaceId, validityTime, jsonFlag)
 		if err != nil {
 			pretty.Exit(1, "Error: Variable exporting failed because: %v", err)

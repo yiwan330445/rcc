@@ -3,9 +3,7 @@ package cmd
 import (
 	"github.com/robocorp/rcc/cloud"
 	"github.com/robocorp/rcc/common"
-	"github.com/robocorp/rcc/conda"
 	"github.com/robocorp/rcc/operations"
-	"github.com/robocorp/rcc/pretty"
 	"github.com/robocorp/rcc/xviper"
 
 	"github.com/spf13/cobra"
@@ -26,10 +24,6 @@ in your own machine.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		if common.DebugFlag {
 			defer common.Stopwatch("Task run lasted").Report()
-		}
-		ok := conda.MustMicromamba()
-		if !ok {
-			pretty.Exit(2, "Could not get micromamba installed.")
 		}
 		defer xviper.RunMinutes().Done()
 		simple, config, todo, label := operations.LoadTaskWithEnvironment(robotFile, runTask, forceFlag)

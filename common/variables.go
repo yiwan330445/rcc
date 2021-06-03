@@ -93,6 +93,10 @@ func HolotreeLocation() string {
 	return ensureDirectory(filepath.Join(RobocorpHome(), "holotree"))
 }
 
+func UsesHolotree() bool {
+	return len(HolotreeSpace) > 0
+}
+
 func PipCache() string {
 	return ensureDirectory(filepath.Join(RobocorpHome(), "pipcache"))
 }

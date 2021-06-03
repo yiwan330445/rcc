@@ -27,6 +27,7 @@ type Robot interface {
 	CondaConfigFile() string
 	CondaHash() string
 	RootDirectory() string
+	HasHolozip() bool
 	Holozip() string
 	Validate() (bool, error)
 	Diagnostics(*common.DiagnosticStatus, bool)
@@ -161,6 +162,7 @@ func (it *robot) Diagnostics(target *common.DiagnosticStatus, production bool) {
 	target.Details["robot-use-conda"] = fmt.Sprintf("%v", it.UsesConda())
 	target.Details["robot-conda-file"] = it.CondaConfigFile()
 	target.Details["robot-conda-hash"] = it.CondaHash()
+	target.Details["hololib.zip"] = it.Holozip()
 	plan, ok := conda.InstallationPlan(it.CondaHash())
 	if ok {
 		target.Details["robot-conda-plan"] = plan
@@ -203,6 +205,10 @@ func (it *robot) Validate() (bool, error) {
 
 func (it *robot) RootDirectory() string {
 	return it.Root
+}
+
+func (it *robot) HasHolozip() bool {
+	return len(it.Holozip()) > 0
 }
 
 func (it *robot) Holozip() string {

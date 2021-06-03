@@ -12,9 +12,12 @@ const (
 	ENABLE_VIRTUAL_TERMINAL_PROCESSING = 0x4
 )
 
-func localSetup() {
+func localSetup(interactive bool) {
 	Iconic = false
 	Disabled = true
+	if !interactive {
+		return
+	}
 	kernel32 := syscall.NewLazyDLL("kernel32.dll")
 	if kernel32 == nil {
 		common.Trace("Cannot use colors. Did not get kernel32.dll!")

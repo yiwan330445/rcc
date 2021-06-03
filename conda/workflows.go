@@ -142,6 +142,9 @@ func (it InstallObserver) HasFailures(targetFolder string) bool {
 }
 
 func newLive(yaml, condaYaml, requirementsText, key string, force, freshInstall bool, postInstall []string) (bool, error) {
+	if !MustMicromamba() {
+		return false, fmt.Errorf("Could not get micromamba installed.")
+	}
 	targetFolder := LiveFrom(key)
 	common.Debug("===  new live  ---  pre cleanup phase ===")
 	common.Timeline("pre cleanup phase.")

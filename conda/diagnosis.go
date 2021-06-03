@@ -54,36 +54,36 @@ func DirhashDiff(history, future map[string]string, warning bool) {
 	sort.Strings(changed)
 	separate := false
 	for _, folder := range removed {
-		common.Log("- diff: removed %q", folder)
+		common.Trace("- diff: removed %q", folder)
 		separate = true
 	}
 	if len(changed) > 0 {
 		if separate {
-			common.Log("-------")
+			common.Trace("-------")
 			separate = false
 		}
 		for _, folder := range changed {
-			common.Log("- diff: changed %q", folder)
+			common.Trace("- diff: changed %q", folder)
 			separate = true
 		}
 	}
 	if len(added) > 0 {
 		if separate {
-			common.Log("-------")
+			common.Trace("-------")
 			separate = false
 		}
 		for _, folder := range added {
-			common.Log("- diff: added %q", folder)
+			common.Trace("- diff: added %q", folder)
 			separate = true
 		}
 	}
 	if warning {
 		if separate {
-			common.Log("-------")
+			common.Trace("-------")
 			separate = false
 		}
 		common.Log("Notice: Robot run modified the environment which will slow down the next run.")
-		common.Log("        Please inform the robot developer about this.")
+		common.Log("        Please inform the robot developer about this. Use --trace for details.")
 	}
 	common.Log("----  rcc env diff  ----")
 }

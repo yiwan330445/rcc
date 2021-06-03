@@ -1,5 +1,16 @@
 # rcc change log
 
+## v9.18.0 (date: 3.6.2021)
+
+- now using holotree location from catalog, so that catalog decides where
+  holotree is created (defaults to `ROBOCORP_HOME` but can be different)
+- if hololib.zip exist, then `--space` flag must be given or run fails
+- hololib.zip is now reported in robot diagnostics
+- environment difference print is now (mostly) behind `--trace` flag
+- if rcc is not interactive, color toggling on Windows is skipped
+- micromamba download is now done "on demand" only
+- added robot tests for hololib.zip workflow
+
 ## v9.17.2 (date: 2.6.2021)
 
 - fixing broken tests, and taking account changed specifications

@@ -32,8 +32,6 @@ var prepareCloudCmd = &cobra.Command{
 		workarea := filepath.Join(os.TempDir(), fmt.Sprintf("workarea%x", common.When))
 		defer os.RemoveAll(workarea)
 
-		pretty.Guard(conda.MustMicromamba(), 1, "Could not get micromamba installed.")
-
 		account := operations.AccountByName(AccountName())
 		pretty.Guard(account != nil, 2, "Could not find account by name: %q", AccountName())
 

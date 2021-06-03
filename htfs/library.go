@@ -268,8 +268,12 @@ func (it *hololib) Restore(blueprint, client, tag []byte) (result string, err er
 	prefix := textual(sipit(client), 9)
 	suffix := textual(sipit(tag), 8)
 	name := prefix + "_" + suffix
-	metafile := filepath.Join(common.HolotreeLocation(), fmt.Sprintf("%s.meta", name))
-	targetdir := filepath.Join(common.HolotreeLocation(), name)
+	fs, err := NewRoot(it.Stage())
+	fail.On(err != nil, "Failed to create stage -> %v", err)
+	err = fs.LoadFrom(it.CatalogPath(key))
+	fail.On(err != nil, "Failed to load catalog %s -> %v", it.CatalogPath(key), err)
+	metafile := filepath.Join(fs.HolotreeBase(), fmt.Sprintf("%s.meta", name))
+	targetdir := filepath.Join(fs.HolotreeBase(), name)
 	currentstate := make(map[string]string)
 	shadow, err := NewRoot(targetdir)
 	if err == nil {
@@ -280,10 +284,6 @@ func (it *hololib) Restore(blueprint, client, tag []byte) (result string, err er
 		shadow.Treetop(DigestRecorder(currentstate))
 		common.Timeline("holotree digest done")
 	}
-	fs, err := NewRoot(it.Stage())
-	fail.On(err != nil, "Failed to create stage -> %v", err)
-	err = fs.LoadFrom(it.CatalogPath(key))
-	fail.On(err != nil, "Failed to load catalog %s -> %v", it.CatalogPath(key), err)
 	err = fs.Relocate(targetdir)
 	fail.On(err != nil, "Failed to relocate %s -> %v", targetdir, err)
 	common.Timeline("holotree make branches start")

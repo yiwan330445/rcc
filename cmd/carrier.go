@@ -8,7 +8,6 @@ import (
 
 	"github.com/robocorp/rcc/cloud"
 	"github.com/robocorp/rcc/common"
-	"github.com/robocorp/rcc/conda"
 	"github.com/robocorp/rcc/operations"
 	"github.com/robocorp/rcc/pathlib"
 	"github.com/robocorp/rcc/pretty"
@@ -42,10 +41,6 @@ func runCarrier() error {
 	}
 	if common.DebugFlag {
 		defer common.Stopwatch("Task testrun lasted").Report()
-	}
-	ok = conda.MustMicromamba()
-	if !ok {
-		pretty.Exit(4, "Could not get micromamba installed.")
 	}
 	defer xviper.RunMinutes().Done()
 	now := time.Now()
