@@ -1,5 +1,11 @@
 # rcc change log
 
+## v9.19.0 (date: 8.6.2021)
+
+- added event journaling support (no user visible yet)
+- added first event "space-used" in holotree restore operations (this enables
+  tracking of all places where environments are created)
+
 ## v9.18.0 (date: 3.6.2021)
 
 - now using holotree location from catalog, so that catalog decides where

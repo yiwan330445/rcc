@@ -61,6 +61,10 @@ func ensureDirectory(name string) string {
 	return name
 }
 
+func EventJournal() string {
+	return filepath.Join(RobocorpHome(), "event.log")
+}
+
 func TemplateLocation() string {
 	return ensureDirectory(filepath.Join(RobocorpHome(), "templates"))
 }

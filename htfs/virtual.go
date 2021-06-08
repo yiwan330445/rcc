@@ -8,6 +8,7 @@ import (
 
 	"github.com/robocorp/rcc/common"
 	"github.com/robocorp/rcc/fail"
+	"github.com/robocorp/rcc/journal"
 )
 
 type virtual struct {
@@ -70,6 +71,7 @@ func (it *virtual) Restore(blueprint, client, tag []byte) (string, error) {
 	name := prefix + "_" + suffix
 	metafile := filepath.Join(common.HolotreeLocation(), fmt.Sprintf("%s.meta", name))
 	targetdir := filepath.Join(common.HolotreeLocation(), name)
+	journal.Post("space-used", metafile, "virutal holotree with blueprint %s", key)
 	currentstate := make(map[string]string)
 	shadow, err := NewRoot(targetdir)
 	if err == nil {

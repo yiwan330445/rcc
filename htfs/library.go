@@ -17,6 +17,7 @@ import (
 	"github.com/robocorp/rcc/common"
 	"github.com/robocorp/rcc/conda"
 	"github.com/robocorp/rcc/fail"
+	"github.com/robocorp/rcc/journal"
 	"github.com/robocorp/rcc/pathlib"
 )
 
@@ -264,16 +265,18 @@ func (it *hololib) Restore(blueprint, client, tag []byte) (result string, err er
 	defer fail.Around(&err)
 	defer common.Stopwatch("Holotree restore took:").Debug()
 	key := BlueprintHash(blueprint)
+	catalog := it.CatalogPath(key)
 	common.Timeline("holotree restore start %s", key)
 	prefix := textual(sipit(client), 9)
 	suffix := textual(sipit(tag), 8)
 	name := prefix + "_" + suffix
 	fs, err := NewRoot(it.Stage())
 	fail.On(err != nil, "Failed to create stage -> %v", err)
-	err = fs.LoadFrom(it.CatalogPath(key))
-	fail.On(err != nil, "Failed to load catalog %s -> %v", it.CatalogPath(key), err)
+	err = fs.LoadFrom(catalog)
+	fail.On(err != nil, "Failed to load catalog %s -> %v", catalog, err)
 	metafile := filepath.Join(fs.HolotreeBase(), fmt.Sprintf("%s.meta", name))
 	targetdir := filepath.Join(fs.HolotreeBase(), name)
+	journal.Post("space-used", metafile, "normal holotree with blueprint %s from %s", key, catalog)
 	currentstate := make(map[string]string)
 	shadow, err := NewRoot(targetdir)
 	if err == nil {
