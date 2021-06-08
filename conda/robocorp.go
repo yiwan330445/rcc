@@ -252,10 +252,6 @@ func RobocorpTemp() string {
 	return fullpath
 }
 
-func RobocorpLock() string {
-	return fmt.Sprintf("%s.lck", common.LiveLocation())
-}
-
 func MinicondaLocation() string {
 	// Legacy function, but must remain until cleanup is done
 	return filepath.Join(common.RobocorpHome(), "miniconda3")

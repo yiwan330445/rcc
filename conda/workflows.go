@@ -341,7 +341,7 @@ func NewEnvironment(force bool, configurations ...string) (string, error) {
 	common.Timeline("New environment.")
 	cloud.BackgroundMetric(common.ControllerIdentity(), "rcc.env.create.start", common.Version)
 
-	lockfile := RobocorpLock()
+	lockfile := common.RobocorpLock()
 	locker, err := pathlib.Locker(lockfile, 30000)
 	if err != nil {
 		common.Log("Could not get lock on live environment. Quitting!")

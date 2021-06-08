@@ -128,7 +128,7 @@ func cleanupTemp(deadline time.Time, dryrun bool) error {
 }
 
 func Cleanup(daylimit int, dryrun, orphans, all, miniconda, micromamba bool) error {
-	lockfile := RobocorpLock()
+	lockfile := common.RobocorpLock()
 	locker, err := pathlib.Locker(lockfile, 30000)
 	if err != nil {
 		common.Log("Could not get lock on live environment. Quitting!")

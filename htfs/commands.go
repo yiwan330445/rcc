@@ -12,6 +12,7 @@ import (
 	"github.com/robocorp/rcc/common"
 	"github.com/robocorp/rcc/conda"
 	"github.com/robocorp/rcc/fail"
+	"github.com/robocorp/rcc/pathlib"
 	"github.com/robocorp/rcc/robot"
 )
 
@@ -21,6 +22,11 @@ func Platform() string {
 
 func NewEnvironment(force bool, condafile, holozip string) (label string, err error) {
 	defer fail.Around(&err)
+
+	lockfile := common.HolotreeLock()
+	locker, err := pathlib.Locker(lockfile, 30000)
+	fail.On(err != nil, "Could not get lock for holotree. Quiting.")
+	defer locker.Release()
 
 	haszip := len(holozip) > 0
 
@@ -56,6 +62,11 @@ func NewEnvironment(force bool, condafile, holozip string) (label string, err er
 
 func RecordCondaEnvironment(tree MutableLibrary, condafile string, force bool) (err error) {
 	defer fail.Around(&err)
+
+	lockfile := common.HolotreeLock()
+	locker, err := pathlib.Locker(lockfile, 30000)
+	fail.On(err != nil, "Could not get lock for holotree. Quiting.")
+	defer locker.Release()
 
 	right, err := conda.ReadCondaYaml(condafile)
 	fail.On(err != nil, "Could not load environmet config %q, reason: %w", condafile, err)

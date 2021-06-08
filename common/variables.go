@@ -48,6 +48,10 @@ func RobocorpHome() string {
 	return ensureDirectory(ExpandPath(defaultRobocorpLocation))
 }
 
+func RobocorpLock() string {
+	return fmt.Sprintf("%s.lck", LiveLocation())
+}
+
 func VerboseEnvironmentBuilding() bool {
 	return len(os.Getenv(VERBOSE_ENVIRONMENT_BUILDING)) > 0
 }
@@ -91,6 +95,10 @@ func HololibCatalogLocation() string {
 
 func HololibLibraryLocation() string {
 	return ensureDirectory(filepath.Join(HololibLocation(), "library"))
+}
+
+func HolotreeLock() string {
+	return fmt.Sprintf("%s.lck", HolotreeLocation())
 }
 
 func HolotreeLocation() string {
