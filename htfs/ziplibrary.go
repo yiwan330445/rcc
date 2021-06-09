@@ -12,6 +12,7 @@ import (
 	"github.com/robocorp/rcc/common"
 	"github.com/robocorp/rcc/fail"
 	"github.com/robocorp/rcc/journal"
+	"github.com/robocorp/rcc/pathlib"
 )
 
 type ziplibrary struct {
@@ -91,6 +92,10 @@ func (it *ziplibrary) Restore(blueprint, client, tag []byte) (result string, err
 	fail.On(err != nil, "Failed to read catalog %q -> %v", catalog, err)
 	metafile := filepath.Join(fs.HolotreeBase(), fmt.Sprintf("%s.meta", name))
 	targetdir := filepath.Join(fs.HolotreeBase(), name)
+	lockfile := filepath.Join(fs.HolotreeBase(), fmt.Sprintf("%s.lck", name))
+	locker, err := pathlib.Locker(lockfile, 30000)
+	fail.On(err != nil, "Could not get lock for %s. Quiting.", targetdir)
+	defer locker.Release()
 	journal.Post("space-used", metafile, "zipped holotree with blueprint %s from %s", key, catalog)
 	currentstate := make(map[string]string)
 	shadow, err := NewRoot(targetdir)

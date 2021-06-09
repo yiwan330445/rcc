@@ -23,8 +23,7 @@ func Platform() string {
 func NewEnvironment(force bool, condafile, holozip string) (label string, err error) {
 	defer fail.Around(&err)
 
-	lockfile := common.HolotreeLock()
-	locker, err := pathlib.Locker(lockfile, 30000)
+	locker, err := pathlib.Locker(common.HolotreeLock(), 30000)
 	fail.On(err != nil, "Could not get lock for holotree. Quiting.")
 	defer locker.Release()
 
@@ -63,8 +62,7 @@ func NewEnvironment(force bool, condafile, holozip string) (label string, err er
 func RecordCondaEnvironment(tree MutableLibrary, condafile string, force bool) (err error) {
 	defer fail.Around(&err)
 
-	lockfile := common.HolotreeLock()
-	locker, err := pathlib.Locker(lockfile, 30000)
+	locker, err := pathlib.Locker(common.HolotreeLock(), 30000)
 	fail.On(err != nil, "Could not get lock for holotree. Quiting.")
 	defer locker.Release()
 

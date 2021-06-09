@@ -9,6 +9,7 @@ import (
 	"github.com/robocorp/rcc/common"
 	"github.com/robocorp/rcc/fail"
 	"github.com/robocorp/rcc/journal"
+	"github.com/robocorp/rcc/pathlib"
 )
 
 type virtual struct {
@@ -71,6 +72,10 @@ func (it *virtual) Restore(blueprint, client, tag []byte) (string, error) {
 	name := prefix + "_" + suffix
 	metafile := filepath.Join(common.HolotreeLocation(), fmt.Sprintf("%s.meta", name))
 	targetdir := filepath.Join(common.HolotreeLocation(), name)
+	lockfile := filepath.Join(common.HolotreeLocation(), fmt.Sprintf("%s.lck", name))
+	locker, err := pathlib.Locker(lockfile, 30000)
+	fail.On(err != nil, "Could not get lock for %s. Quiting.", targetdir)
+	defer locker.Release()
 	journal.Post("space-used", metafile, "virutal holotree with blueprint %s", key)
 	currentstate := make(map[string]string)
 	shadow, err := NewRoot(targetdir)

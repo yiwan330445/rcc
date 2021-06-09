@@ -1,5 +1,9 @@
 # rcc change log
 
+## v9.19.2 (date: 9.6.2021)
+
+- added locking of holotree into environment restoring
+
 ## v9.19.1 (date: 8.6.2021)
 
 - added locking of holotree into new environment building and recording
