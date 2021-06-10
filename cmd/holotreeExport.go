@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"encoding/json"
 	"strings"
 
 	"github.com/robocorp/rcc/common"
@@ -26,10 +27,16 @@ func holotreeExport(catalogs []string, archive string) {
 	pretty.Guard(err == nil, 3, "%s", err)
 }
 
-func listCatalogs() {
-	common.Log("Selectable catalogs (you can use substrings):")
-	for _, catalog := range htfs.Catalogs() {
-		common.Log("- %s", catalog)
+func listCatalogs(jsonForm bool) {
+	if jsonForm {
+		nice, err := json.MarshalIndent(htfs.Catalogs(), "", "  ")
+		pretty.Guard(err == nil, 2, "%s", err)
+		common.Stdout("%s\n", nice)
+	} else {
+		common.Log("Selectable catalogs (you can use substrings):")
+		for _, catalog := range htfs.Catalogs() {
+			common.Log("- %s", catalog)
+		}
 	}
 }
 
@@ -55,7 +62,7 @@ var holotreeExportCmd = &cobra.Command{
 			defer common.Stopwatch("Holotree export command lasted").Report()
 		}
 		if len(args) == 0 {
-			listCatalogs()
+			listCatalogs(jsonFlag)
 		} else {
 			holotreeExport(selectCatalogs(args), holozip)
 		}
@@ -66,4 +73,5 @@ var holotreeExportCmd = &cobra.Command{
 func init() {
 	holotreeCmd.AddCommand(holotreeExportCmd)
 	holotreeExportCmd.Flags().StringVarP(&holozip, "zipfile", "z", "hololib.zip", "Name of zipfile to export.")
+	holotreeExportCmd.Flags().BoolVarP(&jsonFlag, "json", "j", false, "Output in JSON format")
 }

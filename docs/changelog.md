@@ -1,6 +1,12 @@
 # rcc change log
 
-## v9.19.3 (date: 9.6.2021)
+## v9.19.4 (date: 10.6.2021)
+
+- added json format to `rcc holotree export` output formats
+- added docs/recipes.md and also new command `rcc docs recipes`
+- added links to README.md to internal documentation
+
+## v9.19.3 (date: 10.6.2021)
 
 - added support for getting list of events out
 - fix: moved holotree changes messages to trace level
