@@ -26,6 +26,7 @@ type RunFlags struct {
 	EnvironmentFile string
 	RobotYaml       string
 	Assistant       bool
+	NoPipFreeze     bool
 }
 
 func PipFreeze(searchPath pathlib.PathParts, directory, outputDir string, environment []string) bool {
@@ -212,7 +213,7 @@ func ExecuteTask(flags *RunFlags, template []string, config robot.Robot, todo ro
 	before := make(map[string]string)
 	beforeHash, beforeErr := conda.DigestFor(label, before)
 	outputDir := config.ArtifactDirectory()
-	if !flags.Assistant && !common.Silent && !interactive {
+	if !flags.NoPipFreeze && !flags.Assistant && !common.Silent && !interactive {
 		PipFreeze(searchPath, directory, outputDir, environment)
 	}
 	common.Debug("DEBUG: about to run command - %v", task)

@@ -1,5 +1,9 @@
 # rcc change log
 
+## v9.20.0 (date: 10.6.2021)
+
+- added `rcc task script` command for running anything inside robot environment
+
 ## v9.19.4 (date: 10.6.2021)
 
 - added json format to `rcc holotree export` output formats
