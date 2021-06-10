@@ -274,7 +274,7 @@ func RestoreDirectory(library Library, fs *Root, current map[string]string, stat
 				if info.IsDir() {
 					_, ok := it.Dirs[part.Name()]
 					if !ok {
-						common.Debug("* Holotree: remove extra directory %q", directpath)
+						common.Trace("* Holotree: remove extra directory %q", directpath)
 						anywork.Backlog(RemoveDirectory(directpath))
 					}
 					stats.Dirty(!ok)
@@ -283,7 +283,7 @@ func RestoreDirectory(library Library, fs *Root, current map[string]string, stat
 				files[part.Name()] = true
 				found, ok := it.Files[part.Name()]
 				if !ok {
-					common.Debug("* Holotree: remove extra file      %q", directpath)
+					common.Trace("* Holotree: remove extra file      %q", directpath)
 					anywork.Backlog(RemoveFile(directpath))
 					stats.Dirty(true)
 					continue
@@ -293,7 +293,7 @@ func RestoreDirectory(library Library, fs *Root, current map[string]string, stat
 				ok = golden && found.Match(info)
 				stats.Dirty(!ok)
 				if !ok {
-					common.Debug("* Holotree: update changed file    %q", directpath)
+					common.Trace("* Holotree: update changed file    %q", directpath)
 					anywork.Backlog(DropFile(library, found.Digest, directpath, found, fs.Rewrite()))
 				}
 			}
@@ -302,7 +302,7 @@ func RestoreDirectory(library Library, fs *Root, current map[string]string, stat
 				_, seen := files[name]
 				if !seen {
 					stats.Dirty(true)
-					common.Debug("* Holotree: add missing file       %q", directpath)
+					common.Trace("* Holotree: add missing file       %q", directpath)
 					anywork.Backlog(DropFile(library, found.Digest, directpath, found, fs.Rewrite()))
 				}
 			}

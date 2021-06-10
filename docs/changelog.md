@@ -1,5 +1,10 @@
 # rcc change log
 
+## v9.19.3 (date: 9.6.2021)
+
+- added support for getting list of events out
+- fix: moved holotree changes messages to trace level
+
 ## v9.19.2 (date: 9.6.2021)
 
 - added locking of holotree into environment restoring

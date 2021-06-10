@@ -1,8 +1,10 @@
 package journal
 
 import (
+	"bufio"
 	"encoding/json"
 	"fmt"
+	"io"
 	"os"
 	"regexp"
 	"strings"
@@ -51,4 +53,27 @@ func appendJournal(blob []byte) (err error) {
 	_, err = handle.Write([]byte{'\n'})
 	fail.On(err != nil, "Failed to write event journal %v -> %v", common.EventJournal(), err)
 	return handle.Sync()
+}
+
+func Events() (result []Event, err error) {
+	defer fail.Around(&err)
+	handle, err := os.Open(common.EventJournal())
+	fail.On(err != nil, "Failed to open event journal %v -> %v", common.EventJournal(), err)
+	defer handle.Close()
+	source := bufio.NewReader(handle)
+	fail.On(err != nil, "Failed to read %s.", common.EventJournal())
+	result = make([]Event, 0, 100)
+	for {
+		line, err := source.ReadBytes('\n')
+		if err == io.EOF {
+			return result, nil
+		}
+		fail.On(err != nil, "Failed to read %s.", common.EventJournal())
+		event := Event{}
+		err = json.Unmarshal(line, &event)
+		if err != nil {
+			continue
+		}
+		result = append(result, event)
+	}
 }
