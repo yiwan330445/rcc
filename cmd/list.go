@@ -41,7 +41,7 @@ in human readable form.`,
 		lines := make([]string, 0, len(templates))
 		entries := make(map[string]interface{})
 		if !jsonFlag {
-			common.Log("%-25s  %-25s  %-16s  %5s  %s", "Last used", "Last cloned", "Environment", "Plan?", "Leased duration")
+			common.Log("%-25s  %-25s  %-16s  %5s", "Last used", "Last cloned", "Environment", "Plan?")
 		}
 		for _, template := range templates {
 			details := make(map[string]interface{})
@@ -59,12 +59,10 @@ in human readable form.`,
 			details["name"] = template
 			details["used"] = used
 			details["cloned"] = cloned
-			details["leased"] = conda.WhoLeased(template)
-			details["expires"] = conda.LeaseExpires(template)
 			details["base"] = conda.TemplateFrom(template)
 			details["live"] = conda.LiveFrom(template)
 			planfile, plan := conda.InstallationPlan(template)
-			lines = append(lines, fmt.Sprintf("%-25s  %-25s  %-16s  %5v  %q %s", used, cloned, template, plan, conda.WhoLeased(template), conda.LeaseExpires(template)))
+			lines = append(lines, fmt.Sprintf("%-25s  %-25s  %-16s  %5v", used, cloned, template, plan))
 			if plan {
 				details["plan"] = planfile
 			}

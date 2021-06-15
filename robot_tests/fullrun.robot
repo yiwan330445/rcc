@@ -9,7 +9,7 @@ Using and running template example with shell file
 
   Goal        Show rcc version information.
   Step        build/rcc version --controller citests
-  Must Have   v9.
+  Must Have   v10.
 
   Goal        Show rcc license information.
   Step        build/rcc man license --controller citests

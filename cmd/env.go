@@ -20,6 +20,5 @@ used in task context locally.`,
 func init() {
 
 	rootCmd.AddCommand(envCmd)
-	envCmd.PersistentFlags().StringVar(&common.LeaseContract, "lease", "", "unique lease contract for long living environments")
 	envCmd.PersistentFlags().StringVar(&common.StageFolder, "stage", "", "internal, DO NOT USE (unless you know what you are doing)")
 }

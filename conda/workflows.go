@@ -389,14 +389,6 @@ func NewEnvironment(force bool, configurations ...string) (string, error) {
 
 	common.EnvironmentHash = key
 
-	quickFolder, ok, err := LeaseInterceptor(key)
-	if ok {
-		return quickFolder, nil
-	}
-	if err != nil {
-		return "", err
-	}
-
 	liveFolder := LiveFrom(key)
 	after := make(map[string]string)
 	afterHash, afterErr := DigestFor(liveFolder, after)
@@ -472,9 +464,6 @@ func FindEnvironment(prefix string) []string {
 }
 
 func RemoveEnvironment(label string) error {
-	if IsLeasedEnvironment(label) {
-		return fmt.Errorf("WARNING: %q is leased by %q and wont be deleted!", label, WhoLeased(label))
-	}
 	err := removeClone(LiveFrom(label))
 	if err != nil {
 		return err

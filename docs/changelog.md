@@ -1,5 +1,9 @@
 # rcc change log
 
+## v10.0.0 (date: 15.6.2021)
+
+- removed lease support, this is major breaking change (if someone was using it)
+
 ## v9.20.0 (date: 10.6.2021)
 
 - added `rcc task script` command for running anything inside robot environment

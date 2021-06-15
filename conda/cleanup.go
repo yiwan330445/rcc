@@ -1,7 +1,6 @@
 package conda
 
 import (
-	"fmt"
 	"os"
 	"path/filepath"
 	"time"
@@ -59,9 +58,6 @@ func orphanCleanup(dryrun bool) error {
 }
 
 func spotlessCleanup(dryrun bool) error {
-	if anyLeasedEnvironment() {
-		return fmt.Errorf("Cannot clean everything, since there are some leased environments!")
-	}
 	if dryrun {
 		common.Log("Would be removing:")
 		common.Log("- %v", common.BaseLocation())
@@ -83,15 +79,6 @@ func spotlessCleanup(dryrun bool) error {
 	safeRemove("temp", RobocorpTempRoot())
 	safeRemove("executable", BinMicromamba())
 	return nil
-}
-
-func anyLeasedEnvironment() bool {
-	for _, template := range TemplateList() {
-		if IsLeasedEnvironment(template) {
-			return true
-		}
-	}
-	return false
 }
 
 func cleanupTemp(deadline time.Time, dryrun bool) error {
@@ -155,10 +142,6 @@ func Cleanup(daylimit int, dryrun, orphans, all, miniconda, micromamba bool) err
 			return err
 		}
 		if !all && whenBase.After(deadline) {
-			continue
-		}
-		if IsLeasedEnvironment(template) {
-			common.Log("WARNING: %q is leased by %q and wont be cleaned up!", template, WhoLeased(template))
 			continue
 		}
 		if dryrun {

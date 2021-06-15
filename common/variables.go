@@ -24,11 +24,9 @@ var (
 	NoOutputCapture bool
 	Liveonly        bool
 	Stageonly       bool
-	LeaseEffective  bool
 	StageFolder     string
 	ControllerType  string
 	HolotreeSpace   string
-	LeaseContract   string
 	EnvironmentHash string
 	SemanticTag     string
 	When            int64
@@ -150,8 +148,4 @@ func UserAgent() string {
 
 func ControllerIdentity() string {
 	return strings.ToLower(fmt.Sprintf("rcc.%s", ControllerType))
-}
-
-func IsLeaseRequest() bool {
-	return len(LeaseContract) > 0
 }
