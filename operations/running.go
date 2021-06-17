@@ -154,7 +154,7 @@ func ExecuteSimpleTask(flags *RunFlags, template []string, config robot.Robot, t
 		}
 	}
 	outputDir := config.ArtifactDirectory()
-	common.Debug("DEBUG: about to run command - %v", task)
+	common.Debug("about to run command - %v", task)
 	if common.NoOutputCapture {
 		_, err = shell.New(environment, directory, task...).Execute(interactive)
 	} else {
@@ -216,7 +216,7 @@ func ExecuteTask(flags *RunFlags, template []string, config robot.Robot, todo ro
 	if !flags.NoPipFreeze && !flags.Assistant && !common.Silent && !interactive {
 		PipFreeze(searchPath, directory, outputDir, environment)
 	}
-	common.Debug("DEBUG: about to run command - %v", task)
+	common.Debug("about to run command - %v", task)
 	if common.NoOutputCapture {
 		_, err = shell.New(environment, directory, task...).Execute(interactive)
 	} else {

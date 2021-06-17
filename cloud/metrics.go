@@ -35,7 +35,7 @@ func sendMetric(metricsHost, kind, name, value string) {
 	}
 	timestamp := time.Now().UnixNano()
 	url := fmt.Sprintf(trackingUrl, url.PathEscape(kind), timestamp, url.PathEscape(xviper.TrackingIdentity()), url.PathEscape(name), url.PathEscape(value))
-	common.Debug("DEBUG: Sending metric as %v%v", metricsHost, url)
+	common.Debug("Sending metric as %v%v", metricsHost, url)
 	client.Put(client.NewRequest(url))
 }
 
@@ -44,7 +44,7 @@ func BackgroundMetric(kind, name, value string) {
 	if len(metricsHost) == 0 {
 		return
 	}
-	common.Debug("DEBUG: BackgroundMetric kind:%v name:%v value:%v send:%v", kind, name, value, xviper.CanTrack())
+	common.Debug("BackgroundMetric kind:%v name:%v value:%v send:%v", kind, name, value, xviper.CanTrack())
 	if xviper.CanTrack() {
 		telemetryBarrier.Add(1)
 		go sendMetric(metricsHost, kind, name, value)
@@ -52,7 +52,7 @@ func BackgroundMetric(kind, name, value string) {
 }
 
 func WaitTelemetry() {
-	common.Debug("DEBUG: wait telemetry to complete")
+	common.Debug("wait telemetry to complete")
 	telemetryBarrier.Wait()
-	common.Debug("DEBUG: telemetry sending completed")
+	common.Debug("telemetry sending completed")
 }

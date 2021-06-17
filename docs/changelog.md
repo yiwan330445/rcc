@@ -1,5 +1,13 @@
 # rcc change log
 
+## v10.1.0 (date: 17.6.2021)
+
+- adding pager for `rcc man xxx` documents
+- more trace printing on workflow setup
+- added [D] and [T] markers for debug and trace level log entries
+- when debug and trace log level is on, normal log entries are prefixed with [N]
+- fixed rights problem in file `rcc_plan.log`
+
 ## v10.0.0 (date: 15.6.2021)
 
 - removed lease support, this is major breaking change (if someone was using it)

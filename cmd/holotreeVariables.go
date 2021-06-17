@@ -28,7 +28,7 @@ func holotreeExpandEnvironment(userFiles []string, packfile, environment, worksp
 	pretty.Guard(err == nil, 5, "%s", err)
 
 	condafile := filepath.Join(conda.RobocorpTemp(), htfs.BlueprintHash(holotreeBlueprint))
-	err = os.WriteFile(condafile, holotreeBlueprint, 0o640)
+	err = os.WriteFile(condafile, holotreeBlueprint, 0o644)
 	pretty.Guard(err == nil, 6, "%s", err)
 
 	holozip := ""

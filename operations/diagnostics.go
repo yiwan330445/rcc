@@ -227,7 +227,7 @@ func fileIt(filename string) (io.WriteCloser, error) {
 	if len(filename) == 0 {
 		return os.Stdout, nil
 	}
-	file, err := os.OpenFile(filename, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0o600)
+	file, err := os.OpenFile(filename, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0o644)
 	if err != nil {
 		return nil, err
 	}

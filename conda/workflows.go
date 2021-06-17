@@ -35,13 +35,16 @@ func metaLoad(location string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return string(raw), nil
+	result := string(raw)
+	common.Trace("[Load] Metafile %q content: %s", location, result)
+	return result, nil
 }
 
 func metaSave(location, data string) error {
 	if common.Stageonly {
 		return nil
 	}
+	common.Trace("[Save] Metafile %q content: %s", location, data)
 	return ioutil.WriteFile(metafile(location), []byte(data), 0644)
 }
 
@@ -56,10 +59,12 @@ func LastUsed(location string) (time.Time, error) {
 func IsPristine(folder string) bool {
 	digest, err := DigestFor(folder, nil)
 	if err != nil {
+		common.Trace("Calculating digest for folder %q failed, reason %v.", folder, err)
 		return false
 	}
 	meta, err := metaLoad(folder)
 	if err != nil {
+		common.Trace("Loading metafile for folder %q failed, reason %v.", folder, err)
 		return false
 	}
 	return Hexdigest(digest) == meta
@@ -172,7 +177,7 @@ func newLive(yaml, condaYaml, requirementsText, key string, force, freshInstall 
 func newLiveInternal(yaml, condaYaml, requirementsText, key string, force, freshInstall bool, postInstall []string) (bool, bool) {
 	targetFolder := LiveFrom(key)
 	planfile := fmt.Sprintf("%s.plan", targetFolder)
-	planWriter, err := os.OpenFile(planfile, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0o600)
+	planWriter, err := os.OpenFile(planfile, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0o644)
 	if err != nil {
 		return false, false
 	}
@@ -407,9 +412,12 @@ func NewEnvironment(force bool, configurations ...string) (string, error) {
 	} else {
 		templateFolder := TemplateFrom(key)
 		if IsPristine(templateFolder) {
+			common.Trace("Template is pristine: %q", templateFolder)
 			before := make(map[string]string)
 			beforeHash, beforeErr := DigestFor(templateFolder, before)
 			DiagnoseDirty(templateFolder, liveFolder, beforeHash, afterHash, beforeErr, afterErr, before, after, false)
+		} else {
+			common.Log("WARNING! Template is NOT pristine: %q", templateFolder)
 		}
 		common.Log("####  Progress: 2/6  [try clone existing same template to live, key: %v]", key)
 		common.Timeline("2/6 base to live.")
@@ -473,6 +481,7 @@ func RemoveEnvironment(label string) error {
 
 func removeClone(location string) error {
 	if !pathlib.IsDir(location) {
+		common.Trace("Location %q is not directory, not removed.", location)
 		return nil
 	}
 	randomLocation := fmt.Sprintf("%s.%08X", location, rand.Uint32())
@@ -482,19 +491,26 @@ func removeClone(location string) error {
 		common.Log("Rename %q -> %q failed as: %v!", location, randomLocation, err)
 		return err
 	}
+	common.Trace("Rename %q -> %q was successful!", location, randomLocation)
 	err = os.RemoveAll(randomLocation)
 	if err != nil {
 		common.Log("Removal of %q failed as: %v!", randomLocation, err)
 		return err
 	}
+	common.Trace("Removal of %q was successful!", randomLocation)
 	meta := metafile(location)
 	if pathlib.IsFile(meta) {
-		return os.Remove(meta)
+		err = os.Remove(meta)
+		common.Trace("Removal of %q result was %v.", meta, err)
+		return err
 	}
+	common.Trace("Metafile %q was not file.", meta)
 	return nil
 }
 
 func CloneFromTo(source, target string, copier pathlib.Copier) (bool, error) {
+	common.Trace("Start CloneFromTo: %q -> %q", source, target)
+	defer common.Trace("Done CloneFromTo: %q -> %q", source, target)
 	err := removeClone(target)
 	if err != nil {
 		return false, err
@@ -509,11 +525,13 @@ func CloneFromTo(source, target string, copier pathlib.Copier) (bool, error) {
 			if err != nil {
 				return false, fmt.Errorf("Source %q is not pristine! And could not remove: %v", source, err)
 			}
+			common.Trace("Source %q dirty. And it was removed.", source)
 		}
 		return false, nil
 	}
 	expected, err := metaLoad(source)
 	if err != nil {
+		common.Trace("Metafile load %q failed with %v.", source, err)
 		return false, nil
 	}
 	success := cloneFolder(source, target, 100, copier)
@@ -522,10 +540,17 @@ func CloneFromTo(source, target string, copier pathlib.Copier) (bool, error) {
 		if err != nil {
 			return false, fmt.Errorf("Cloning %q to %q failed! And cleanup failed: %v", source, target, err)
 		}
+		common.Trace("Cloing %q -> %q failed.", source, target)
 		return false, nil
 	}
 	digest, err := DigestFor(target, nil)
 	if err != nil || Hexdigest(digest) != expected {
+		common.Trace("Digest %q failed, %s vs %s or error %v.", target, Hexdigest(digest), expected, err)
+		origin := make(map[string]string)
+		originHash, originErr := DigestFor(source, origin)
+		created := make(map[string]string)
+		createdHash, createdErr := DigestFor(target, created)
+		DiagnoseDirty(source, target, originHash, createdHash, originErr, createdErr, origin, created, false)
 		err = removeClone(target)
 		if err != nil {
 			return false, fmt.Errorf("Target %q does not match source %q! And cleanup failed: %v!", target, source, err)
@@ -534,6 +559,7 @@ func CloneFromTo(source, target string, copier pathlib.Copier) (bool, error) {
 	}
 	metaSave(target, expected)
 	touchMetafile(source)
+	common.Trace("Success CloneFromTo: %q -> %q", source, target)
 	return true, nil
 }
 

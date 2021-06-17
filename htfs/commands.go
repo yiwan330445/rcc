@@ -95,7 +95,7 @@ func RecordEnvironment(tree MutableLibrary, blueprint []byte, force bool) (err e
 
 	if force || !exists {
 		identityfile := filepath.Join(tree.Stage(), "identity.yaml")
-		err = ioutil.WriteFile(identityfile, blueprint, 0o640)
+		err = ioutil.WriteFile(identityfile, blueprint, 0o644)
 		fail.On(err != nil, "Failed to save %q, reason %w.", identityfile, err)
 		label, err := conda.NewEnvironment(force, identityfile)
 		fail.On(err != nil, "Failed to create environment, reason %w.", err)

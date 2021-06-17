@@ -52,3 +52,23 @@ rcc task script --silent -- pip list
 # start interactive ipython session
 rcc task script --interactive -- ipython
 ```
+
+## Where can I find updates for rcc?
+
+https://downloads.robocorp.com/rcc/releases/index.html
+
+That is rcc download site with two categories of:
+- tested versions (these are ones we ship with our tools)
+- latest 20 versions (which are not battle tested yet, but are bleeding edge)
+
+## What has changed on rcc?
+
+### See changelog from git repo ...
+
+https://github.com/robocorp/rcc/blob/master/docs/changelog.md
+
+### See that from your version of rcc directly ...
+
+```sh
+rcc docs changelog
+```

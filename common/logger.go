@@ -64,20 +64,24 @@ func Error(context string, err error) {
 
 func Log(format string, details ...interface{}) {
 	if !Silent {
-		printout(os.Stderr, fmt.Sprintf(format, details...))
+		prefix := ""
+		if DebugFlag || TraceFlag {
+			prefix = "[N] "
+		}
+		printout(os.Stderr, fmt.Sprintf(prefix+format, details...))
 	}
 }
 
 func Debug(format string, details ...interface{}) error {
 	if DebugFlag {
-		printout(os.Stderr, fmt.Sprintf(format, details...))
+		printout(os.Stderr, fmt.Sprintf("[D] "+format, details...))
 	}
 	return nil
 }
 
 func Trace(format string, details ...interface{}) error {
 	if TraceFlag {
-		printout(os.Stderr, fmt.Sprintf(format, details...))
+		printout(os.Stderr, fmt.Sprintf("[T] "+format, details...))
 	}
 	return nil
 }

@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"github.com/robocorp/rcc/blobs"
-	"github.com/robocorp/rcc/common"
 	"github.com/robocorp/rcc/pretty"
 
 	"github.com/spf13/cobra"
@@ -18,7 +17,7 @@ var recipesCmd = &cobra.Command{
 		if err != nil {
 			pretty.Exit(1, "Cannot show recipes.md, reason: %v", err)
 		}
-		common.Stdout("\n%s\n", content)
+		pretty.Page(content)
 	},
 }
 

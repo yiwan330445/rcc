@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"github.com/robocorp/rcc/blobs"
-	"github.com/robocorp/rcc/common"
 	"github.com/robocorp/rcc/pretty"
 
 	"github.com/spf13/cobra"
@@ -17,7 +16,7 @@ var licenseCmd = &cobra.Command{
 		if err != nil {
 			pretty.Exit(1, "Cannot show LICENSE, reason: %v", err)
 		}
-		common.Stdout("%s\n", content)
+		pretty.Page(content)
 	},
 }
 

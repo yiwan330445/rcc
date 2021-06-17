@@ -22,6 +22,12 @@ var (
 	Reset       string
 	Sparkles    string
 	Rocket      string
+	Home        string
+	Clear       string
+	Bold        string
+	Faint       string
+	Italic      string
+	Underline   string
 )
 
 func Setup() {
@@ -42,6 +48,12 @@ func Setup() {
 		Cyan = csi("96m")
 		Yellow = csi("93m")
 		Reset = csi("0m")
+		Home = csi("1;1H")
+		Clear = csi("0J")
+		Bold = csi("1m")
+		Faint = csi("2m")
+		Italic = csi("3m")
+		Underline = csi("4m")
 	}
 	if Iconic && !Colorless {
 		Sparkles = "\u2728 "
