@@ -1,5 +1,9 @@
 # rcc change log
 
+## v10.1.1 (date: 18.6.2021)
+
+- taking micromamba 0.14.0 into use
+
 ## v10.1.0 (date: 17.6.2021)
 
 - adding pager for `rcc man xxx` documents
