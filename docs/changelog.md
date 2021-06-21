@@ -1,5 +1,9 @@
 # rcc change log
 
+## v10.2.1 (date: 21.6.2021)
+
+- showing dependencies listing from environment before runs
+
 ## v10.2.0 (date: 21.6.2021)
 
 - adding golden-ee.yaml document into holotree space (listing of components)

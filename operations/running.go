@@ -29,25 +29,29 @@ type RunFlags struct {
 	NoPipFreeze     bool
 }
 
-func PipFreeze(searchPath pathlib.PathParts, directory, outputDir string, environment []string) bool {
-	pip, ok := searchPath.Which("pip", conda.FileExtensions)
-	if !ok {
-		return false
+func ExecutionEnvironmentListing(label string, searchPath pathlib.PathParts, directory, outputDir string, environment []string) bool {
+	common.Timeline("execution environment listing")
+	defer common.Log("--")
+	err := conda.DumpEnvironmentDependencies(label)
+	if err != nil {
+		pip, ok := searchPath.Which("pip", conda.FileExtensions)
+		if !ok {
+			return false
+		}
+		fullPip, err := filepath.EvalSymlinks(pip)
+		if err != nil {
+			return false
+		}
+		common.Log("Installed pip packages:")
+		if common.NoOutputCapture {
+			_, err = shell.New(environment, directory, fullPip, "freeze", "--all").Execute(false)
+		} else {
+			_, err = shell.New(environment, directory, fullPip, "freeze", "--all").Tee(outputDir, false)
+		}
 	}
-	fullPip, err := filepath.EvalSymlinks(pip)
 	if err != nil {
 		return false
 	}
-	common.Log("Installed pip packages:")
-	if common.NoOutputCapture {
-		_, err = shell.New(environment, directory, fullPip, "freeze", "--all").Execute(false)
-	} else {
-		_, err = shell.New(environment, directory, fullPip, "freeze", "--all").Tee(outputDir, false)
-	}
-	if err != nil {
-		return false
-	}
-	common.Log("--")
 	return true
 }
 
@@ -214,7 +218,7 @@ func ExecuteTask(flags *RunFlags, template []string, config robot.Robot, todo ro
 	beforeHash, beforeErr := conda.DigestFor(label, before)
 	outputDir := config.ArtifactDirectory()
 	if !flags.NoPipFreeze && !flags.Assistant && !common.Silent && !interactive {
-		PipFreeze(searchPath, directory, outputDir, environment)
+		ExecutionEnvironmentListing(label, searchPath, directory, outputDir, environment)
 	}
 	common.Debug("about to run command - %v", task)
 	if common.NoOutputCapture {

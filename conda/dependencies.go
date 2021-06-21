@@ -2,10 +2,12 @@ package conda
 
 import (
 	"encoding/json"
+	"fmt"
 	"os"
 	"path/filepath"
 	"sort"
 	"strings"
+	"text/tabwriter"
 
 	"github.com/robocorp/rcc/common"
 	"github.com/robocorp/rcc/fail"
@@ -58,6 +60,10 @@ func fillDependencies(context, targetFolder string, seen map[string]string, coll
 	return collector, nil
 }
 
+func goldenMasterFilename(targetFolder string) string {
+	return filepath.Join(targetFolder, "golden-ee.yaml")
+}
+
 func goldenMaster(targetFolder string, pipUsed bool) (err error) {
 	defer fail.Around(&err)
 
@@ -74,7 +80,36 @@ func goldenMaster(targetFolder string, pipUsed bool) (err error) {
 	})
 	body, err := yaml.Marshal(collector)
 	fail.On(err != nil, "Failed to make yaml, reason: %v", err)
-	goldenfile := filepath.Join(targetFolder, "golden-ee.yaml")
+	goldenfile := goldenMasterFilename(targetFolder)
 	common.Debug("%sGolden EE file at: %v%s", pretty.Yellow, goldenfile, pretty.Reset)
 	return os.WriteFile(goldenfile, body, 0644)
+}
+
+func LoadWantedDependencies(filename string) (_ dependencies, err error) {
+	defer fail.Around(&err)
+
+	body, err := os.ReadFile(filename)
+	fail.On(err != nil, "Failed to read dependencies from %q, reason: %v.", filename, err)
+	result := make(dependencies, 0, 100)
+	err = yaml.Unmarshal(body, &result)
+	fail.On(err != nil, "Failed to parse dependencies from %q, reason: %v.", filename, err)
+	return result, nil
+}
+
+func DumpEnvironmentDependencies(targetFolder string) (err error) {
+	defer fail.Around(&err)
+
+	filename := goldenMasterFilename(targetFolder)
+	dependencyList, err := LoadWantedDependencies(filename)
+	fail.On(err != nil, "%v", err)
+
+	tabbed := tabwriter.NewWriter(os.Stderr, 2, 4, 2, ' ', 0)
+	tabbed.Write([]byte("No.\tPackage\tVersion\tOrigin\n"))
+	tabbed.Write([]byte("---\t-------\t-------\t------\n"))
+	for at, entry := range dependencyList {
+		data := fmt.Sprintf("%3d\t%s\t%s\t%s\n", at+1, entry.Name, entry.Version, entry.Origin)
+		tabbed.Write([]byte(data))
+	}
+	tabbed.Flush()
+	return nil
 }
