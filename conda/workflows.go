@@ -218,7 +218,7 @@ func newLiveInternal(yaml, condaYaml, requirementsText, key string, force, fresh
 		return false, true
 	}
 	fmt.Fprintf(planWriter, "\n---  pip plan @%ss  ---\n\n", stopwatch)
-	pipCache, wheelCache := common.PipCache(), common.WheelCache()
+	pipUsed, pipCache, wheelCache := false, common.PipCache(), common.WheelCache()
 	size, ok := pathlib.Size(requirementsText)
 	if !ok || size == 0 {
 		common.Log("####  Progress: 4/6  [pip install phase skipped -- no pip dependencies]")
@@ -227,7 +227,7 @@ func newLiveInternal(yaml, condaYaml, requirementsText, key string, force, fresh
 		common.Log("####  Progress: 4/6  [pip install phase]")
 		common.Timeline("4/6 pip install start.")
 		common.Debug("Updating new environment at %v with pip requirements from %v (size: %v)", targetFolder, requirementsText, size)
-		pipCommand := common.NewCommander("pip", "install", "--no-color", "--disable-pip-version-check", "--prefer-binary", "--cache-dir", pipCache, "--find-links", wheelCache, "--requirement", requirementsText)
+		pipCommand := common.NewCommander("pip", "install", "--isolated", "--no-color", "--disable-pip-version-check", "--prefer-binary", "--cache-dir", pipCache, "--find-links", wheelCache, "--requirement", requirementsText)
 		pipCommand.Option("--index-url", settings.Global.PypiURL())
 		pipCommand.Option("--trusted-host", settings.Global.PypiTrustedHost())
 		pipCommand.ConditionalFlag(common.VerboseEnvironmentBuilding(), "--verbose")
@@ -239,6 +239,7 @@ func newLiveInternal(yaml, condaYaml, requirementsText, key string, force, fresh
 			return false, false
 		}
 		common.Timeline("pip done.")
+		pipUsed = true
 	}
 	fmt.Fprintf(planWriter, "\n---  post install plan @%ss  ---\n\n", stopwatch)
 	if postInstall != nil && len(postInstall) > 0 {
@@ -268,6 +269,10 @@ func newLiveInternal(yaml, condaYaml, requirementsText, key string, force, fresh
 	}
 	for _, line := range LoadActivationEnvironment(targetFolder) {
 		fmt.Fprintf(planWriter, "%s\n", line)
+	}
+	err = goldenMaster(targetFolder, pipUsed)
+	if err != nil {
+		common.Log("%sGolden EE failure: %v%s", pretty.Yellow, err, pretty.Reset)
 	}
 	fmt.Fprintf(planWriter, "\n---  installation plan complete @%ss  ---\n\n", stopwatch)
 	planWriter.Sync()

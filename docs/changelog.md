@@ -1,5 +1,9 @@
 # rcc change log
 
+## v10.2.0 (date: 21.6.2021)
+
+- adding golden-ee.yaml document into holotree space (listing of components)
+
 ## v10.1.1 (date: 18.6.2021)
 
 - taking micromamba 0.14.0 into use
