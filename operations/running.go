@@ -29,10 +29,11 @@ type RunFlags struct {
 	NoPipFreeze     bool
 }
 
-func ExecutionEnvironmentListing(label string, searchPath pathlib.PathParts, directory, outputDir string, environment []string) bool {
+func ExecutionEnvironmentListing(wantedfile, label string, searchPath pathlib.PathParts, directory, outputDir string, environment []string) bool {
 	common.Timeline("execution environment listing")
 	defer common.Log("--")
-	err := conda.DumpEnvironmentDependencies(label)
+	goldenfile := conda.GoldenMasterFilename(label)
+	err := conda.SideBySideViewOfDependencies(goldenfile, wantedfile)
 	if err != nil {
 		pip, ok := searchPath.Which("pip", conda.FileExtensions)
 		if !ok {
@@ -57,7 +58,7 @@ func ExecutionEnvironmentListing(label string, searchPath pathlib.PathParts, dir
 
 func LoadAnyTaskEnvironment(packfile string, force bool) (bool, robot.Robot, robot.Task, string) {
 	FixRobot(packfile)
-	config, err := robot.LoadRobotYaml(packfile, true)
+	config, err := robot.LoadRobotYaml(packfile, false)
 	if err != nil {
 		pretty.Exit(1, "Error: %v", err)
 	}
@@ -218,7 +219,8 @@ func ExecuteTask(flags *RunFlags, template []string, config robot.Robot, todo ro
 	beforeHash, beforeErr := conda.DigestFor(label, before)
 	outputDir := config.ArtifactDirectory()
 	if !flags.NoPipFreeze && !flags.Assistant && !common.Silent && !interactive {
-		ExecutionEnvironmentListing(label, searchPath, directory, outputDir, environment)
+		wantedfile, _ := config.DependenciesFile()
+		ExecutionEnvironmentListing(wantedfile, label, searchPath, directory, outputDir, environment)
 	}
 	common.Debug("about to run command - %v", task)
 	if common.NoOutputCapture {

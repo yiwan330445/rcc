@@ -31,6 +31,7 @@ type Robot interface {
 	Holozip() string
 	Validate() (bool, error)
 	Diagnostics(*common.DiagnosticStatus, bool)
+	DependenciesFile() (string, bool)
 
 	WorkingDirectory() string
 	ArtifactDirectory() string
@@ -201,6 +202,10 @@ func (it *robot) Validate() (bool, error) {
 		}
 	}
 	return true, nil
+}
+func (it *robot) DependenciesFile() (string, bool) {
+	filename := filepath.Join(it.Root, "dependencies.yaml")
+	return filename, pathlib.IsFile(filename)
 }
 
 func (it *robot) RootDirectory() string {

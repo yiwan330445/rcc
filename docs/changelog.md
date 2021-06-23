@@ -1,5 +1,12 @@
 # rcc change log
 
+## v10.2.2 (date: 23.6.2021)
+
+- adding `rcc robot dependencies` command for viewing desired execution
+  environment dependencies
+- same view is now also shown in run context replacing `pip freeze` if
+  golden-ee.yaml exists in execution environment
+
 ## v10.2.1 (date: 21.6.2021)
 
 - showing dependencies listing from environment before runs

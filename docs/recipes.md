@@ -1,5 +1,47 @@
 # Tips, tricks, and recipies
 
+## How to see dependency changes?
+
+Since version 10.2.2, rcc can show dependency listings using
+`rcc robot dependencies` command. Listing always have two sided, "Wanted"
+which is content from dependencies.yaml file, and "Available" which is from
+actual environment command was run against. Listing is also shown during
+robot runs.
+
+### Why is this important?
+
+- as time passes and world moves forward, new version of used components
+  (dependencies) are released, and this may cause "configuration drift" on
+  your robots, and without tooling in place, this drift might go unnoticed
+- if your dependencies are not fixed, there will be configuration drift and
+  your robot may change behaviour (become buggy) when dependency changes and
+  goes against implemented robot
+- even if you fix your dependencies in `conda.yaml`, some of those components
+  or their components might have floating dependencies and they change your
+  robots behaviour
+- if your execution environment is different from your development environment
+  then there might be different versions available for different operating
+  systems
+- if dependency resolution algorithm changes (pip for example) then you might
+  get different environment with same `conda.yaml`
+- when you upgrade one of your dependencies (for example, rpaframework) to new
+  version, dependency resolution will now change, and now listing helps you
+  understand what has changed and how you need to change your robot
+  implementation because of that
+
+### Example of dependencies listing from holotree environment
+
+```sh
+# first list dependencies from execution environment
+rcc robot dependencies --space user
+
+# if everything looks good, copy it as wanted dependencies.yaml
+rcc robot dependencies --space user --copy
+
+# and verify that everything looks `Same`
+rcc robot dependencies --space user
+```
+
 ## How pass arguments to robot from CLI?
 
 Since version 9.15.0, rcc supports passing arguments from CLI to underlying
