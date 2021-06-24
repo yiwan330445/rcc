@@ -32,6 +32,7 @@ type Robot interface {
 	Validate() (bool, error)
 	Diagnostics(*common.DiagnosticStatus, bool)
 	DependenciesFile() (string, bool)
+	IdealCondaYaml() (string, bool)
 
 	WorkingDirectory() string
 	ArtifactDirectory() string
@@ -173,7 +174,15 @@ func (it *robot) Diagnostics(target *common.DiagnosticStatus, production bool) {
 	target.Details["robot-artifact-directory"] = it.ArtifactDirectory()
 	target.Details["robot-paths"] = strings.Join(it.Paths(), ", ")
 	target.Details["robot-python-paths"] = strings.Join(it.PythonPaths(), ", ")
-
+	dependencies, ok := it.DependenciesFile()
+	if !ok {
+		dependencies = "missing"
+	} else {
+		if it.VerifyCondaDependencies() {
+			diagnose.Ok("Dependencies in conda.yaml and dependencies.yaml match.")
+		}
+	}
+	target.Details["robot-dependencies-yaml"] = dependencies
 }
 
 func (it *robot) Validate() (bool, error) {
@@ -203,9 +212,54 @@ func (it *robot) Validate() (bool, error) {
 	}
 	return true, nil
 }
+
 func (it *robot) DependenciesFile() (string, bool) {
 	filename := filepath.Join(it.Root, "dependencies.yaml")
 	return filename, pathlib.IsFile(filename)
+}
+
+func (it *robot) IdealCondaYaml() (string, bool) {
+	wanted, ok := it.DependenciesFile()
+	if !ok {
+		return "", false
+	}
+	dependencies := conda.LoadWantedDependencies(wanted)
+	if len(dependencies) == 0 {
+		return "", false
+	}
+	condaEnv, err := conda.ReadCondaYaml(it.CondaConfigFile())
+	if err != nil {
+		return "", false
+	}
+	ideal, _ := condaEnv.FromDependencies(dependencies)
+	body, err := ideal.AsYaml()
+	if err != nil {
+		return "", false
+	}
+	return body, true
+}
+
+func (it *robot) VerifyCondaDependencies() bool {
+	wanted, ok := it.DependenciesFile()
+	if !ok {
+		return true
+	}
+	dependencies := conda.LoadWantedDependencies(wanted)
+	if len(dependencies) == 0 {
+		return true
+	}
+	condaEnv, err := conda.ReadCondaYaml(it.CondaConfigFile())
+	if err != nil {
+		return true
+	}
+	ideal, ok := condaEnv.FromDependencies(dependencies)
+	if !ok {
+		body, err := ideal.AsYaml()
+		if err == nil {
+			fmt.Println("IDEAL:", body)
+		}
+	}
+	return ok
 }
 
 func (it *robot) RootDirectory() string {

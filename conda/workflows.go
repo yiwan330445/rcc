@@ -406,14 +406,18 @@ func NewEnvironment(force bool, configurations ...string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	if reusable {
+	if !force && reusable {
 		hits += 1
 		xviper.Set("stats.env.hit", hits)
 		return liveFolder, nil
 	}
-	if common.Stageonly {
-		common.Log("####  Progress: 2/6  [skipped -- stage only]")
-		common.Timeline("2/6 stage only.")
+	if force || common.Stageonly {
+		if force {
+			common.Log("####  Progress: 2/6  [skipped -- forced]")
+		} else {
+			common.Log("####  Progress: 2/6  [skipped -- stage only]")
+			common.Timeline("2/6 stage only.")
+		}
 	} else {
 		templateFolder := TemplateFrom(key)
 		if IsPristine(templateFolder) {

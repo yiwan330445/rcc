@@ -134,6 +134,52 @@ func SummonEnvironment(filename string) *Environment {
 	}
 }
 
+func (it *Environment) FromDependencies(fixed dependencies) (*Environment, bool) {
+	result := &Environment{
+		Name:     it.Name,
+		Prefix:   it.Prefix,
+		Channels: it.Channels,
+		Conda:    []*Dependency{},
+		Pip:      []*Dependency{},
+	}
+	same := true
+	for _, dependency := range it.Conda {
+		found, ok := fixed.Lookup(dependency.Name, false)
+		if !ok {
+			result.Conda = append(result.Conda, dependency)
+			same = false
+			continue
+		}
+		if dependency.Qualifier != "=" || dependency.Versions != found.Version {
+			same = false
+		}
+		result.Conda = append(result.Conda, &Dependency{
+			Original:  fmt.Sprintf("%s=%s", dependency.Name, found.Version),
+			Name:      dependency.Name,
+			Qualifier: "=",
+			Versions:  found.Version,
+		})
+	}
+	for _, dependency := range it.Pip {
+		found, ok := fixed.Lookup(dependency.Name, true)
+		if !ok {
+			result.Conda = append(result.Conda, dependency)
+			same = false
+			continue
+		}
+		if dependency.Qualifier != "==" || dependency.Versions != found.Version {
+			same = false
+		}
+		result.Pip = append(result.Pip, &Dependency{
+			Original:  fmt.Sprintf("%s==%s", dependency.Name, found.Version),
+			Name:      dependency.Name,
+			Qualifier: "==",
+			Versions:  found.Version,
+		})
+	}
+	return result, same
+}
+
 func (it *Environment) pipPromote() error {
 	removed := make([]int, 0, len(it.Pip))
 

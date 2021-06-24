@@ -33,6 +33,12 @@ func doCopyDependencies(config robot.Robot, label string) {
 	pretty.Guard(err == nil, 2, "Copy %q -> %q failed, reason: %v", source, target, err)
 }
 
+func doShowIdeal(config robot.Robot, label string) {
+	ideal, ok := config.IdealCondaYaml()
+	pretty.Guard(ok, 4, "Could not determine ideal conda.yaml. Sorry.")
+	common.Log("Ideal conda.yaml based on 'dependencies.yaml' would be:\n%s", ideal)
+}
+
 var robotDependenciesCmd = &cobra.Command{
 	Use:     "dependencies",
 	Short:   "View wanted vs. available dependencies of robot execution environment.",
@@ -50,6 +56,7 @@ var robotDependenciesCmd = &cobra.Command{
 		}
 		common.Log("--")
 		doShowDependencies(config, label)
+		doShowIdeal(config, label)
 		pretty.Ok()
 	},
 }

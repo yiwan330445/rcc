@@ -39,6 +39,21 @@ func (it dependencies) sorted() dependencies {
 	return it
 }
 
+func (it dependencies) Lookup(name string, pypi bool) (*dependency, bool) {
+	for _, entry := range it {
+		if pypi && entry.Origin != "pypi" {
+			continue
+		}
+		if !pypi && entry.Origin == "pypi" {
+			continue
+		}
+		if entry.Name == name {
+			return entry, true
+		}
+	}
+	return nil, false
+}
+
 func parseDependencies(origin string, output []byte) (dependencies, error) {
 	result := make(dependencies, 0, 100)
 	err := json.Unmarshal(output, &result)

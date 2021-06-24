@@ -1,5 +1,11 @@
 # rcc change log
 
+## v10.2.3 (date: 24.6.2021)
+
+- added `dependencies.yaml` into robot diagnostics
+- show ideal `conda.yaml` that matches `dependencies.yaml`
+- fixed `--force` install on base/live environments
+
 ## v10.2.2 (date: 23.6.2021)
 
 - adding `rcc robot dependencies` command for viewing desired execution
