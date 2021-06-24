@@ -148,10 +148,8 @@ func (it *Environment) FromDependencies(fixed dependencies) (*Environment, bool)
 		if !ok {
 			result.Conda = append(result.Conda, dependency)
 			same = false
+			common.Debug("Could not fix version for dependency %q from conda.", dependency.Name)
 			continue
-		}
-		if dependency.Qualifier != "=" || dependency.Versions != found.Version {
-			same = false
 		}
 		result.Conda = append(result.Conda, &Dependency{
 			Original:  fmt.Sprintf("%s=%s", dependency.Name, found.Version),
@@ -163,12 +161,10 @@ func (it *Environment) FromDependencies(fixed dependencies) (*Environment, bool)
 	for _, dependency := range it.Pip {
 		found, ok := fixed.Lookup(dependency.Name, true)
 		if !ok {
-			result.Conda = append(result.Conda, dependency)
+			result.Conda = append(result.Pip, dependency)
 			same = false
+			common.Debug("Could not fix version for dependency %q from pypi.", dependency.Name)
 			continue
-		}
-		if dependency.Qualifier != "==" || dependency.Versions != found.Version {
-			same = false
 		}
 		result.Pip = append(result.Pip, &Dependency{
 			Original:  fmt.Sprintf("%s==%s", dependency.Name, found.Version),

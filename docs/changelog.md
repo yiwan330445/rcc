@@ -1,5 +1,10 @@
 # rcc change log
 
+## v10.2.4 (date: 24.6.2021)
+
+- added `--bind` option to copy exact dependencies from `dependencies.yaml`
+  into `conda.yaml`, so that `conda.yaml` represents fixed dependencies
+
 ## v10.2.3 (date: 24.6.2021)
 
 - added `dependencies.yaml` into robot diagnostics

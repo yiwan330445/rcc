@@ -231,7 +231,10 @@ func (it *robot) IdealCondaYaml() (string, bool) {
 	if err != nil {
 		return "", false
 	}
-	ideal, _ := condaEnv.FromDependencies(dependencies)
+	ideal, ok := condaEnv.FromDependencies(dependencies)
+	if !ok {
+		return "", false
+	}
 	body, err := ideal.AsYaml()
 	if err != nil {
 		return "", false

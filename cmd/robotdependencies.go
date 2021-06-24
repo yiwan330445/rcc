@@ -1,6 +1,8 @@
 package cmd
 
 import (
+	"os"
+
 	"github.com/robocorp/rcc/common"
 	"github.com/robocorp/rcc/conda"
 	"github.com/robocorp/rcc/operations"
@@ -13,6 +15,7 @@ import (
 
 var (
 	copyDependenciesFlag bool
+	bindDependenciesFlag bool
 )
 
 func doShowDependencies(config robot.Robot, label string) {
@@ -33,9 +36,18 @@ func doCopyDependencies(config robot.Robot, label string) {
 	pretty.Guard(err == nil, 2, "Copy %q -> %q failed, reason: %v", source, target, err)
 }
 
+func doBindDependencies(config robot.Robot, label string) {
+	ideal, ok := config.IdealCondaYaml()
+	pretty.Guard(ok, 4, "Could not determine ideal conda.yaml for binding. Sorry.")
+	filename := config.CondaConfigFile()
+	err := os.WriteFile(filename, []byte(ideal), 0644)
+	pretty.Guard(err == nil, 5, "Could not write file %q, reason: %v", filename, err)
+	common.Log("%sOverwrote %q with ideal conda.yaml content.%s", pretty.Yellow, filename, pretty.Reset)
+}
+
 func doShowIdeal(config robot.Robot, label string) {
 	ideal, ok := config.IdealCondaYaml()
-	pretty.Guard(ok, 4, "Could not determine ideal conda.yaml. Sorry.")
+	pretty.Guard(ok, 6, "Could not determine ideal conda.yaml. Sorry.")
 	common.Log("Ideal conda.yaml based on 'dependencies.yaml' would be:\n%s", ideal)
 }
 
@@ -56,6 +68,9 @@ var robotDependenciesCmd = &cobra.Command{
 		}
 		common.Log("--")
 		doShowDependencies(config, label)
+		if bindDependenciesFlag {
+			doBindDependencies(config, label)
+		}
 		doShowIdeal(config, label)
 		pretty.Ok()
 	},
@@ -64,6 +79,7 @@ var robotDependenciesCmd = &cobra.Command{
 func init() {
 	robotCmd.AddCommand(robotDependenciesCmd)
 	robotDependenciesCmd.Flags().BoolVarP(&copyDependenciesFlag, "copy", "c", false, "Copy golden-ee.yaml from environment as wanted dependencies.yaml, overwriting previous if exists.")
+	robotDependenciesCmd.Flags().BoolVarP(&bindDependenciesFlag, "bind", "b", false, "Bind (overwrite) conda.yaml dependencies from 'dependencies.yaml'.")
 	robotDependenciesCmd.Flags().BoolVarP(&forceFlag, "force", "f", false, "Forced environment update.")
 	robotDependenciesCmd.Flags().StringVarP(&robotFile, "robot", "r", "robot.yaml", "Full path to the 'robot.yaml' configuration file.")
 	robotDependenciesCmd.Flags().StringVarP(&common.HolotreeSpace, "space", "s", "", "Space to use for execution environment dependencies.")

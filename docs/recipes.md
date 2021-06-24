@@ -40,6 +40,10 @@ rcc robot dependencies --space user --copy
 
 # and verify that everything looks `Same`
 rcc robot dependencies --space user
+
+# you can even overwrite conda.yaml using exact dependencies found from that
+# dependencies.yaml, using '--bind' option
+rcc robot dependencies --space user --bind
 ```
 
 ## How pass arguments to robot from CLI?
