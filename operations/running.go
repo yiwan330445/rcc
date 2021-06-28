@@ -29,6 +29,25 @@ type RunFlags struct {
 	NoPipFreeze     bool
 }
 
+func FreezeEnvironmentListing(label string, config robot.Robot) {
+	goldenfile := conda.GoldenMasterFilename(label)
+	listing := conda.LoadWantedDependencies(goldenfile)
+	if len(listing) == 0 {
+		common.Log("No dependencies found at %q", goldenfile)
+		return
+	}
+	env, err := conda.ReadCondaYaml(config.CondaConfigFile())
+	if err != nil {
+		common.Log("Could not read %q, reason: %v", config.CondaConfigFile(), err)
+		return
+	}
+	frozen := env.FreezeDependencies(listing)
+	err = frozen.SaveAs(config.FreezeFilename())
+	if err != nil {
+		common.Log("Could not save %q, reason: %v", config.FreezeFilename(), err)
+	}
+}
+
 func ExecutionEnvironmentListing(wantedfile, label string, searchPath pathlib.PathParts, directory, outputDir string, environment []string) bool {
 	common.Timeline("execution environment listing")
 	defer common.Log("--")
@@ -222,6 +241,7 @@ func ExecuteTask(flags *RunFlags, template []string, config robot.Robot, todo ro
 		wantedfile, _ := config.DependenciesFile()
 		ExecutionEnvironmentListing(wantedfile, label, searchPath, directory, outputDir, environment)
 	}
+	FreezeEnvironmentListing(label, config)
 	common.Debug("about to run command - %v", task)
 	if common.NoOutputCapture {
 		_, err = shell.New(environment, directory, task...).Execute(interactive)

@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"runtime"
 	"sort"
 	"strings"
 
@@ -36,6 +37,7 @@ type Robot interface {
 
 	WorkingDirectory() string
 	ArtifactDirectory() string
+	FreezeFilename() string
 	Paths() pathlib.PathParts
 	PythonPaths() pathlib.PathParts
 	SearchPath(location string) pathlib.PathParts
@@ -349,6 +351,10 @@ func (it *robot) CondaHash() string {
 
 func (it *robot) WorkingDirectory() string {
 	return it.Root
+}
+
+func (it *robot) FreezeFilename() string {
+	return filepath.Join(it.ArtifactDirectory(), fmt.Sprintf("environment_%s_%s_freeze.yaml", runtime.GOOS, runtime.GOARCH))
 }
 
 func (it *robot) ArtifactDirectory() string {

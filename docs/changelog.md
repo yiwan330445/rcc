@@ -1,5 +1,9 @@
 # rcc change log
 
+## v10.3.0 (date: 28.6.2021)
+
+- creating environment freeze YAML file into output directory on every run
+
 ## v10.2.4 (date: 24.6.2021)
 
 - added `--bind` option to copy exact dependencies from `dependencies.yaml`

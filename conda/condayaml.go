@@ -134,13 +134,48 @@ func SummonEnvironment(filename string) *Environment {
 	}
 }
 
+func (it *Environment) FreezeDependencies(fixed dependencies) *Environment {
+	result := &Environment{
+		Name:        it.Name,
+		Prefix:      it.Prefix,
+		Channels:    it.Channels,
+		Conda:       []*Dependency{},
+		Pip:         []*Dependency{},
+		PostInstall: it.PostInstall,
+	}
+	for _, dependency := range fixed {
+		if dependency.Origin == "pypi" {
+			continue
+		}
+		result.Conda = append(result.Conda, &Dependency{
+			Original:  fmt.Sprintf("%s=%s", dependency.Name, dependency.Version),
+			Name:      dependency.Name,
+			Qualifier: "=",
+			Versions:  dependency.Version,
+		})
+	}
+	for _, dependency := range fixed {
+		if dependency.Origin != "pypi" {
+			continue
+		}
+		result.Pip = append(result.Pip, &Dependency{
+			Original:  fmt.Sprintf("%s==%s", dependency.Name, dependency.Version),
+			Name:      dependency.Name,
+			Qualifier: "==",
+			Versions:  dependency.Version,
+		})
+	}
+	return result
+}
+
 func (it *Environment) FromDependencies(fixed dependencies) (*Environment, bool) {
 	result := &Environment{
-		Name:     it.Name,
-		Prefix:   it.Prefix,
-		Channels: it.Channels,
-		Conda:    []*Dependency{},
-		Pip:      []*Dependency{},
+		Name:        it.Name,
+		Prefix:      it.Prefix,
+		Channels:    it.Channels,
+		Conda:       []*Dependency{},
+		Pip:         []*Dependency{},
+		PostInstall: it.PostInstall,
 	}
 	same := true
 	for _, dependency := range it.Conda {
