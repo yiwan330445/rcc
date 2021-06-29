@@ -129,6 +129,7 @@ func LoadTaskWithEnvironment(packfile, theTask string, force bool) (bool, robot.
 func SelectExecutionModel(runFlags *RunFlags, simple bool, template []string, config robot.Robot, todo robot.Task, label string, interactive bool, extraEnv map[string]string) {
 	common.Timeline("robot execution starts (simple=%v).", simple)
 	defer common.Timeline("robot execution done.")
+	pathlib.EnsureDirectoryExists(config.ArtifactDirectory())
 	if simple {
 		ExecuteSimpleTask(runFlags, template, config, todo, interactive, extraEnv)
 	} else {
