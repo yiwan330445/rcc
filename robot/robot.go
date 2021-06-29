@@ -33,7 +33,6 @@ type Robot interface {
 	Validate() (bool, error)
 	Diagnostics(*common.DiagnosticStatus, bool)
 	DependenciesFile() (string, bool)
-	IdealCondaYaml() (string, bool)
 
 	WorkingDirectory() string
 	ArtifactDirectory() string
@@ -218,30 +217,6 @@ func (it *robot) Validate() (bool, error) {
 func (it *robot) DependenciesFile() (string, bool) {
 	filename := filepath.Join(it.Root, "dependencies.yaml")
 	return filename, pathlib.IsFile(filename)
-}
-
-func (it *robot) IdealCondaYaml() (string, bool) {
-	wanted, ok := it.DependenciesFile()
-	if !ok {
-		return "", false
-	}
-	dependencies := conda.LoadWantedDependencies(wanted)
-	if len(dependencies) == 0 {
-		return "", false
-	}
-	condaEnv, err := conda.ReadCondaYaml(it.CondaConfigFile())
-	if err != nil {
-		return "", false
-	}
-	ideal, ok := condaEnv.FromDependencies(dependencies)
-	if !ok {
-		return "", false
-	}
-	body, err := ideal.AsYaml()
-	if err != nil {
-		return "", false
-	}
-	return body, true
 }
 
 func (it *robot) VerifyCondaDependencies() bool {

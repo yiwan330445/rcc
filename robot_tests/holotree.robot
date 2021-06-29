@@ -5,14 +5,12 @@ Resource  resources.robot
 
 *** Test cases ***
 
-Holotree testing flow
-
-  Goal        Initialize new standard robot into tmp/holotin folder using force.
+Goal: Initialize new standard robot into tmp/holotin folder using force.
   Step        build/rcc robot init --controller citests -t extended -d tmp/holotin -f
   Use STDERR
   Must Have   OK.
 
-  Goal        See variables from specific environment without robot.yaml knowledge
+Goal: See variables from specific environment without robot.yaml knowledge
   Step        build/rcc holotree variables --space jam --controller citests conda/testdata/conda.yaml
   Must Have   ROBOCORP_HOME=
   Must Have   PYTHON_EXE=
@@ -33,7 +31,7 @@ Holotree testing flow
   Wont Have   ROBOT_ROOT=
   Wont Have   ROBOT_ARTIFACTS=
 
-  Goal        See variables from specific environment with robot.yaml but without task
+Goal: See variables from specific environment with robot.yaml but without task
   Step        build/rcc holotree variables --space jam --controller citests -r tmp/holotin/robot.yaml
   Must Have   ROBOCORP_HOME=
   Must Have   PYTHON_EXE=
@@ -54,11 +52,11 @@ Holotree testing flow
   Must Have   ROBOT_ROOT=
   Must Have   ROBOT_ARTIFACTS=
 
-  Goal        See variables from specific environment without robot.yaml knowledge in JSON form
+Goal: See variables from specific environment without robot.yaml knowledge in JSON form
   Step        build/rcc holotree variables --space jam --controller citests --json conda/testdata/conda.yaml
   Must Be Json Response
 
-  Goal        See variables from specific environment with robot.yaml knowledge
+Goal: See variables from specific environment with robot.yaml knowledge
   Step        build/rcc holotree variables --space jam --controller citests conda/testdata/conda.yaml --config tmp/alternative.yaml -r tmp/holotin/robot.yaml -e tmp/holotin/devdata/env.json
   Must Have   ROBOCORP_HOME=
   Must Have   PYTHON_EXE=
@@ -87,14 +85,14 @@ Holotree testing flow
   Wont Have   (virtual)
   Must Have   live only
 
-  Goal        See variables from specific environment with robot.yaml knowledge in JSON form
+Goal: See variables from specific environment with robot.yaml knowledge in JSON form
   Step        build/rcc holotree variables --space jam --controller citests --json conda/testdata/conda.yaml --config tmp/alternative.yaml -r tmp/holotin/robot.yaml -e tmp/holotin/devdata/env.json
   Must Be Json Response
   Use STDERR
   Wont Have   (virtual)
   Wont Have   live only
 
-  Goal        Liveonly works and uses virtual holotree
+Goal: Liveonly works and uses virtual holotree
   Step        build/rcc holotree vars --liveonly --space jam --controller citests robot_tests/certificates.yaml --config tmp/alternative.yaml --timeline
   Must Have   ROBOCORP_HOME=
   Must Have   PYTHON_EXE=
@@ -123,7 +121,7 @@ Holotree testing flow
   Must Have   (virtual)
   Must Have   live only
 
-  Goal        Liveonly works and uses virtual holotree and can give output in JSON form
+Goal: Liveonly works and uses virtual holotree and can give output in JSON form
   Step        build/rcc ht vars --liveonly --space jam --controller citests --json robot_tests/certificates.yaml --config tmp/alternative.yaml --timeline
   Must Be Json Response
   Use STDERR

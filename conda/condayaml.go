@@ -143,10 +143,15 @@ func (it *Environment) FreezeDependencies(fixed dependencies) *Environment {
 		Pip:         []*Dependency{},
 		PostInstall: it.PostInstall,
 	}
+	used := make(map[string]bool)
 	for _, dependency := range fixed {
 		if dependency.Origin == "pypi" {
 			continue
 		}
+		if used[dependency.Name] {
+			continue
+		}
+		used[dependency.Name] = true
 		result.Conda = append(result.Conda, &Dependency{
 			Original:  fmt.Sprintf("%s=%s", dependency.Name, dependency.Version),
 			Name:      dependency.Name,
@@ -158,6 +163,10 @@ func (it *Environment) FreezeDependencies(fixed dependencies) *Environment {
 		if dependency.Origin != "pypi" {
 			continue
 		}
+		if used[dependency.Name] {
+			continue
+		}
+		used[dependency.Name] = true
 		result.Pip = append(result.Pip, &Dependency{
 			Original:  fmt.Sprintf("%s==%s", dependency.Name, dependency.Version),
 			Name:      dependency.Name,
@@ -485,7 +494,6 @@ func (it *Environment) Diagnostics(target *common.DiagnosticStatus, production b
 		diagnose.Ok("Channels in conda.yaml are ok.")
 	}
 	ok = true
-	condaCount := len(it.Conda)
 	for _, dependency := range it.Conda {
 		presentation := dependency.Representation()
 		if packages[presentation] {
@@ -507,11 +515,6 @@ func (it *Environment) Diagnostics(target *common.DiagnosticStatus, production b
 		diagnose.Ok("Conda dependencies in conda.yaml are ok.")
 	}
 	ok = true
-	pipCount := len(it.Pip)
-	if pipCount > 0 {
-		diagnose.Warning("", "There is %d pip dependencies. Please, prefer using conda dependencies over pip dependencies.", pipCount)
-		ok = false
-	}
 	for _, dependency := range it.Pip {
 		presentation := dependency.Representation()
 		if packages[presentation] {
@@ -531,11 +534,6 @@ func (it *Environment) Diagnostics(target *common.DiagnosticStatus, production b
 	}
 	if ok {
 		diagnose.Ok("Pip dependencies in conda.yaml are ok.")
-	}
-	totalCount := condaCount + pipCount
-	if totalCount > 10 {
-		diagnose.Warning("", "There are more than 10 dependencies in conda.yaml [conda: %d, pip: %d]. This might cause problems for dependency resolvers.", condaCount, pipCount)
-		diagnose.Warning("", "Too many dependencies might also indicate lack of focus, doing too much, doing it wrong, or missing cleanup step in development process.")
 	}
 	if floating {
 		diagnose.Warning("", "Floating dependencies in Robocorp Cloud containers will be slow, because floating environments cannot be cached.")

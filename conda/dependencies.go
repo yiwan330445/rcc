@@ -155,7 +155,6 @@ func SideBySideViewOfDependencies(goldenfile, wantedfile string) (err error) {
 	tabbed.Write([]byte("Wanted\tVersion\tOrigin\t|\tNo.\t|\tAvailable\tVersion\tOrigin\t|\tStatus\n"))
 	tabbed.Write([]byte("------\t-------\t------\t+\t---\t+\t---------\t-------\t------\t+\t------\n"))
 	for at, key := range keyset {
-		//left, right, status := "n/a\tn/a\tn/a\t", "\tn/a\tn/a\tn/a", unknown
 		left, right, status := "-\t-\t-\t", "\t-\t-\t-", unknown
 		sides := diffmap[key]
 		if sides[0] < 0 || sides[1] < 0 {

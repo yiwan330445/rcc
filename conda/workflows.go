@@ -425,7 +425,7 @@ func NewEnvironment(force bool, configurations ...string) (string, error) {
 			before := make(map[string]string)
 			beforeHash, beforeErr := DigestFor(templateFolder, before)
 			DiagnoseDirty(templateFolder, liveFolder, beforeHash, afterHash, beforeErr, afterErr, before, after, false)
-		} else {
+		} else if pathlib.IsDir(templateFolder) {
 			common.Log("WARNING! Template is NOT pristine: %q", templateFolder)
 		}
 		common.Log("####  Progress: 2/6  [try clone existing same template to live, key: %v]", key)

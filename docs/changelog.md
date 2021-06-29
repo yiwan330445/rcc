@@ -1,5 +1,18 @@
 # rcc change log
 
+## v10.3.1 (date: 29.6.2021)
+
+- cleaning up `rcc robot dependencies` and related code now that freeze is
+  actually implemented
+- changed `--copy` to `--export` since it better describes the action
+- removed `--bind` because copying freeze file from run is better way
+- removed "ideal" conda.yaml printout, since runs now create artifact
+  on every run in new envrionments
+- removed those robot diagnostics that are misguiding now when dependencies
+  are frozen
+- updated rpaframework to version 10.3.0 in templates
+- updated robot tests for rcc
+
 ## v10.3.0 (date: 28.6.2021)
 
 - creating environment freeze YAML file into output directory on every run

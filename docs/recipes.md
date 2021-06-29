@@ -35,15 +35,11 @@ robot runs.
 # first list dependencies from execution environment
 rcc robot dependencies --space user
 
-# if everything looks good, copy it as wanted dependencies.yaml
-rcc robot dependencies --space user --copy
+# if everything looks good, export it as wanted dependencies.yaml
+rcc robot dependencies --space user --export
 
 # and verify that everything looks `Same`
 rcc robot dependencies --space user
-
-# you can even overwrite conda.yaml using exact dependencies found from that
-# dependencies.yaml, using '--bind' option
-rcc robot dependencies --space user --bind
 ```
 
 ## How pass arguments to robot from CLI?
