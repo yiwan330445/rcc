@@ -1,10 +1,14 @@
 # rcc change log
 
+## v10.3.3 (date: 29.6.2021)
+
+- updated tips, tricks, and recipes
+
 ## v10.3.2 (date: 29.6.2021)
 
 - fix for missing artifact directory on runs
 
-## v10.3.1 (date: 29.6.2021)
+## v10.3.1 (date: 29.6.2021) broken
 
 - cleaning up `rcc robot dependencies` and related code now that freeze is
   actually implemented
