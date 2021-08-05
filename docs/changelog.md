@@ -1,5 +1,9 @@
 # rcc change log
 
+## v10.4.0 (date: 5.8.2021)
+
+- bug fix: `rcc_activate.sh` were failing, when path to rcc has spaces in it
+
 ## v10.3.3 (date: 29.6.2021)
 
 - updated tips, tricks, and recipes

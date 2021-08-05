@@ -15,8 +15,8 @@ const (
 	activateScript = `#!/bin/bash
 
 export MAMBA_ROOT_PREFIX={{.Robocorphome}}
-eval "$({{.Micromamba}} shell activate -s bash -p {{.Live}})"
-{{.Rcc}} internal env -l after
+eval "$('{{.Micromamba}}' shell activate -s bash -p {{.Live}})"
+"{{.Rcc}}" internal env -l after
 `
 	commandSuffix = ".sh"
 )
