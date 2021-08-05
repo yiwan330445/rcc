@@ -1,5 +1,9 @@
 # rcc change log
 
+## v10.4.1 (date: 5.8.2021)
+
+- taking micromamba 0.15.2 into use
+
 ## v10.4.0 (date: 5.8.2021)
 
 - bug fix: `rcc_activate.sh` were failing, when path to rcc has spaces in it
