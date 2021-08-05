@@ -1,5 +1,10 @@
 # rcc change log
 
+## v10.4.2 (date: 5.8.2021)
+
+- bugfix: scaling down holotree concurrency, since at least Mac file limits
+  are hit by current concurrency limit
+
 ## v10.4.1 (date: 5.8.2021)
 
 - taking micromamba 0.15.2 into use

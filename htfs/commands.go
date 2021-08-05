@@ -33,7 +33,7 @@ func NewEnvironment(force bool, condafile, holozip string) (label string, err er
 	_, holotreeBlueprint, err := ComposeFinalBlueprint([]string{condafile}, "")
 	fail.On(err != nil, "%s", err)
 
-	anywork.Scale(200)
+	anywork.Scale(100)
 
 	tree, err := New()
 	fail.On(err != nil, "%s", err)
