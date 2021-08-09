@@ -149,7 +149,6 @@ func LiftFile(sourcename, sinkname string) anywork.Work {
 		if err != nil {
 			panic(err)
 		}
-		sink.Sync()
 	}
 }
 
@@ -169,7 +168,6 @@ func LiftFlatFile(sourcename, sinkname string) anywork.Work {
 		if err != nil {
 			panic(err)
 		}
-		sink.Sync()
 	}
 }
 
@@ -189,7 +187,6 @@ func DropFile(library Library, digest, sinkname string, details *File, rewrite [
 		if err != nil {
 			panic(err)
 		}
-		sink.Sync()
 		for _, position := range details.Rewrite {
 			_, err = sink.Seek(position, 0)
 			if err != nil {
@@ -200,7 +197,6 @@ func DropFile(library Library, digest, sinkname string, details *File, rewrite [
 				panic(err)
 			}
 		}
-		sink.Sync()
 		os.Chmod(sinkname, details.Mode)
 		os.Chtimes(sinkname, motherTime, motherTime)
 	}
@@ -222,7 +218,6 @@ func DropFlatFile(sourcename, sinkname string, details *File, rewrite []byte) an
 		if err != nil {
 			panic(err)
 		}
-		sink.Sync()
 		for _, position := range details.Rewrite {
 			_, err = sink.Seek(position, 0)
 			if err != nil {
@@ -233,7 +228,6 @@ func DropFlatFile(sourcename, sinkname string, details *File, rewrite []byte) an
 				panic(err)
 			}
 		}
-		sink.Sync()
 		os.Chmod(sinkname, details.Mode)
 		os.Chtimes(sinkname, motherTime, motherTime)
 	}

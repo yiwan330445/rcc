@@ -1,5 +1,10 @@
 # rcc change log
 
+## v10.4.3 (date: 9.8.2021)
+
+- bugfix: trying to fix Mac related slowing by removing file syncs on
+  holotree copy processes
+
 ## v10.4.2 (date: 5.8.2021)
 
 - bugfix: scaling down holotree concurrency, since at least Mac file limits
