@@ -61,8 +61,8 @@ func init() {
 	pipeline = make(WorkQueue, 100000)
 	failpipe = make(Failures)
 	errcount = make(Counters)
-	headcount = 1
-	go member(headcount)
+	headcount = 0
+	Scale(16)
 	go watcher(failpipe, errcount)
 }
 

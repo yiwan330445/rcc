@@ -1,5 +1,10 @@
 # rcc change log
 
+## v10.4.4 (date: 9.8.2021)
+
+- bugfix: raising initial scaling factor to 16, so that there should always
+  be workers waiting
+
 ## v10.4.3 (date: 9.8.2021)
 
 - bugfix: trying to fix Mac related slowing by removing file syncs on
