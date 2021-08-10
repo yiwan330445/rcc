@@ -1,20 +1,25 @@
 # rcc change log
 
+## v10.5.0 (date: 10.8.2021)
+
+- supporting multiple environment configurations to enable operating system
+  and architecture specific freeze files (within one robot project)
+
 ## v10.4.5 (date: 10.8.2021)
 
 - bugfix: removing one more filesystem sync from holotree (Mac slowdown fix).
 
-## v10.4.4 (date: 9.8.2021)
+## v10.4.4 (date: 9.8.2021) broken
 
 - bugfix: raising initial scaling factor to 16, so that there should always
   be workers waiting
 
-## v10.4.3 (date: 9.8.2021)
+## v10.4.3 (date: 9.8.2021) broken
 
 - bugfix: trying to fix Mac related slowing by removing file syncs on
   holotree copy processes
 
-## v10.4.2 (date: 5.8.2021)
+## v10.4.2 (date: 5.8.2021) broken
 
 - bugfix: scaling down holotree concurrency, since at least Mac file limits
   are hit by current concurrency limit

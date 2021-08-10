@@ -60,7 +60,7 @@ func markTempForRecycling() {
 	markedAlready = true
 	filename := filepath.Join(conda.RobocorpTemp(), "recycle.now")
 	ioutil.WriteFile(filename, []byte("True"), 0o644)
-	common.Debug("Marked %q for recyling.", conda.RobocorpTemp())
+	common.Debug("Marked %q for recycling.", conda.RobocorpTemp())
 }
 
 func main() {

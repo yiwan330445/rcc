@@ -48,13 +48,14 @@ type Task interface {
 }
 
 type robot struct {
-	Tasks      map[string]*task `yaml:"tasks"`
-	Conda      string           `yaml:"condaConfigFile"`
-	Ignored    []string         `yaml:"ignoreFiles"`
-	Artifacts  string           `yaml:"artifactsDir"`
-	Path       []string         `yaml:"PATH"`
-	Pythonpath []string         `yaml:"PYTHONPATH"`
-	Root       string
+	Tasks        map[string]*task `yaml:"tasks"`
+	Conda        string           `yaml:"condaConfigFile,omitempty"`
+	Environments []string         `yaml:"environmentConfigs,omitempty"`
+	Ignored      []string         `yaml:"ignoreFiles"`
+	Artifacts    string           `yaml:"artifactsDir"`
+	Path         []string         `yaml:"PATH"`
+	Pythonpath   []string         `yaml:"PYTHONPATH"`
+	Root         string
 }
 
 type task struct {
@@ -309,10 +310,14 @@ func (it *robot) TaskByName(name string) Task {
 }
 
 func (it *robot) UsesConda() bool {
-	return len(it.Conda) > 0
+	return len(it.Conda) > 0 || len(it.availableEnvironmentConfigurations(osArchitectureToken())) > 0
 }
 
 func (it *robot) CondaConfigFile() string {
+	available := it.availableEnvironmentConfigurations(osArchitectureToken())
+	if len(available) > 0 {
+		return available[0]
+	}
 	return filepath.Join(it.Root, it.Conda)
 }
 
@@ -328,8 +333,39 @@ func (it *robot) WorkingDirectory() string {
 	return it.Root
 }
 
+func osArchitectureToken() string {
+	return fmt.Sprintf("%s_%s", runtime.GOOS, runtime.GOARCH)
+}
+
+func freezeFileBasename() string {
+	return fmt.Sprintf("environment_%s_freeze.yaml", osArchitectureToken())
+}
+
+func (it *robot) availableEnvironmentConfigurations(marker string) []string {
+	result := make([]string, 0, len(it.Environments))
+	common.Trace("Available environment configurations:")
+	for _, part := range it.Environments {
+		underscored := strings.Count(part, "_") > 2
+		freezed := strings.Contains(strings.ToLower(part), "freeze")
+		marked := strings.Contains(part, marker)
+		if (underscored || freezed) && !marked {
+			continue
+		}
+		fullpath := filepath.Join(it.Root, part)
+		if !pathlib.IsFile(fullpath) {
+			continue
+		}
+		common.Trace("- %s", fullpath)
+		result = append(result, fullpath)
+	}
+	if len(result) == 0 {
+		common.Trace("- nothing")
+	}
+	return result
+}
+
 func (it *robot) FreezeFilename() string {
-	return filepath.Join(it.ArtifactDirectory(), fmt.Sprintf("environment_%s_%s_freeze.yaml", runtime.GOOS, runtime.GOARCH))
+	return filepath.Join(it.ArtifactDirectory(), freezeFileBasename())
 }
 
 func (it *robot) ArtifactDirectory() string {
