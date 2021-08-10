@@ -1,5 +1,9 @@
 # rcc change log
 
+## v10.4.5 (date: 10.8.2021)
+
+- bugfix: removing one more filesystem sync from holotree (Mac slowdown fix).
+
 ## v10.4.4 (date: 9.8.2021)
 
 - bugfix: raising initial scaling factor to 16, so that there should always

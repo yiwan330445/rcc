@@ -24,7 +24,6 @@ func delegateOpen(it MutableLibrary, digest string) (readable io.Reader, closer 
 	}
 	closer = func() error {
 		reader.Close()
-		source.Sync()
 		return source.Close()
 	}
 	return reader, closer, nil
