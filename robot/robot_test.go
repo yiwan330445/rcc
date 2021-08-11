@@ -16,6 +16,15 @@ func TestCannotReadMissingRobotYaml(t *testing.T) {
 	must.Nil(sut)
 }
 
+func TestCanMatchArchitecture(t *testing.T) {
+	must, wont := hamlet.Specifications(t)
+
+	wont.Nil(robot.GoosPattern)
+	wont.Nil(robot.GoarchPattern)
+	must.Equal([]string{"darwin", "darwin"}, robot.GoosPattern.FindStringSubmatch("foo_darwin_arm64_freeze.yaml"))
+	must.Equal([]string{"arm64", "arm64"}, robot.GoarchPattern.FindStringSubmatch("foo_darwin_arm64_freeze.yaml"))
+}
+
 func TestCanReadRealRobotYaml(t *testing.T) {
 	must, wont := hamlet.Specifications(t)
 

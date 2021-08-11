@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"regexp"
 	"runtime"
 	"sort"
 	"strings"
@@ -17,6 +18,11 @@ import (
 
 	"github.com/google/shlex"
 	"gopkg.in/yaml.v2"
+)
+
+var (
+	GoosPattern   = regexp.MustCompile("(?i:(windows|darwin|linux))")
+	GoarchPattern = regexp.MustCompile("(?i:(amd64|arm64))")
 )
 
 type Robot interface {
@@ -341,6 +347,11 @@ func freezeFileBasename() string {
 	return fmt.Sprintf("environment_%s_freeze.yaml", osArchitectureToken())
 }
 
+func submatch(pattern *regexp.Regexp, expected, text string) bool {
+	match := pattern.FindStringSubmatch(text)
+	return match == nil || len(match) == 0 || match[0] == expected
+}
+
 func (it *robot) availableEnvironmentConfigurations(marker string) []string {
 	result := make([]string, 0, len(it.Environments))
 	common.Trace("Available environment configurations:")
@@ -349,6 +360,12 @@ func (it *robot) availableEnvironmentConfigurations(marker string) []string {
 		freezed := strings.Contains(strings.ToLower(part), "freeze")
 		marked := strings.Contains(part, marker)
 		if (underscored || freezed) && !marked {
+			continue
+		}
+		if !submatch(GoosPattern, runtime.GOOS, part) {
+			continue
+		}
+		if !submatch(GoarchPattern, runtime.GOARCH, part) {
 			continue
 		}
 		fullpath := filepath.Join(it.Root, part)

@@ -1,5 +1,10 @@
 # rcc change log
 
+## v10.5.1 (date: 11.8.2021)
+
+- improvements for detecting OS/architecture for multiple environment
+  configurations
+
 ## v10.5.0 (date: 10.8.2021)
 
 - supporting multiple environment configurations to enable operating system
