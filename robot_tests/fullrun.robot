@@ -21,7 +21,7 @@ Goal: Telemetry tracking enabled by default.
   Step        build/rcc configure identity --controller citests
   Must Have   anonymous health tracking is: enabled
   Must Exist  %{ROBOCORP_HOME}/rcc.yaml
-  Wont Exist  %{ROBOCORP_HOME}/rcccache.yaml
+  Must Exist  %{ROBOCORP_HOME}/rcccache.yaml
 
 Goal: Send telemetry data to cloud.
   Step        build/rcc feedback metric --controller citests -t test -n rcc.test -v robot.fullrun

@@ -1,5 +1,9 @@
 # rcc change log
 
+## v10.5.2 (date: 12.8.2021)
+
+- added once a day metric about timezone where rcc is executed
+
 ## v10.5.1 (date: 11.8.2021)
 
 - improvements for detecting OS/architecture for multiple environment

@@ -10,12 +10,33 @@ import (
 	"github.com/robocorp/rcc/cmd"
 	"github.com/robocorp/rcc/common"
 	"github.com/robocorp/rcc/conda"
+	"github.com/robocorp/rcc/operations"
 	"github.com/robocorp/rcc/pathlib"
+)
+
+const (
+	timezonekey = `rcc.cli.tz`
+	daily       = 60 * 60 * 24
 )
 
 var (
 	markedAlready = false
 )
+
+func TimezoneMetric() error {
+	cache, err := operations.SummonCache()
+	if err != nil {
+		return err
+	}
+	deadline, ok := cache.Stamps[timezonekey]
+	if ok && deadline > common.When {
+		return nil
+	}
+	cache.Stamps[timezonekey] = common.When + daily
+	zone := time.Now().Format("MST-0700")
+	cloud.BackgroundMetric(common.ControllerIdentity(), timezonekey, zone)
+	return cache.Save()
+}
 
 func ExitProtection() {
 	status := recover()
@@ -73,4 +94,5 @@ func main() {
 	defer os.Stderr.Sync()
 	defer os.Stdout.Sync()
 	cmd.Execute()
+	TimezoneMetric()
 }
