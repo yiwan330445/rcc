@@ -67,9 +67,7 @@ func (it *virtual) Restore(blueprint, client, tag []byte) (string, error) {
 	defer common.Stopwatch("Holotree restore took:").Debug()
 	key := BlueprintHash(blueprint)
 	common.Timeline("holotree restore start %s (virtual)", key)
-	prefix := textual(sipit(client), 9)
-	suffix := textual(sipit(tag), 8)
-	name := prefix + "_" + suffix
+	name := ControllerSpaceName(client, tag)
 	metafile := filepath.Join(common.HolotreeLocation(), fmt.Sprintf("%s.meta", name))
 	targetdir := filepath.Join(common.HolotreeLocation(), name)
 	lockfile := filepath.Join(common.HolotreeLocation(), fmt.Sprintf("%s.lck", name))

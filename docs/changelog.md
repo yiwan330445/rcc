@@ -1,5 +1,10 @@
 # rcc change log
 
+## v10.6.0 (date: 16.8.2021)
+
+- added possibility to also delete holotree space by providing controller
+  and space flags (for easier scripting)
+
 ## v10.5.2 (date: 12.8.2021)
 
 - added once a day metric about timezone where rcc is executed

@@ -79,9 +79,7 @@ func (it *ziplibrary) Restore(blueprint, client, tag []byte) (result string, err
 	defer common.Stopwatch("Holotree restore took:").Debug()
 	key := BlueprintHash(blueprint)
 	common.Timeline("holotree restore start %s (zip)", key)
-	prefix := textual(sipit(client), 9)
-	suffix := textual(sipit(tag), 8)
-	name := prefix + "_" + suffix
+	name := ControllerSpaceName(client, tag)
 	fs, err := NewRoot(".")
 	fail.On(err != nil, "Failed to create root -> %v", err)
 	catalog := it.CatalogPath(key)

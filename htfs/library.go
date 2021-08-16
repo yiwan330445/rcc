@@ -261,15 +261,19 @@ func Spaces() []*Root {
 	return roots
 }
 
+func ControllerSpaceName(client, tag []byte) string {
+	prefix := textual(sipit(client), 9)
+	suffix := textual(sipit(tag), 8)
+	return prefix + "_" + suffix
+}
+
 func (it *hololib) Restore(blueprint, client, tag []byte) (result string, err error) {
 	defer fail.Around(&err)
 	defer common.Stopwatch("Holotree restore took:").Debug()
 	key := BlueprintHash(blueprint)
 	catalog := it.CatalogPath(key)
 	common.Timeline("holotree restore start %s", key)
-	prefix := textual(sipit(client), 9)
-	suffix := textual(sipit(tag), 8)
-	name := prefix + "_" + suffix
+	name := ControllerSpaceName(client, tag)
 	fs, err := NewRoot(it.Stage())
 	fail.On(err != nil, "Failed to create stage -> %v", err)
 	err = fs.LoadFrom(catalog)
