@@ -1,5 +1,11 @@
 # rcc change log
 
+## v10.7.0 (date: 16.8.2021)
+
+- when environment creation is serialized, after short delay, rcc reports
+  that it is waiting to be able to contiue
+- added __MACOSX as ignored files/directories
+
 ## v10.6.0 (date: 16.8.2021)
 
 - added possibility to also delete holotree space by providing controller

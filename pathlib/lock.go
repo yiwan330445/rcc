@@ -2,6 +2,7 @@ package pathlib
 
 import (
 	"os"
+	"time"
 
 	"github.com/robocorp/rcc/common"
 )
@@ -23,4 +24,28 @@ func (it fake) Release() error {
 func Fake() Releaser {
 	common.Trace("LOCKER: lockless mode.")
 	return fake(true)
+}
+
+func waitingLockNotification(message string, latch chan bool) {
+	delay := 5 * time.Second
+	counter := 0
+	for {
+		select {
+		case <-latch:
+			return
+		case <-time.After(delay):
+			counter += 1
+			delay *= 3
+			common.Log("#%d: %s (lock wait)", counter, message)
+			common.Timeline("waiting for lock")
+		}
+	}
+}
+
+func LockWaitMessage(message string) func() {
+	latch := make(chan bool)
+	go waitingLockNotification(message, latch)
+	return func() {
+		latch <- true
+	}
 }

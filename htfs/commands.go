@@ -23,7 +23,9 @@ func Platform() string {
 func NewEnvironment(force bool, condafile, holozip string) (label string, err error) {
 	defer fail.Around(&err)
 
+	callback := pathlib.LockWaitMessage("Serialized environment creation")
 	locker, err := pathlib.Locker(common.HolotreeLock(), 30000)
+	callback()
 	fail.On(err != nil, "Could not get lock for holotree. Quiting.")
 	defer locker.Release()
 

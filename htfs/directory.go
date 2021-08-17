@@ -21,6 +21,7 @@ var (
 
 func init() {
 	killfile = make(map[string]bool)
+	killfile["__MACOSX"] = true
 	killfile["__pycache__"] = true
 	killfile[".pyc"] = true
 	killfile[".git"] = true

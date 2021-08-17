@@ -228,6 +228,7 @@ func defaultIgnores(selfie string) pathlib.Ignore {
 	result = append(result, pathlib.IgnorePattern("temp/"))
 	result = append(result, pathlib.IgnorePattern("tmp/"))
 	result = append(result, pathlib.IgnorePattern("__pycache__"))
+	result = append(result, pathlib.IgnorePattern("__MACOSX"))
 	return pathlib.CompositeIgnore(result...)
 }
 
