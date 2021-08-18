@@ -77,6 +77,12 @@ func RecordCondaEnvironment(tree MutableLibrary, condafile string, force bool) (
 	return RecordEnvironment(tree, []byte(content), force)
 }
 
+func CleanupHolotreeStage(tree MutableLibrary) error {
+	common.Timeline("holotree stage removal start")
+	defer common.Timeline("holotree stage removal done")
+	return os.RemoveAll(tree.Stage())
+}
+
 func RecordEnvironment(tree MutableLibrary, blueprint []byte, force bool) (err error) {
 	defer fail.Around(&err)
 
@@ -85,29 +91,28 @@ func RecordEnvironment(tree MutableLibrary, blueprint []byte, force bool) (err e
 	common.Stageonly = true
 	common.Liveonly = true
 
-	err = os.RemoveAll(tree.Stage())
-	fail.On(err != nil, "Failed to clean stage, reason %v.", err)
-
-	err = os.MkdirAll(tree.Stage(), 0o755)
-	fail.On(err != nil, "Failed to create stage, reason %v.", err)
-
 	common.Debug("Holotree stage is %q.", tree.Stage())
 	exists := tree.HasBlueprint(blueprint)
 	common.Debug("Has blueprint environment: %v", exists)
 
 	if force || !exists {
+		err = CleanupHolotreeStage(tree)
+		fail.On(err != nil, "Failed to clean stage, reason %v.", err)
+
+		err = os.MkdirAll(tree.Stage(), 0o755)
+		fail.On(err != nil, "Failed to create stage, reason %v.", err)
+
 		identityfile := filepath.Join(tree.Stage(), "identity.yaml")
 		err = ioutil.WriteFile(identityfile, blueprint, 0o644)
 		fail.On(err != nil, "Failed to save %q, reason %w.", identityfile, err)
 		label, err := conda.NewEnvironment(force, identityfile)
 		fail.On(err != nil, "Failed to create environment, reason %w.", err)
 		common.Debug("Label: %q", label)
-	}
 
-	if force || !exists {
-		err := tree.Record(blueprint)
+		err = tree.Record(blueprint)
 		fail.On(err != nil, "Failed to record blueprint %q, reason: %w", string(blueprint), err)
 	}
+
 	return nil
 }
 

@@ -1,5 +1,9 @@
 # rcc change log
 
+## v10.7.1 (date: 18.8.2021)
+
+- bugfix: trying to remove preformance hit on windows directory cleanup
+
 ## v10.7.0 (date: 16.8.2021)
 
 - when environment creation is serialized, after short delay, rcc reports
