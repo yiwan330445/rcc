@@ -3,6 +3,7 @@ package cloud
 import (
 	"fmt"
 	"net/url"
+	"runtime"
 	"sync"
 	"time"
 
@@ -48,6 +49,7 @@ func BackgroundMetric(kind, name, value string) {
 	if xviper.CanTrack() {
 		telemetryBarrier.Add(1)
 		go sendMetric(metricsHost, kind, name, value)
+		runtime.Gosched()
 	}
 }
 

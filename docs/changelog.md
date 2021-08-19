@@ -1,5 +1,11 @@
 # rcc change log
 
+## v10.8.0 (date: 19.8.2021)
+
+- added holotree check command to verify holotree library integrity
+- added "env cleanup" also as "config cleanup"
+- minor go-routine schedule yield added (experiment)
+
 ## v10.7.1 (date: 18.8.2021)
 
 - bugfix: trying to remove preformance hit on windows directory cleanup

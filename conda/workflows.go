@@ -9,6 +9,7 @@ import (
 	"math/rand"
 	"os"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"time"
 
@@ -581,6 +582,7 @@ func cloneFolder(source, target string, workers int, copier pathlib.Copier) bool
 	for x := 0; x < workers; x++ {
 		go copyWorker(queue, done, copier)
 	}
+	runtime.Gosched()
 
 	success := copyFolder(source, target, queue)
 	close(queue)

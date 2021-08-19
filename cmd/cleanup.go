@@ -34,6 +34,7 @@ After cleanup, they will not be available anymore.`,
 }
 
 func init() {
+	configureCmd.AddCommand(cleanupCmd)
 	envCmd.AddCommand(cleanupCmd)
 	cleanupCmd.Flags().BoolVarP(&dryFlag, "dryrun", "d", false, "Don't delete environments, just show what would happen.")
 	cleanupCmd.Flags().BoolVarP(&orphanFlag, "orphans", "o", false, "Cleanup orphan, unreachable enviroments.")

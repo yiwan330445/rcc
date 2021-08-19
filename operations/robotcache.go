@@ -5,6 +5,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"runtime"
 	"time"
 
 	"github.com/robocorp/rcc/common"
@@ -45,6 +46,7 @@ func CacheRobot(filename string) error {
 		return fmt.Errorf("Could not cache %v, reason: digest mismatch.", fullpath)
 	}
 	go CleanupOldestRobot()
+	runtime.Gosched()
 	return nil
 }
 

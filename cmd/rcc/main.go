@@ -4,6 +4,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"runtime"
 	"time"
 
 	"github.com/robocorp/rcc/cloud"
@@ -72,6 +73,7 @@ func startTempRecycling() {
 			go os.RemoveAll(folder)
 		}
 	}
+	runtime.Gosched()
 }
 
 func markTempForRecycling() {

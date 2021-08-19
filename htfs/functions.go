@@ -64,6 +64,48 @@ func DigestRecorder(target map[string]string) Treetop {
 	return tool
 }
 
+func IntegrityCheck(result map[string]string) Treetop {
+	var tool Treetop
+	tool = func(path string, it *Dir) error {
+		for name, subdir := range it.Dirs {
+			tool(filepath.Join(path, name), subdir)
+		}
+		for name, file := range it.Files {
+			if file.Name != file.Digest {
+				result[filepath.Join(path, name)] = file.Digest
+			}
+		}
+		return nil
+	}
+	return tool
+}
+
+func Hasher() Filetask {
+	return func(fullpath string, details *File) anywork.Work {
+		return func() {
+			source, err := os.Open(fullpath)
+			if err != nil {
+				panic(fmt.Sprintf("Open %q, reason: %v", fullpath, err))
+			}
+			defer source.Close()
+
+			var reader io.ReadCloser
+			reader, err = gzip.NewReader(source)
+			if err != nil {
+				_, err = source.Seek(0, 0)
+				fail.On(err != nil, "Failed to seek %q -> %v", fullpath, err)
+				reader = source
+			}
+			digest := sha256.New()
+			_, err = io.Copy(digest, reader)
+			if err != nil {
+				panic(fmt.Sprintf("Copy %q, reason: %v", fullpath, err))
+			}
+			details.Digest = fmt.Sprintf("%02x", digest.Sum(nil))
+		}
+	}
+}
+
 func Locator(seek string) Filetask {
 	return func(fullpath string, details *File) anywork.Work {
 		return func() {
