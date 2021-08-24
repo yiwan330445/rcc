@@ -7,9 +7,11 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"runtime"
 
 	"github.com/robocorp/rcc/anywork"
 	"github.com/robocorp/rcc/common"
+	"github.com/robocorp/rcc/conda"
 	"github.com/robocorp/rcc/fail"
 	"github.com/robocorp/rcc/pathlib"
 	"github.com/robocorp/rcc/trollhash"
@@ -80,9 +82,13 @@ func IntegrityCheck(result map[string]string) Treetop {
 	return tool
 }
 
-func Hasher() Filetask {
+func Hasher(known map[string]string) Filetask {
 	return func(fullpath string, details *File) anywork.Work {
 		return func() {
+			_, ok := known[details.Name]
+			if !ok {
+				defer anywork.Backlog(RemoveFile(fullpath))
+			}
 			source, err := os.Open(fullpath)
 			if err != nil {
 				panic(fmt.Sprintf("Open %q, reason: %v", fullpath, err))
@@ -370,4 +376,64 @@ func ZipRoot(library MutableLibrary, fs *Root, sink Zipper) Treetop {
 		return nil
 	}
 	return tool
+}
+
+func LoadHololibHashes() map[string]string {
+	roots := LoadCatalogs()
+	slots := make([]map[string]string, len(roots))
+	for at, root := range roots {
+		anywork.Backlog(DigestLoader(root, at, slots))
+	}
+	result := make(map[string]string)
+	runtime.Gosched()
+	anywork.Sync()
+	for _, slot := range slots {
+		for k, v := range slot {
+			result[k] = v
+		}
+	}
+	return result
+}
+
+func DigestLoader(root *Root, at int, slots []map[string]string) anywork.Work {
+	return func() {
+		collector := make(map[string]string)
+		task := DigestMapper(collector)
+		err := task(root.Path, root.Tree)
+		if err != nil {
+			panic(fmt.Sprintf("Collecting dir %q, reason: %v", root.Path, err))
+		}
+		slots[at] = collector
+		common.Trace("Root %q loaded.", root.Path)
+	}
+}
+
+func LoadCatalogs() []*Root {
+	common.Timeline("catalog load start")
+	defer common.Timeline("catalog load done")
+	catalogs := Catalogs()
+	roots := make([]*Root, len(catalogs))
+	for at, catalog := range catalogs {
+		fullpath := filepath.Join(common.HololibCatalogLocation(), catalog)
+		anywork.Backlog(CatalogLoader(fullpath, at, roots))
+	}
+	runtime.Gosched()
+	anywork.Sync()
+	return roots
+}
+
+func CatalogLoader(catalog string, at int, roots []*Root) anywork.Work {
+	return func() {
+		tempdir := filepath.Join(conda.RobocorpTemp(), "shadow")
+		shadow, err := NewRoot(tempdir)
+		if err != nil {
+			panic(fmt.Sprintf("Temp dir %q, reason: %v", tempdir, err))
+		}
+		err = shadow.LoadFrom(catalog)
+		if err != nil {
+			panic(fmt.Sprintf("Load %q, reason: %v", catalog, err))
+		}
+		roots[at] = shadow
+		common.Trace("Catalog %q loaded.", catalog)
+	}
 }

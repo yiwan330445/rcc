@@ -108,15 +108,14 @@ func LiveCapture(liveFolder string, command ...string) (string, int, error) {
 	return task.CaptureOutput()
 }
 
-func LiveExecution(sink *os.File, liveFolder string, command ...string) error {
+func LiveExecution(sink *os.File, liveFolder string, command ...string) (int, error) {
 	defer sink.Sync()
 	fmt.Fprintf(sink, "Command %q at %q:\n", command, liveFolder)
 	task, err := livePrepare(liveFolder, command...)
 	if err != nil {
-		return err
+		return 0, err
 	}
-	_, err = task.Tracked(sink, false)
-	return err
+	return task.Tracked(sink, false)
 }
 
 type InstallObserver map[string]bool
@@ -162,6 +161,7 @@ func newLive(yaml, condaYaml, requirementsText, key string, force, freshInstall 
 	common.Timeline("first try.")
 	success, fatal := newLiveInternal(yaml, condaYaml, requirementsText, key, force, freshInstall, postInstall)
 	if !success && !force && !fatal {
+		cloud.BackgroundMetric(common.ControllerIdentity(), "rcc.env.creation.retry", common.Version)
 		common.Debug("===  new live  ---  second try phase ===")
 		common.Timeline("second try.")
 		common.ForceDebug()
@@ -210,8 +210,9 @@ func newLiveInternal(yaml, condaYaml, requirementsText, key string, force, fresh
 	tee := io.MultiWriter(observer, planWriter)
 	code, err := shell.New(CondaEnvironment(), ".", mambaCommand.CLI()...).Tracked(tee, false)
 	if err != nil || code != 0 {
+		cloud.BackgroundMetric(common.ControllerIdentity(), "rcc.env.fatal.micromamba", fmt.Sprintf("%d_%x", code, code))
 		common.Timeline("micromamba fail.")
-		common.Fatal("Micromamba", err)
+		common.Fatal(fmt.Sprintf("Micromamba [%d/%x]", code, code), err)
 		return false, false
 	}
 	common.Timeline("micromamba done.")
@@ -233,10 +234,11 @@ func newLiveInternal(yaml, condaYaml, requirementsText, key string, force, fresh
 		pipCommand.Option("--trusted-host", settings.Global.PypiTrustedHost())
 		pipCommand.ConditionalFlag(common.VerboseEnvironmentBuilding(), "--verbose")
 		common.Debug("===  new live  ---  pip install phase ===")
-		err = LiveExecution(planWriter, targetFolder, pipCommand.CLI()...)
-		if err != nil {
+		code, err = LiveExecution(planWriter, targetFolder, pipCommand.CLI()...)
+		if err != nil || code != 0 {
+			cloud.BackgroundMetric(common.ControllerIdentity(), "rcc.env.fatal.pip", fmt.Sprintf("%d_%x", code, code))
 			common.Timeline("pip fail.")
-			common.Fatal("Pip", err)
+			common.Fatal(fmt.Sprintf("Pip [%d/%x]", code, code), err)
 			return false, false
 		}
 		common.Timeline("pip done.")
@@ -254,7 +256,7 @@ func newLiveInternal(yaml, condaYaml, requirementsText, key string, force, fresh
 				return false, false
 			}
 			common.Debug("Running post install script '%s' ...", script)
-			err = LiveExecution(planWriter, targetFolder, scriptCommand...)
+			_, err = LiveExecution(planWriter, targetFolder, scriptCommand...)
 			if err != nil {
 				common.Fatal("post-install", err)
 				common.Log("%sScript '%s' failure: %v%s", pretty.Red, script, err, pretty.Reset)

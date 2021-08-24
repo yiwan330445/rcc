@@ -1,5 +1,12 @@
 # rcc change log
 
+## v10.8.1 (date: 20.8.2021)
+
+- holotree check command now removes orphan hololib files
+- environment creation metrics added on failure cases
+- pip and micromamba exit codes now also in hex form
+- minor error message fixes for Windows (colors)
+
 ## v10.8.0 (date: 19.8.2021)
 
 - added holotree check command to verify holotree library integrity

@@ -312,6 +312,7 @@ func (it *hololib) Restore(blueprint, client, tag []byte) (result string, err er
 	fs.Space = string(tag)
 	err = fs.SaveAs(metafile)
 	fail.On(err != nil, "Failed to save metafile %q -> %v", metafile, err)
+	pathlib.TouchWhen(catalog, time.Now())
 	return targetdir, nil
 }
 
