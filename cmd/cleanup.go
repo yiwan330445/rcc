@@ -10,6 +10,7 @@ import (
 
 var (
 	allFlag        bool
+	quickFlag      bool
 	orphanFlag     bool
 	minicondaFlag  bool
 	micromambaFlag bool
@@ -25,7 +26,7 @@ After cleanup, they will not be available anymore.`,
 		if common.DebugFlag {
 			defer common.Stopwatch("Env cleanup lasted").Report()
 		}
-		err := conda.Cleanup(daysOption, dryFlag, orphanFlag, allFlag, minicondaFlag, micromambaFlag)
+		err := conda.Cleanup(daysOption, dryFlag, orphanFlag, quickFlag, allFlag, minicondaFlag, micromambaFlag)
 		if err != nil {
 			pretty.Exit(1, "Error: %v", err)
 		}
@@ -41,5 +42,6 @@ func init() {
 	cleanupCmd.Flags().BoolVarP(&minicondaFlag, "miniconda", "m", false, "Remove miniconda3 installation (replaced by micromamba).")
 	cleanupCmd.Flags().BoolVarP(&micromambaFlag, "micromamba", "", false, "Remove micromamba installation.")
 	cleanupCmd.Flags().BoolVarP(&allFlag, "all", "a", false, "Cleanup all enviroments.")
+	cleanupCmd.Flags().BoolVarP(&quickFlag, "quick", "q", false, "Cleanup most of enviroments, but leave hololib and pkgs cache intact.")
 	cleanupCmd.Flags().IntVarP(&daysOption, "days", "", 30, "What is the limit in days to keep environments for (deletes environments older than this).")
 }

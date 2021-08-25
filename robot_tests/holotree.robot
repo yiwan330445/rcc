@@ -121,6 +121,18 @@ Goal: Liveonly works and uses virtual holotree
   Must Have   (virtual)
   Must Have   live only
 
+Goal: Do quick cleanup on environments
+  Step        build/rcc config cleanup --controller citests --quick
+  Must Exist  %{ROBOCORP_HOME}/bin/micromamba
+  Must Exist  %{ROBOCORP_HOME}/hololib/
+  Must Exist  %{ROBOCORP_HOME}/pkgs/
+  Wont Exist  %{ROBOCORP_HOME}/holotree/
+  Wont Exist  %{ROBOCORP_HOME}/base/
+  Wont Exist  %{ROBOCORP_HOME}/live/
+  Wont Exist  %{ROBOCORP_HOME}/pipcache/
+  Use STDERR
+  Must Have   OK
+
 Goal: Liveonly works and uses virtual holotree and can give output in JSON form
   Step        build/rcc ht vars --liveonly --space jam --controller citests --json robot_tests/certificates.yaml --config tmp/alternative.yaml --timeline
   Must Be Json Response

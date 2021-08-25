@@ -217,7 +217,7 @@ Goal: See diagnostics as valid JSON form
   Must Be Json Response
 
 Goal: Simulate issue report sending with dryrun
-  Step        build/rcc feedback issue --dryrun --report robot_tests/report.json --attachments robot_tests/conda.yaml
+  Step        build/rcc feedback issue --controller citests --dryrun --report robot_tests/report.json --attachments robot_tests/conda.yaml
   Must Have   "report":
   Must Have   "zipfile":
   Must Have   "installationId":

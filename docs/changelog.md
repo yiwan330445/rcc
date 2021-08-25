@@ -1,6 +1,11 @@
 # rcc change log
 
-## v10.8.1 (date: 20.8.2021)
+## v10.9.0 (date: 25.8.2021)
+
+- added --quick option to `rcc config cleanup` command to provide
+  partial cleanup, but leave hololib and pkgs cache intact
+
+## v10.8.1 (date: 24.8.2021)
 
 - holotree check command now removes orphan hololib files
 - environment creation metrics added on failure cases

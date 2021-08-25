@@ -57,27 +57,37 @@ func orphanCleanup(dryrun bool) error {
 	return nil
 }
 
-func spotlessCleanup(dryrun bool) error {
+func quickCleanup(dryrun bool) error {
 	if dryrun {
 		common.Log("Would be removing:")
 		common.Log("- %v", common.BaseLocation())
 		common.Log("- %v", common.LiveLocation())
 		common.Log("- %v", common.HolotreeLocation())
-		common.Log("- %v", common.HololibLocation())
 		common.Log("- %v", common.PipCache())
-		common.Log("- %v", MambaPackages())
-		common.Log("- %v", BinMicromamba())
 		common.Log("- %v", RobocorpTempRoot())
+		common.Log("- %v", MinicondaLocation())
 		return nil
 	}
 	safeRemove("cache", common.HolotreeLocation())
-	safeRemove("cache", common.HololibLocation())
 	safeRemove("cache", common.BaseLocation())
 	safeRemove("cache", common.LiveLocation())
 	safeRemove("cache", common.PipCache())
-	safeRemove("cache", MambaPackages())
 	safeRemove("temp", RobocorpTempRoot())
+	safeRemove("cache", MinicondaLocation())
+	return nil
+}
+
+func spotlessCleanup(dryrun bool) error {
+	quickCleanup(dryrun)
+	if dryrun {
+		common.Log("- %v", BinMicromamba())
+		common.Log("- %v", common.HololibLocation())
+		common.Log("- %v", MambaPackages())
+		return nil
+	}
 	safeRemove("executable", BinMicromamba())
+	safeRemove("cache", common.HololibLocation())
+	safeRemove("cache", MambaPackages())
 	return nil
 }
 
@@ -114,7 +124,7 @@ func cleanupTemp(deadline time.Time, dryrun bool) error {
 	return nil
 }
 
-func Cleanup(daylimit int, dryrun, orphans, all, miniconda, micromamba bool) error {
+func Cleanup(daylimit int, dryrun, orphans, quick, all, miniconda, micromamba bool) error {
 	lockfile := common.RobocorpLock()
 	locker, err := pathlib.Locker(lockfile, 30000)
 	if err != nil {
@@ -122,6 +132,10 @@ func Cleanup(daylimit int, dryrun, orphans, all, miniconda, micromamba bool) err
 		return err
 	}
 	defer locker.Release()
+
+	if quick {
+		return quickCleanup(dryrun)
+	}
 
 	if all {
 		return spotlessCleanup(dryrun)
