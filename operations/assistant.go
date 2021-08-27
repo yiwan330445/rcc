@@ -248,11 +248,18 @@ func BackgroundAssistantHeartbeat(cancel chan bool, client cloud.Client, account
 		case _ = <-cancel:
 			common.Trace("Stopping assistant heartbeat.")
 			return
-		case <-time.After(60 * time.Second):
+		case <-time.After(37 * time.Second):
 			counter += 1
 			common.Trace("Sending assistant heartbeat #%d.", counter)
-			go BeatAssistantRun(client, account, workspaceId, assistantId, runId, counter)
+			go beatAssistantRunBackground(client, account, workspaceId, assistantId, runId, counter)
 		}
+	}
+}
+
+func beatAssistantRunBackground(client cloud.Client, account *account, workspaceId, assistantId, runId string, beat int) {
+	err := BeatAssistantRun(client, account, workspaceId, assistantId, runId, beat)
+	if err != nil {
+		common.Log("Problem sendig assistant heartbeat: %s", err)
 	}
 }
 

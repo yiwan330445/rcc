@@ -1,5 +1,11 @@
 # rcc change log
 
+## v10.9.1 (date: 27.8.2021)
+
+- made problems in assistant heartbeats visible
+- changed assistant heartbeat from 60s to 37s to prevent collision with
+  DNS TTL value
+
 ## v10.9.0 (date: 25.8.2021)
 
 - added --quick option to `rcc config cleanup` command to provide
