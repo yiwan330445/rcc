@@ -1,5 +1,9 @@
 # rcc change log
 
+## v10.9.2 (date: 30.8.2021)
+
+- bugfix: long running assistant run now updates access tokens correctly
+
 ## v10.9.1 (date: 27.8.2021)
 
 - made problems in assistant heartbeats visible

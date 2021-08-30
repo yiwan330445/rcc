@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/robocorp/rcc/cloud"
 	"github.com/robocorp/rcc/common"
@@ -173,13 +174,14 @@ func AuthorizeClaims(accountName string, claims *Claims) (Token, error) {
 }
 
 func AuthorizeCommand(client cloud.Client, account *account, claims *Claims) (Token, error) {
+	when := time.Now().Unix()
 	found, ok := account.Cached(claims.Name, claims.Url)
 	if ok {
 		cached := make(Token)
 		cached["endpoint"] = client.Endpoint()
 		cached["requested"] = claims
 		cached["status"] = "200"
-		cached["when"] = common.When
+		cached["when"] = when
 		cached["token"] = found
 		return cached, nil
 	}
@@ -190,7 +192,7 @@ func AuthorizeCommand(client cloud.Client, account *account, claims *Claims) (To
 	}
 	bodyHash := Digest(body)
 	size := len([]byte(body))
-	nonce := fmt.Sprintf("%d", common.When)
+	nonce := fmt.Sprintf("%d", when)
 	signed := HmacSignature(claims, account.Secret, nonce, bodyHash)
 	request := client.NewRequest(claims.Url)
 	request.Headers[contentType] = applicationJson
@@ -210,11 +212,11 @@ func AuthorizeCommand(client cloud.Client, account *account, claims *Claims) (To
 	token["endpoint"] = client.Endpoint()
 	token["requested"] = claims
 	token["status"] = response.Status
-	token["when"] = common.When
-	account.WasVerified(common.When)
+	token["when"] = when
+	account.WasVerified(when)
 	trueToken, ok := token["token"].(string)
 	if ok {
-		deadline := common.When + int64(3*(claims.ExpiresIn/4))
+		deadline := when + int64(3*(claims.ExpiresIn/4))
 		account.CacheToken(claims.Name, claims.Url, trueToken, deadline)
 	}
 	return token, nil
@@ -237,9 +239,10 @@ func DeleteAccount(client cloud.Client, account *account) error {
 }
 
 func UserinfoCommand(client cloud.Client, account *account) (*UserInfo, error) {
+	when := time.Now().Unix()
 	claims := VerificationClaims()
 	bodyHash := Digest("{}")
-	nonce := fmt.Sprintf("%d", common.When)
+	nonce := fmt.Sprintf("%d", when)
 	signed := HmacSignature(claims, account.Secret, nonce, bodyHash)
 	request := client.NewRequest(claims.Url)
 	request.Headers[contentType] = applicationJson
@@ -258,9 +261,9 @@ func UserinfoCommand(client cloud.Client, account *account) (*UserInfo, error) {
 	link["endpoint"] = client.Endpoint()
 	link["requested"] = claims
 	link["status"] = response.Status
-	link["when"] = common.When
+	link["when"] = when
 	result.Link = link
-	account.WasVerified(common.When)
+	account.WasVerified(when)
 	account.UpdateDetails(result.User)
 	return &result, nil
 }
