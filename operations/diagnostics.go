@@ -72,7 +72,10 @@ func RunDiagnostics() *common.DiagnosticStatus {
 
 	// checks
 	result.Checks = append(result.Checks, robocorpHomeCheck())
-	result.Checks = append(result.Checks, pythonPathCheck())
+	result.Checks = append(result.Checks, anyPathCheck("PYTHONPATH"))
+	result.Checks = append(result.Checks, anyPathCheck("PLAYWRIGHT_BROWSERS_PATH"))
+	result.Checks = append(result.Checks, anyPathCheck("NODE_OPTIONS"))
+	result.Checks = append(result.Checks, anyPathCheck("NODE_PATH"))
 	if !common.OverrideSystemRequirements() {
 		result.Checks = append(result.Checks, longPathSupportCheck())
 	}
@@ -112,21 +115,21 @@ func longPathSupportCheck() *common.DiagnosticCheck {
 	}
 }
 
-func pythonPathCheck() *common.DiagnosticCheck {
+func anyPathCheck(key string) *common.DiagnosticCheck {
 	supportGeneralUrl := settings.Global.DocsLink("troubleshooting")
-	pythonPath := os.Getenv("PYTHONPATH")
-	if len(pythonPath) > 0 {
+	anyPath := os.Getenv(key)
+	if len(anyPath) > 0 {
 		return &common.DiagnosticCheck{
 			Type:    "OS",
 			Status:  statusWarning,
-			Message: fmt.Sprintf("PYTHONPATH is set to %q. This may cause problems.", pythonPath),
+			Message: fmt.Sprintf("%s is set to %q. This may cause problems.", key, anyPath),
 			Link:    supportGeneralUrl,
 		}
 	}
 	return &common.DiagnosticCheck{
 		Type:    "OS",
 		Status:  statusOk,
-		Message: "PYTHONPATH is not set, which is good.",
+		Message: fmt.Sprintf("%s is not set, which is good.", key),
 		Link:    supportGeneralUrl,
 	}
 }

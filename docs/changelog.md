@@ -1,5 +1,10 @@
 # rcc change log
 
+## v10.9.3 (date: 31.8.2021)
+
+- added diagnostic warnings on `PLAYWRIGHT_BROWSERS_PATH`, `NODE_OPTIONS`,
+  and `NODE_PATH` environment variables when they are set
+
 ## v10.9.2 (date: 30.8.2021)
 
 - bugfix: long running assistant run now updates access tokens correctly
