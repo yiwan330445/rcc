@@ -2,7 +2,9 @@ package cmd
 
 import (
 	"fmt"
+	"path/filepath"
 
+	"github.com/robocorp/rcc/anywork"
 	"github.com/robocorp/rcc/common"
 	"github.com/robocorp/rcc/htfs"
 	"github.com/robocorp/rcc/pretty"
@@ -26,10 +28,29 @@ func checkHolotreeIntegrity() {
 	err = fs.Treetop(htfs.IntegrityCheck(collector))
 	common.Timeline("holotree integrity report")
 	pretty.Guard(err == nil, 4, "%s", err)
+	purge := make(map[string]bool)
 	for k, v := range collector {
 		fmt.Println(k, v)
+		found, ok := known[filepath.Base(k)]
+		if !ok {
+			continue
+		}
+		for catalog, _ := range found {
+			purge[catalog] = true
+		}
 	}
-	pretty.Guard(len(collector) == 0, 5, "Size: %d", len(collector))
+	redo := false
+	for k, _ := range purge {
+		fmt.Println("Purge catalog:", k)
+		redo = true
+		anywork.Backlog(htfs.RemoveFile(k))
+	}
+	if redo {
+		pretty.Warning("Some catalogs were purged. Run this check command again, please!")
+	}
+	err = anywork.Sync()
+	pretty.Guard(err == nil, 5, "%s", err)
+	pretty.Guard(len(collector) == 0, 6, "Size: %d", len(collector))
 }
 
 var holotreeCheckCmd = &cobra.Command{

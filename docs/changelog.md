@@ -1,5 +1,9 @@
 # rcc change log
 
+## v10.9.4 (date: 31.8.2021)
+
+- invalidating hololib catalogs with broken files in hololib
+
 ## v10.9.3 (date: 31.8.2021)
 
 - added diagnostic warnings on `PLAYWRIGHT_BROWSERS_PATH`, `NODE_OPTIONS`,

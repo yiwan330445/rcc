@@ -82,7 +82,7 @@ func IntegrityCheck(result map[string]string) Treetop {
 	return tool
 }
 
-func Hasher(known map[string]string) Filetask {
+func Hasher(known map[string]map[string]bool) Filetask {
 	return func(fullpath string, details *File) anywork.Work {
 		return func() {
 			_, ok := known[details.Name]
@@ -378,18 +378,24 @@ func ZipRoot(library MutableLibrary, fs *Root, sink Zipper) Treetop {
 	return tool
 }
 
-func LoadHololibHashes() map[string]string {
-	roots := LoadCatalogs()
+func LoadHololibHashes() map[string]map[string]bool {
+	catalogs, roots := LoadCatalogs()
 	slots := make([]map[string]string, len(roots))
 	for at, root := range roots {
 		anywork.Backlog(DigestLoader(root, at, slots))
 	}
-	result := make(map[string]string)
+	result := make(map[string]map[string]bool)
 	runtime.Gosched()
 	anywork.Sync()
-	for _, slot := range slots {
-		for k, v := range slot {
-			result[k] = v
+	for at, slot := range slots {
+		catalog := catalogs[at]
+		for k, _ := range slot {
+			found, ok := result[k]
+			if !ok {
+				found = make(map[string]bool)
+				result[k] = found
+			}
+			found[catalog] = true
 		}
 	}
 	return result
@@ -408,7 +414,7 @@ func DigestLoader(root *Root, at int, slots []map[string]string) anywork.Work {
 	}
 }
 
-func LoadCatalogs() []*Root {
+func LoadCatalogs() ([]string, []*Root) {
 	common.Timeline("catalog load start")
 	defer common.Timeline("catalog load done")
 	catalogs := Catalogs()
@@ -416,10 +422,11 @@ func LoadCatalogs() []*Root {
 	for at, catalog := range catalogs {
 		fullpath := filepath.Join(common.HololibCatalogLocation(), catalog)
 		anywork.Backlog(CatalogLoader(fullpath, at, roots))
+		catalogs[at] = fullpath
 	}
 	runtime.Gosched()
 	anywork.Sync()
-	return roots
+	return catalogs, roots
 }
 
 func CatalogLoader(catalog string, at int, roots []*Root) anywork.Work {
