@@ -15,6 +15,7 @@ used in task context locally.`,
 	PersistentPreRun: func(cmd *cobra.Command, args []string) {
 		settings.CriticalEnvironmentSettingsCheck()
 	},
+	Hidden: true,
 }
 
 func init() {

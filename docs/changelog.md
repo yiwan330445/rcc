@@ -1,5 +1,12 @@
 # rcc change log
 
+## v11.0.0 (date: 6.9.2021) UNSTABLE
+
+- BREAKING CHANGES (ongoing work, small steps, considered unstable) and goal
+  is to remove old base/live environment handling and make holotree default
+  and only way to manage environments
+- setting "user" as default space for all commands that need environments
+
 ## v10.9.4 (date: 31.8.2021)
 
 - invalidating hololib catalogs with broken files in hololib

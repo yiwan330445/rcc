@@ -41,5 +41,5 @@ var holotreeDeleteCmd = &cobra.Command{
 func init() {
 	holotreeCmd.AddCommand(holotreeDeleteCmd)
 	holotreeDeleteCmd.Flags().BoolVarP(&dryFlag, "dryrun", "d", false, "Don't delete environments, just show what would happen.")
-	holotreeDeleteCmd.Flags().StringVarP(&common.HolotreeSpace, "space", "s", "", "Client specific name to identify environment to delete.")
+	holotreeDeleteCmd.Flags().StringVarP(&common.HolotreeSpace, "space", "s", "user", "Client specific name to identify environment to delete.")
 }

@@ -16,7 +16,7 @@ Prepare Local
   Set Environment Variable  ROBOCORP_HOME  tmp/robocorp
 
   Comment     Verify micromamba is installed or download and install it.
-  Step        build/rcc env new robot_tests/conda.yaml
+  Step        build/rcc ht vars robot_tests/conda.yaml
   Must Exist  %{ROBOCORP_HOME}/bin/
   Must Exist  %{ROBOCORP_HOME}/base/
   Must Exist  %{ROBOCORP_HOME}/live/

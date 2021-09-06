@@ -44,5 +44,5 @@ func init() {
 	scriptCmd.Flags().StringVarP(&robotFile, "robot", "r", "robot.yaml", "Full path to the 'robot.yaml' configuration file.")
 	scriptCmd.Flags().BoolVarP(&forceFlag, "force", "f", false, "Force conda cache update (only for new environments).")
 	scriptCmd.Flags().BoolVarP(&interactiveFlag, "interactive", "", false, "Allow robot to be interactive in terminal/command prompt. For development only, not for production!")
-	scriptCmd.Flags().StringVarP(&common.HolotreeSpace, "space", "s", "", "Client specific name to identify this environment.")
+	scriptCmd.Flags().StringVarP(&common.HolotreeSpace, "space", "s", "user", "Client specific name to identify this environment.")
 }

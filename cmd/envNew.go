@@ -16,6 +16,7 @@ When given multiple conda.yaml files, they will be merged together and the
 end result will be a composite environment.`,
 	Args: cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
+		pretty.Exit(42, "DEPRECATED: env commands should not be used anymore!")
 		if common.DebugFlag {
 			defer common.Stopwatch("New environment creation lasted").Report()
 		}

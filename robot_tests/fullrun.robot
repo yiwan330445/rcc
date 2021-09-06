@@ -7,7 +7,7 @@ Resource  resources.robot
 
 Goal: Show rcc version information.
   Step        build/rcc version --controller citests
-  Must Have   v10.
+  Must Have   v11.
 
 Goal: Show rcc license information.
   Step        build/rcc man license --controller citests
@@ -112,13 +112,13 @@ Goal: Run task in clean temporary directory.
   Must Have   1 task, 1 passed, 0 failed
   Use STDERR
   Must Have   rpaframework
-  Must Have   Progress: 0/6
-  Must Have   Progress: 1/6
+  Wont Have   Progress: 0/6
+  Wont Have   Progress: 1/6
   Wont Have   Progress: 2/6
   Wont Have   Progress: 3/6
   Wont Have   Progress: 4/6
   Wont Have   Progress: 5/6
-  Must Have   Progress: 6/6
+  Wont Have   Progress: 6/6
   Must Have   OK.
 
 Goal: Merge two different conda.yaml files with conflict fails

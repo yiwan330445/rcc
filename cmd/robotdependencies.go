@@ -59,5 +59,5 @@ func init() {
 	robotDependenciesCmd.Flags().BoolVarP(&exportDependenciesFlag, "export", "e", false, "Export execution environment description into robot dependencies.yaml, overwriting previous if exists.")
 	robotDependenciesCmd.Flags().BoolVarP(&forceFlag, "force", "f", false, "Forced environment update.")
 	robotDependenciesCmd.Flags().StringVarP(&robotFile, "robot", "r", "robot.yaml", "Full path to the 'robot.yaml' configuration file.")
-	robotDependenciesCmd.Flags().StringVarP(&common.HolotreeSpace, "space", "s", "", "Space to use for execution environment dependencies.")
+	robotDependenciesCmd.Flags().StringVarP(&common.HolotreeSpace, "space", "s", "user", "Space to use for execution environment dependencies.")
 }

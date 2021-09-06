@@ -98,8 +98,7 @@ func init() {
 	holotreeVariablesCmd.Flags().IntVarP(&validityTime, "minutes", "m", 0, "How many minutes the authorization should be valid for. <optional>")
 	holotreeVariablesCmd.Flags().StringVarP(&accountName, "account", "a", "", "Account used for workspace. <optional>")
 
-	holotreeVariablesCmd.Flags().StringVarP(&common.HolotreeSpace, "space", "s", "", "Client specific name to identify this environment.")
-	holotreeVariablesCmd.MarkFlagRequired("space")
+	holotreeVariablesCmd.Flags().StringVarP(&common.HolotreeSpace, "space", "s", "user", "Client specific name to identify this environment.")
 	holotreeVariablesCmd.Flags().BoolVarP(&holotreeForce, "force", "f", false, "Force environment creation with refresh.")
 	holotreeVariablesCmd.Flags().BoolVarP(&holotreeJson, "json", "j", false, "Show environment as JSON.")
 }
