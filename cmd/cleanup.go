@@ -40,7 +40,7 @@ func init() {
 	cleanupCmd.Flags().BoolVarP(&orphanFlag, "orphans", "o", false, "Cleanup orphan, unreachable enviroments.")
 	cleanupCmd.Flags().BoolVarP(&minicondaFlag, "miniconda", "m", false, "Remove miniconda3 installation (replaced by micromamba).")
 	cleanupCmd.Flags().BoolVarP(&micromambaFlag, "micromamba", "", false, "Remove micromamba installation.")
-	cleanupCmd.Flags().BoolVarP(&allFlag, "all", "a", false, "Cleanup all enviroments.")
+	cleanupCmd.Flags().BoolVarP(&allFlag, "all", "", false, "Cleanup all enviroments.")
 	cleanupCmd.Flags().BoolVarP(&quickFlag, "quick", "q", false, "Cleanup most of enviroments, but leave hololib and pkgs cache intact.")
 	cleanupCmd.Flags().IntVarP(&daysOption, "days", "", 30, "What is the limit in days to keep environments for (deletes environments older than this).")
 }

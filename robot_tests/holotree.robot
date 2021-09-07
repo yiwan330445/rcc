@@ -83,7 +83,6 @@ Goal: See variables from specific environment with robot.yaml knowledge
   Wont Have   RC_WORKSPACE_ID=
   Use STDERR
   Wont Have   (virtual)
-  Must Have   live only
 
 Goal: See variables from specific environment with robot.yaml knowledge in JSON form
   Step        build/rcc holotree variables --space jam --controller citests --json conda/testdata/conda.yaml --config tmp/alternative.yaml -r tmp/holotin/robot.yaml -e tmp/holotin/devdata/env.json

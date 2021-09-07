@@ -1,5 +1,10 @@
 # rcc change log
 
+## v11.0.1 (date: 7.9.2021) UNSTABLE
+
+- BREAKING CHANGES (ongoing work, see v11.0.0 for more details)
+- fixing robot tests
+
 ## v11.0.0 (date: 6.9.2021) UNSTABLE
 
 - BREAKING CHANGES (ongoing work, small steps, considered unstable) and goal

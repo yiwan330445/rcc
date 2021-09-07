@@ -58,6 +58,7 @@ func NewEnvironment(force bool, condafile, holozip string) (label string, err er
 
 	path, err := library.Restore(holotreeBlueprint, []byte(common.ControllerIdentity()), []byte(common.HolotreeSpace))
 	fail.On(err != nil, "Failed to restore blueprint %q, reason: %v", string(holotreeBlueprint), err)
+	common.EnvironmentHash = BlueprintHash(holotreeBlueprint)
 	return path, nil
 }
 

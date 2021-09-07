@@ -122,21 +122,23 @@ Goal: Run task in clean temporary directory.
   Must Have   OK.
 
 Goal: Merge two different conda.yaml files with conflict fails
-  Step        build/rcc env new --controller citests conda/testdata/conda.yaml conda/testdata/other.yaml  1
+  Step        build/rcc holotree vars --controller citests conda/testdata/conda.yaml conda/testdata/other.yaml  5
   Use STDERR
   Must Have   robotframework=3.1 vs. robotframework=3.2
 
 Goal: Merge two different conda.yaml files without conflict passes
-  Step        build/rcc env new --controller citests conda/testdata/other.yaml conda/testdata/third.yaml --silent
-  Must Have   0cc761cfb9692a36
+  Step        build/rcc holotree vars --controller citests conda/testdata/other.yaml conda/testdata/third.yaml --silent
+  Must Have   5bea0c1d2419493e
+  Must Have   4e67cd8d4_9fcd2534
 
 Goal: Can list environments as JSON
-  Step        build/rcc env list --controller citests --json
-  Must Have   0cc761cfb9692a36
+  Step        build/rcc holotree list --controller citests --json
+  Must Have   4e67cd8d4_9fcd2534
+  Must Have   5bea0c1d2419493e
   Must Be Json Response
 
 Goal: See variables from specific environment without robot.yaml knowledge
-  Step        build/rcc env variables --controller citests conda/testdata/conda.yaml
+  Step        build/rcc holotree variables --controller citests conda/testdata/conda.yaml
   Must Have   ROBOCORP_HOME=
   Must Have   PYTHON_EXE=
   Must Have   CONDA_DEFAULT_ENV=rcc
@@ -155,10 +157,10 @@ Goal: See variables from specific environment without robot.yaml knowledge
   Wont Have   PYTHONPATH=
   Wont Have   ROBOT_ROOT=
   Wont Have   ROBOT_ARTIFACTS=
-  Must Have   f0a9e281269b31ea
+  Must Have   54399f4561ae95af
 
 Goal: See variables from specific environment with robot.yaml but without task
-  Step        build/rcc env variables --controller citests -r tmp/fluffy/robot.yaml
+  Step        build/rcc holotree variables --controller citests -r tmp/fluffy/robot.yaml
   Must Have   ROBOCORP_HOME=
   Must Have   PYTHON_EXE=
   Must Have   CONDA_DEFAULT_ENV=rcc
@@ -171,7 +173,7 @@ Goal: See variables from specific environment with robot.yaml but without task
   Must Have   PYTHONNOUSERSITE=1
   Must Have   TEMP=
   Must Have   TMP=
-  Must Have   RCC_ENVIRONMENT_HASH=199e494e4c733ef3
+  Must Have   RCC_ENVIRONMENT_HASH=2e3ef3ffef58c9ec
   Must Have   RCC_INSTALLATION_ID=
   Must Have   RCC_TRACKING_ALLOWED=
   Must Have   PYTHONPATH=
@@ -179,11 +181,11 @@ Goal: See variables from specific environment with robot.yaml but without task
   Must Have   ROBOT_ARTIFACTS=
 
 Goal: See variables from specific environment without robot.yaml knowledge in JSON form
-  Step        build/rcc env variables --controller citests --json conda/testdata/conda.yaml
+  Step        build/rcc holotree variables --controller citests --json conda/testdata/conda.yaml
   Must Be Json Response
 
 Goal: See variables from specific environment with robot.yaml knowledge
-  Step        build/rcc env variables --task "Run Example task" --controller citests conda/testdata/conda.yaml --config tmp/alternative.yaml -r tmp/fluffy/robot.yaml -e tmp/fluffy/devdata/env.json
+  Step        build/rcc holotree variables --controller citests conda/testdata/conda.yaml --config tmp/alternative.yaml -r tmp/fluffy/robot.yaml -e tmp/fluffy/devdata/env.json
   Must Have   ROBOCORP_HOME=
   Must Have   PYTHON_EXE=
   Must Have   CONDA_DEFAULT_ENV=rcc
@@ -209,7 +211,7 @@ Goal: See variables from specific environment with robot.yaml knowledge
   Wont Have   RC_WORKSPACE_ID=
 
 Goal: See variables from specific environment with robot.yaml knowledge in JSON form
-  Step        build/rcc env variables --task "Run Example task" --controller citests --json conda/testdata/conda.yaml --config tmp/alternative.yaml -r tmp/fluffy/robot.yaml -e tmp/fluffy/devdata/env.json
+  Step        build/rcc holotree variables --controller citests --json conda/testdata/conda.yaml --config tmp/alternative.yaml -r tmp/fluffy/robot.yaml -e tmp/fluffy/devdata/env.json
   Must Be Json Response
 
 Goal: See diagnostics as valid JSON form
