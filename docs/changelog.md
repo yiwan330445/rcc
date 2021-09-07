@@ -1,5 +1,11 @@
 # rcc change log
 
+## v10.10.0 (date: 7.9.2021)
+
+- this is series 10 maitenance branch
+- rcc config cleanup improvement, so that not partial cleanup is done on
+  holotree structure (on Windows, respecting locked environments)
+
 ## v10.9.4 (date: 31.8.2021)
 
 - invalidating hololib catalogs with broken files in hololib
