@@ -10,22 +10,24 @@ import (
 	"github.com/robocorp/rcc/pretty"
 )
 
-func safeRemove(hint, pathling string) {
+func safeRemove(hint, pathling string) error {
 	var err error
 	if !pathlib.Exists(pathling) {
 		common.Debug("[%s] Missing %v, not need to remove.", hint, pathling)
-		return
+		return nil
 	}
 	if pathlib.IsDir(pathling) {
-		err = os.RemoveAll(pathling)
+		err = renameRemove(pathling)
 	} else {
 		err = os.Remove(pathling)
 	}
 	if err != nil {
 		pretty.Warning("[%s] %s -> %v", hint, pathling, err)
+		pretty.Warning("Make sure that you have rights to %q, and that nothing has locks in there.", pathling)
 	} else {
 		common.Debug("[%s] Removed %v.", hint, pathling)
 	}
+	return err
 }
 
 func doCleanup(fullpath string, dryrun bool) error {
@@ -62,33 +64,37 @@ func quickCleanup(dryrun bool) error {
 		common.Log("Would be removing:")
 		common.Log("- %v", common.BaseLocation())
 		common.Log("- %v", common.LiveLocation())
-		common.Log("- %v", common.HolotreeLocation())
-		common.Log("- %v", common.PipCache())
-		common.Log("- %v", RobocorpTempRoot())
 		common.Log("- %v", MinicondaLocation())
+		common.Log("- %v", common.PipCache())
+		common.Log("- %v", common.HolotreeLocation())
+		common.Log("- %v", RobocorpTempRoot())
 		return nil
 	}
-	safeRemove("cache", common.HolotreeLocation())
 	safeRemove("cache", common.BaseLocation())
 	safeRemove("cache", common.LiveLocation())
-	safeRemove("cache", common.PipCache())
-	safeRemove("temp", RobocorpTempRoot())
 	safeRemove("cache", MinicondaLocation())
-	return nil
+	safeRemove("cache", common.PipCache())
+	err := safeRemove("cache", common.HolotreeLocation())
+	if err != nil {
+		return err
+	}
+	return safeRemove("temp", RobocorpTempRoot())
 }
 
 func spotlessCleanup(dryrun bool) error {
-	quickCleanup(dryrun)
+	err := quickCleanup(dryrun)
+	if err != nil {
+		return err
+	}
 	if dryrun {
+		common.Log("- %v", MambaPackages())
 		common.Log("- %v", BinMicromamba())
 		common.Log("- %v", common.HololibLocation())
-		common.Log("- %v", MambaPackages())
 		return nil
 	}
-	safeRemove("executable", BinMicromamba())
-	safeRemove("cache", common.HololibLocation())
 	safeRemove("cache", MambaPackages())
-	return nil
+	safeRemove("executable", BinMicromamba())
+	return safeRemove("cache", common.HololibLocation())
 }
 
 func cleanupTemp(deadline time.Time, dryrun bool) error {

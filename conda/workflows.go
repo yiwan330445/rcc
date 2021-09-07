@@ -80,7 +80,7 @@ func reuseExistingLive(key string) (bool, error) {
 		touchMetafile(candidate)
 		return true, nil
 	}
-	err := removeClone(candidate)
+	err := renameRemove(candidate)
 	if err != nil {
 		return false, err
 	}
@@ -137,7 +137,7 @@ func (it InstallObserver) Write(content []byte) (int, error) {
 func (it InstallObserver) HasFailures(targetFolder string) bool {
 	if it["safetyerror"] && it["corrupted"] && len(it) > 2 {
 		cloud.BackgroundMetric(common.ControllerIdentity(), "rcc.env.creation.failure", common.Version)
-		removeClone(targetFolder)
+		renameRemove(targetFolder)
 		location := filepath.Join(common.RobocorpHome(), "pkgs")
 		common.Log("%sWARNING! Conda environment is unstable, see above error.%s", pretty.Red, pretty.Reset)
 		common.Log("%sWARNING! To fix it, try to remove directory: %v%s", pretty.Red, location, pretty.Reset)
@@ -153,7 +153,7 @@ func newLive(yaml, condaYaml, requirementsText, key string, force, freshInstall 
 	targetFolder := LiveFrom(key)
 	common.Debug("===  new live  ---  pre cleanup phase ===")
 	common.Timeline("pre cleanup phase.")
-	err := removeClone(targetFolder)
+	err := renameRemove(targetFolder)
 	if err != nil {
 		return false, err
 	}
@@ -166,7 +166,7 @@ func newLive(yaml, condaYaml, requirementsText, key string, force, freshInstall 
 		common.Timeline("second try.")
 		common.ForceDebug()
 		common.Log("Retry! First try failed ... now retrying with debug and force options!")
-		err = removeClone(targetFolder)
+		err = renameRemove(targetFolder)
 		if err != nil {
 			return false, err
 		}
@@ -486,14 +486,14 @@ func FindEnvironment(prefix string) []string {
 }
 
 func RemoveEnvironment(label string) error {
-	err := removeClone(LiveFrom(label))
+	err := renameRemove(LiveFrom(label))
 	if err != nil {
 		return err
 	}
-	return removeClone(TemplateFrom(label))
+	return renameRemove(TemplateFrom(label))
 }
 
-func removeClone(location string) error {
+func renameRemove(location string) error {
 	if !pathlib.IsDir(location) {
 		common.Trace("Location %q is not directory, not removed.", location)
 		return nil
@@ -525,7 +525,7 @@ func removeClone(location string) error {
 func CloneFromTo(source, target string, copier pathlib.Copier) (bool, error) {
 	common.Trace("Start CloneFromTo: %q -> %q", source, target)
 	defer common.Trace("Done CloneFromTo: %q -> %q", source, target)
-	err := removeClone(target)
+	err := renameRemove(target)
 	if err != nil {
 		return false, err
 	}
@@ -535,7 +535,7 @@ func CloneFromTo(source, target string, copier pathlib.Copier) (bool, error) {
 		if common.Liveonly {
 			common.Debug("Clone source %q is dirty, but wont remove since --liveonly flag.", source)
 		} else {
-			err = removeClone(source)
+			err = renameRemove(source)
 			if err != nil {
 				return false, fmt.Errorf("Source %q is not pristine! And could not remove: %v", source, err)
 			}
@@ -550,7 +550,7 @@ func CloneFromTo(source, target string, copier pathlib.Copier) (bool, error) {
 	}
 	success := cloneFolder(source, target, 100, copier)
 	if !success {
-		err = removeClone(target)
+		err = renameRemove(target)
 		if err != nil {
 			return false, fmt.Errorf("Cloning %q to %q failed! And cleanup failed: %v", source, target, err)
 		}
@@ -565,7 +565,7 @@ func CloneFromTo(source, target string, copier pathlib.Copier) (bool, error) {
 		created := make(map[string]string)
 		createdHash, createdErr := DigestFor(target, created)
 		DiagnoseDirty(source, target, originHash, createdHash, originErr, createdErr, origin, created, false)
-		err = removeClone(target)
+		err = renameRemove(target)
 		if err != nil {
 			return false, fmt.Errorf("Target %q does not match source %q! And cleanup failed: %v!", target, source, err)
 		}

@@ -1,5 +1,10 @@
 # rcc change log
 
+## v11.0.2 (date: 8.9.2021) UNSTABLE
+
+- BREAKING CHANGES (ongoing work, see v11.0.0 for more details)
+- technical work: cherry-picking changes from v10.10.0 into series 11
+
 ## v11.0.1 (date: 7.9.2021) UNSTABLE
 
 - BREAKING CHANGES (ongoing work, see v11.0.0 for more details)
@@ -11,6 +16,12 @@
   is to remove old base/live environment handling and make holotree default
   and only way to manage environments
 - setting "user" as default space for all commands that need environments
+
+## v10.10.0 (date: 7.9.2021)
+
+- this is series 10 maitenance branch
+- rcc config cleanup improvement, so that not partial cleanup is done on
+  holotree structure (on Windows, respecting locked environments)
 
 ## v10.9.4 (date: 31.8.2021)
 
