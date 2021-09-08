@@ -1,5 +1,14 @@
 # rcc change log
 
+## v11.0.3 (date: 8.9.2021) UNSTABLE
+
+- BREAKING CHANGES (ongoing work, see v11.0.0 for more details)
+- removed commands "new", "delete", "list", and "variables" from `rcc env`
+  command set
+- replaced `rcc env hash` with new `rcc holotree hash`, which now calculates
+  blueprint fingerprint hash similar way that env hash but differently
+  because holotree uses siphash algorithm
+
 ## v11.0.2 (date: 8.9.2021) UNSTABLE
 
 - BREAKING CHANGES (ongoing work, see v11.0.0 for more details)

@@ -7,7 +7,6 @@ import (
 
 	"github.com/robocorp/rcc/cloud"
 	"github.com/robocorp/rcc/common"
-	"github.com/robocorp/rcc/conda"
 	"github.com/robocorp/rcc/htfs"
 	"github.com/robocorp/rcc/operations"
 	"github.com/robocorp/rcc/pathlib"
@@ -54,11 +53,7 @@ var prepareCloudCmd = &cobra.Command{
 
 		var label string
 		condafile := config.CondaConfigFile()
-		if len(common.HolotreeSpace) > 0 {
-			label, err = htfs.NewEnvironment(false, condafile, config.Holozip())
-		} else {
-			label, err = conda.NewEnvironment(false, condafile)
-		}
+		label, err = htfs.NewEnvironment(false, condafile, config.Holozip())
 		pretty.Guard(err == nil, 8, "Error: %v", err)
 
 		common.Log("Prepared %q.", label)

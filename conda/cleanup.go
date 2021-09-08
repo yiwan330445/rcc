@@ -168,6 +168,7 @@ func Cleanup(daylimit int, dryrun, orphans, quick, all, miniconda, micromamba bo
 			common.Log("Would be removing %v.", template)
 			continue
 		}
+		// FIXME: remove this when base/live removal is done
 		RemoveEnvironment(template)
 		common.Debug("Removed environment %v.", template)
 	}

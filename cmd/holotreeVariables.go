@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/robocorp/rcc/common"
 	"github.com/robocorp/rcc/conda"
@@ -19,6 +20,46 @@ var (
 	holotreeForce     bool
 	holotreeJson      bool
 )
+
+func asSimpleMap(line string) map[string]string {
+	parts := strings.SplitN(strings.TrimSpace(line), "=", 2)
+	if len(parts) != 2 {
+		return nil
+	}
+	if len(parts[0]) == 0 {
+		return nil
+	}
+	result := make(map[string]string)
+	result["key"] = parts[0]
+	result["value"] = parts[1]
+	return result
+}
+
+func asJson(items []string) error {
+	result := make([]map[string]string, 0, len(items))
+	for _, line := range items {
+		entry := asSimpleMap(line)
+		if entry != nil {
+			result = append(result, entry)
+		}
+	}
+	content, err := operations.NiceJsonOutput(result)
+	if err != nil {
+		return err
+	}
+	common.Stdout("%s\n", content)
+	return nil
+}
+
+func asExportedText(items []string) {
+	prefix := "export"
+	if conda.IsWindows() {
+		prefix = "SET"
+	}
+	for _, line := range items {
+		common.Stdout("%s %s\n", prefix, line)
+	}
+}
 
 func holotreeExpandEnvironment(userFiles []string, packfile, environment, workspace string, validity int, force bool) []string {
 	var extra []string

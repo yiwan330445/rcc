@@ -343,6 +343,7 @@ func ShortDigest(content string) string {
 }
 
 func CalculateComboHash(configurations ...string) (string, error) {
+	// FIXME: Remove this func once live/base is erased from codebase
 	key, _, _, err := temporaryConfig("/dev/null", "/dev/null", false, configurations...)
 	if err != nil {
 		return "", err
