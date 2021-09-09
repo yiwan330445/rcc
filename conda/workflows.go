@@ -474,18 +474,6 @@ func NewEnvironment(force bool, configurations ...string) (string, error) {
 	return "", errors.New("Could not create environment.")
 }
 
-func FindEnvironment(prefix string) []string {
-	prefix = strings.ToLower(prefix)
-	livelist := LiveList()
-	result := make([]string, 0, len(livelist))
-	for _, entry := range livelist {
-		if strings.HasPrefix(entry, prefix) {
-			result = append(result, entry)
-		}
-	}
-	return result
-}
-
 func RemoveEnvironment(label string) error {
 	err := renameRemove(LiveFrom(label))
 	if err != nil {
@@ -595,24 +583,6 @@ func cloneFolder(source, target string, workers int, copier pathlib.Copier) bool
 	}
 
 	return success
-}
-
-func SilentTouch(directory string, when time.Time) bool {
-	handle, err := os.Open(directory)
-	if err != nil {
-		return false
-	}
-	entries, err := handle.Readdir(-1)
-	handle.Close()
-	if err != nil {
-		return false
-	}
-	for _, entry := range entries {
-		if !entry.IsDir() {
-			pathlib.TouchWhen(filepath.Join(directory, entry.Name()), when)
-		}
-	}
-	return true
 }
 
 func copyFolder(source, target string, queue chan copyRequest) bool {

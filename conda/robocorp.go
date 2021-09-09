@@ -192,10 +192,6 @@ func MambaPackages() string {
 	return common.ExpandPath(filepath.Join(common.RobocorpHome(), "pkgs"))
 }
 
-func MambaCache() string {
-	return common.ExpandPath(filepath.Join(MambaPackages(), "cache"))
-}
-
 func asVersion(text string) (uint64, string) {
 	text = strings.TrimSpace(text)
 	multiline := strings.SplitN(text, "\n", 2)
@@ -283,10 +279,6 @@ func LiveFrom(hash string) string {
 
 func TemplateList() []string {
 	return dirnamesFrom(common.BaseLocation())
-}
-
-func LiveList() []string {
-	return dirnamesFrom(common.LiveLocation())
 }
 
 func OrphanList() []string {

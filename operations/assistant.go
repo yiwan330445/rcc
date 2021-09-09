@@ -209,19 +209,6 @@ func IoAsString(source io.Reader) string {
 	return string(body)
 }
 
-func AssistantTreeCommand(client cloud.Client, account *account, workspace string) (*WorkspaceTreeData, error) {
-	response, err := WorkspaceTreeCommandRequest(client, account, workspace)
-	if err != nil {
-		return nil, err
-	}
-	treedata := new(WorkspaceTreeData)
-	err = json.Unmarshal(response.Body, &treedata)
-	if err != nil {
-		return nil, err
-	}
-	return treedata, nil
-}
-
 func ListAssistantsCommand(client cloud.Client, account *account, workspaceId string) ([]Token, error) {
 	credentials, err := summonAssistantToken(client, account, workspaceId)
 	if err != nil {

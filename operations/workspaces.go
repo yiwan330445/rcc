@@ -102,35 +102,6 @@ func WorkspaceTreeCommand(client cloud.Client, account *account, workspace strin
 	return token, nil
 }
 
-func RobotDigestCommand(client cloud.Client, account *account, workspaceId, robotId string) (string, error) {
-	treedata, err := AssistantTreeCommand(client, account, workspaceId)
-	if err != nil {
-		return "", err
-	}
-	if treedata.Robots == nil {
-		return "", fmt.Errorf("Cannot find any valid robots from workspace %v!", workspaceId)
-	}
-	var selected *RobotData = nil
-	for _, robot := range treedata.Robots {
-		if robot.Id == robotId {
-			selected = robot
-			break
-		}
-	}
-	if selected == nil {
-		return "", fmt.Errorf("Cannot find robot %v from workspace %v!", robotId, workspaceId)
-	}
-	found, ok := selected.Package["sha256"]
-	if !ok {
-		return "", fmt.Errorf("Robot %v from workspace %v has no digest available!", robotId, workspaceId)
-	}
-	digest, ok := found.(string)
-	if !ok {
-		return "", fmt.Errorf("Robot %v from workspace %v has no string digest available, only %#v!", robotId, workspaceId, found)
-	}
-	return digest, nil
-}
-
 func NewRobotCommand(client cloud.Client, account *account, workspace, robotName string) (Token, error) {
 	credentials, err := summonEditRobotToken(client, account, workspace)
 	if err != nil {

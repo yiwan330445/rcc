@@ -128,6 +128,11 @@ func FindEnvironment(fragment string) []string {
 	return result
 }
 
+func InstallationPlan(hash string) (string, bool) {
+	finalplan := filepath.Join(common.HolotreeLocation(), hash, "rcc_plan.log")
+	return finalplan, pathlib.IsFile(finalplan)
+}
+
 func RemoveHolotreeSpace(label string) (err error) {
 	defer fail.Around(&err)
 

@@ -36,10 +36,6 @@ var (
 	FileExtensions = []string{".exe", ".com", ".bat", ".cmd", ""}
 )
 
-func ensureHardlinkEnvironmment() (string, error) {
-	return "", fmt.Errorf("Not implemented yet!")
-}
-
 func CondaEnvironment() []string {
 	env := os.Environ()
 	env = append(env, fmt.Sprintf("MAMBA_ROOT_PREFIX=%s", common.RobocorpHome()))

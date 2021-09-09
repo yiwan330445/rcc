@@ -1,7 +1,6 @@
 package operations
 
 import (
-	"encoding/json"
 	"fmt"
 	"regexp"
 	"sort"
@@ -192,11 +191,6 @@ func ListAccounts(json bool) {
 	} else {
 		listAccountsAsText(accounts)
 	}
-}
-
-func EncodeCredentials(target *json.Encoder, force bool) error {
-	VerifyAccounts(force)
-	return target.Encode(smudgeSecrets(findAccounts()))
 }
 
 func loadAccount(label string) *account {

@@ -1,5 +1,14 @@
 # rcc change log
 
+## v11.0.4 (date: 9.9.2021) UNSTABLE
+
+- BREAKING CHANGES (ongoing work, see v11.0.0 for more details)
+- replaced `rcc env plan` with new `rcc holotree plan`, which now shows
+  installation plans from holotree spaces
+- now all env commands are removed, so also toplevel "env" command is gone
+- added naive helper script, deadcode.py, to find dead code
+- cleaned up some dead code branches
+
 ## v11.0.3 (date: 8.9.2021) UNSTABLE
 
 - BREAKING CHANGES (ongoing work, see v11.0.0 for more details)
