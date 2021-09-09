@@ -12,7 +12,7 @@ Instead, how about just `rcc`?
 
 RCC creates virtual execution environments that only show up as files and folders on the user machine, basically containing the complexity described above. The target is that neither setting up nor using these environments must either depend on or change anything to the user's environment.
 
-The [hotel analogy below](/rcc/holotree#a-better-analogy-accommodations) describes the problem and evolution of our solutions.
+The [hotel analogy below](/docs/environment-caching.md#a-better-analogy-accommodations) describes the problem and evolution of our solutions.
 
 ## The second evolution of environment management in RCC
 
