@@ -1,5 +1,12 @@
 # rcc change log
 
+## v11.0.5 (date: 10.9.2021) UNSTABLE
+
+- BREAKING CHANGES (ongoing work, see v11.0.0 for more details)
+- removing conda environment build related code
+- internal clone command was removed
+- side note: there is trail of FIXME comments in code for future work
+
 ## v11.0.4 (date: 9.9.2021) UNSTABLE
 
 - BREAKING CHANGES (ongoing work, see v11.0.0 for more details)

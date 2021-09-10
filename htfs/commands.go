@@ -89,7 +89,6 @@ func RecordEnvironment(tree MutableLibrary, blueprint []byte, force bool) (err e
 
 	// following must be setup here
 	common.StageFolder = tree.Stage()
-	common.Stageonly = true
 	common.Liveonly = true
 
 	common.Debug("Holotree stage is %q.", tree.Stage())

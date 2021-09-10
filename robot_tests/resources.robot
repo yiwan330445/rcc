@@ -18,8 +18,6 @@ Prepare Local
   Comment     Verify micromamba is installed or download and install it.
   Step        build/rcc ht vars robot_tests/conda.yaml
   Must Exist  %{ROBOCORP_HOME}/bin/
-  Must Exist  %{ROBOCORP_HOME}/base/
-  Must Exist  %{ROBOCORP_HOME}/live/
   Must Exist  %{ROBOCORP_HOME}/wheels/
   Must Exist  %{ROBOCORP_HOME}/pipcache/
 

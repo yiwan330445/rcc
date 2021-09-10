@@ -126,8 +126,6 @@ Goal: Do quick cleanup on environments
   Must Exist  %{ROBOCORP_HOME}/hololib/
   Must Exist  %{ROBOCORP_HOME}/pkgs/
   Wont Exist  %{ROBOCORP_HOME}/holotree/
-  Wont Exist  %{ROBOCORP_HOME}/base/
-  Wont Exist  %{ROBOCORP_HOME}/live/
   Wont Exist  %{ROBOCORP_HOME}/pipcache/
   Use STDERR
   Must Have   OK

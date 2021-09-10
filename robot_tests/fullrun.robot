@@ -102,8 +102,6 @@ Goal: Run task in place in debug mode and with timeline.
   Must Have   Status
   Must Have   OK.
   Must Exist  tmp/fluffy/output/environment_*_freeze.yaml
-  Must Exist  %{ROBOCORP_HOME}/base/
-  Must Exist  %{ROBOCORP_HOME}/live/
   Must Exist  %{ROBOCORP_HOME}/wheels/
   Must Exist  %{ROBOCORP_HOME}/pipcache/
 

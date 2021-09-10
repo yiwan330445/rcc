@@ -23,7 +23,6 @@ var (
 	NoCache         bool
 	NoOutputCapture bool
 	Liveonly        bool
-	Stageonly       bool
 	StageFolder     string
 	ControllerType  string
 	HolotreeSpace   string
@@ -132,7 +131,6 @@ func UnifyVerbosityFlags() {
 func UnifyStageHandling() {
 	if len(StageFolder) > 0 {
 		Liveonly = true
-		Stageonly = true
 	}
 }
 

@@ -271,10 +271,8 @@ func TemplateFrom(hash string) string {
 }
 
 func LiveFrom(hash string) string {
-	if common.Stageonly {
-		return common.StageFolder
-	}
-	return common.ExpandPath(filepath.Join(common.LiveLocation(), hash))
+	// FIXME: remove when base/live is erased
+	return common.StageFolder
 }
 
 func TemplateList() []string {
