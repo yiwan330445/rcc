@@ -46,7 +46,7 @@ func RobocorpHome() string {
 }
 
 func RobocorpLock() string {
-	return fmt.Sprintf("%s.lck", LiveLocation())
+	return filepath.Join(RobocorpHome(), "robocorp.lck")
 }
 
 func VerboseEnvironmentBuilding() bool {
@@ -72,14 +72,6 @@ func TemplateLocation() string {
 
 func BinLocation() string {
 	return ensureDirectory(filepath.Join(RobocorpHome(), "bin"))
-}
-
-func LiveLocation() string {
-	return ensureDirectory(filepath.Join(RobocorpHome(), "live"))
-}
-
-func BaseLocation() string {
-	return ensureDirectory(filepath.Join(RobocorpHome(), "base"))
 }
 
 func HololibLocation() string {

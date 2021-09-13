@@ -38,41 +38,32 @@ func doCleanup(fullpath string, dryrun bool) error {
 		common.Log("Would be removing: %s", fullpath)
 		return nil
 	}
-	return os.RemoveAll(fullpath)
+	return safeRemove("path", fullpath)
 }
 
-func orphanCleanup(dryrun bool) error {
-	orphans := OrphanList()
-	if len(orphans) == 0 {
-		return nil
-	}
+func alwaysCleanup(dryrun bool) {
+	base := filepath.Join(common.RobocorpHome(), "base")
+	live := filepath.Join(common.RobocorpHome(), "live")
+	miniconda3 := filepath.Join(common.RobocorpHome(), "miniconda3")
 	if dryrun {
-		common.Log("Would be removing orphans:")
-		for _, orphan := range orphans {
-			common.Log("- %v", orphan)
-		}
-		return nil
+		common.Log("Would be removing:")
+		common.Log("- %v", base)
+		common.Log("- %v", live)
+		common.Log("- %v", miniconda3)
+		return
 	}
-	for _, orphan := range orphans {
-		safeRemove("orphan", orphan)
-	}
-	return nil
+	safeRemove("legacy", base)
+	safeRemove("legacy", live)
+	safeRemove("legacy", miniconda3)
 }
 
 func quickCleanup(dryrun bool) error {
 	if dryrun {
-		common.Log("Would be removing:")
-		common.Log("- %v", common.BaseLocation())
-		common.Log("- %v", common.LiveLocation())
-		common.Log("- %v", MinicondaLocation())
 		common.Log("- %v", common.PipCache())
 		common.Log("- %v", common.HolotreeLocation())
 		common.Log("- %v", RobocorpTempRoot())
 		return nil
 	}
-	safeRemove("cache", common.BaseLocation())
-	safeRemove("cache", common.LiveLocation())
-	safeRemove("cache", MinicondaLocation())
 	safeRemove("cache", common.PipCache())
 	err := safeRemove("cache", common.HolotreeLocation())
 	if err != nil {
@@ -130,7 +121,7 @@ func cleanupTemp(deadline time.Time, dryrun bool) error {
 	return nil
 }
 
-func Cleanup(daylimit int, dryrun, orphans, quick, all, miniconda, micromamba bool) error {
+func Cleanup(daylimit int, dryrun, quick, all, micromamba bool) error {
 	lockfile := common.RobocorpLock()
 	locker, err := pathlib.Locker(lockfile, 30000)
 	if err != nil {
@@ -138,6 +129,8 @@ func Cleanup(daylimit int, dryrun, orphans, quick, all, miniconda, micromamba bo
 		return err
 	}
 	defer locker.Release()
+
+	alwaysCleanup(dryrun)
 
 	if quick {
 		return quickCleanup(dryrun)
@@ -147,37 +140,9 @@ func Cleanup(daylimit int, dryrun, orphans, quick, all, miniconda, micromamba bo
 		return spotlessCleanup(dryrun)
 	}
 
-	deadline := time.Now().Add(-24 * time.Duration(daylimit) * time.Hour)
+	deadline := time.Now().Add(-48 * time.Duration(daylimit) * time.Hour)
 	cleanupTemp(deadline, dryrun)
-	for _, template := range TemplateList() {
-		whenLive, err := LastUsed(LiveFrom(template))
-		if err != nil {
-			return err
-		}
-		if !all && whenLive.After(deadline) {
-			continue
-		}
-		whenBase, err := LastUsed(TemplateFrom(template))
-		if err != nil {
-			return err
-		}
-		if !all && whenBase.After(deadline) {
-			continue
-		}
-		if dryrun {
-			common.Log("Would be removing %v.", template)
-			continue
-		}
-		// FIXME: remove this when base/live removal is done
-		RemoveEnvironment(template)
-		common.Debug("Removed environment %v.", template)
-	}
-	if orphans {
-		err = orphanCleanup(dryrun)
-	}
-	if miniconda && err == nil {
-		err = doCleanup(MinicondaLocation(), dryrun)
-	}
+
 	if micromamba && err == nil {
 		err = doCleanup(MambaPackages(), dryrun)
 	}

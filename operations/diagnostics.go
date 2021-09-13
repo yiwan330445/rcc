@@ -93,8 +93,7 @@ func rccStatusLine() string {
 	misses := xviper.GetInt("stats.env.miss")
 	failures := xviper.GetInt("stats.env.failures")
 	merges := xviper.GetInt("stats.env.merges")
-	templates := len(conda.TemplateList())
-	return fmt.Sprintf("%d environments, %d requests, %d merges, %d hits, %d dirty, %d misses, %d failures | %s", templates, requests, merges, hits, dirty, misses, failures, xviper.TrackingIdentity())
+	return fmt.Sprintf("%d requests, %d merges, %d hits, %d dirty, %d misses, %d failures | %s", requests, merges, hits, dirty, misses, failures, xviper.TrackingIdentity())
 }
 
 func longPathSupportCheck() *common.DiagnosticCheck {

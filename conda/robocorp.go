@@ -74,76 +74,6 @@ func DigestFor(folder string, collect map[string]string) ([]byte, error) {
 	return result, nil
 }
 
-func hashedEntity(name string) bool {
-	return hashPattern.MatchString(name)
-}
-
-func hasDatadir(basedir, metafile string) bool {
-	if filepath.Ext(metafile) != ".meta" {
-		return false
-	}
-	fullpath := filepath.Join(basedir, metafile)
-	stat, err := os.Stat(fullpath[:len(fullpath)-5])
-	return err == nil && stat.IsDir()
-}
-
-func hasMetafile(basedir, subdir string) bool {
-	folder := filepath.Join(basedir, subdir)
-	_, err := os.Stat(metafile(folder))
-	return err == nil
-}
-
-func dirnamesFrom(location string) []string {
-	result := make([]string, 0, 20)
-	handle, err := os.Open(common.ExpandPath(location))
-	if err != nil {
-		common.Error("Warning", err)
-		return result
-	}
-	defer handle.Close()
-	children, err := handle.Readdir(-1)
-	if err != nil {
-		common.Error("Warning", err)
-		return result
-	}
-
-	for _, child := range children {
-		if child.IsDir() && hasMetafile(location, child.Name()) {
-			result = append(result, child.Name())
-		}
-	}
-
-	return result
-}
-
-func orphansFrom(location string) []string {
-	result := make([]string, 0, 20)
-	handle, err := os.Open(common.ExpandPath(location))
-	if err != nil {
-		common.Error("Warning", err)
-		return result
-	}
-	defer handle.Close()
-	children, err := handle.Readdir(-1)
-	if err != nil {
-		common.Error("Warning", err)
-		return result
-	}
-
-	for _, child := range children {
-		hashed := hashedEntity(child.Name())
-		if hashed && child.IsDir() && hasMetafile(location, child.Name()) {
-			continue
-		}
-		if hashed && !child.IsDir() && hasDatadir(location, child.Name()) {
-			continue
-		}
-		result = append(result, filepath.Join(location, child.Name()))
-	}
-
-	return result
-}
-
 func FindPath(environment string) pathlib.PathParts {
 	target := pathlib.TargetPath()
 	target = target.Remove(ignoredPaths)
@@ -248,11 +178,6 @@ func RobocorpTemp() string {
 	return fullpath
 }
 
-func MinicondaLocation() string {
-	// Legacy function, but must remain until cleanup is done
-	return filepath.Join(common.RobocorpHome(), "miniconda3")
-}
-
 func LocalChannel() (string, bool) {
 	basefolder := filepath.Join(common.RobocorpHome(), "channel")
 	fullpath := filepath.Join(basefolder, "channeldata.json")
@@ -266,23 +191,9 @@ func LocalChannel() (string, bool) {
 	return "", false
 }
 
-func TemplateFrom(hash string) string {
-	return filepath.Join(common.BaseLocation(), hash)
-}
-
 func LiveFrom(hash string) string {
 	// FIXME: remove when base/live is erased
 	return common.StageFolder
-}
-
-func TemplateList() []string {
-	return dirnamesFrom(common.BaseLocation())
-}
-
-func OrphanList() []string {
-	result := orphansFrom(common.BaseLocation())
-	result = append(result, orphansFrom(common.LiveLocation())...)
-	return result
 }
 
 func InstallationPlan(hash string) (string, bool) {

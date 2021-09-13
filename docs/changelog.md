@@ -1,5 +1,12 @@
 # rcc change log
 
+## v11.0.6 (date: 13.9.2021) UNSTABLE
+
+- BREAKING CHANGES (ongoing work, see v11.0.0 for more details)
+- removing options from cleanup commands, since those are base/live specific
+  and not needed anymore (orphans, miniconda)
+- removed dead code resulted from above
+
 ## v11.0.5 (date: 10.9.2021) UNSTABLE
 
 - BREAKING CHANGES (ongoing work, see v11.0.0 for more details)

@@ -379,14 +379,6 @@ func NewEnvironment(force bool, configurations ...string) (string, error) {
 	return "", errors.New("Could not create environment.")
 }
 
-func RemoveEnvironment(label string) error {
-	err := renameRemove(LiveFrom(label))
-	if err != nil {
-		return err
-	}
-	return renameRemove(TemplateFrom(label))
-}
-
 func renameRemove(location string) error {
 	if !pathlib.IsDir(location) {
 		common.Trace("Location %q is not directory, not removed.", location)
