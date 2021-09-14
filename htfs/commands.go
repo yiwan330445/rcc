@@ -14,6 +14,7 @@ import (
 	"github.com/robocorp/rcc/fail"
 	"github.com/robocorp/rcc/pathlib"
 	"github.com/robocorp/rcc/robot"
+	"github.com/robocorp/rcc/xviper"
 )
 
 func Platform() string {
@@ -23,6 +24,9 @@ func Platform() string {
 func NewEnvironment(force bool, condafile, holozip string) (label string, err error) {
 	defer fail.Around(&err)
 
+	defer conda.Progress(12, "Fresh holotree done.")
+	conda.Progress(1, "Fresh holotree environment %v.", xviper.TrackingIdentity())
+
 	callback := pathlib.LockWaitMessage("Serialized environment creation")
 	locker, err := pathlib.Locker(common.HolotreeLock(), 30000)
 	callback()
@@ -31,15 +35,15 @@ func NewEnvironment(force bool, condafile, holozip string) (label string, err er
 
 	haszip := len(holozip) > 0
 
-	common.Timeline("new holotree environment")
 	_, holotreeBlueprint, err := ComposeFinalBlueprint([]string{condafile}, "")
 	fail.On(err != nil, "%s", err)
+	common.EnvironmentHash = BlueprintHash(holotreeBlueprint)
+	conda.Progress(2, "Holotree blueprint is %q.", common.EnvironmentHash)
 
 	anywork.Scale(100)
 
 	tree, err := New()
 	fail.On(err != nil, "%s", err)
-	common.Timeline("holotree library created")
 
 	if !haszip && !tree.HasBlueprint(holotreeBlueprint) && common.Liveonly {
 		tree = Virtual()
@@ -56,9 +60,9 @@ func NewEnvironment(force bool, condafile, holozip string) (label string, err er
 		library = tree
 	}
 
+	conda.Progress(11, "Restore space from library.")
 	path, err := library.Restore(holotreeBlueprint, []byte(common.ControllerIdentity()), []byte(common.HolotreeSpace))
 	fail.On(err != nil, "Failed to restore blueprint %q, reason: %v", string(holotreeBlueprint), err)
-	common.EnvironmentHash = BlueprintHash(holotreeBlueprint)
 	return path, nil
 }
 
@@ -96,19 +100,22 @@ func RecordEnvironment(tree MutableLibrary, blueprint []byte, force bool) (err e
 	common.Debug("Has blueprint environment: %v", exists)
 
 	if force || !exists {
+		conda.Progress(3, "Cleanup holotree stage for fresh install.")
 		err = CleanupHolotreeStage(tree)
 		fail.On(err != nil, "Failed to clean stage, reason %v.", err)
 
 		err = os.MkdirAll(tree.Stage(), 0o755)
 		fail.On(err != nil, "Failed to create stage, reason %v.", err)
 
+		conda.Progress(4, "Build environment into holotree stage.")
 		identityfile := filepath.Join(tree.Stage(), "identity.yaml")
 		err = ioutil.WriteFile(identityfile, blueprint, 0o644)
 		fail.On(err != nil, "Failed to save %q, reason %w.", identityfile, err)
-		label, err := conda.NewEnvironment(force, identityfile)
+		label, err := conda.LegacyEnvironment(force, identityfile)
 		fail.On(err != nil, "Failed to create environment, reason %w.", err)
 		common.Debug("Label: %q", label)
 
+		conda.Progress(10, "Record holotree stage to hololib.")
 		err = tree.Record(blueprint)
 		fail.On(err != nil, "Failed to record blueprint %q, reason: %w", string(blueprint), err)
 	}

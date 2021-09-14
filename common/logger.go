@@ -92,5 +92,7 @@ func Stdout(format string, details ...interface{}) {
 }
 
 func WaitLogs() {
+	defer Timeline("wait logs done")
+
 	logbarrier.Wait()
 }

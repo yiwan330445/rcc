@@ -88,13 +88,15 @@ func markTempForRecycling() {
 
 func main() {
 	common.Timeline("Start.")
+	defer common.EndOfTimeline()
+
 	defer ExitProtection()
 
-	defer common.EndOfTimeline()
 	go startTempRecycling()
 	defer markTempForRecycling()
 	defer os.Stderr.Sync()
 	defer os.Stdout.Sync()
 	cmd.Execute()
+	common.Timeline("Command execution done.")
 	TimezoneMetric()
 }

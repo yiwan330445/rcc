@@ -89,7 +89,6 @@ Goal: See variables from specific environment with robot.yaml knowledge in JSON 
   Must Be Json Response
   Use STDERR
   Wont Have   (virtual)
-  Wont Have   live only
 
 Goal: Liveonly works and uses virtual holotree
   Step        build/rcc holotree vars --liveonly --space jam --controller citests robot_tests/certificates.yaml --config tmp/alternative.yaml --timeline
@@ -118,7 +117,6 @@ Goal: Liveonly works and uses virtual holotree
   Wont Have   RC_WORKSPACE_ID=
   Use STDERR
   Must Have   (virtual)
-  Must Have   live only
 
 Goal: Do quick cleanup on environments
   Step        build/rcc config cleanup --controller citests --quick
@@ -135,4 +133,3 @@ Goal: Liveonly works and uses virtual holotree and can give output in JSON form
   Must Be Json Response
   Use STDERR
   Must Have   (virtual)
-  Must Have   live only

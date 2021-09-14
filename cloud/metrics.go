@@ -54,6 +54,8 @@ func BackgroundMetric(kind, name, value string) {
 }
 
 func WaitTelemetry() {
+	defer common.Timeline("wait telemetry done")
+
 	common.Debug("wait telemetry to complete")
 	telemetryBarrier.Wait()
 	common.Debug("telemetry sending completed")

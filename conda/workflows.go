@@ -152,12 +152,12 @@ func newLiveInternal(yaml, condaYaml, requirementsText, key string, force, fresh
 	if force {
 		ttl = "0"
 	}
+	Progress(5, "Running micromamba phase.")
 	mambaCommand := common.NewCommander(BinMicromamba(), "create", "--always-copy", "--no-rc", "--safety-checks", "enabled", "--extra-safety-checks", "--retry-clean-cache", "--strict-channel-priority", "--repodata-ttl", ttl, "-y", "-f", condaYaml, "-p", targetFolder)
 	mambaCommand.Option("--channel-alias", settings.Global.CondaURL())
 	mambaCommand.ConditionalFlag(common.VerboseEnvironmentBuilding(), "--verbose")
 	observer := make(InstallObserver)
 	common.Debug("===  new live  ---  micromamba create phase ===")
-	common.Timeline("Micromamba start.")
 	fmt.Fprintf(planWriter, "\n---  micromamba plan @%ss  ---\n\n", stopwatch)
 	tee := io.MultiWriter(observer, planWriter)
 	code, err := shell.New(CondaEnvironment(), ".", mambaCommand.CLI()...).Tracked(tee, false)
@@ -175,11 +175,9 @@ func newLiveInternal(yaml, condaYaml, requirementsText, key string, force, fresh
 	pipUsed, pipCache, wheelCache := false, common.PipCache(), common.WheelCache()
 	size, ok := pathlib.Size(requirementsText)
 	if !ok || size == 0 {
-		common.Log("####  Progress: 4/6  [pip install phase skipped -- no pip dependencies]")
-		common.Timeline("4/6 no pip.")
+		Progress(6, "Skipping pip install phase -- no pip dependencies.")
 	} else {
-		common.Log("####  Progress: 4/6  [pip install phase]")
-		common.Timeline("4/6 pip install start.")
+		Progress(6, "Running pip install phase.")
 		common.Debug("Updating new environment at %v with pip requirements from %v (size: %v)", targetFolder, requirementsText, size)
 		pipCommand := common.NewCommander("pip", "install", "--isolated", "--no-color", "--disable-pip-version-check", "--prefer-binary", "--cache-dir", pipCache, "--find-links", wheelCache, "--requirement", requirementsText)
 		pipCommand.Option("--index-url", settings.Global.PypiURL())
@@ -198,7 +196,7 @@ func newLiveInternal(yaml, condaYaml, requirementsText, key string, force, fresh
 	}
 	fmt.Fprintf(planWriter, "\n---  post install plan @%ss  ---\n\n", stopwatch)
 	if postInstall != nil && len(postInstall) > 0 {
-		common.Timeline("post install.")
+		Progress(7, "Post install scripts phase started.")
 		common.Debug("===  new live  ---  post install phase ===")
 		for _, script := range postInstall {
 			scriptCommand, err := shlex.Split(script)
@@ -215,7 +213,10 @@ func newLiveInternal(yaml, condaYaml, requirementsText, key string, force, fresh
 				return false, false
 			}
 		}
+	} else {
+		Progress(7, "Post install scripts phase skipped -- no scripts.")
 	}
+	Progress(8, "Activate environment started phase.")
 	common.Debug("===  new live  ---  activate phase ===")
 	fmt.Fprintf(planWriter, "\n---  activation plan @%ss  ---\n\n", stopwatch)
 	err = Activate(planWriter, targetFolder)
@@ -232,6 +233,7 @@ func newLiveInternal(yaml, condaYaml, requirementsText, key string, force, fresh
 	fmt.Fprintf(planWriter, "\n---  installation plan complete @%ss  ---\n\n", stopwatch)
 	planWriter.Sync()
 	planWriter.Close()
+	Progress(9, "Update installation plan.")
 	finalplan, _ := InstallationPlan(key)
 	os.Rename(planfile, finalplan)
 	common.Log("%sInstallation plan is: %v%s", pretty.Yellow, finalplan, pretty.Reset)
@@ -303,7 +305,13 @@ func CalculateComboHash(configurations ...string) (string, error) {
 	return key, nil
 }
 
-func NewEnvironment(force bool, configurations ...string) (string, error) {
+func Progress(step int, form string, details ...interface{}) {
+	message := fmt.Sprintf(form, details...)
+	common.Log("####  Progress: %d/12  %s  %s", step, common.Version, message)
+	common.Timeline("%d/12 %s", step, message)
+}
+
+func LegacyEnvironment(force bool, configurations ...string) (string, error) {
 	common.Timeline("New environment.")
 	cloud.BackgroundMetric(common.ControllerIdentity(), "rcc.env.create.start", common.Version)
 
@@ -318,19 +326,10 @@ func NewEnvironment(force bool, configurations ...string) (string, error) {
 	defer locker.Release()
 
 	requests := xviper.GetInt("stats.env.request") + 1
-	hits := xviper.GetInt("stats.env.hit")
-	dirty := xviper.GetInt("stats.env.dirty")
 	misses := xviper.GetInt("stats.env.miss")
 	failures := xviper.GetInt("stats.env.failures")
 	merges := xviper.GetInt("stats.env.merges")
 	freshInstall := true
-
-	defer func() {
-		common.Log("####  Progress: 6/6  [Done.] [Cache statistics: %d requests, %d merges, %d hits, %d dirty, %d misses, %d failures | %s]", requests, merges, hits, dirty, misses, failures, common.Version)
-		common.Timeline("6/6 Done.")
-	}()
-	common.Log("####  Progress: 0/6  [try use existing live same environment?] %v", xviper.TrackingIdentity())
-	common.Timeline("0/6 Existing.")
 
 	xviper.Set("stats.env.request", requests)
 
@@ -350,18 +349,8 @@ func NewEnvironment(force bool, configurations ...string) (string, error) {
 	}
 	defer os.Remove(condaYaml)
 	defer os.Remove(requirementsText)
-	common.Log("####  Progress: 1/6  [environment key is: %s (deprecated)]", key)
-	common.Timeline("1/6 key %s (deprecated).", key)
 
 	liveFolder := common.StageFolder
-	if force {
-		common.Log("####  Progress: 2/6  [skipped -- forced]")
-	} else {
-		common.Log("####  Progress: 2/6  [skipped -- stage only]")
-		common.Timeline("2/6 stage only.")
-	}
-	common.Log("####  Progress: 3/6  [try create new environment from scratch]")
-	common.Timeline("3/6 env from scratch.")
 	success, err := newLive(yaml, condaYaml, requirementsText, key, force, freshInstall, finalEnv.PostInstall)
 	if err != nil {
 		return "", err
@@ -369,8 +358,6 @@ func NewEnvironment(force bool, configurations ...string) (string, error) {
 	if success {
 		misses += 1
 		xviper.Set("stats.env.miss", misses)
-		common.Log("####  Progress: 5/6  [skipped -- live only]")
-		common.Timeline("5/6 live only.")
 		return liveFolder, nil
 	}
 
