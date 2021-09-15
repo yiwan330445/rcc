@@ -118,10 +118,6 @@ func EnvironmentFor(location string) []string {
 	return append(os.Environ(), EnvironmentExtensionFor(location)...)
 }
 
-func MambaPackages() string {
-	return common.ExpandPath(filepath.Join(common.RobocorpHome(), "pkgs"))
-}
-
 func asVersion(text string) (uint64, string) {
 	text = strings.TrimSpace(text)
 	multiline := strings.SplitN(text, "\n", 2)
@@ -165,12 +161,8 @@ func HasMicroMamba() bool {
 	return goodEnough
 }
 
-func RobocorpTempRoot() string {
-	return filepath.Join(common.RobocorpHome(), "temp")
-}
-
 func RobocorpTemp() string {
-	tempLocation := filepath.Join(RobocorpTempRoot(), randomIdentifier)
+	tempLocation := filepath.Join(common.RobocorpTempRoot(), randomIdentifier)
 	fullpath, err := pathlib.EnsureDirectory(tempLocation)
 	if err != nil {
 		common.Log("WARNING (%v) -> %v", tempLocation, err)
@@ -189,14 +181,4 @@ func LocalChannel() (string, bool) {
 		return basefolder, true
 	}
 	return "", false
-}
-
-func LiveFrom(hash string) string {
-	// FIXME: remove when base/live is erased
-	return common.StageFolder
-}
-
-func InstallationPlan(hash string) (string, bool) {
-	finalplan := filepath.Join(LiveFrom(hash), "rcc_plan.log")
-	return finalplan, pathlib.IsFile(finalplan)
 }

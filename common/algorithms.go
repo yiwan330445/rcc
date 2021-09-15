@@ -1,6 +1,8 @@
 package common
 
 import (
+	"crypto/sha256"
+	"fmt"
 	"math"
 )
 
@@ -23,4 +25,15 @@ func Entropy(input []byte) float64 {
 		entropy += (-weight * math.Log2(weight))
 	}
 	return entropy / 8.0
+}
+
+func Hexdigest(raw []byte) string {
+	return fmt.Sprintf("%02x", raw)
+}
+
+func ShortDigest(content string) string {
+	digester := sha256.New()
+	digester.Write([]byte(content))
+	result := Hexdigest(digester.Sum(nil))
+	return result[:16]
 }

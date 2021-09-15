@@ -60,7 +60,7 @@ func ExitProtection() {
 }
 
 func startTempRecycling() {
-	pattern := filepath.Join(conda.RobocorpTempRoot(), "*", "recycle.now")
+	pattern := filepath.Join(common.RobocorpTempRoot(), "*", "recycle.now")
 	found, err := filepath.Glob(pattern)
 	if err != nil {
 		common.Debug("Recycling failed, reason: %v", err)

@@ -1,5 +1,12 @@
 # rcc change log
 
+## v11.0.8 (date: 14.9.2021) UNSTABLE
+
+- BREAKING CHANGES (ongoing work, see v11.0.0 for more details)
+- showing correct `rcc_plan.log` and `identity.yaml` files on log
+- reorganizing some common code away from conda module
+- rpaframework upgrade to version 11.1.3 in templates
+
 ## v11.0.7 (date: 14.9.2021) UNSTABLE
 
 - BREAKING CHANGES (ongoing work, see v11.0.0 for more details)

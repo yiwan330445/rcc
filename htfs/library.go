@@ -19,6 +19,7 @@ import (
 	"github.com/robocorp/rcc/fail"
 	"github.com/robocorp/rcc/journal"
 	"github.com/robocorp/rcc/pathlib"
+	"github.com/robocorp/rcc/pretty"
 )
 
 const (
@@ -313,6 +314,14 @@ func (it *hololib) Restore(blueprint, client, tag []byte) (result string, err er
 	err = fs.SaveAs(metafile)
 	fail.On(err != nil, "Failed to save metafile %q -> %v", metafile, err)
 	pathlib.TouchWhen(catalog, time.Now())
+	planfile := filepath.Join(targetdir, "rcc_plan.log")
+	if pathlib.FileExist(planfile) {
+		common.Log("%sInstallation plan is: %v%s", pretty.Yellow, planfile, pretty.Reset)
+	}
+	identityfile := filepath.Join(targetdir, "identity.yaml")
+	if pathlib.FileExist(identityfile) {
+		common.Log("%sEnvironment configuration descriptor is: %v%s", pretty.Yellow, identityfile, pretty.Reset)
+	}
 	return targetdir, nil
 }
 

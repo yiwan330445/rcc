@@ -61,7 +61,7 @@ func quickCleanup(dryrun bool) error {
 	if dryrun {
 		common.Log("- %v", common.PipCache())
 		common.Log("- %v", common.HolotreeLocation())
-		common.Log("- %v", RobocorpTempRoot())
+		common.Log("- %v", common.RobocorpTempRoot())
 		return nil
 	}
 	safeRemove("cache", common.PipCache())
@@ -69,7 +69,7 @@ func quickCleanup(dryrun bool) error {
 	if err != nil {
 		return err
 	}
-	return safeRemove("temp", RobocorpTempRoot())
+	return safeRemove("temp", common.RobocorpTempRoot())
 }
 
 func spotlessCleanup(dryrun bool) error {
@@ -78,18 +78,18 @@ func spotlessCleanup(dryrun bool) error {
 		return err
 	}
 	if dryrun {
-		common.Log("- %v", MambaPackages())
+		common.Log("- %v", common.MambaPackages())
 		common.Log("- %v", BinMicromamba())
 		common.Log("- %v", common.HololibLocation())
 		return nil
 	}
-	safeRemove("cache", MambaPackages())
+	safeRemove("cache", common.MambaPackages())
 	safeRemove("executable", BinMicromamba())
 	return safeRemove("cache", common.HololibLocation())
 }
 
 func cleanupTemp(deadline time.Time, dryrun bool) error {
-	basedir := RobocorpTempRoot()
+	basedir := common.RobocorpTempRoot()
 	handle, err := os.Open(basedir)
 	if err != nil {
 		return err
@@ -144,7 +144,7 @@ func Cleanup(daylimit int, dryrun, quick, all, micromamba bool) error {
 	cleanupTemp(deadline, dryrun)
 
 	if micromamba && err == nil {
-		err = doCleanup(MambaPackages(), dryrun)
+		err = doCleanup(common.MambaPackages(), dryrun)
 	}
 	if micromamba && err == nil {
 		err = doCleanup(BinMicromamba(), dryrun)

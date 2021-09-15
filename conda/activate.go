@@ -18,14 +18,6 @@ const (
 	activateFile    = "rcc_activate.json"
 )
 
-func BinRcc() string {
-	self, err := os.Executable()
-	if err != nil {
-		return os.Args[0]
-	}
-	return self
-}
-
 func capturePreformatted(incoming string) ([]string, string) {
 	lines := strings.SplitAfter(incoming, "\n")
 	capture := false
@@ -61,7 +53,7 @@ func createScript(targetFolder string) (string, error) {
 		return "", err
 	}
 	details := make(map[string]string)
-	details["Rcc"] = BinRcc()
+	details["Rcc"] = common.BinRcc()
 	details["Robocorphome"] = common.RobocorpHome()
 	details["Micromamba"] = BinMicromamba()
 	details["Live"] = targetFolder
@@ -106,7 +98,7 @@ func diffStringMaps(before, after map[string]string) map[string]string {
 }
 
 func Activate(sink *os.File, targetFolder string) error {
-	envCommand := []string{BinRcc(), "internal", "env", "--label", "before"}
+	envCommand := []string{common.BinRcc(), "internal", "env", "--label", "before"}
 	out, _, err := LiveCapture(targetFolder, envCommand...)
 	if err != nil {
 		return err

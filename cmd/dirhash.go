@@ -47,7 +47,7 @@ var dirhashCmd = &cobra.Command{
 			}
 			collector = conda.MakeRelativeMap(fullpath, collector)
 			diffMaps = append(diffMaps, collector)
-			result := conda.Hexdigest(digest)
+			result := common.Hexdigest(digest)
 			common.Log("+ %v %v", result, directory)
 			if showIntermediateDirhashes {
 				relative := make(map[string]string)

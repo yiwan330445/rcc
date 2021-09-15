@@ -96,3 +96,9 @@ func WaitLogs() {
 
 	logbarrier.Wait()
 }
+
+func Progress(step int, form string, details ...interface{}) {
+	message := fmt.Sprintf(form, details...)
+	Log("####  Progress: %d/12  %s  %s", step, Version, message)
+	Timeline("%d/12 %s", step, message)
+}

@@ -62,12 +62,24 @@ func ensureDirectory(name string) string {
 	return name
 }
 
+func BinRcc() string {
+	self, err := os.Executable()
+	if err != nil {
+		return os.Args[0]
+	}
+	return self
+}
+
 func EventJournal() string {
 	return filepath.Join(RobocorpHome(), "event.log")
 }
 
 func TemplateLocation() string {
 	return ensureDirectory(filepath.Join(RobocorpHome(), "templates"))
+}
+
+func RobocorpTempRoot() string {
+	return filepath.Join(RobocorpHome(), "temp")
 }
 
 func BinLocation() string {
@@ -108,6 +120,10 @@ func WheelCache() string {
 
 func RobotCache() string {
 	return ensureDirectory(filepath.Join(RobocorpHome(), "robots"))
+}
+
+func MambaPackages() string {
+	return ExpandPath(filepath.Join(RobocorpHome(), "pkgs"))
 }
 
 func UnifyVerbosityFlags() {

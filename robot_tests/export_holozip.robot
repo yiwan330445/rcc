@@ -41,18 +41,18 @@ Goal: Must have author space visible
   Must Have   4e67cd8d4_fcb4b859
   Must Have   rcc.citests
   Must Have   author
-  Must Have   2e3ef3ffef58c9ec
+  Must Have   55aacd3b136421fd
   Wont Have   guest
 
 Goal: Show exportable environment list
   Step        build/rcc ht export
   Use STDERR
   Must Have   Selectable catalogs
-  Must Have   - 2e3ef3ffef58c9ec
+  Must Have   - 55aacd3b136421fd
   Must Have   OK.
 
 Goal: Export environment for standalone robot
-  Step        build/rcc ht export -z tmp/standalone/hololib.zip 2e3ef3ffef58c9ec
+  Step        build/rcc ht export -z tmp/standalone/hololib.zip 55aacd3b136421fd
   Use STDERR
   Wont Have   Selectable catalogs
   Must Have   OK.
@@ -75,7 +75,7 @@ Goal: Can delete author space
   Wont Have   4e67cd8d4_fcb4b859
   Wont Have   rcc.citests
   Wont Have   author
-  Wont Have   2e3ef3ffef58c9ec
+  Wont Have   55aacd3b136421fd
   Wont Have   guest
 
 Goal: Can run as guest
@@ -92,7 +92,7 @@ Goal: No spaces created under guest
   Wont Have   4e67cd8d4_fcb4b859
   Wont Have   rcc.citests
   Wont Have   author
-  Wont Have   2e3ef3ffef58c9ec
+  Wont Have   55aacd3b136421fd
   Wont Have   4e67cd8d4_559e19be
   Wont Have   guest
 
@@ -103,6 +103,6 @@ Goal: Space created under author for guest
   Wont Have   4e67cd8d4_fcb4b859
   Wont Have   author
   Must Have   rcc.citests
-  Must Have   2e3ef3ffef58c9ec
+  Must Have   55aacd3b136421fd
   Must Have   4e67cd8d4_aacf1552
   Must Have   guest

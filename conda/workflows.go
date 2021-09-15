@@ -1,7 +1,6 @@
 package conda
 
 import (
-	"crypto/sha256"
 	"errors"
 	"fmt"
 	"io"
@@ -22,21 +21,8 @@ import (
 	"github.com/robocorp/rcc/xviper"
 )
 
-func Hexdigest(raw []byte) string {
-	return fmt.Sprintf("%02x", raw)
-}
-
 func metafile(folder string) string {
 	return common.ExpandPath(folder + ".meta")
-}
-
-func metaSave(location, data string) error {
-	// FIXME: remove when base/live is erased
-	return nil
-}
-
-func LastUsed(location string) (time.Time, error) {
-	return pathlib.Modtime(metafile(location))
 }
 
 func livePrepare(liveFolder string, command ...string) (*shell.Task, error) {
@@ -152,7 +138,7 @@ func newLiveInternal(yaml, condaYaml, requirementsText, key string, force, fresh
 	if force {
 		ttl = "0"
 	}
-	Progress(5, "Running micromamba phase.")
+	common.Progress(5, "Running micromamba phase.")
 	mambaCommand := common.NewCommander(BinMicromamba(), "create", "--always-copy", "--no-rc", "--safety-checks", "enabled", "--extra-safety-checks", "--retry-clean-cache", "--strict-channel-priority", "--repodata-ttl", ttl, "-y", "-f", condaYaml, "-p", targetFolder)
 	mambaCommand.Option("--channel-alias", settings.Global.CondaURL())
 	mambaCommand.ConditionalFlag(common.VerboseEnvironmentBuilding(), "--verbose")
@@ -175,9 +161,9 @@ func newLiveInternal(yaml, condaYaml, requirementsText, key string, force, fresh
 	pipUsed, pipCache, wheelCache := false, common.PipCache(), common.WheelCache()
 	size, ok := pathlib.Size(requirementsText)
 	if !ok || size == 0 {
-		Progress(6, "Skipping pip install phase -- no pip dependencies.")
+		common.Progress(6, "Skipping pip install phase -- no pip dependencies.")
 	} else {
-		Progress(6, "Running pip install phase.")
+		common.Progress(6, "Running pip install phase.")
 		common.Debug("Updating new environment at %v with pip requirements from %v (size: %v)", targetFolder, requirementsText, size)
 		pipCommand := common.NewCommander("pip", "install", "--isolated", "--no-color", "--disable-pip-version-check", "--prefer-binary", "--cache-dir", pipCache, "--find-links", wheelCache, "--requirement", requirementsText)
 		pipCommand.Option("--index-url", settings.Global.PypiURL())
@@ -196,7 +182,7 @@ func newLiveInternal(yaml, condaYaml, requirementsText, key string, force, fresh
 	}
 	fmt.Fprintf(planWriter, "\n---  post install plan @%ss  ---\n\n", stopwatch)
 	if postInstall != nil && len(postInstall) > 0 {
-		Progress(7, "Post install scripts phase started.")
+		common.Progress(7, "Post install scripts phase started.")
 		common.Debug("===  new live  ---  post install phase ===")
 		for _, script := range postInstall {
 			scriptCommand, err := shlex.Split(script)
@@ -214,9 +200,9 @@ func newLiveInternal(yaml, condaYaml, requirementsText, key string, force, fresh
 			}
 		}
 	} else {
-		Progress(7, "Post install scripts phase skipped -- no scripts.")
+		common.Progress(7, "Post install scripts phase skipped -- no scripts.")
 	}
-	Progress(8, "Activate environment started phase.")
+	common.Progress(8, "Activate environment started phase.")
 	common.Debug("===  new live  ---  activate phase ===")
 	fmt.Fprintf(planWriter, "\n---  activation plan @%ss  ---\n\n", stopwatch)
 	err = Activate(planWriter, targetFolder)
@@ -233,10 +219,9 @@ func newLiveInternal(yaml, condaYaml, requirementsText, key string, force, fresh
 	fmt.Fprintf(planWriter, "\n---  installation plan complete @%ss  ---\n\n", stopwatch)
 	planWriter.Sync()
 	planWriter.Close()
-	Progress(9, "Update installation plan.")
-	finalplan, _ := InstallationPlan(key)
+	common.Progress(9, "Update installation plan.")
+	finalplan := filepath.Join(targetFolder, "rcc_plan.log")
 	os.Rename(planfile, finalplan)
-	common.Log("%sInstallation plan is: %v%s", pretty.Yellow, finalplan, pretty.Reset)
 	common.Debug("===  new live  ---  finalize phase ===")
 
 	markerFile := filepath.Join(targetFolder, "identity.yaml")
@@ -245,12 +230,7 @@ func newLiveInternal(yaml, condaYaml, requirementsText, key string, force, fresh
 		return false, false
 	}
 
-	digest, err := DigestFor(targetFolder, nil)
-	if err != nil {
-		common.Fatal("Digest", err)
-		return false, false
-	}
-	return metaSave(targetFolder, Hexdigest(digest)) == nil, false
+	return true, false
 }
 
 func temporaryConfig(condaYaml, requirementsText string, save bool, filenames ...string) (string, string, *Environment, error) {
@@ -275,7 +255,7 @@ func temporaryConfig(condaYaml, requirementsText string, save bool, filenames ..
 	if err != nil {
 		return "", "", nil, err
 	}
-	hash := ShortDigest(yaml)
+	hash := common.ShortDigest(yaml)
 	if !save {
 		return hash, yaml, right, nil
 	}
@@ -289,30 +269,7 @@ func temporaryConfig(condaYaml, requirementsText string, save bool, filenames ..
 	return hash, yaml, right, err
 }
 
-func ShortDigest(content string) string {
-	digester := sha256.New()
-	digester.Write([]byte(content))
-	result := Hexdigest(digester.Sum(nil))
-	return result[:16]
-}
-
-func CalculateComboHash(configurations ...string) (string, error) {
-	// FIXME: Remove this func once live/base is erased from codebase
-	key, _, _, err := temporaryConfig("/dev/null", "/dev/null", false, configurations...)
-	if err != nil {
-		return "", err
-	}
-	return key, nil
-}
-
-func Progress(step int, form string, details ...interface{}) {
-	message := fmt.Sprintf(form, details...)
-	common.Log("####  Progress: %d/12  %s  %s", step, common.Version, message)
-	common.Timeline("%d/12 %s", step, message)
-}
-
-func LegacyEnvironment(force bool, configurations ...string) (string, error) {
-	common.Timeline("New environment.")
+func LegacyEnvironment(force bool, configurations ...string) error {
 	cloud.BackgroundMetric(common.ControllerIdentity(), "rcc.env.create.start", common.Version)
 
 	lockfile := common.RobocorpLock()
@@ -321,7 +278,7 @@ func LegacyEnvironment(force bool, configurations ...string) (string, error) {
 	callback()
 	if err != nil {
 		common.Log("Could not get lock on live environment. Quitting!")
-		return "", err
+		return err
 	}
 	defer locker.Release()
 
@@ -345,25 +302,24 @@ func LegacyEnvironment(force bool, configurations ...string) (string, error) {
 	if err != nil {
 		failures += 1
 		xviper.Set("stats.env.failures", failures)
-		return "", err
+		return err
 	}
 	defer os.Remove(condaYaml)
 	defer os.Remove(requirementsText)
 
-	liveFolder := common.StageFolder
 	success, err := newLive(yaml, condaYaml, requirementsText, key, force, freshInstall, finalEnv.PostInstall)
 	if err != nil {
-		return "", err
+		return err
 	}
 	if success {
 		misses += 1
 		xviper.Set("stats.env.miss", misses)
-		return liveFolder, nil
+		return nil
 	}
 
 	failures += 1
 	xviper.Set("stats.env.failures", failures)
-	return "", errors.New("Could not create environment.")
+	return errors.New("Could not create environment.")
 }
 
 func renameRemove(location string) error {
