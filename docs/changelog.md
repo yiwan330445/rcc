@@ -1,6 +1,12 @@
 # rcc change log
 
-## v11.0.8 (date: 14.9.2021) UNSTABLE
+## v11.1.0 (date: 16.9.2021)
+
+- BREAKING CHANGES, but now this may be considered stable(ish)
+- micromamba update to version 0.15.3
+- added more robot tests and improved `rcc holotree plan` command
+
+## v11.0.8 (date: 15.9.2021) UNSTABLE
 
 - BREAKING CHANGES (ongoing work, see v11.0.0 for more details)
 - showing correct `rcc_plan.log` and `identity.yaml` files on log

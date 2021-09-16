@@ -9,6 +9,14 @@ Together with [robot.yaml](https://robocorp.com/docs/setup/robot-yaml-format) co
 </p>
 
 
+## Why use rcc?
+
+* Are developers manually installing conda or pip packages? Here rcc makes it easier for developers to just worry about getting `conda.yaml` and `robot.yaml` right, and then let rcc to do the heavy lifting of keeping environments pristine, clean, and up to date.
+* Have you run into "works on my machine" problem, where the original developer has a working setup, but others have a hard time repeating the experience? In this case, let rcc help you to set up repeatable runtime environments across users and operating systems.
+* Have you experienced "configuration drift", where once working runtime environment dependencies get updated and break your production system? Here rcc can help by either making drift visible or freezing all dependencies so that drifting does not happen.
+* Do you have python programs that have conflicting dependencies? There rcc can help by making dedicated runtime environments for different setups, where different `robot.yaml` files define what to run and `conda.yaml` defines runtime environment dependencies
+
+
 ## Getting Started
 
 :arrow_double_down: Install rcc 

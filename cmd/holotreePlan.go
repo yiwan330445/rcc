@@ -12,11 +12,13 @@ import (
 )
 
 var holotreePlanCmd = &cobra.Command{
-	Use:   "plan",
+	Use:   "plan <plan+>",
 	Short: "Show installation plans for given holotree spaces (or substrings)",
 	Long:  "Show installation plans for given holotree spaces (or substrings)",
+	Args:  cobra.MinimumNArgs(1),
 
 	Run: func(cmd *cobra.Command, args []string) {
+		found := false
 		for _, prefix := range args {
 			for _, label := range htfs.FindEnvironment(prefix) {
 				planfile, ok := htfs.InstallationPlan(label)
@@ -24,8 +26,11 @@ var holotreePlanCmd = &cobra.Command{
 				content, err := ioutil.ReadFile(planfile)
 				pretty.Guard(err == nil, 2, "Could not read plan %q, reason: %v", planfile, err)
 				fmt.Fprintf(os.Stdout, string(content))
+				found = true
 			}
 		}
+		pretty.Guard(found, 3, "Nothing matched given plans!")
+		pretty.Ok()
 	},
 }
 

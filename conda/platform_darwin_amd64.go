@@ -44,7 +44,7 @@ func CondaPaths(prefix string) []string {
 }
 
 func MicromambaLink() string {
-	return settings.Global.DownloadsLink("micromamba/v0.15.2/macos64/micromamba")
+	return settings.Global.DownloadsLink("micromamba/v0.15.3/macos64/micromamba")
 }
 
 func IsWindows() bool {
