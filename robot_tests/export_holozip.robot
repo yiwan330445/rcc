@@ -32,7 +32,7 @@ Goal: Create environment for standalone robot
   Must Have   4e67cd8d4_fcb4b859
   Use STDERR
   Must Have   Downloading micromamba
-  Must Have   Progress: 1/12
+  Must Have   Progress: 01/12
   Must Have   Progress: 12/12
 
 Goal: Must have author space visible

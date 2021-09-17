@@ -1,8 +1,6 @@
 package pathlib
 
 import (
-	"compress/flate"
-	"compress/gzip"
 	"io"
 	"os"
 	"path/filepath"
@@ -12,33 +10,7 @@ import (
 
 type copyfunc func(io.Writer, io.Reader) (int64, error)
 
-func archiver(target io.Writer, source io.Reader) (int64, error) {
-	wrapper, err := gzip.NewWriterLevel(target, flate.BestSpeed)
-	if err != nil {
-		return 0, err
-	}
-	defer wrapper.Close()
-	return io.Copy(wrapper, source)
-}
-
-func restorer(target io.Writer, source io.Reader) (int64, error) {
-	wrapper, err := gzip.NewReader(source)
-	if err != nil {
-		return 0, err
-	}
-	defer wrapper.Close()
-	return io.Copy(target, wrapper)
-}
-
 type Copier func(string, string, bool) error
-
-func ArchiveFile(source, target string, overwrite bool) error {
-	return copyFile(source, target, overwrite, archiver)
-}
-
-func RestoreFile(source, target string, overwrite bool) error {
-	return copyFile(source, target, overwrite, restorer)
-}
 
 func CopyFile(source, target string, overwrite bool) error {
 	mark, err := Modtime(source)

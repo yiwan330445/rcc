@@ -29,12 +29,14 @@ var (
 	EnvironmentHash string
 	SemanticTag     string
 	When            int64
+	ProgressMark    time.Time
 	Clock           *stopwatch
 )
 
 func init() {
 	Clock = &stopwatch{"Clock", time.Now()}
 	When = Clock.started.Unix()
+	ProgressMark = time.Now()
 }
 
 func RobocorpHome() string {

@@ -173,109 +173,73 @@ func ScheduleLifters(library MutableLibrary, stats *stats) Treetop {
 	return scheduler
 }
 
-func LiftFile(sourcename, sinkname string) anywork.Work {
-	return func() {
-		source, err := os.Open(sourcename)
-		if err != nil {
-			panic(err)
+func onErrPanicClose(err error, sink io.Closer) {
+	if err != nil {
+		if sink != nil {
+			sink.Close()
 		}
-		defer source.Close()
-		sink, err := os.Create(sinkname)
-		if err != nil {
-			panic(err)
-		}
-		defer sink.Close()
-		writer, err := gzip.NewWriterLevel(sink, gzip.BestSpeed)
-		if err != nil {
-			panic(err)
-		}
-		_, err = io.Copy(writer, source)
-		if err != nil {
-			panic(err)
-		}
-		err = writer.Close()
-		if err != nil {
-			panic(err)
-		}
+		panic(err)
 	}
 }
 
-func LiftFlatFile(sourcename, sinkname string) anywork.Work {
+func LiftFile(sourcename, sinkname string) anywork.Work {
 	return func() {
 		source, err := os.Open(sourcename)
-		if err != nil {
-			panic(err)
-		}
+		onErrPanicClose(err, nil)
+
 		defer source.Close()
-		sink, err := os.Create(sinkname)
-		if err != nil {
-			panic(err)
-		}
+		partname := fmt.Sprintf("%s.part%s", sinkname, <-common.Identities)
+		defer os.Remove(partname)
+		sink, err := os.Create(partname)
+		onErrPanicClose(err, nil)
+
 		defer sink.Close()
-		_, err = io.Copy(sink, source)
-		if err != nil {
-			panic(err)
-		}
+		writer, err := gzip.NewWriterLevel(sink, gzip.BestSpeed)
+		onErrPanicClose(err, sink)
+
+		_, err = io.Copy(writer, source)
+		onErrPanicClose(err, sink)
+
+		err = writer.Close()
+		onErrPanicClose(err, sink)
+
+		err = sink.Close()
+		onErrPanicClose(err, nil)
+
+		err = os.Rename(partname, sinkname)
+		onErrPanicClose(err, nil)
 	}
 }
 
 func DropFile(library Library, digest, sinkname string, details *File, rewrite []byte) anywork.Work {
 	return func() {
 		reader, closer, err := library.Open(digest)
-		if err != nil {
-			panic(err)
-		}
-		defer closer()
-		sink, err := os.Create(sinkname)
-		if err != nil {
-			panic(err)
-		}
-		defer sink.Close()
-		_, err = io.Copy(sink, reader)
-		if err != nil {
-			panic(err)
-		}
-		for _, position := range details.Rewrite {
-			_, err = sink.Seek(position, 0)
-			if err != nil {
-				panic(fmt.Sprintf("%v %d", err, position))
-			}
-			_, err = sink.Write(rewrite)
-			if err != nil {
-				panic(err)
-			}
-		}
-		os.Chmod(sinkname, details.Mode)
-		os.Chtimes(sinkname, motherTime, motherTime)
-	}
-}
+		onErrPanicClose(err, nil)
 
-func DropFlatFile(sourcename, sinkname string, details *File, rewrite []byte) anywork.Work {
-	return func() {
-		source, err := os.Open(sourcename)
-		if err != nil {
-			panic(err)
-		}
-		defer source.Close()
-		sink, err := os.Create(sinkname)
-		if err != nil {
-			panic(err)
-		}
-		defer sink.Close()
-		_, err = io.Copy(sink, source)
-		if err != nil {
-			panic(err)
-		}
+		defer closer()
+		partname := fmt.Sprintf("%s.part%s", sinkname, <-common.Identities)
+		defer os.Remove(partname)
+		sink, err := os.Create(partname)
+		onErrPanicClose(err, nil)
+
+		_, err = io.Copy(sink, reader)
+		onErrPanicClose(err, sink)
+
 		for _, position := range details.Rewrite {
 			_, err = sink.Seek(position, 0)
 			if err != nil {
+				sink.Close()
 				panic(fmt.Sprintf("%v %d", err, position))
 			}
 			_, err = sink.Write(rewrite)
-			if err != nil {
-				panic(err)
-			}
+			onErrPanicClose(err, sink)
 		}
+		err = sink.Close()
+		onErrPanicClose(err, nil)
+
+		err = os.Rename(partname, sinkname)
+		onErrPanicClose(err, nil)
+
 		os.Chmod(sinkname, details.Mode)
 		os.Chtimes(sinkname, motherTime, motherTime)
 	}

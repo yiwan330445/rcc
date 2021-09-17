@@ -77,9 +77,9 @@ Goal: Run task in place in debug mode and with timeline.
   Step        build/rcc task run --task "Run Example task" --controller citests -r tmp/fluffy/robot.yaml --debug --timeline
   Must Have   1 task, 1 passed, 0 failed
   Use STDERR
-  Must Have   Progress: 1/12
-  Must Have   Progress: 2/12
-  Must Have   Progress: 3/12
+  Must Have   Progress: 01/12
+  Must Have   Progress: 02/12
+  Must Have   Progress: 03/12
   Must Have   Progress: 12/12
   Must Have   rpaframework
   Must Have   PID #
@@ -111,11 +111,11 @@ Goal: Run task in clean temporary directory.
   Must Have   1 task, 1 passed, 0 failed
   Use STDERR
   Must Have   rpaframework
-  Must Have   Progress: 1/12
-  Wont Have   Progress: 3/12
-  Wont Have   Progress: 5/12
-  Wont Have   Progress: 7/12
-  Wont Have   Progress: 9/12
+  Must Have   Progress: 01/12
+  Wont Have   Progress: 03/12
+  Wont Have   Progress: 05/12
+  Wont Have   Progress: 07/12
+  Wont Have   Progress: 09/12
   Must Have   Progress: 11/12
   Must Have   Progress: 12/12
   Must Have   OK.

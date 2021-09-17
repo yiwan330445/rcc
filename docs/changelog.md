@@ -1,5 +1,11 @@
 # rcc change log
 
+## v11.1.1 (date: 17.9.2021)
+
+- bugfix: using rename in hololib file copy to make it more transactional
+- progress indicator now has elapsed time since previous progress entry
+- experimental upgrade to use go 1.17 on Github Actions
+
 ## v11.1.0 (date: 16.9.2021)
 
 - BREAKING CHANGES, but now this may be considered stable(ish)

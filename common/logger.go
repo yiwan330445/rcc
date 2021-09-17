@@ -98,7 +98,10 @@ func WaitLogs() {
 }
 
 func Progress(step int, form string, details ...interface{}) {
+	previous := ProgressMark
+	ProgressMark = time.Now()
+	delta := ProgressMark.Sub(previous).Round(1 * time.Millisecond).Seconds()
 	message := fmt.Sprintf(form, details...)
-	Log("####  Progress: %d/12  %s  %s", step, Version, message)
+	Log("####  Progress: %02d/12  %s  %8.3fs  %s", step, Version, delta, message)
 	Timeline("%d/12 %s", step, message)
 }
