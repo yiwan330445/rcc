@@ -68,3 +68,8 @@ Goal: Can get plan for used environment.
   Must Have   installation plan complete
   Use STDERR
   Must Have   OK.
+
+Goal: Holotree is still correct.
+  Step        build/rcc holotree check --controller citests
+  Use STDERR
+  Must Have   OK.

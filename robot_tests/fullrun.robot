@@ -105,6 +105,7 @@ Goal: Run task in place in debug mode and with timeline.
   Must Exist  tmp/fluffy/output/environment_*_freeze.yaml
   Must Exist  %{ROBOCORP_HOME}/wheels/
   Must Exist  %{ROBOCORP_HOME}/pipcache/
+  Step        build/rcc holotree check --controller citests
 
 Goal: Run task in clean temporary directory.
   Step        build/rcc task testrun --task "Run Example task" --controller citests -r tmp/fluffy/robot.yaml
@@ -157,6 +158,7 @@ Goal: See variables from specific environment without robot.yaml knowledge
   Wont Have   ROBOT_ROOT=
   Wont Have   ROBOT_ARTIFACTS=
   Must Have   54399f4561ae95af
+  Step        build/rcc holotree check --controller citests
 
 Goal: See variables from specific environment with robot.yaml but without task
   Step        build/rcc holotree variables --controller citests -r tmp/fluffy/robot.yaml
@@ -178,6 +180,7 @@ Goal: See variables from specific environment with robot.yaml but without task
   Must Have   PYTHONPATH=
   Must Have   ROBOT_ROOT=
   Must Have   ROBOT_ARTIFACTS=
+  Step        build/rcc holotree check --controller citests
 
 Goal: See variables from specific environment without robot.yaml knowledge in JSON form
   Step        build/rcc holotree variables --controller citests --json conda/testdata/conda.yaml
@@ -208,6 +211,7 @@ Goal: See variables from specific environment with robot.yaml knowledge
   Wont Have   RC_API_SECRET_TOKEN=
   Wont Have   RC_API_WORKITEM_TOKEN=
   Wont Have   RC_WORKSPACE_ID=
+  Step        build/rcc holotree check --controller citests
 
 Goal: See variables from specific environment with robot.yaml knowledge in JSON form
   Step        build/rcc holotree variables --controller citests --json conda/testdata/conda.yaml --config tmp/alternative.yaml -r tmp/fluffy/robot.yaml -e tmp/fluffy/devdata/env.json

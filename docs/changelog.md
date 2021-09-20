@@ -1,5 +1,11 @@
 # rcc change log
 
+## v11.1.2 (date: 20.9.2021)
+
+- bugfix: removing duplicate file copy on holotree recording
+- removed "new live" phrase from debug printouts
+- made robot tests to check holotree integrity in some selected points
+
 ## v11.1.1 (date: 17.9.2021)
 
 - bugfix: using rename in hololib file copy to make it more transactional

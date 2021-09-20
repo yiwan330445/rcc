@@ -89,18 +89,18 @@ func newLive(yaml, condaYaml, requirementsText, key string, force, freshInstall 
 		return false, fmt.Errorf("Could not get micromamba installed.")
 	}
 	targetFolder := common.StageFolder
-	common.Debug("===  new live  ---  pre cleanup phase ===")
+	common.Debug("===  pre cleanup phase ===")
 	common.Timeline("pre cleanup phase.")
 	err := renameRemove(targetFolder)
 	if err != nil {
 		return false, err
 	}
-	common.Debug("===  new live  ---  first try phase ===")
+	common.Debug("===  first try phase ===")
 	common.Timeline("first try.")
 	success, fatal := newLiveInternal(yaml, condaYaml, requirementsText, key, force, freshInstall, postInstall)
 	if !success && !force && !fatal {
 		cloud.BackgroundMetric(common.ControllerIdentity(), "rcc.env.creation.retry", common.Version)
-		common.Debug("===  new live  ---  second try phase ===")
+		common.Debug("===  second try phase ===")
 		common.Timeline("second try.")
 		common.ForceDebug()
 		common.Log("Retry! First try failed ... now retrying with debug and force options!")
@@ -143,7 +143,7 @@ func newLiveInternal(yaml, condaYaml, requirementsText, key string, force, fresh
 	mambaCommand.Option("--channel-alias", settings.Global.CondaURL())
 	mambaCommand.ConditionalFlag(common.VerboseEnvironmentBuilding(), "--verbose")
 	observer := make(InstallObserver)
-	common.Debug("===  new live  ---  micromamba create phase ===")
+	common.Debug("===  micromamba create phase ===")
 	fmt.Fprintf(planWriter, "\n---  micromamba plan @%ss  ---\n\n", stopwatch)
 	tee := io.MultiWriter(observer, planWriter)
 	code, err := shell.New(CondaEnvironment(), ".", mambaCommand.CLI()...).Tracked(tee, false)
@@ -169,7 +169,7 @@ func newLiveInternal(yaml, condaYaml, requirementsText, key string, force, fresh
 		pipCommand.Option("--index-url", settings.Global.PypiURL())
 		pipCommand.Option("--trusted-host", settings.Global.PypiTrustedHost())
 		pipCommand.ConditionalFlag(common.VerboseEnvironmentBuilding(), "--verbose")
-		common.Debug("===  new live  ---  pip install phase ===")
+		common.Debug("===  pip install phase ===")
 		code, err = LiveExecution(planWriter, targetFolder, pipCommand.CLI()...)
 		if err != nil || code != 0 {
 			cloud.BackgroundMetric(common.ControllerIdentity(), "rcc.env.fatal.pip", fmt.Sprintf("%d_%x", code, code))
@@ -183,7 +183,7 @@ func newLiveInternal(yaml, condaYaml, requirementsText, key string, force, fresh
 	fmt.Fprintf(planWriter, "\n---  post install plan @%ss  ---\n\n", stopwatch)
 	if postInstall != nil && len(postInstall) > 0 {
 		common.Progress(7, "Post install scripts phase started.")
-		common.Debug("===  new live  ---  post install phase ===")
+		common.Debug("===  post install phase ===")
 		for _, script := range postInstall {
 			scriptCommand, err := shlex.Split(script)
 			if err != nil {
@@ -203,7 +203,7 @@ func newLiveInternal(yaml, condaYaml, requirementsText, key string, force, fresh
 		common.Progress(7, "Post install scripts phase skipped -- no scripts.")
 	}
 	common.Progress(8, "Activate environment started phase.")
-	common.Debug("===  new live  ---  activate phase ===")
+	common.Debug("===  activate phase ===")
 	fmt.Fprintf(planWriter, "\n---  activation plan @%ss  ---\n\n", stopwatch)
 	err = Activate(planWriter, targetFolder)
 	if err != nil {
@@ -222,7 +222,7 @@ func newLiveInternal(yaml, condaYaml, requirementsText, key string, force, fresh
 	common.Progress(9, "Update installation plan.")
 	finalplan := filepath.Join(targetFolder, "rcc_plan.log")
 	os.Rename(planfile, finalplan)
-	common.Debug("===  new live  ---  finalize phase ===")
+	common.Debug("===  finalize phase ===")
 
 	markerFile := filepath.Join(targetFolder, "identity.yaml")
 	err = ioutil.WriteFile(markerFile, []byte(yaml), 0o644)

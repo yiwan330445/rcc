@@ -150,15 +150,22 @@ func MakeBranches(path string, it *Dir) error {
 
 func ScheduleLifters(library MutableLibrary, stats *stats) Treetop {
 	var scheduler Treetop
+	seen := make(map[string]bool)
 	scheduler = func(path string, it *Dir) error {
 		for name, subdir := range it.Dirs {
 			scheduler(filepath.Join(path, name), subdir)
 		}
 		for name, file := range it.Files {
+			if seen[file.Digest] {
+				common.Trace("LiftFile %s %q already scheduled.", file.Digest, name)
+				continue
+			}
+			seen[file.Digest] = true
 			directory := library.Location(file.Digest)
-			if !pathlib.IsDir(directory) {
+			if !seen[directory] && !pathlib.IsDir(directory) {
 				os.MkdirAll(directory, 0o755)
 			}
+			seen[directory] = true
 			sinkpath := filepath.Join(directory, file.Digest)
 			ok := pathlib.IsFile(sinkpath)
 			stats.Dirty(!ok)
@@ -200,14 +207,13 @@ func LiftFile(sourcename, sinkname string) anywork.Work {
 		_, err = io.Copy(writer, source)
 		onErrPanicClose(err, sink)
 
-		err = writer.Close()
-		onErrPanicClose(err, sink)
+		onErrPanicClose(writer.Close(), sink)
 
-		err = sink.Close()
-		onErrPanicClose(err, nil)
+		onErrPanicClose(sink.Close(), nil)
 
-		err = os.Rename(partname, sinkname)
-		onErrPanicClose(err, nil)
+		runtime.Gosched()
+
+		onErrPanicClose(os.Rename(partname, sinkname), nil)
 	}
 }
 
@@ -234,14 +240,13 @@ func DropFile(library Library, digest, sinkname string, details *File, rewrite [
 			_, err = sink.Write(rewrite)
 			onErrPanicClose(err, sink)
 		}
-		err = sink.Close()
-		onErrPanicClose(err, nil)
 
-		err = os.Rename(partname, sinkname)
-		onErrPanicClose(err, nil)
+		onErrPanicClose(sink.Close(), nil)
 
-		os.Chmod(sinkname, details.Mode)
-		os.Chtimes(sinkname, motherTime, motherTime)
+		onErrPanicClose(os.Rename(partname, sinkname), nil)
+
+		onErrPanicClose(os.Chmod(sinkname, details.Mode), nil)
+		onErrPanicClose(os.Chtimes(sinkname, motherTime, motherTime), nil)
 	}
 }
 
