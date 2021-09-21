@@ -2,7 +2,9 @@ package anywork
 
 import (
 	"fmt"
+	"io"
 	"os"
+	"runtime"
 	"sync"
 )
 
@@ -62,11 +64,22 @@ func init() {
 	failpipe = make(Failures)
 	errcount = make(Counters)
 	headcount = 0
-	Scale(16)
+	AutoScale()
 	go watcher(failpipe, errcount)
 }
 
-func Scale(limit uint64) {
+func Scale() uint64 {
+	return headcount
+}
+
+func AutoScale() {
+	limit := uint64(runtime.NumCPU() - 1)
+	if limit > 96 {
+		limit = 96
+	}
+	if limit < 4 {
+		limit = 4
+	}
 	for headcount < limit {
 		go member(headcount)
 		headcount += 1
@@ -87,6 +100,17 @@ func Sync() error {
 		return fmt.Errorf("There has been %d failures. See messages above.", count)
 	}
 	return nil
+}
+
+func OnErrPanicCloseAll(err error, closers ...io.Closer) {
+	if err != nil {
+		for _, closer := range closers {
+			if closer != nil {
+				closer.Close()
+			}
+		}
+		panic(err)
+	}
 }
 
 func Done() error {

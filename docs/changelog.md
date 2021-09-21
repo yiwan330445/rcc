@@ -1,5 +1,10 @@
 # rcc change log
 
+## v11.1.3 (date: 21.9.2021)
+
+- bugfix: changing performance thru auto-scaling workers based on number
+  of CPUs (minus one, but at least 4 workers)
+
 ## v11.1.2 (date: 20.9.2021)
 
 - bugfix: removing duplicate file copy on holotree recording

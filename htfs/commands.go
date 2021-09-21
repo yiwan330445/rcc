@@ -24,7 +24,7 @@ func Platform() string {
 func NewEnvironment(force bool, condafile, holozip string) (label string, err error) {
 	defer fail.Around(&err)
 
-	defer common.Progress(12, "Fresh holotree done.")
+	defer common.Progress(12, "Fresh holotree done [with %d workers].", anywork.Scale())
 	common.Progress(1, "Fresh holotree environment %v.", xviper.TrackingIdentity())
 
 	callback := pathlib.LockWaitMessage("Serialized environment creation")
@@ -39,8 +39,6 @@ func NewEnvironment(force bool, condafile, holozip string) (label string, err er
 	fail.On(err != nil, "%s", err)
 	common.EnvironmentHash = BlueprintHash(holotreeBlueprint)
 	common.Progress(2, "Holotree blueprint is %q.", common.EnvironmentHash)
-
-	anywork.Scale(100)
 
 	tree, err := New()
 	fail.On(err != nil, "%s", err)
@@ -60,7 +58,7 @@ func NewEnvironment(force bool, condafile, holozip string) (label string, err er
 		library = tree
 	}
 
-	common.Progress(11, "Restore space from library.")
+	common.Progress(11, "Restore space from library [with %d workers].", anywork.Scale())
 	path, err := library.Restore(holotreeBlueprint, []byte(common.ControllerIdentity()), []byte(common.HolotreeSpace))
 	fail.On(err != nil, "Failed to restore blueprint %q, reason: %v", string(holotreeBlueprint), err)
 	return path, nil
@@ -114,7 +112,7 @@ func RecordEnvironment(tree MutableLibrary, blueprint []byte, force bool) (err e
 		err = conda.LegacyEnvironment(force, identityfile)
 		fail.On(err != nil, "Failed to create environment, reason %w.", err)
 
-		common.Progress(10, "Record holotree stage to hololib.")
+		common.Progress(10, "Record holotree stage to hololib [with %d workers].", anywork.Scale())
 		err = tree.Record(blueprint)
 		fail.On(err != nil, "Failed to record blueprint %q, reason: %w", string(blueprint), err)
 	}

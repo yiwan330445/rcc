@@ -180,56 +180,47 @@ func ScheduleLifters(library MutableLibrary, stats *stats) Treetop {
 	return scheduler
 }
 
-func onErrPanicClose(err error, sink io.Closer) {
-	if err != nil {
-		if sink != nil {
-			sink.Close()
-		}
-		panic(err)
-	}
-}
-
 func LiftFile(sourcename, sinkname string) anywork.Work {
 	return func() {
 		source, err := os.Open(sourcename)
-		onErrPanicClose(err, nil)
+		anywork.OnErrPanicCloseAll(err)
 
 		defer source.Close()
 		partname := fmt.Sprintf("%s.part%s", sinkname, <-common.Identities)
 		defer os.Remove(partname)
 		sink, err := os.Create(partname)
-		onErrPanicClose(err, nil)
+		anywork.OnErrPanicCloseAll(err)
 
 		defer sink.Close()
 		writer, err := gzip.NewWriterLevel(sink, gzip.BestSpeed)
-		onErrPanicClose(err, sink)
+		anywork.OnErrPanicCloseAll(err, sink)
 
 		_, err = io.Copy(writer, source)
-		onErrPanicClose(err, sink)
+		anywork.OnErrPanicCloseAll(err, sink)
 
-		onErrPanicClose(writer.Close(), sink)
+		anywork.OnErrPanicCloseAll(writer.Close(), sink)
 
-		onErrPanicClose(sink.Close(), nil)
+		anywork.OnErrPanicCloseAll(sink.Close())
 
 		runtime.Gosched()
 
-		onErrPanicClose(os.Rename(partname, sinkname), nil)
+		anywork.OnErrPanicCloseAll(os.Rename(partname, sinkname))
 	}
 }
 
 func DropFile(library Library, digest, sinkname string, details *File, rewrite []byte) anywork.Work {
 	return func() {
 		reader, closer, err := library.Open(digest)
-		onErrPanicClose(err, nil)
+		anywork.OnErrPanicCloseAll(err)
 
 		defer closer()
 		partname := fmt.Sprintf("%s.part%s", sinkname, <-common.Identities)
 		defer os.Remove(partname)
 		sink, err := os.Create(partname)
-		onErrPanicClose(err, nil)
+		anywork.OnErrPanicCloseAll(err)
 
 		_, err = io.Copy(sink, reader)
-		onErrPanicClose(err, sink)
+		anywork.OnErrPanicCloseAll(err, sink)
 
 		for _, position := range details.Rewrite {
 			_, err = sink.Seek(position, 0)
@@ -238,33 +229,27 @@ func DropFile(library Library, digest, sinkname string, details *File, rewrite [
 				panic(fmt.Sprintf("%v %d", err, position))
 			}
 			_, err = sink.Write(rewrite)
-			onErrPanicClose(err, sink)
+			anywork.OnErrPanicCloseAll(err, sink)
 		}
 
-		onErrPanicClose(sink.Close(), nil)
+		anywork.OnErrPanicCloseAll(sink.Close())
 
-		onErrPanicClose(os.Rename(partname, sinkname), nil)
+		anywork.OnErrPanicCloseAll(os.Rename(partname, sinkname))
 
-		onErrPanicClose(os.Chmod(sinkname, details.Mode), nil)
-		onErrPanicClose(os.Chtimes(sinkname, motherTime, motherTime), nil)
+		anywork.OnErrPanicCloseAll(os.Chmod(sinkname, details.Mode))
+		anywork.OnErrPanicCloseAll(os.Chtimes(sinkname, motherTime, motherTime))
 	}
 }
 
 func RemoveFile(filename string) anywork.Work {
 	return func() {
-		err := os.Remove(filename)
-		if err != nil {
-			panic(err)
-		}
+		anywork.OnErrPanicCloseAll(os.Remove(filename))
 	}
 }
 
 func RemoveDirectory(dirname string) anywork.Work {
 	return func() {
-		err := os.RemoveAll(dirname)
-		if err != nil {
-			panic(err)
-		}
+		anywork.OnErrPanicCloseAll(os.RemoveAll(dirname))
 	}
 }
 
@@ -272,16 +257,12 @@ func RestoreDirectory(library Library, fs *Root, current map[string]string, stat
 	return func(path string, it *Dir) anywork.Work {
 		return func() {
 			content, err := os.ReadDir(path)
-			if err != nil {
-				panic(err)
-			}
+			anywork.OnErrPanicCloseAll(err)
 			files := make(map[string]bool)
 			for _, part := range content {
 				directpath := filepath.Join(path, part.Name())
 				info, err := os.Stat(directpath)
-				if err != nil {
-					panic(err)
-				}
+				anywork.OnErrPanicCloseAll(err)
 				if info.IsDir() {
 					_, ok := it.Dirs[part.Name()]
 					if !ok {
