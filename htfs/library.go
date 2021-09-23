@@ -122,8 +122,8 @@ func (it zipseen) Add(fullpath, relativepath string) (err error) {
 func (it *hololib) Export(catalogs []string, archive string) (err error) {
 	defer fail.Around(&err)
 
-	common.Timeline("holotree export start")
-	defer common.Timeline("holotree export done")
+	common.TimelineBegin("holotree export start")
+	defer common.TimelineEnd()
 
 	handle, err := os.Create(archive)
 	fail.On(err != nil, "Could not create archive %q.", archive)
@@ -216,9 +216,9 @@ func (it *hololib) queryBlueprint(key string) bool {
 		common.Debug("Catalog load failed, reason: %v", err)
 		return false
 	}
-	common.Timeline("holotree content check start")
+	common.TimelineBegin("holotree content check start")
 	err = shadow.Treetop(CatalogCheck(it, shadow))
-	common.Timeline("holotree content check done")
+	common.TimelineEnd()
 	if err != nil {
 		cloud.BackgroundMetric(common.ControllerIdentity(), "rcc.holotree.catalog.failure", common.Version)
 		common.Debug("Catalog check failed, reason: %v", err)
@@ -273,7 +273,8 @@ func (it *hololib) Restore(blueprint, client, tag []byte) (result string, err er
 	defer common.Stopwatch("Holotree restore took:").Debug()
 	key := BlueprintHash(blueprint)
 	catalog := it.CatalogPath(key)
-	common.Timeline("holotree restore start %s", key)
+	common.TimelineBegin("holotree space restore start [%s]", key)
+	defer common.TimelineEnd()
 	name := ControllerSpaceName(client, tag)
 	fs, err := NewRoot(it.Stage())
 	fail.On(err != nil, "Failed to create stage -> %v", err)
@@ -292,21 +293,21 @@ func (it *hololib) Restore(blueprint, client, tag []byte) (result string, err er
 		err = shadow.LoadFrom(metafile)
 	}
 	if err == nil {
-		common.Timeline("holotree digest start")
+		common.TimelineBegin("holotree digest start")
 		shadow.Treetop(DigestRecorder(currentstate))
-		common.Timeline("holotree digest done")
+		common.TimelineEnd()
 	}
 	err = fs.Relocate(targetdir)
 	fail.On(err != nil, "Failed to relocate %s -> %v", targetdir, err)
-	common.Timeline("holotree make branches start")
+	common.TimelineBegin("holotree make branches start")
 	err = fs.Treetop(MakeBranches)
-	common.Timeline("holotree make branches done")
+	common.TimelineEnd()
 	fail.On(err != nil, "Failed to make branches -> %v", err)
 	score := &stats{}
-	common.Timeline("holotree restore start")
+	common.TimelineBegin("holotree restore start")
 	err = fs.AllDirs(RestoreDirectory(it, fs, currentstate, score))
 	fail.On(err != nil, "Failed to restore directories -> %v", err)
-	common.Timeline("holotree restore done")
+	common.TimelineEnd()
 	defer common.Timeline("- dirty %d/%d", score.dirty, score.total)
 	common.Debug("Holotree dirty workload: %d/%d\n", score.dirty, score.total)
 	fs.Controller = string(client)

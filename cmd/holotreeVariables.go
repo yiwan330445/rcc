@@ -64,6 +64,8 @@ func asExportedText(items []string) {
 func holotreeExpandEnvironment(userFiles []string, packfile, environment, workspace string, validity int, force bool) []string {
 	var extra []string
 	var data operations.Token
+	common.TimelineBegin("environment expansion start")
+	defer common.TimelineEnd()
 
 	config, holotreeBlueprint, err := htfs.ComposeFinalBlueprint(userFiles, packfile)
 	pretty.Guard(err == nil, 5, "%s", err)
@@ -80,18 +82,21 @@ func holotreeExpandEnvironment(userFiles []string, packfile, environment, worksp
 	pretty.Guard(err == nil, 6, "%s", err)
 
 	if Has(environment) {
+		common.Timeline("load robot environment")
 		developmentEnvironment, err := robot.LoadEnvironmentSetup(environment)
 		if err == nil {
 			extra = developmentEnvironment.AsEnvironment()
 		}
 	}
 
+	common.Timeline("load robot environment")
 	env := conda.EnvironmentExtensionFor(path)
 	if config != nil {
 		env = config.ExecutionEnvironment(path, extra, false)
 	}
 
 	if Has(workspace) {
+		common.Timeline("get run robot claims")
 		claims := operations.RunRobotClaims(validity*60, workspace)
 		data, err = operations.AuthorizeClaims(AccountName(), claims)
 		pretty.Guard(err == nil, 9, "Failed to get cloud data, reason: %v", err)

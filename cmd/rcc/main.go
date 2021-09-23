@@ -60,6 +60,7 @@ func ExitProtection() {
 }
 
 func startTempRecycling() {
+	defer common.Timeline("temp recycling done")
 	pattern := filepath.Join(common.RobocorpTempRoot(), "*", "recycle.now")
 	found, err := filepath.Glob(pattern)
 	if err != nil {
@@ -87,7 +88,7 @@ func markTempForRecycling() {
 }
 
 func main() {
-	common.Timeline("Start.")
+	common.TimelineBegin("Start.")
 	defer common.EndOfTimeline()
 
 	defer ExitProtection()

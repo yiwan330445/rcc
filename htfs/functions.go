@@ -17,15 +17,21 @@ import (
 	"github.com/robocorp/rcc/trollhash"
 )
 
+func JustFileExistCheck(library MutableLibrary, path, name, digest string) anywork.Work {
+	return func() {
+		location := library.ExactLocation(digest)
+		if !pathlib.IsFile(location) {
+			fullpath := filepath.Join(path, name)
+			panic(fmt.Errorf("Content for %q [%s] is missing!", fullpath, digest))
+		}
+	}
+}
+
 func CatalogCheck(library MutableLibrary, fs *Root) Treetop {
 	var tool Treetop
 	tool = func(path string, it *Dir) error {
 		for name, file := range it.Files {
-			location := library.ExactLocation(file.Digest)
-			if !pathlib.IsFile(location) {
-				fullpath := filepath.Join(path, name)
-				return fmt.Errorf("Content for %q [%s] is missing!", fullpath, file.Digest)
-			}
+			anywork.Backlog(JustFileExistCheck(library, path, name, file.Digest))
 		}
 		for name, subdir := range it.Dirs {
 			err := tool(filepath.Join(path, name), subdir)
@@ -365,8 +371,8 @@ func DigestLoader(root *Root, at int, slots []map[string]string) anywork.Work {
 }
 
 func LoadCatalogs() ([]string, []*Root) {
-	common.Timeline("catalog load start")
-	defer common.Timeline("catalog load done")
+	common.TimelineBegin("catalog load start")
+	defer common.TimelineEnd()
 	catalogs := Catalogs()
 	roots := make([]*Root, len(catalogs))
 	for at, catalog := range catalogs {

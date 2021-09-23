@@ -76,9 +76,11 @@ func Origin() string {
 func Execute() {
 	defer func() {
 		if profiling != nil {
+			common.Timeline("closing profiling started")
 			pprof.StopCPUProfile()
 			profiling.Sync()
 			profiling.Close()
+			common.TimelineEnd()
 		}
 	}()
 
@@ -109,6 +111,7 @@ func init() {
 
 func initConfig() {
 	if profilefile != "" {
+		common.TimelineBegin("profiling run started")
 		sink, err := os.Create(profilefile)
 		pretty.Guard(err == nil, 5, "Failed to create profile file %q, reason %v.", profilefile, err)
 		err = pprof.StartCPUProfile(sink)

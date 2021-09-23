@@ -2,37 +2,57 @@ package common
 
 import (
 	"fmt"
+	"strings"
 )
 
 var (
 	TimelineEnabled bool
 	pipe            chan string
+	indent          chan bool
 	done            chan bool
 )
 
 type timevent struct {
-	when Duration
-	what string
+	level int
+	when  Duration
+	what  string
 }
 
-func timeliner(events chan string, done chan bool) {
+func timeliner(events chan string, indent, done chan bool) {
 	history := make([]*timevent, 0, 100)
+	level := 0
+loop:
 	for {
-		event, ok := <-events
-		if !ok {
-			break
+		select {
+		case event, ok := <-events:
+			if !ok {
+				break loop
+			}
+			history = append(history, &timevent{level, Clock.Elapsed(), event})
+		case deeper, ok := <-indent:
+			if !ok {
+				break loop
+			}
+			if deeper {
+				level += 1
+			} else {
+				level -= 1
+			}
+			if level < 0 {
+				level = 0
+			}
 		}
-		history = append(history, &timevent{Clock.Elapsed(), event})
 	}
 	death := Clock.Elapsed()
 	if TimelineEnabled && death.Milliseconds() > 0 {
-		history = append(history, &timevent{death, "Now."})
+		history = append(history, &timevent{0, death, "Now."})
 		Log("----  rcc timeline  ----")
 		Log(" #  percent  seconds  event")
 		for at, event := range history {
 			permille := event.when * 1000 / death
 			percent := float64(permille) / 10.0
-			Log("%2d:  %5.1f%%  %7s  %s", at+1, percent, event.when, event.what)
+			indent := strings.Repeat("| ", event.level)
+			Log("%2d:  %5.1f%%  %7s  %s%s", at+1, percent, event.when, indent, event.what)
 		}
 		Log("----  rcc timeline  ----")
 	}
@@ -41,8 +61,9 @@ func timeliner(events chan string, done chan bool) {
 
 func init() {
 	pipe = make(chan string)
+	indent = make(chan bool)
 	done = make(chan bool)
-	go timeliner(pipe, done)
+	go timeliner(pipe, indent, done)
 }
 
 func IgnoreAllPanics() {
@@ -54,7 +75,19 @@ func Timeline(form string, details ...interface{}) {
 	pipe <- fmt.Sprintf(form, details...)
 }
 
+func TimelineBegin(form string, details ...interface{}) {
+	Timeline(form, details...)
+	indent <- true
+}
+
+func TimelineEnd() {
+	indent <- false
+	Timeline("`")
+}
+
 func EndOfTimeline() {
+	TimelineEnd()
 	close(pipe)
+	close(indent)
 	<-done
 }

@@ -101,21 +101,21 @@ func (it *ziplibrary) Restore(blueprint, client, tag []byte) (result string, err
 		err = shadow.LoadFrom(metafile)
 	}
 	if err == nil {
-		common.Timeline("holotree digest start (zip)")
+		common.TimelineBegin("holotree digest start (zip)")
 		shadow.Treetop(DigestRecorder(currentstate))
-		common.Timeline("holotree digest done (zip)")
+		common.TimelineEnd()
 	}
 	err = fs.Relocate(targetdir)
 	fail.On(err != nil, "Failed to relocate %q -> %v", targetdir, err)
-	common.Timeline("holotree make branches start (zip)")
+	common.TimelineBegin("holotree make branches start (zip)")
 	err = fs.Treetop(MakeBranches)
-	common.Timeline("holotree make branches done (zip)")
+	common.TimelineEnd()
 	fail.On(err != nil, "Failed to make branches %q -> %v", targetdir, err)
 	score := &stats{}
-	common.Timeline("holotree restore start (zip)")
+	common.TimelineBegin("holotree restore start (zip)")
 	err = fs.AllDirs(RestoreDirectory(it, fs, currentstate, score))
 	fail.On(err != nil, "Failed to restore directory %q -> %v", targetdir, err)
-	common.Timeline("holotree restore done (zip)")
+	common.TimelineEnd()
 	defer common.Timeline("- dirty %d/%d", score.dirty, score.total)
 	common.Debug("Holotree dirty workload: %d/%d\n", score.dirty, score.total)
 	fs.Controller = string(client)

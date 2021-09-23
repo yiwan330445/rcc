@@ -98,8 +98,8 @@ func (it *Root) Lift() error {
 }
 
 func (it *Root) Treetop(task Treetop) error {
-	common.Timeline("holotree treetop sync start")
-	defer common.Timeline("holotree treetop sync done")
+	common.TimelineBegin("holotree treetop sync start")
+	defer common.TimelineEnd()
 	err := task(it.Path, it.Tree)
 	if err != nil {
 		return err
@@ -108,15 +108,15 @@ func (it *Root) Treetop(task Treetop) error {
 }
 
 func (it *Root) AllDirs(task Dirtask) error {
-	common.Timeline("holotree dirs sync start")
-	defer common.Timeline("holotree dirs sync done")
+	common.TimelineBegin("holotree dirs sync start")
+	defer common.TimelineEnd()
 	it.Tree.AllDirs(it.Path, task)
 	return anywork.Sync()
 }
 
 func (it *Root) AllFiles(task Filetask) error {
-	common.Timeline("holotree files sync start")
-	defer common.Timeline("holotree files sync done")
+	common.TimelineBegin("holotree files sync start")
+	defer common.TimelineEnd()
 	it.Tree.AllFiles(it.Path, task)
 	return anywork.Sync()
 }
@@ -154,8 +154,8 @@ func (it *Root) ReadFrom(source io.Reader) error {
 }
 
 func (it *Root) LoadFrom(filename string) error {
-	common.Timeline("holotree load %q", filename)
-	defer common.Timeline("holotree load done")
+	common.TimelineBegin("holotree load %q", filename)
+	defer common.TimelineEnd()
 	source, err := os.Open(filename)
 	if err != nil {
 		return err

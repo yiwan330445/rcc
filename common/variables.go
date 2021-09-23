@@ -37,14 +37,24 @@ func init() {
 	Clock = &stopwatch{"Clock", time.Now()}
 	When = Clock.started.Unix()
 	ProgressMark = time.Now()
+
+	ensureDirectory(TemplateLocation())
+	ensureDirectory(BinLocation())
+	ensureDirectory(HolotreeLocation())
+	ensureDirectory(HololibCatalogLocation())
+	ensureDirectory(HololibLibraryLocation())
+	ensureDirectory(PipCache())
+	ensureDirectory(WheelCache())
+	ensureDirectory(RobotCache())
+	ensureDirectory(MambaPackages())
 }
 
 func RobocorpHome() string {
 	home := os.Getenv(ROBOCORP_HOME_VARIABLE)
 	if len(home) > 0 {
-		return ensureDirectory(ExpandPath(home))
+		return ExpandPath(home)
 	}
-	return ensureDirectory(ExpandPath(defaultRobocorpLocation))
+	return ExpandPath(defaultRobocorpLocation)
 }
 
 func RobocorpLock() string {
@@ -57,11 +67,6 @@ func VerboseEnvironmentBuilding() bool {
 
 func OverrideSystemRequirements() bool {
 	return len(os.Getenv(ROBOCORP_OVERRIDE_SYSTEM_REQUIREMENTS)) > 0
-}
-
-func ensureDirectory(name string) string {
-	os.MkdirAll(name, 0o750)
-	return name
 }
 
 func BinRcc() string {
@@ -77,7 +82,7 @@ func EventJournal() string {
 }
 
 func TemplateLocation() string {
-	return ensureDirectory(filepath.Join(RobocorpHome(), "templates"))
+	return filepath.Join(RobocorpHome(), "templates")
 }
 
 func RobocorpTempRoot() string {
@@ -85,19 +90,19 @@ func RobocorpTempRoot() string {
 }
 
 func BinLocation() string {
-	return ensureDirectory(filepath.Join(RobocorpHome(), "bin"))
+	return filepath.Join(RobocorpHome(), "bin")
 }
 
 func HololibLocation() string {
-	return ensureDirectory(filepath.Join(RobocorpHome(), "hololib"))
+	return filepath.Join(RobocorpHome(), "hololib")
 }
 
 func HololibCatalogLocation() string {
-	return ensureDirectory(filepath.Join(HololibLocation(), "catalog"))
+	return filepath.Join(HololibLocation(), "catalog")
 }
 
 func HololibLibraryLocation() string {
-	return ensureDirectory(filepath.Join(HololibLocation(), "library"))
+	return filepath.Join(HololibLocation(), "library")
 }
 
 func HolotreeLock() string {
@@ -105,7 +110,7 @@ func HolotreeLock() string {
 }
 
 func HolotreeLocation() string {
-	return ensureDirectory(filepath.Join(RobocorpHome(), "holotree"))
+	return filepath.Join(RobocorpHome(), "holotree")
 }
 
 func UsesHolotree() bool {
@@ -113,15 +118,15 @@ func UsesHolotree() bool {
 }
 
 func PipCache() string {
-	return ensureDirectory(filepath.Join(RobocorpHome(), "pipcache"))
+	return filepath.Join(RobocorpHome(), "pipcache")
 }
 
 func WheelCache() string {
-	return ensureDirectory(filepath.Join(RobocorpHome(), "wheels"))
+	return filepath.Join(RobocorpHome(), "wheels")
 }
 
 func RobotCache() string {
-	return ensureDirectory(filepath.Join(RobocorpHome(), "robots"))
+	return filepath.Join(RobocorpHome(), "robots")
 }
 
 func MambaPackages() string {
@@ -156,4 +161,8 @@ func UserAgent() string {
 
 func ControllerIdentity() string {
 	return strings.ToLower(fmt.Sprintf("rcc.%s", ControllerType))
+}
+
+func ensureDirectory(name string) {
+	Error("mkdir", os.MkdirAll(name, 0o750))
 }
