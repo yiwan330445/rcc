@@ -1,5 +1,10 @@
 # rcc change log
 
+## v11.1.5 (date: 24.9.2021)
+
+- bugfix: performance profiling revealed bottleneck in windows, where calling
+  stat is expensive, so here is try to limit using it uneccessarily
+
 ## v11.1.4 (date: 23.9.2021)
 
 - bugfix: adding concurrencty to catalog check

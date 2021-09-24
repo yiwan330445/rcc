@@ -22,14 +22,12 @@ func Abs(path string) (string, error) {
 
 func IsDir(pathname string) bool {
 	stat, err := os.Stat(pathname)
-	if err != nil {
-		return false
-	}
-	return stat.IsDir()
+	return err == nil && stat.IsDir()
 }
 
 func IsFile(pathname string) bool {
-	return Exists(pathname) && !IsDir(pathname)
+	stat, err := os.Stat(pathname)
+	return err == nil && !stat.IsDir()
 }
 
 func Size(pathname string) (int64, bool) {
