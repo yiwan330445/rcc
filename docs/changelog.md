@@ -1,5 +1,38 @@
 # rcc change log
 
+## v11.1.6 (date: 27.9.2021)
+
+### What to consider when upgrading from series 10 to series 11 of rcc?
+
+Major version break between rcc 10 and 11 was about removing the old base/live
+way of managing environments (`rcc environment ...` commands). That had some
+visible changes in rcc commands used. Here is a summary of those changes.
+
+- Compared to base/live based management of environments, holotree needs
+  a different mindset to work with. With the new holotree, users decide which
+  processes share the same working space and which receive their own space.
+  So, high level management of logical spaces has shifted from rcc to user
+  (or tools), where in base/live users did not have the option to do so.
+  Low level management is still rcc responsibility and based on "conda.yaml"
+  content.
+- All `rcc environment` commands were removed or renamed, since this was
+  an old way of doing things.
+- Old `rcc env hash` was renamed to `rcc holotree hash` and changed to show
+  holotree blueprint hash.
+- Old `rcc env plan` was renamed to `rcc holotree plan` and changed to show
+  plan from given holotree space.
+- Old `rcc env cleanup` was renamed to `rcc configuration cleanup`  and
+  changed to work in a way that only holotree things are valid from now on.
+  This means that if you are using `rcc conf cleanup`, check help for changed
+  flags also.
+- In general, the old `--stage` flag is gone, since it was base/live specific.
+- Holotree related commands, including various run commands, now have default
+  values for the `--space` flag. So if no `--space` flag is given, that
+  defaults to `user` value, and the same space will be updated based
+  on requested environment specification.
+- Output of some commands have changed, for example there are now more
+  "Progress" steps in rcc output.
+
 ## v11.1.5 (date: 24.9.2021)
 
 - bugfix: performance profiling revealed bottleneck in windows, where calling
