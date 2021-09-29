@@ -93,6 +93,8 @@ func holotreeExpandEnvironment(userFiles []string, packfile, environment, worksp
 	env := conda.EnvironmentExtensionFor(path)
 	if config != nil {
 		env = config.ExecutionEnvironment(path, extra, false)
+	} else {
+		env = append(extra, env...)
 	}
 
 	if Has(workspace) {

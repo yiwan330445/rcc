@@ -1,5 +1,13 @@
 # rcc change log
 
+## v11.2.0 (date: 29.9.2021)
+
+- updated content to [recipes](/docs/recipes.md) about Holotree controls
+- two new documentation commands, features and usecases, and corresponding
+  markdown documents in docs folder
+- added env.json capability also into pure `conda.yaml` case in
+  `rcc holotree variables` command (bugfix)
+
 ## v11.1.6 (date: 27.9.2021)
 
 ### What to consider when upgrading from series 10 to series 11 of rcc?

@@ -220,6 +220,50 @@ mkdir -p output
 cp target/build/micromamba output/micromamba-$version
 ```
 
+## How to control holotree environments?
+
+There is three controlling factors for where holotree spaces are created.
+
+First is location of `ROBOCORP_HOME` at creation time of environment. This
+decides general location for environment and it cannot be changed or relocated
+afterwards.
+
+Second controlling factor is given using `--controller` option and default for
+this is value `user`. And when applications are calling rcc, they should
+have their own "controller" identity, so that all spaces created for one
+application are groupped together by prefix of their "space" identity name.
+
+Third controlling factor is content of `--space` option and again default
+value there is `user`. Here it is up to user or application to decide their
+strategy of use of different names to separate environments to their logical
+used partitions. If you choose to use just defaults (user/user) then there
+is going to be only one real environment available.
+
+But above three controls gives you good ways to control how you and your
+applications manage their usage of different python environments for
+different purposes. You can share environments if you want, but you can also
+give dedicates space for thos things that need full control of their space.
+
+So running following commands demonstrate different levels of control for
+space creation.
+
+```
+export ROBOCORP_HOME=/tmp/rchome
+rcc holotree variables simple.yaml
+rcc holotree variables --space tips simple.yaml
+rcc holotree variables --controller tricks --space tips simple.yaml
+```
+
+If you now run `rcc holotree list` it should list something like following.
+
+```
+Identity            Controller  Space  Blueprint         Full path
+--------            ----------  -----  --------          ---------
+5a1fac3c5_2daaa295  rcc.user    tips   c34ed96c2d8a459a  /tmp/rchome/holotree/5a1fac3c5_2daaa295
+5a1fac3c5_9fcd2534  rcc.user    user   c34ed96c2d8a459a  /tmp/rchome/holotree/5a1fac3c5_9fcd2534
+9e7018022_2daaa295  rcc.tricks  tips   c34ed96c2d8a459a  /tmp/rchome/holotree/9e7018022_2daaa295
+```
+
 ## Where can I find updates for rcc?
 
 https://downloads.robocorp.com/rcc/releases/index.html
