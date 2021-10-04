@@ -1,5 +1,9 @@
 # rcc change log
 
+## v11.3.0 (date: 4.10.2021)
+
+- update robot templates from cloud (not used yet, coming up in next versions)
+
 ## v11.2.0 (date: 29.9.2021)
 
 - updated content to [recipes](/docs/recipes.md) about Holotree controls

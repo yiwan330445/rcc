@@ -109,6 +109,12 @@ func resolveLink(link, page string) string {
 
 type gateway bool
 
+func (it gateway) TemplatesYamlURL() string {
+	config, err := SummonSettings()
+	pretty.Guard(err == nil, 111, "Could not get settings, reason: %v", err)
+	return config.Autoupdates["templates"]
+}
+
 func (it gateway) Diagnostics(target *common.DiagnosticStatus) {
 	config, err := SummonSettings()
 	pretty.Guard(err == nil, 111, "Could not get settings, reason: %v", err)
