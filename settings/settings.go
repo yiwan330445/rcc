@@ -166,12 +166,6 @@ func (it gateway) Hostnames() []string {
 	return config.Hostnames()
 }
 
-func (it gateway) Templates() map[string]string {
-	config, err := SummonSettings()
-	pretty.Guard(err == nil, 111, "Could not get settings, reason: %v", err)
-	return config.Templates
-}
-
 func (it gateway) ConfiguredHttpTransport() *http.Transport {
 	return httpTransport
 }

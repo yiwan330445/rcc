@@ -5,13 +5,11 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/robocorp/rcc/cloud"
 	"github.com/robocorp/rcc/common"
 	"github.com/robocorp/rcc/htfs"
 	"github.com/robocorp/rcc/operations"
 	"github.com/robocorp/rcc/pretty"
 	"github.com/robocorp/rcc/robot"
-	"github.com/robocorp/rcc/settings"
 	"github.com/spf13/cobra"
 )
 
@@ -20,22 +18,25 @@ var (
 )
 
 func updateEnvironments(robots []string) {
-	for at, robotling := range robots {
+	tree, err := htfs.New()
+	pretty.Guard(err == nil, 2, "Holotree creation error: %v", err)
+	for at, template := range robots {
 		workarea := filepath.Join(os.TempDir(), fmt.Sprintf("workarea%x%x", common.When, at))
 		defer os.RemoveAll(workarea)
 		common.Debug("Using temporary workarea: %v", workarea)
-		err := operations.Unzip(workarea, robotling, false, true)
-		pretty.Guard(err == nil, 2, "Could not unzip %q, reason: %w", robotling, err)
+		err = operations.InitializeWorkarea(workarea, template, false, forceFlag)
+		pretty.Guard(err == nil, 2, "Could not create robot %q, reason: %v", template, err)
 		targetRobot := robot.DetectConfigurationName(workarea)
+		_, blueprint, err := htfs.ComposeFinalBlueprint([]string{}, targetRobot)
+		if tree.HasBlueprint(blueprint) {
+			continue
+		}
 		config, err := robot.LoadRobotYaml(targetRobot, false)
 		pretty.Guard(err == nil, 2, "Could not load robot config %q, reason: %w", targetRobot, err)
 		if !config.UsesConda() {
 			continue
 		}
-		condafile := config.CondaConfigFile()
-		tree, err := htfs.New()
-		pretty.Guard(err == nil, 2, "Holotree creation error: %v", err)
-		err = htfs.RecordCondaEnvironment(tree, condafile, false)
+		_, err = htfs.NewEnvironment(config.CondaConfigFile(), "", false, false)
 		pretty.Guard(err == nil, 2, "Holotree recording error: %v", err)
 	}
 }
@@ -51,15 +52,7 @@ var holotreeBootstrapCmd = &cobra.Command{
 			defer common.Stopwatch("Holotree bootstrap lasted").Report()
 		}
 
-		robots := make([]string, 0, 20)
-		for key, _ := range settings.Global.Templates() {
-			zipname := fmt.Sprintf("%s.zip", key)
-			filename := filepath.Join(common.TemplateLocation(), zipname)
-			robots = append(robots, filename)
-			url := fmt.Sprintf("templates/%s", zipname)
-			err := cloud.Download(settings.Global.DownloadsLink(url), filename)
-			pretty.Guard(err == nil, 2, "Could not download %q, reason: %w", url, err)
-		}
+		robots := operations.ListTemplates(false)
 
 		if !holotreeQuick {
 			updateEnvironments(robots)

@@ -310,11 +310,11 @@ func (it *robot) TaskByName(name string) Task {
 }
 
 func (it *robot) UsesConda() bool {
-	return len(it.Conda) > 0 || len(it.availableEnvironmentConfigurations(osArchitectureToken())) > 0
+	return len(it.Conda) > 0 || len(it.availableEnvironmentConfigurations(common.Platform())) > 0
 }
 
 func (it *robot) CondaConfigFile() string {
-	available := it.availableEnvironmentConfigurations(osArchitectureToken())
+	available := it.availableEnvironmentConfigurations(common.Platform())
 	if len(available) > 0 {
 		return available[0]
 	}
@@ -325,12 +325,8 @@ func (it *robot) WorkingDirectory() string {
 	return it.Root
 }
 
-func osArchitectureToken() string {
-	return fmt.Sprintf("%s_%s", runtime.GOOS, runtime.GOARCH)
-}
-
 func freezeFileBasename() string {
-	return fmt.Sprintf("environment_%s_freeze.yaml", osArchitectureToken())
+	return fmt.Sprintf("environment_%s_freeze.yaml", common.Platform())
 }
 
 func submatch(pattern *regexp.Regexp, expected, text string) bool {

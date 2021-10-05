@@ -186,7 +186,7 @@ func (it *hololib) Record(blueprint []byte) error {
 }
 
 func (it *hololib) CatalogPath(key string) string {
-	name := fmt.Sprintf("%s.%s", key, Platform())
+	name := fmt.Sprintf("%s.%s", key, common.Platform())
 	return filepath.Join(common.HololibCatalogLocation(), name)
 }
 

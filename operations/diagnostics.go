@@ -62,7 +62,7 @@ func RunDiagnostics() *common.DiagnosticStatus {
 	result.Details["user-agent"] = common.UserAgent()
 	result.Details["installationId"] = xviper.TrackingIdentity()
 	result.Details["telemetry-enabled"] = fmt.Sprintf("%v", xviper.CanTrack())
-	result.Details["os"] = fmt.Sprintf("%s %s", runtime.GOOS, runtime.GOARCH)
+	result.Details["os"] = common.Platform()
 	result.Details["cpus"] = fmt.Sprintf("%d", runtime.NumCPU())
 	result.Details["when"] = time.Now().Format(time.RFC3339 + " (MST)")
 

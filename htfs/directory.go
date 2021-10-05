@@ -54,7 +54,7 @@ func NewRoot(path string) (*Root, error) {
 	return &Root{
 		Identity: basename,
 		Path:     fullpath,
-		Platform: Platform(),
+		Platform: common.Platform(),
 		Lifted:   false,
 		Tree:     newDir(""),
 	}, nil

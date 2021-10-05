@@ -5,6 +5,7 @@ import (
 	"path/filepath"
 	"testing"
 
+	"github.com/robocorp/rcc/common"
 	"github.com/robocorp/rcc/hamlet"
 	"github.com/robocorp/rcc/htfs"
 )
@@ -45,7 +46,7 @@ func TestHTFSspecification(t *testing.T) {
 func TestZipLibrary(t *testing.T) {
 	must, wont := hamlet.Specifications(t)
 
-	must.Equal("linux_amd64", htfs.Platform())
+	must.Equal("linux_amd64", common.Platform())
 
 	_, blueprint, err := htfs.ComposeFinalBlueprint([]string{"testdata/simple.yaml"}, "")
 	must.Nil(err)

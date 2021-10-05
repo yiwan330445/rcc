@@ -6,7 +6,7 @@ Resource        resources.robot
 *** Test cases ***
 
 Goal: Initialize new standard robot.
-  Step        build/rcc robot init --controller citests -t standard -d tmp/standardi -f
+  Step        build/rcc robot init -i --controller citests -t standard -d tmp/standardi -f
   Use STDERR
   Must Have   OK.
 
@@ -20,7 +20,7 @@ Goal: Running standard robot is succesful.
   Must Have   OK.
 
 Goal: Initialize new python robot.
-  Step        build/rcc robot init --controller citests -t python -d tmp/pythoni -f
+  Step        build/rcc robot init -i --controller citests -t python -d tmp/pythoni -f
   Use STDERR
   Must Have   OK.
 
@@ -34,7 +34,7 @@ Goal: Running python robot is succesful.
   Must Have   OK.
 
 Goal: Initialize new extended robot.
-  Step        build/rcc robot init --controller citests -t extended -d tmp/extendedi -f
+  Step        build/rcc robot init -i --controller citests -t extended -d tmp/extendedi -f
   Use STDERR
   Must Have   OK.
 

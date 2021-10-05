@@ -1,11 +1,9 @@
 package htfs
 
 import (
-	"fmt"
 	"io/ioutil"
 	"os"
 	"path/filepath"
-	"runtime"
 	"strings"
 
 	"github.com/robocorp/rcc/anywork"
@@ -17,11 +15,7 @@ import (
 	"github.com/robocorp/rcc/xviper"
 )
 
-func Platform() string {
-	return strings.ToLower(fmt.Sprintf("%s_%s", runtime.GOOS, runtime.GOARCH))
-}
-
-func NewEnvironment(force bool, condafile, holozip string) (label string, err error) {
+func NewEnvironment(condafile, holozip string, restore, force bool) (label string, err error) {
 	defer fail.Around(&err)
 
 	defer common.Progress(12, "Fresh holotree done [with %d workers].", anywork.Scale())
@@ -58,26 +52,15 @@ func NewEnvironment(force bool, condafile, holozip string) (label string, err er
 		library = tree
 	}
 
-	common.Progress(11, "Restore space from library [with %d workers].", anywork.Scale())
-	path, err := library.Restore(holotreeBlueprint, []byte(common.ControllerIdentity()), []byte(common.HolotreeSpace))
-	fail.On(err != nil, "Failed to restore blueprint %q, reason: %v", string(holotreeBlueprint), err)
+	path := ""
+	if restore {
+		common.Progress(11, "Restore space from library [with %d workers].", anywork.Scale())
+		path, err = library.Restore(holotreeBlueprint, []byte(common.ControllerIdentity()), []byte(common.HolotreeSpace))
+		fail.On(err != nil, "Failed to restore blueprint %q, reason: %v", string(holotreeBlueprint), err)
+	} else {
+		common.Progress(11, "Restoring space skipped.")
+	}
 	return path, nil
-}
-
-func RecordCondaEnvironment(tree MutableLibrary, condafile string, force bool) (err error) {
-	defer fail.Around(&err)
-
-	locker, err := pathlib.Locker(common.HolotreeLock(), 30000)
-	fail.On(err != nil, "Could not get lock for holotree. Quiting.")
-	defer locker.Release()
-
-	right, err := conda.ReadCondaYaml(condafile)
-	fail.On(err != nil, "Could not load environmet config %q, reason: %w", condafile, err)
-
-	content, err := right.AsYaml()
-	fail.On(err != nil, "YAML error with %q, reason: %w", condafile, err)
-
-	return RecordEnvironment(tree, []byte(content), force)
 }
 
 func CleanupHolotreeStage(tree MutableLibrary) error {
@@ -91,7 +74,11 @@ func RecordEnvironment(tree MutableLibrary, blueprint []byte, force bool) (err e
 
 	// following must be setup here
 	common.StageFolder = tree.Stage()
+	backup := common.Liveonly
 	common.Liveonly = true
+	defer func() {
+		common.Liveonly = backup
+	}()
 
 	common.Debug("Holotree stage is %q.", tree.Stage())
 	exists := tree.HasBlueprint(blueprint)

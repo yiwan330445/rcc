@@ -71,7 +71,7 @@ func (it *ziplibrary) Open(digest string) (readable io.Reader, closer Closer, er
 }
 
 func (it *ziplibrary) CatalogPath(key string) string {
-	return filepath.Join("catalog", fmt.Sprintf("%s.%s", key, Platform()))
+	return filepath.Join("catalog", fmt.Sprintf("%s.%s", key, common.Platform()))
 }
 
 func (it *ziplibrary) Restore(blueprint, client, tag []byte) (result string, err error) {

@@ -8,19 +8,33 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var (
+	internalOnlyFlag bool
+)
+
 func createWorkarea() {
 	if len(directory) == 0 {
 		pretty.Exit(1, "Error: missing target directory")
 	}
-	err := operations.InitializeWorkarea(directory, templateName, forceFlag)
+	err := operations.InitializeWorkarea(directory, templateName, internalOnlyFlag, forceFlag)
 	if err != nil {
 		pretty.Exit(2, "Error: %v", err)
 	}
 }
 
+func listJsonTemplates() {
+	templates := make(map[string]string)
+	for _, pair := range operations.ListTemplatesWithDescription(internalOnlyFlag) {
+		templates[pair[0]] = pair[1]
+	}
+	out, err := operations.NiceJsonOutput(templates)
+	pretty.Guard(err == nil, 2, "Failed to format templates as JSON, reason: %s", err)
+	common.Stdout("%s\n", out)
+}
+
 func listTemplates() {
 	common.Stdout("Template names:\n")
-	for _, name := range operations.ListTemplates() {
+	for _, name := range operations.ListTemplates(internalOnlyFlag) {
 		common.Stdout("- %v\n", name)
 	}
 }
@@ -33,6 +47,10 @@ var initializeCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		if common.DebugFlag {
 			defer common.Stopwatch("Initialization lasted").Report()
+		}
+		if jsonFlag {
+			listJsonTemplates()
+			return
 		}
 		if listFlag {
 			listTemplates()
@@ -49,4 +67,6 @@ func init() {
 	initializeCmd.Flags().StringVarP(&templateName, "template", "t", "standard", "Template to use to generate the robot content.")
 	initializeCmd.Flags().BoolVarP(&forceFlag, "force", "f", false, "Force the creation of the robot and possibly overwrite data.")
 	initializeCmd.Flags().BoolVarP(&listFlag, "list", "l", false, "List available templates.")
+	initializeCmd.Flags().BoolVarP(&jsonFlag, "json", "j", false, "List available templates as JSON.")
+	initializeCmd.Flags().BoolVarP(&internalOnlyFlag, "internal", "i", false, "Use only builtin internal templates.")
 }

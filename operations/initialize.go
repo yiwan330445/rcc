@@ -20,6 +20,8 @@ import (
 )
 
 type StringMap map[string]string
+type StringPair [2]string
+type StringPairList []StringPair
 
 type MetaTemplates struct {
 	Date      string    `yaml:"date"`
@@ -28,15 +30,35 @@ type MetaTemplates struct {
 	Url       string    `yaml:"url"`
 }
 
+func (it StringPairList) Len() int {
+	return len(it)
+}
+
+func (it StringPairList) Less(left, right int) bool {
+	return it[left][0] < it[right][0]
+}
+
+func (it StringPairList) Swap(left, right int) {
+	it[left], it[right] = it[right], it[left]
+}
+
+func parseTemplateInfo(raw []byte) (ingore *MetaTemplates, err error) {
+	var metadata MetaTemplates
+	err = yaml.Unmarshal(raw, &metadata)
+	if err != nil {
+		return nil, err
+	}
+	return &metadata, nil
+}
+
 func TemplateInfo(filename string) (ingore *MetaTemplates, err error) {
 	defer fail.Around(&err)
 
 	raw, err := os.ReadFile(filename)
 	fail.On(err != nil, "Failure reading %q, reason: %v", filename, err)
-	var metadata MetaTemplates
-	err = yaml.Unmarshal(raw, &metadata)
+	metadata, err := parseTemplateInfo(raw)
 	fail.On(err != nil, "Failure parsing %q, reason: %v", filename, err)
-	return &metadata, nil
+	return metadata, nil
 }
 
 func templatesYamlPart() string {
@@ -51,7 +73,7 @@ func templatesZipPart() string {
 	return filepath.Join(common.TemplateLocation(), "templates.zip.part")
 }
 
-func templatesZipFinal() string {
+func TemplatesZip() string {
 	return filepath.Join(common.TemplateLocation(), "templates.zip")
 }
 
@@ -69,11 +91,25 @@ func needNewTemplates() (ignore *MetaTemplates, err error) {
 	meta, err := TemplateInfo(partfile)
 	fail.On(err != nil, "%s", err)
 	fail.On(!strings.HasPrefix(meta.Url, "https:"), "Location for templates.zip is not https: %q", meta.Url)
-	hash, err := pathlib.Sha256(templatesZipFinal())
+	hash, err := pathlib.Sha256(TemplatesZip())
 	if err != nil || hash != meta.Hash {
 		return meta, nil
 	}
 	return nil, nil
+}
+
+func activeTemplateInfo(internal bool) (*MetaTemplates, error) {
+	if !internal {
+		meta, err := TemplateInfo(templatesYamlFinal())
+		if err == nil {
+			return meta, nil
+		}
+	}
+	raw, err := blobs.Asset("assets/templates.yaml")
+	if err != nil {
+		return nil, err
+	}
+	return parseTemplateInfo(raw)
 }
 
 func downloadTemplatesZip(meta *MetaTemplates) (err error) {
@@ -102,7 +138,7 @@ func updateTemplates() (err error) {
 	err = downloadTemplatesZip(meta)
 	fail.On(err != nil, "%s", err)
 	err = os.Rename(templatesYamlPart(), templatesYamlFinal())
-	alt := os.Rename(templatesZipPart(), templatesZipFinal())
+	alt := os.Rename(templatesZipPart(), TemplatesZip())
 	fail.On(alt != nil, "%s", alt)
 	fail.On(err != nil, "%s", err)
 	return nil
@@ -135,25 +171,57 @@ func unpack(content []byte, directory string) error {
 	return nil
 }
 
-func ListTemplates() []string {
+func ListTemplatesWithDescription(internal bool) StringPairList {
 	err := updateTemplates()
 	if err != nil {
 		pretty.Warning("Problem updating templates.zip, reason: %v", err)
 	}
-	assets := blobs.AssetNames()
-	result := make([]string, 0, len(assets))
-	for _, name := range blobs.AssetNames() {
-		if !strings.HasPrefix(name, "assets") || !strings.HasSuffix(name, ".zip") {
-			continue
-		}
-		result = append(result, strings.TrimSuffix(filepath.Base(name), filepath.Ext(name)))
+	result := make(StringPairList, 0, 10)
+	meta, err := activeTemplateInfo(internal)
+	if err != nil {
+		pretty.Warning("Problem getting template list, reason: %v", err)
+		return result
 	}
-	sort.Strings(result)
+	for name, description := range meta.Templates {
+		result = append(result, StringPair{name, description})
+	}
+	sort.Sort(result)
 	return result
 }
 
-func InitializeWorkarea(directory, name string, force bool) error {
-	content, err := blobs.Asset(fmt.Sprintf("assets/%s.zip", name))
+func ListTemplates(internal bool) []string {
+	pairs := ListTemplatesWithDescription(internal)
+	result := make([]string, 0, len(pairs))
+	for _, pair := range pairs {
+		result = append(result, pair[0])
+	}
+	return result
+}
+
+func templateByName(name string, internal bool) ([]byte, error) {
+	zipfile := TemplatesZip()
+	blobname := fmt.Sprintf("assets/%s.zip", name)
+	if internal || !pathlib.IsFile(zipfile) {
+		return blobs.Asset(blobname)
+	}
+	unzipper, err := newUnzipper(zipfile)
+	if err != nil {
+		return nil, err
+	}
+	defer unzipper.Close()
+	zipname := fmt.Sprintf("%s.zip", name)
+	blob, err := unzipper.Asset(zipname)
+	if err != nil {
+		return nil, err
+	}
+	if blob != nil {
+		return blob, nil
+	}
+	return blobs.Asset(blobname)
+}
+
+func InitializeWorkarea(directory, name string, internal, force bool) error {
+	content, err := templateByName(name, internal)
 	if err != nil {
 		return err
 	}

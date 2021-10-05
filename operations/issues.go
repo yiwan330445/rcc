@@ -6,7 +6,6 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
-	"runtime"
 
 	"github.com/robocorp/rcc/cloud"
 	"github.com/robocorp/rcc/common"
@@ -109,7 +108,7 @@ func ReportIssue(email, robotFile, reportFile string, attachmentsFiles []string,
 	token["controller"] = common.ControllerIdentity()
 	_, ok = token["platform"]
 	if !ok {
-		token["platform"] = fmt.Sprintf("%s %s", runtime.GOOS, runtime.GOARCH)
+		token["platform"] = common.Platform()
 	}
 	issueReport, err := token.AsJson()
 	if err != nil {

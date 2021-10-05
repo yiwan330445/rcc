@@ -155,6 +155,10 @@ func ForceDebug() {
 	UnifyVerbosityFlags()
 }
 
+func Platform() string {
+	return strings.ToLower(fmt.Sprintf("%s_%s", runtime.GOOS, runtime.GOARCH))
+}
+
 func UserAgent() string {
 	return fmt.Sprintf("rcc/%s (%s %s) %s", Version, runtime.GOOS, runtime.GOARCH, ControllerIdentity())
 }

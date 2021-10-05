@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"sort"
 	"strconv"
 	"strings"
 
@@ -89,12 +90,20 @@ func Create(arguments []string) error {
 		return fmt.Errorf("Folder %s already exists. Try with other name.", robotName)
 	}
 
-	selected, err := choose("Choose a template", "Templates", operations.ListTemplates())
+	templates := operations.ListTemplatesWithDescription(false)
+	descriptions := make([]string, 0, len(templates))
+	lookup := make(map[string]string)
+	for _, template := range templates {
+		descriptions = append(descriptions, template[1])
+		lookup[template[1]] = template[0]
+	}
+	sort.Strings(descriptions)
+	selected, err := choose("Choose a template", "Templates", descriptions)
 	if err != nil {
 		return err
 	}
 
-	err = operations.InitializeWorkarea(fullpath, selected, false)
+	err = operations.InitializeWorkarea(fullpath, lookup[selected], false, false)
 	if err != nil {
 		return err
 	}

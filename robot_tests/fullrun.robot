@@ -48,7 +48,7 @@ Goal: Show config help for rcc.
   Must Have   credentials
 
 Goal: List available robot templates.
-  Step        build/rcc robot init -l --controller citests
+  Step        build/rcc robot init -i -l --controller citests
   Must Have   extended
   Must Have   python
   Must Have   standard
@@ -56,7 +56,7 @@ Goal: List available robot templates.
   Must Have   OK.
 
 Goal: Initialize new standard robot into tmp/fluffy folder using force.
-  Step        build/rcc robot init --controller citests -t extended -d tmp/fluffy -f
+  Step        build/rcc robot init -i --controller citests -t extended -d tmp/fluffy -f
   Use STDERR
   Must Have   OK.
 
@@ -67,7 +67,7 @@ Goal: There should now be fluffy in robot listing
   Must Have   "robot"
 
 Goal: Fail to initialize new standard robot into tmp/fluffy without force.
-  Step        build/rcc robot init --controller citests -t extended -d tmp/fluffy  2
+  Step        build/rcc robot init -i --controller citests -t extended -d tmp/fluffy  2
   Use STDERR
   Must Have   Error: Directory
   Must Have   fluffy is not empty

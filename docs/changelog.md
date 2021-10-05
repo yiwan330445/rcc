@@ -1,5 +1,14 @@
 # rcc change log
 
+## v11.3.1 (date: 5.10.2021)
+
+- using templates from templates.zip in addition to internal templates
+- command `rcc holotree bootstrap` update to use templates.zip
+- command `rcc interactive create` now uses template descriptions
+- command `rcc robot init` now has `--json` flag to produce template list
+  as JSON
+- settings.yaml updated to version 2021.10
+
 ## v11.3.0 (date: 4.10.2021)
 
 - update robot templates from cloud (not used yet, coming up in next versions)

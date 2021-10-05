@@ -29,11 +29,6 @@ branding:
   logo: https://downloads.robocorp.com/company/press-kit/logos/robocorp-logo-black.svg
   theme-color: FF0000
 
-templates:
-  standard: Standard Robot Framework template
-  extended: Extended Robot Framework template
-  python: Basic Python template
-
 meta:
   source: builtin
-  version: 2021.04
+  version: 2021.10

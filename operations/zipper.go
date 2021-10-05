@@ -9,6 +9,7 @@ import (
 
 	"github.com/robocorp/rcc/common"
 	"github.com/robocorp/rcc/pathlib"
+	"github.com/robocorp/rcc/pretty"
 	"github.com/robocorp/rcc/robot"
 )
 
@@ -125,6 +126,27 @@ func (it *unzipper) Explode(workers int, directory string) error {
 	common.Debug("Done.")
 
 	return nil
+}
+
+func (it *unzipper) Asset(name string) ([]byte, error) {
+	stream, err := it.reader.Open(name)
+	if err != nil {
+		return nil, err
+	}
+	defer stream.Close()
+	stat, err := stream.Stat()
+	if err != nil {
+		return nil, err
+	}
+	payload := make([]byte, stat.Size())
+	total, err := stream.Read(payload)
+	if err != nil && err != io.EOF {
+		return nil, err
+	}
+	if int64(total) != stat.Size() {
+		pretty.Warning("Asset %q read partially!", name)
+	}
+	return payload, nil
 }
 
 func (it *unzipper) Extract(directory string) error {
