@@ -26,11 +26,13 @@ import (
 )
 
 const (
-	canaryUrl     = `/canary.txt`
-	statusOk      = `ok`
-	statusWarning = `warning`
-	statusFail    = `fail`
-	statusFatal   = `fatal`
+	canaryUrl      = `/canary.txt`
+	pypiCanaryUrl  = `/jupyterlab-pygments/`
+	condaCanaryUrl = `/conda-forge/linux-64/repodata.json`
+	statusOk       = `ok`
+	statusWarning  = `warning`
+	statusFail     = `fail`
+	statusFatal    = `fatal`
 )
 
 type stringerr func() (string, error)
@@ -84,6 +86,8 @@ func RunDiagnostics() *common.DiagnosticStatus {
 		result.Checks = append(result.Checks, dnsLookupCheck(host))
 	}
 	result.Checks = append(result.Checks, canaryDownloadCheck())
+	result.Checks = append(result.Checks, pypiHeadCheck())
+	result.Checks = append(result.Checks, condaHeadCheck())
 	return result
 }
 
@@ -167,6 +171,64 @@ func dnsLookupCheck(site string) *common.DiagnosticCheck {
 		Type:    "network",
 		Status:  statusOk,
 		Message: fmt.Sprintf("%s found: %v", site, found),
+		Link:    supportNetworkUrl,
+	}
+}
+
+func condaHeadCheck() *common.DiagnosticCheck {
+	supportNetworkUrl := settings.Global.DocsLink("troubleshooting/firewall-and-proxies")
+	client, err := cloud.NewClient(settings.Global.CondaLink(""))
+	if err != nil {
+		return &common.DiagnosticCheck{
+			Type:    "network",
+			Status:  statusWarning,
+			Message: fmt.Sprintf("%v: %v", settings.Global.CondaLink(""), err),
+			Link:    supportNetworkUrl,
+		}
+	}
+	request := client.NewRequest(condaCanaryUrl)
+	response := client.Head(request)
+	if response.Status >= 400 {
+		return &common.DiagnosticCheck{
+			Type:    "network",
+			Status:  statusWarning,
+			Message: fmt.Sprintf("Conda canary download failed: %d", response.Status),
+			Link:    supportNetworkUrl,
+		}
+	}
+	return &common.DiagnosticCheck{
+		Type:    "network",
+		Status:  statusOk,
+		Message: fmt.Sprintf("Conda canary download successful: %s", settings.Global.CondaLink(condaCanaryUrl)),
+		Link:    supportNetworkUrl,
+	}
+}
+
+func pypiHeadCheck() *common.DiagnosticCheck {
+	supportNetworkUrl := settings.Global.DocsLink("troubleshooting/firewall-and-proxies")
+	client, err := cloud.NewClient(settings.Global.PypiLink(""))
+	if err != nil {
+		return &common.DiagnosticCheck{
+			Type:    "network",
+			Status:  statusWarning,
+			Message: fmt.Sprintf("%v: %v", settings.Global.PypiLink(""), err),
+			Link:    supportNetworkUrl,
+		}
+	}
+	request := client.NewRequest(pypiCanaryUrl)
+	response := client.Head(request)
+	if response.Status >= 400 {
+		return &common.DiagnosticCheck{
+			Type:    "network",
+			Status:  statusWarning,
+			Message: fmt.Sprintf("PyPI canary download failed: %d", response.Status),
+			Link:    supportNetworkUrl,
+		}
+	}
+	return &common.DiagnosticCheck{
+		Type:    "network",
+		Status:  statusOk,
+		Message: fmt.Sprintf("PyPI canary download successful: %s", settings.Global.PypiLink(pypiCanaryUrl)),
 		Link:    supportNetworkUrl,
 	}
 }
@@ -268,6 +330,9 @@ func diagnoseFilesUnmarshal(tool Unmarshaler, label, rootdir string, paths []str
 	for _, tail := range paths {
 		investigated = true
 		fullpath := filepath.Join(rootdir, tail)
+		if strings.Contains(fullpath, ".ipynb_checkpoints") || strings.Contains(fullpath, ".virtual_documents") {
+			continue
+		}
 		content, err := ioutil.ReadFile(fullpath)
 		if err != nil {
 			diagnose.Fail(supportGeneralUrl, "Problem reading %s file %q: %v", label, tail, err)

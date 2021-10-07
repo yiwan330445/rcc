@@ -59,11 +59,13 @@ func alwaysCleanup(dryrun bool) {
 
 func quickCleanup(dryrun bool) error {
 	if dryrun {
+		common.Log("- %v", common.TemplateLocation())
 		common.Log("- %v", common.PipCache())
 		common.Log("- %v", common.HolotreeLocation())
 		common.Log("- %v", common.RobocorpTempRoot())
 		return nil
 	}
+	safeRemove("templates", common.TemplateLocation())
 	safeRemove("cache", common.PipCache())
 	err := safeRemove("cache", common.HolotreeLocation())
 	if err != nil {

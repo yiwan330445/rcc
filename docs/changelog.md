@@ -1,5 +1,13 @@
 # rcc change log
 
+## v11.3.2 (date: 7.10.2021)
+
+- templates are removed when quick cleanup is requested
+- bugfix: now debug and trace flags are also considered same as
+  `VERBOSE_ENVIRONMENT_BUILDING` environment variable
+- bugfix: added some jupyter paths as skipped ingored ones in diagnostics
+- added canary checks into diagnostics for pypi and conda repos
+
 ## v11.3.1 (date: 5.10.2021)
 
 - using templates from templates.zip in addition to internal templates

@@ -41,6 +41,7 @@ type Response struct {
 type Client interface {
 	Endpoint() string
 	NewRequest(string) *Request
+	Head(request *Request) *Response
 	Get(request *Request) *Response
 	Post(request *Request) *Response
 	Put(request *Request) *Response
@@ -137,6 +138,10 @@ func (it *internalClient) NewRequest(url string) *Request {
 		Url:     url,
 		Headers: make(map[string]string),
 	}
+}
+
+func (it *internalClient) Head(request *Request) *Response {
+	return it.does("HEAD", request)
 }
 
 func (it *internalClient) Get(request *Request) *Response {

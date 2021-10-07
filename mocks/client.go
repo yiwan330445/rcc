@@ -48,6 +48,10 @@ func (it *MockClient) does(method string, request *cloud.Request) *cloud.Respons
 	return it.Responses[index]
 }
 
+func (it *MockClient) Head(request *cloud.Request) *cloud.Response {
+	return it.does("HEAD", request)
+}
+
 func (it *MockClient) Get(request *cloud.Request) *cloud.Response {
 	return it.does("GET", request)
 }

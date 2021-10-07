@@ -16,6 +16,11 @@ import (
 	"github.com/robocorp/rcc/pretty"
 )
 
+const (
+	pypiDefault  = "https://pypi.org/simple/"
+	condaDefault = "https://conda.anaconda.org/"
+)
+
 var (
 	httpTransport  *http.Transport
 	cachedSettings *Settings
@@ -158,6 +163,22 @@ func (it gateway) DownloadsLink(resource string) string {
 
 func (it gateway) DocsLink(page string) string {
 	return resolveLink(it.Endpoints().Docs, page)
+}
+
+func (it gateway) PypiLink(page string) string {
+	endpoint := it.Endpoints().Pypi
+	if len(endpoint) == 0 {
+		endpoint = pypiDefault
+	}
+	return resolveLink(endpoint, page)
+}
+
+func (it gateway) CondaLink(page string) string {
+	endpoint := it.Endpoints().Conda
+	if len(endpoint) == 0 {
+		endpoint = condaDefault
+	}
+	return resolveLink(endpoint, page)
 }
 
 func (it gateway) Hostnames() []string {

@@ -62,7 +62,7 @@ func RobocorpLock() string {
 }
 
 func VerboseEnvironmentBuilding() bool {
-	return len(os.Getenv(VERBOSE_ENVIRONMENT_BUILDING)) > 0
+	return DebugFlag || TraceFlag || len(os.Getenv(VERBOSE_ENVIRONMENT_BUILDING)) > 0
 }
 
 func OverrideSystemRequirements() bool {
