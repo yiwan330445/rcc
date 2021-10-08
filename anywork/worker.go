@@ -77,8 +77,8 @@ func AutoScale() {
 	if limit > 96 {
 		limit = 96
 	}
-	if limit < 4 {
-		limit = 4
+	if limit < 2 {
+		limit = 2
 	}
 	for headcount < limit {
 		go member(headcount)

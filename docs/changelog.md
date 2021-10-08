@@ -1,5 +1,11 @@
 # rcc change log
 
+## v11.3.3 (date: 8.10.2021)
+
+- micromamba update to version 0.16.0
+- minor change on os.Stat usage in holotree functions
+- changed minimum required worker count to 2 (was 4 previously)
+
 ## v11.3.2 (date: 7.10.2021)
 
 - templates are removed when quick cleanup is requested

@@ -267,9 +267,7 @@ func RestoreDirectory(library Library, fs *Root, current map[string]string, stat
 			files := make(map[string]bool)
 			for _, part := range content {
 				directpath := filepath.Join(path, part.Name())
-				info, err := os.Stat(directpath)
-				anywork.OnErrPanicCloseAll(err)
-				if info.IsDir() {
+				if part.IsDir() {
 					_, ok := it.Dirs[part.Name()]
 					if !ok {
 						common.Trace("* Holotree: remove extra directory %q", directpath)
@@ -288,6 +286,8 @@ func RestoreDirectory(library Library, fs *Root, current map[string]string, stat
 				}
 				shadow, ok := current[directpath]
 				golden := !ok || found.Digest == shadow
+				info, err := part.Info()
+				anywork.OnErrPanicCloseAll(err)
 				ok = golden && found.Match(info)
 				stats.Dirty(!ok)
 				if !ok {
