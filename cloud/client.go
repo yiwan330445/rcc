@@ -10,6 +10,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"github.com/robocorp/rcc/common"
 	"github.com/robocorp/rcc/pathlib"
@@ -47,6 +48,7 @@ type Client interface {
 	Put(request *Request) *Response
 	Delete(request *Request) *Response
 	NewClient(endpoint string) (Client, error)
+	WithTimeout(time.Duration) Client
 }
 
 func EnsureHttps(endpoint string) (string, error) {
@@ -73,6 +75,16 @@ func NewClient(endpoint string) (Client, error) {
 		endpoint: https,
 		client:   &http.Client{Transport: settings.Global.ConfiguredHttpTransport()},
 	}, nil
+}
+
+func (it *internalClient) WithTimeout(timeout time.Duration) Client {
+	return &internalClient{
+		endpoint: it.endpoint,
+		client: &http.Client{
+			Transport: settings.Global.ConfiguredHttpTransport(),
+			Timeout:   timeout,
+		},
+	}
 }
 
 func (it *internalClient) NewClient(endpoint string) (Client, error) {

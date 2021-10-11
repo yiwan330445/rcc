@@ -18,7 +18,7 @@ import (
 func NewEnvironment(condafile, holozip string, restore, force bool) (label string, err error) {
 	defer fail.Around(&err)
 
-	defer common.Progress(12, "Fresh holotree done [with %d workers].", anywork.Scale())
+	defer common.Progress(13, "Fresh holotree done [with %d workers].", anywork.Scale())
 	common.Progress(1, "Fresh holotree environment %v.", xviper.TrackingIdentity())
 
 	callback := pathlib.LockWaitMessage("Serialized environment creation")
@@ -54,11 +54,11 @@ func NewEnvironment(condafile, holozip string, restore, force bool) (label strin
 
 	path := ""
 	if restore {
-		common.Progress(11, "Restore space from library [with %d workers].", anywork.Scale())
+		common.Progress(12, "Restore space from library [with %d workers].", anywork.Scale())
 		path, err = library.Restore(holotreeBlueprint, []byte(common.ControllerIdentity()), []byte(common.HolotreeSpace))
 		fail.On(err != nil, "Failed to restore blueprint %q, reason: %v", string(holotreeBlueprint), err)
 	} else {
-		common.Progress(11, "Restoring space skipped.")
+		common.Progress(12, "Restoring space skipped.")
 	}
 	return path, nil
 }
@@ -99,7 +99,7 @@ func RecordEnvironment(tree MutableLibrary, blueprint []byte, force bool) (err e
 		err = conda.LegacyEnvironment(force, identityfile)
 		fail.On(err != nil, "Failed to create environment, reason %w.", err)
 
-		common.Progress(10, "Record holotree stage to hololib [with %d workers].", anywork.Scale())
+		common.Progress(11, "Record holotree stage to hololib [with %d workers].", anywork.Scale())
 		err = tree.Record(blueprint)
 		fail.On(err != nil, "Failed to record blueprint %q, reason: %w", string(blueprint), err)
 	}

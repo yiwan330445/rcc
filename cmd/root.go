@@ -107,6 +107,7 @@ func init() {
 	rootCmd.PersistentFlags().BoolVarP(&common.DebugFlag, "debug", "", false, "to get debug output where available (not for production use)")
 	rootCmd.PersistentFlags().BoolVarP(&common.TraceFlag, "trace", "", false, "to get trace output where available (not for production use)")
 	rootCmd.PersistentFlags().BoolVarP(&common.TimelineEnabled, "timeline", "", false, "print timeline at the end of run")
+	rootCmd.PersistentFlags().BoolVarP(&common.StrictFlag, "strict", "", false, "be more strict on environment creation and handling")
 }
 
 func initConfig() {

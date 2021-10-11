@@ -2,6 +2,7 @@ package mocks
 
 import (
 	"testing"
+	"time"
 
 	"github.com/robocorp/rcc/cloud"
 )
@@ -26,6 +27,10 @@ func (it *MockClient) Endpoint() string {
 
 func (it *MockClient) NewClient(endpoint string) (cloud.Client, error) {
 	return it, nil
+}
+
+func (it *MockClient) WithTimeout(time.Duration) cloud.Client {
+	return it
 }
 
 func (it *MockClient) NewRequest(url string) *cloud.Request {

@@ -288,15 +288,23 @@ func (it *hololib) Restore(blueprint, client, tag []byte) (result string, err er
 	defer locker.Release()
 	journal.Post("space-used", metafile, "normal holotree with blueprint %s from %s", key, catalog)
 	currentstate := make(map[string]string)
+	mode := fmt.Sprintf("new space for %q", key)
 	shadow, err := NewRoot(targetdir)
 	if err == nil {
 		err = shadow.LoadFrom(metafile)
 	}
 	if err == nil {
-		common.TimelineBegin("holotree digest start")
+		if key == shadow.Blueprint {
+			mode = fmt.Sprintf("cleaned up space for %q", key)
+		} else {
+			mode = fmt.Sprintf("coverted space from %q to %q", shadow.Blueprint, key)
+		}
+		common.TimelineBegin("holotree digest start [%q -> %q]", shadow.Blueprint, key)
 		shadow.Treetop(DigestRecorder(currentstate))
 		common.TimelineEnd()
 	}
+	common.Timeline("mode: %s", mode)
+	common.Debug("Holotree operating mode is: %s", mode)
 	err = fs.Relocate(targetdir)
 	fail.On(err != nil, "Failed to relocate %s -> %v", targetdir, err)
 	common.TimelineBegin("holotree make branches start")

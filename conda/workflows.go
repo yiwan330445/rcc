@@ -216,10 +216,27 @@ func newLiveInternal(yaml, condaYaml, requirementsText, key string, force, fresh
 	if err != nil {
 		common.Log("%sGolden EE failure: %v%s", pretty.Yellow, err, pretty.Reset)
 	}
+	fmt.Fprintf(planWriter, "\n---  pip check plan @%ss  ---\n\n", stopwatch)
+	if common.StrictFlag && pipUsed {
+		common.Progress(9, "Running pip check phase.")
+		pipCommand := common.NewCommander("pip", "check", "--no-color")
+		pipCommand.ConditionalFlag(common.VerboseEnvironmentBuilding(), "--verbose")
+		common.Debug("===  pip check phase ===")
+		code, err = LiveExecution(planWriter, targetFolder, pipCommand.CLI()...)
+		if err != nil || code != 0 {
+			cloud.BackgroundMetric(common.ControllerIdentity(), "rcc.env.fatal.pipcheck", fmt.Sprintf("%d_%x", code, code))
+			common.Timeline("pip check fail.")
+			common.Fatal(fmt.Sprintf("Pip check [%d/%x]", code, code), err)
+			return false, false
+		}
+		common.Timeline("pip check done.")
+	} else {
+		common.Progress(9, "Pip check skipped.")
+	}
 	fmt.Fprintf(planWriter, "\n---  installation plan complete @%ss  ---\n\n", stopwatch)
 	planWriter.Sync()
 	planWriter.Close()
-	common.Progress(9, "Update installation plan.")
+	common.Progress(10, "Update installation plan.")
 	finalplan := filepath.Join(targetFolder, "rcc_plan.log")
 	os.Rename(planfile, finalplan)
 	common.Debug("===  finalize phase ===")

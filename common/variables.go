@@ -19,6 +19,7 @@ var (
 	Silent          bool
 	DebugFlag       bool
 	TraceFlag       bool
+	StrictFlag      bool
 	LogLinenumbers  bool
 	NoCache         bool
 	NoOutputCapture bool

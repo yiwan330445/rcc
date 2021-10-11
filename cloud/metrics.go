@@ -34,6 +34,7 @@ func sendMetric(metricsHost, kind, name, value string) {
 		common.Debug("ERROR: %v", err)
 		return
 	}
+	client = client.WithTimeout(5 * time.Second)
 	timestamp := time.Now().UnixNano()
 	url := fmt.Sprintf(trackingUrl, url.PathEscape(kind), timestamp, url.PathEscape(xviper.TrackingIdentity()), url.PathEscape(name), url.PathEscape(value))
 	common.Debug("Sending metric as %v%v", metricsHost, url)
