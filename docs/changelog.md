@@ -1,6 +1,10 @@
 # rcc change log
 
-## v11.3.4 (date: 11.10.2021)
+## v11.3.5 (date: 12.10.2021)
+
+- bugfix: added retries and better error message on holotree rename pattern
+
+## v11.3.4 (date: 12.10.2021)
 
 - new toplevel flag to turn on `--strict` environment handling, and for now
   this make rcc to run `pip check` after environment install completes

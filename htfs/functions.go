@@ -5,9 +5,11 @@ import (
 	"crypto/sha256"
 	"fmt"
 	"io"
+	"math/rand"
 	"os"
 	"path/filepath"
 	"runtime"
+	"time"
 
 	"github.com/robocorp/rcc/anywork"
 	"github.com/robocorp/rcc/common"
@@ -186,6 +188,32 @@ func ScheduleLifters(library MutableLibrary, stats *stats) Treetop {
 	return scheduler
 }
 
+func TryRename(context, source, target string) (err error) {
+	for delay := 0; delay < 5; delay += 1 {
+		time.Sleep(time.Duration(delay*100) * time.Millisecond)
+		err = os.Rename(source, target)
+		if err == nil {
+			return nil
+		}
+	}
+	common.Debug("Heads up: rename about to fail [%q -> %q], reason: %s", source, target, err)
+	origin := "source"
+	intermediate := fmt.Sprintf("%s.%d_%x", source, os.Getpid(), rand.Intn(4096))
+	err = os.Rename(source, intermediate)
+	if err == nil {
+		source = intermediate
+		origin = "target"
+	}
+	for delay := 0; delay < 5; delay += 1 {
+		time.Sleep(time.Duration(delay*100) * time.Millisecond)
+		err = os.Rename(source, target)
+		if err == nil {
+			return nil
+		}
+	}
+	return fmt.Errorf("Rename failure [%s/%s/%s/%s], reason: %s", context, common.ControllerType, common.HolotreeSpace, origin, err)
+}
+
 func LiftFile(sourcename, sinkname string) anywork.Work {
 	return func() {
 		source, err := os.Open(sourcename)
@@ -210,7 +238,7 @@ func LiftFile(sourcename, sinkname string) anywork.Work {
 
 		runtime.Gosched()
 
-		anywork.OnErrPanicCloseAll(os.Rename(partname, sinkname))
+		anywork.OnErrPanicCloseAll(TryRename("liftfile", partname, sinkname))
 	}
 }
 
@@ -240,7 +268,7 @@ func DropFile(library Library, digest, sinkname string, details *File, rewrite [
 
 		anywork.OnErrPanicCloseAll(sink.Close())
 
-		anywork.OnErrPanicCloseAll(os.Rename(partname, sinkname))
+		anywork.OnErrPanicCloseAll(TryRename("dropfile", partname, sinkname))
 
 		anywork.OnErrPanicCloseAll(os.Chmod(sinkname, details.Mode))
 		anywork.OnErrPanicCloseAll(os.Chtimes(sinkname, motherTime, motherTime))
