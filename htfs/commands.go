@@ -66,7 +66,7 @@ func NewEnvironment(condafile, holozip string, restore, force bool) (label strin
 func CleanupHolotreeStage(tree MutableLibrary) error {
 	common.Timeline("holotree stage removal start")
 	defer common.Timeline("holotree stage removal done")
-	return os.RemoveAll(tree.Stage())
+	return TryRemoveAll("stage", tree.Stage())
 }
 
 func RecordEnvironment(tree MutableLibrary, blueprint []byte, force bool) (err error) {
@@ -131,8 +131,8 @@ func RemoveHolotreeSpace(label string) (err error) {
 		if name != label {
 			continue
 		}
-		os.Remove(metafile)
-		err = os.RemoveAll(directory)
+		TryRemove("metafile", metafile)
+		err = TryRemoveAll("space", directory)
 		fail.On(err != nil, "Problem removing %q, reason: %s.", directory, err)
 	}
 	return nil

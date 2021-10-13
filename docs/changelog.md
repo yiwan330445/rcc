@@ -1,5 +1,9 @@
 # rcc change log
 
+## v11.3.6 (date: 13.10.2021)
+
+- bugfix: added retries to holotree file removal
+
 ## v11.3.5 (date: 12.10.2021)
 
 - bugfix: added retries and better error message on holotree rename pattern

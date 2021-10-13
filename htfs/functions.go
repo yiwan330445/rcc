@@ -188,6 +188,28 @@ func ScheduleLifters(library MutableLibrary, stats *stats) Treetop {
 	return scheduler
 }
 
+func TryRemove(context, target string) (err error) {
+	for delay := 0; delay < 5; delay += 1 {
+		time.Sleep(time.Duration(delay*100) * time.Millisecond)
+		err = os.Remove(target)
+		if err == nil {
+			return nil
+		}
+	}
+	return fmt.Errorf("Remove failure [%s, %s, %s], reason: %s", context, common.ControllerIdentity(), common.HolotreeSpace, err)
+}
+
+func TryRemoveAll(context, target string) (err error) {
+	for delay := 0; delay < 5; delay += 1 {
+		time.Sleep(time.Duration(delay*100) * time.Millisecond)
+		err = os.RemoveAll(target)
+		if err == nil {
+			return nil
+		}
+	}
+	return fmt.Errorf("RemoveAll failure [%s, %s, %s], reason: %s", context, common.ControllerIdentity(), common.HolotreeSpace, err)
+}
+
 func TryRename(context, source, target string) (err error) {
 	for delay := 0; delay < 5; delay += 1 {
 		time.Sleep(time.Duration(delay*100) * time.Millisecond)
@@ -211,7 +233,7 @@ func TryRename(context, source, target string) (err error) {
 			return nil
 		}
 	}
-	return fmt.Errorf("Rename failure [%s/%s/%s/%s], reason: %s", context, common.ControllerType, common.HolotreeSpace, origin, err)
+	return fmt.Errorf("Rename failure [%s, %s, %s, %s], reason: %s", context, common.ControllerIdentity(), common.HolotreeSpace, origin, err)
 }
 
 func LiftFile(sourcename, sinkname string) anywork.Work {
@@ -277,13 +299,13 @@ func DropFile(library Library, digest, sinkname string, details *File, rewrite [
 
 func RemoveFile(filename string) anywork.Work {
 	return func() {
-		anywork.OnErrPanicCloseAll(os.Remove(filename))
+		anywork.OnErrPanicCloseAll(TryRemove("file", filename))
 	}
 }
 
 func RemoveDirectory(dirname string) anywork.Work {
 	return func() {
-		anywork.OnErrPanicCloseAll(os.RemoveAll(dirname))
+		anywork.OnErrPanicCloseAll(TryRemoveAll("directory", dirname))
 	}
 }
 
