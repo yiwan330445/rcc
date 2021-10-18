@@ -1,5 +1,11 @@
 # rcc change log
 
+## v11.4.0 (date: 18.10.2021)
+
+- new command `rcc configuration speedtest` which gives abstract score to both
+  network and filesystem speed
+- some refactoring to enable above functionality
+
 ## v11.3.6 (date: 13.10.2021)
 
 - bugfix: added retries to holotree file removal

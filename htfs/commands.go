@@ -15,7 +15,7 @@ import (
 	"github.com/robocorp/rcc/xviper"
 )
 
-func NewEnvironment(condafile, holozip string, restore, force bool) (label string, err error) {
+func NewEnvironment(condafile, holozip string, restore, force bool) (label string, scorecard common.Scorecard, err error) {
 	defer fail.Around(&err)
 
 	defer common.Progress(13, "Fresh holotree done [with %d workers].", anywork.Scale())
@@ -41,13 +41,15 @@ func NewEnvironment(condafile, holozip string, restore, force bool) (label strin
 		tree = Virtual()
 		common.Timeline("downgraded to virtual holotree library")
 	}
+	scorecard = common.NewScorecard()
 	var library Library
 	if haszip {
 		library, err = ZipLibrary(holozip)
 		fail.On(err != nil, "Failed to load %q -> %s", holozip, err)
 		common.Timeline("downgraded to holotree zip library")
 	} else {
-		err = RecordEnvironment(tree, holotreeBlueprint, force)
+		scorecard.Start()
+		err = RecordEnvironment(tree, holotreeBlueprint, force, scorecard)
 		fail.On(err != nil, "%s", err)
 		library = tree
 	}
@@ -60,7 +62,7 @@ func NewEnvironment(condafile, holozip string, restore, force bool) (label strin
 	} else {
 		common.Progress(12, "Restoring space skipped.")
 	}
-	return path, nil
+	return path, scorecard, nil
 }
 
 func CleanupHolotreeStage(tree MutableLibrary) error {
@@ -69,7 +71,7 @@ func CleanupHolotreeStage(tree MutableLibrary) error {
 	return TryRemoveAll("stage", tree.Stage())
 }
 
-func RecordEnvironment(tree MutableLibrary, blueprint []byte, force bool) (err error) {
+func RecordEnvironment(tree MutableLibrary, blueprint []byte, force bool, scorecard common.Scorecard) (err error) {
 	defer fail.Around(&err)
 
 	// following must be setup here
@@ -98,6 +100,8 @@ func RecordEnvironment(tree MutableLibrary, blueprint []byte, force bool) (err e
 		fail.On(err != nil, "Failed to save %q, reason %w.", identityfile, err)
 		err = conda.LegacyEnvironment(force, identityfile)
 		fail.On(err != nil, "Failed to create environment, reason %w.", err)
+
+		scorecard.Midpoint()
 
 		common.Progress(11, "Record holotree stage to hololib [with %d workers].", anywork.Scale())
 		err = tree.Record(blueprint)

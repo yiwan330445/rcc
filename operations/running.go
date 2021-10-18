@@ -114,7 +114,7 @@ func LoadTaskWithEnvironment(packfile, theTask string, force bool) (bool, robot.
 		return true, config, todo, ""
 	}
 
-	label, err := htfs.NewEnvironment(config.CondaConfigFile(), config.Holozip(), true, force)
+	label, _, err := htfs.NewEnvironment(config.CondaConfigFile(), config.Holozip(), true, force)
 	if err != nil {
 		pretty.Exit(4, "Error: %v", err)
 	}

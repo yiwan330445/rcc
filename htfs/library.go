@@ -15,7 +15,6 @@ import (
 	"github.com/dchest/siphash"
 	"github.com/robocorp/rcc/cloud"
 	"github.com/robocorp/rcc/common"
-	"github.com/robocorp/rcc/conda"
 	"github.com/robocorp/rcc/fail"
 	"github.com/robocorp/rcc/journal"
 	"github.com/robocorp/rcc/pathlib"
@@ -206,7 +205,7 @@ func (it *hololib) queryBlueprint(key string) bool {
 	if !pathlib.IsFile(catalog) {
 		return false
 	}
-	tempdir := filepath.Join(conda.RobocorpTemp(), key)
+	tempdir := filepath.Join(common.RobocorpTemp(), key)
 	shadow, err := NewRoot(tempdir)
 	if err != nil {
 		return false

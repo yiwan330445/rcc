@@ -2,6 +2,7 @@ package common
 
 import (
 	"fmt"
+	"math/rand"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -16,22 +17,24 @@ const (
 )
 
 var (
-	Silent          bool
-	DebugFlag       bool
-	TraceFlag       bool
-	StrictFlag      bool
-	LogLinenumbers  bool
-	NoCache         bool
-	NoOutputCapture bool
-	Liveonly        bool
-	StageFolder     string
-	ControllerType  string
-	HolotreeSpace   string
-	EnvironmentHash string
-	SemanticTag     string
-	When            int64
-	ProgressMark    time.Time
-	Clock           *stopwatch
+	Silent             bool
+	DebugFlag          bool
+	TraceFlag          bool
+	StrictFlag         bool
+	LogLinenumbers     bool
+	NoCache            bool
+	NoOutputCapture    bool
+	Liveonly           bool
+	StageFolder        string
+	ControllerType     string
+	HolotreeSpace      string
+	EnvironmentHash    string
+	SemanticTag        string
+	ForcedRobocorpHome string
+	When               int64
+	ProgressMark       time.Time
+	Clock              *stopwatch
+	randomIdentifier   string
 )
 
 func init() {
@@ -39,6 +42,7 @@ func init() {
 	When = Clock.started.Unix()
 	ProgressMark = time.Now()
 
+	randomIdentifier = fmt.Sprintf("%016x", rand.Uint64()^uint64(os.Getpid()))
 	ensureDirectory(TemplateLocation())
 	ensureDirectory(BinLocation())
 	ensureDirectory(HolotreeLocation())
@@ -51,6 +55,9 @@ func init() {
 }
 
 func RobocorpHome() string {
+	if len(ForcedRobocorpHome) > 0 {
+		return ExpandPath(ForcedRobocorpHome)
+	}
 	home := os.Getenv(ROBOCORP_HOME_VARIABLE)
 	if len(home) > 0 {
 		return ExpandPath(home)
@@ -88,6 +95,19 @@ func TemplateLocation() string {
 
 func RobocorpTempRoot() string {
 	return filepath.Join(RobocorpHome(), "temp")
+}
+
+func RobocorpTemp() string {
+	tempLocation := filepath.Join(RobocorpTempRoot(), randomIdentifier)
+	fullpath, err := filepath.Abs(tempLocation)
+	if err != nil {
+		fullpath = tempLocation
+	}
+	ensureDirectory(fullpath)
+	if err != nil {
+		Log("WARNING (%v) -> %v", tempLocation, err)
+	}
+	return fullpath
 }
 
 func BinLocation() string {

@@ -3,7 +3,6 @@ package conda
 import (
 	"crypto/sha256"
 	"fmt"
-	"math/rand"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -18,14 +17,9 @@ import (
 )
 
 var (
-	ignoredPaths     = []string{"python", "conda"}
-	hashPattern      = regexp.MustCompile("^[0-9a-f]{16}(?:\\.meta)?$")
-	randomIdentifier string
+	ignoredPaths = []string{"python", "conda"}
+	hashPattern  = regexp.MustCompile("^[0-9a-f]{16}(?:\\.meta)?$")
 )
-
-func init() {
-	randomIdentifier = fmt.Sprintf("%016x", rand.Uint64()^uint64(os.Getpid()))
-}
 
 func sorted(files []os.FileInfo) {
 	sort.SliceStable(files, func(left, right int) bool {
@@ -101,13 +95,13 @@ func EnvironmentExtensionFor(location string) []string {
 		"PYTHONEXECUTABLE=",
 		"PYTHONNOUSERSITE=1",
 		"PYTHONDONTWRITEBYTECODE=x",
-		"PYTHONPYCACHEPREFIX="+RobocorpTemp(),
+		"PYTHONPYCACHEPREFIX="+common.RobocorpTemp(),
 		"ROBOCORP_HOME="+common.RobocorpHome(),
 		"RCC_ENVIRONMENT_HASH="+common.EnvironmentHash,
 		"RCC_INSTALLATION_ID="+xviper.TrackingIdentity(),
 		"RCC_TRACKING_ALLOWED="+fmt.Sprintf("%v", xviper.CanTrack()),
-		"TEMP="+RobocorpTemp(),
-		"TMP="+RobocorpTemp(),
+		"TEMP="+common.RobocorpTemp(),
+		"TMP="+common.RobocorpTemp(),
 		searchPath.AsEnvironmental("PATH"),
 	)
 	environment = append(environment, LoadActivationEnvironment(location)...)
@@ -159,15 +153,6 @@ func HasMicroMamba() bool {
 	common.Debug("%q version is %q -> %v (good enough: %v)", BinMicromamba(), versionText, version, goodEnough)
 	common.Timeline("µmamba version is %q (at %q).", versionText, BinMicromamba())
 	return goodEnough
-}
-
-func RobocorpTemp() string {
-	tempLocation := filepath.Join(common.RobocorpTempRoot(), randomIdentifier)
-	fullpath, err := pathlib.EnsureDirectory(tempLocation)
-	if err != nil {
-		common.Log("WARNING (%v) -> %v", tempLocation, err)
-	}
-	return fullpath
 }
 
 func LocalChannel() (string, bool) {

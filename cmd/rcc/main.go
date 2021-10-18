@@ -10,7 +10,6 @@ import (
 	"github.com/robocorp/rcc/cloud"
 	"github.com/robocorp/rcc/cmd"
 	"github.com/robocorp/rcc/common"
-	"github.com/robocorp/rcc/conda"
 	"github.com/robocorp/rcc/operations"
 	"github.com/robocorp/rcc/pathlib"
 )
@@ -82,9 +81,9 @@ func markTempForRecycling() {
 		return
 	}
 	markedAlready = true
-	filename := filepath.Join(conda.RobocorpTemp(), "recycle.now")
+	filename := filepath.Join(common.RobocorpTemp(), "recycle.now")
 	ioutil.WriteFile(filename, []byte("True"), 0o644)
-	common.Debug("Marked %q for recycling.", conda.RobocorpTemp())
+	common.Debug("Marked %q for recycling.", common.RobocorpTemp())
 }
 
 func main() {

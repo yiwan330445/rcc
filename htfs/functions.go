@@ -13,7 +13,6 @@ import (
 
 	"github.com/robocorp/rcc/anywork"
 	"github.com/robocorp/rcc/common"
-	"github.com/robocorp/rcc/conda"
 	"github.com/robocorp/rcc/fail"
 	"github.com/robocorp/rcc/pathlib"
 	"github.com/robocorp/rcc/trollhash"
@@ -437,7 +436,7 @@ func LoadCatalogs() ([]string, []*Root) {
 
 func CatalogLoader(catalog string, at int, roots []*Root) anywork.Work {
 	return func() {
-		tempdir := filepath.Join(conda.RobocorpTemp(), "shadow")
+		tempdir := filepath.Join(common.RobocorpTemp(), "shadow")
 		shadow, err := NewRoot(tempdir)
 		if err != nil {
 			panic(fmt.Sprintf("Temp dir %q, reason: %v", tempdir, err))

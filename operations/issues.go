@@ -9,7 +9,6 @@ import (
 
 	"github.com/robocorp/rcc/cloud"
 	"github.com/robocorp/rcc/common"
-	"github.com/robocorp/rcc/conda"
 	"github.com/robocorp/rcc/pathlib"
 	"github.com/robocorp/rcc/settings"
 	"github.com/robocorp/rcc/xviper"
@@ -33,7 +32,7 @@ func loadToken(reportFile string) (Token, error) {
 }
 
 func createIssueZip(attachmentsFiles []string) (string, error) {
-	zipfile := filepath.Join(conda.RobocorpTemp(), "attachments.zip")
+	zipfile := filepath.Join(common.RobocorpTemp(), "attachments.zip")
 	zipper, err := newZipper(zipfile)
 	if err != nil {
 		return "", err
@@ -58,7 +57,7 @@ func createIssueZip(attachmentsFiles []string) (string, error) {
 }
 
 func createDiagnosticsReport(robotfile string) (string, *common.DiagnosticStatus, error) {
-	file := filepath.Join(conda.RobocorpTemp(), "diagnostics.txt")
+	file := filepath.Join(common.RobocorpTemp(), "diagnostics.txt")
 	diagnostics, err := ProduceDiagnostics(file, robotfile, false, false)
 	if err != nil {
 		return "", nil, err

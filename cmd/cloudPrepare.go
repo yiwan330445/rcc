@@ -53,7 +53,7 @@ var prepareCloudCmd = &cobra.Command{
 
 		var label string
 		condafile := config.CondaConfigFile()
-		label, err = htfs.NewEnvironment(condafile, config.Holozip(), true, false)
+		label, _, err = htfs.NewEnvironment(condafile, config.Holozip(), true, false)
 		pretty.Guard(err == nil, 8, "Error: %v", err)
 
 		common.Log("Prepared %q.", label)
