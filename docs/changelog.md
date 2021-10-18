@@ -1,5 +1,9 @@
 # rcc change log
 
+## v11.4.1 (date: 18.10.2021)
+
+- minor textual improvements on abstract score reporting
+
 ## v11.4.0 (date: 18.10.2021)
 
 - new command `rcc configuration speedtest` which gives abstract score to both

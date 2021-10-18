@@ -3,13 +3,16 @@ package common
 import (
 	"fmt"
 	"time"
+
+	"github.com/robocorp/rcc/anywork"
 )
 
 const (
 	perfMessage = `
 
 Here are performance score results. Higher is better, 0 is reference point.
-Network score is %d and filesystem score is %d.
+
+Network score is %d and filesystem score is %d. With %d workers on %q.
 `
 	topScale = 125
 	netScale = 1000
@@ -37,7 +40,7 @@ func (it *scorecard) Score() string {
 		return "Score: N/A [measurement not done]"
 	}
 
-	return fmt.Sprintf(perfMessage, topScale-(network/netScale), topScale-(filesystem/fsScale))
+	return fmt.Sprintf(perfMessage, topScale-(network/netScale), topScale-(filesystem/fsScale), anywork.Scale(), Platform())
 }
 
 func (it *scorecard) Start() Scorecard {
