@@ -24,21 +24,22 @@ func init() {
 	randomIdentifier = fmt.Sprintf("%016x", rand.Uint64()^uint64(os.Getpid()))
 }
 
-func workingWorm(pipe chan bool) {
+func workingWorm(pipe chan bool, reply chan int) {
 	fmt.Fprintf(os.Stderr, "\nWorking: -----")
-	index := 0
+	seconds := 0
 loop:
 	for {
-		fmt.Fprintf(os.Stderr, "\b\b\b\b\b%4ds", index)
+		fmt.Fprintf(os.Stderr, "\b\b\b\b\b%4ds", seconds)
 		os.Stderr.Sync()
 		select {
 		case <-time.After(1 * time.Second):
-			index += 1
+			seconds += 1
 			continue
 		case <-pipe:
 			break loop
 		}
 	}
+	reply <- seconds
 }
 
 var speedtestCmd = &cobra.Command{
@@ -53,7 +54,8 @@ var speedtestCmd = &cobra.Command{
 		common.Log("Running network and filesystem performance tests with %d workers.", anywork.Scale())
 		common.Log("This may take several minutes, please be patient.")
 		signal := make(chan bool)
-		go workingWorm(signal)
+		timing := make(chan int)
+		go workingWorm(signal, timing)
 		silent, trace, debug := common.Silent, common.TraceFlag, common.DebugFlag
 		common.Silent = true
 		common.UnifyVerbosityFlags()
@@ -81,7 +83,8 @@ var speedtestCmd = &cobra.Command{
 		}
 		score.Done()
 		close(signal)
-		common.Log("%s", score.Score())
+		elapsed := <-timing
+		common.Log("%s", score.Score(elapsed))
 		pretty.Ok()
 	},
 }

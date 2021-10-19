@@ -12,7 +12,7 @@ const (
 
 Here are performance score results. Higher is better, 0 is reference point.
 
-Network score is %d and filesystem score is %d. With %d workers on %q.
+Score for network=%d, filesystem=%d, and time=%d with %d workers on %q.
 `
 	topScale = 125
 	netScale = 1000
@@ -23,7 +23,7 @@ type Scorecard interface {
 	Start() Scorecard
 	Midpoint() Scorecard
 	Done() Scorecard
-	Score() string
+	Score(int) string
 }
 
 type scorecard struct {
@@ -32,7 +32,7 @@ type scorecard struct {
 	filesystem time.Time
 }
 
-func (it *scorecard) Score() string {
+func (it *scorecard) Score(seconds int) string {
 	network := it.network.Sub(it.start).Milliseconds()
 	filesystem := it.filesystem.Sub(it.network).Milliseconds()
 	Debug("Raw score values: network=%d and filesystem=%d", network, filesystem)
@@ -40,7 +40,7 @@ func (it *scorecard) Score() string {
 		return "Score: N/A [measurement not done]"
 	}
 
-	return fmt.Sprintf(perfMessage, topScale-(network/netScale), topScale-(filesystem/fsScale), anywork.Scale(), Platform())
+	return fmt.Sprintf(perfMessage, topScale-(network/netScale), topScale-(filesystem/fsScale), seconds, anywork.Scale(), Platform())
 }
 
 func (it *scorecard) Start() Scorecard {

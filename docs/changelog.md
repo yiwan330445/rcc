@@ -1,5 +1,9 @@
 # rcc change log
 
+## v11.4.2 (date: 19.10.2021)
+
+- one more improvement on abstract score reporting (time is also scored)
+
 ## v11.4.1 (date: 18.10.2021)
 
 - minor textual improvements on abstract score reporting
