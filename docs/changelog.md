@@ -1,5 +1,9 @@
 # rcc change log
 
+## v11.5.0 (date: 20.10.2021)
+
+- adding initial support for importing hololib.zips into local hololib catalog
+
 ## v11.4.3 (date: 20.10.2021)
 
 - fixing bug where gzipped files in virtual holotree get accidentally
