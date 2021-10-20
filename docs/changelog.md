@@ -1,5 +1,11 @@
 # rcc change log
 
+## v11.4.3 (date: 20.10.2021)
+
+- fixing bug where gzipped files in virtual holotree get accidentally
+  expanded when doing `--liveonly` environments
+- added global `--workers` option to allow control of background worker count
+
 ## v11.4.2 (date: 19.10.2021)
 
 - one more improvement on abstract score reporting (time is also scored)

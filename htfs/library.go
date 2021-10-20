@@ -71,7 +71,7 @@ type hololib struct {
 }
 
 func (it *hololib) Open(digest string) (readable io.Reader, closer Closer, err error) {
-	return delegateOpen(it, digest)
+	return delegateOpen(it, digest, true)
 }
 
 func (it *hololib) Location(digest string) string {

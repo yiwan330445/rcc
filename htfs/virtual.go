@@ -115,7 +115,7 @@ func (it *virtual) Restore(blueprint, client, tag []byte) (string, error) {
 }
 
 func (it *virtual) Open(digest string) (readable io.Reader, closer Closer, err error) {
-	return delegateOpen(it, digest)
+	return delegateOpen(it, digest, false)
 }
 
 func (it *virtual) ExactLocation(key string) string {

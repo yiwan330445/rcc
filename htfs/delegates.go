@@ -8,7 +8,7 @@ import (
 	"github.com/robocorp/rcc/fail"
 )
 
-func delegateOpen(it MutableLibrary, digest string) (readable io.Reader, closer Closer, err error) {
+func delegateOpen(it MutableLibrary, digest string, ungzip bool) (readable io.Reader, closer Closer, err error) {
 	defer fail.Around(&err)
 
 	filename := it.ExactLocation(digest)
@@ -17,7 +17,7 @@ func delegateOpen(it MutableLibrary, digest string) (readable io.Reader, closer 
 
 	var reader io.ReadCloser
 	reader, err = gzip.NewReader(source)
-	if err != nil {
+	if err != nil || !ungzip {
 		_, err = source.Seek(0, 0)
 		fail.On(err != nil, "Failed to seek %q -> %v", filename, err)
 		reader = source

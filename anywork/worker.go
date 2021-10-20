@@ -9,11 +9,12 @@ import (
 )
 
 var (
-	group     *sync.WaitGroup
-	pipeline  WorkQueue
-	failpipe  Failures
-	errcount  Counters
-	headcount uint64
+	group       *sync.WaitGroup
+	pipeline    WorkQueue
+	failpipe    Failures
+	errcount    Counters
+	headcount   uint64
+	WorkerCount int
 )
 
 type Work func()
@@ -74,6 +75,9 @@ func Scale() uint64 {
 
 func AutoScale() {
 	limit := uint64(runtime.NumCPU() - 1)
+	if WorkerCount > 1 {
+		limit = uint64(WorkerCount)
+	}
 	if limit > 96 {
 		limit = 96
 	}

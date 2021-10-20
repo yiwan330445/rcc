@@ -7,6 +7,7 @@ import (
 	"runtime/pprof"
 	"strings"
 
+	"github.com/robocorp/rcc/anywork"
 	"github.com/robocorp/rcc/common"
 	"github.com/robocorp/rcc/conda"
 	"github.com/robocorp/rcc/pathlib"
@@ -108,6 +109,7 @@ func init() {
 	rootCmd.PersistentFlags().BoolVarP(&common.TraceFlag, "trace", "", false, "to get trace output where available (not for production use)")
 	rootCmd.PersistentFlags().BoolVarP(&common.TimelineEnabled, "timeline", "", false, "print timeline at the end of run")
 	rootCmd.PersistentFlags().BoolVarP(&common.StrictFlag, "strict", "", false, "be more strict on environment creation and handling")
+	rootCmd.PersistentFlags().IntVarP(&anywork.WorkerCount, "workers", "", 0, "scale background workers manually (do not use, unless you know what you are doing)")
 }
 
 func initConfig() {
@@ -133,4 +135,5 @@ func initConfig() {
 	common.Trace("CLI command was: %#v", os.Args)
 	common.Debug("Using config file: %v", xviper.ConfigFileUsed())
 	conda.ValidateLocations()
+	anywork.AutoScale()
 }
