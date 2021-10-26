@@ -1,5 +1,13 @@
 # rcc change log
 
+## v11.5.1 (date: 26.10.2021)
+
+- adding holotree catalogs command to list available catalogs with more detail
+- extending holotree list command to show all spaces reachable from hololib
+  catalogs including imported holotree spaces
+- holotree delete should now also remove space elsewhere (based on imported
+  catalogs and their holotree locations)
+
 ## v11.5.0 (date: 20.10.2021)
 
 - adding initial support for importing hololib.zips into local hololib catalog

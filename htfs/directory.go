@@ -107,6 +107,15 @@ func (it *Root) Treetop(task Treetop) error {
 	return anywork.Sync()
 }
 
+func (it *Root) Stats() (*TreeStats, error) {
+	task, stats := CalculateTreeStats()
+	err := it.AllDirs(task)
+	if err != nil {
+		return nil, err
+	}
+	return stats, nil
+}
+
 func (it *Root) AllDirs(task Dirtask) error {
 	common.TimelineBegin("holotree dirs sync start")
 	defer common.TimelineEnd()

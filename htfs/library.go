@@ -237,10 +237,11 @@ func Catalogs() []string {
 
 func Spacemap() map[string]string {
 	result := make(map[string]string)
-	basedir := common.HolotreeLocation()
-	for _, metafile := range pathlib.Glob(basedir, "*.meta") {
-		fullpath := filepath.Join(basedir, metafile)
-		result[fullpath[:len(fullpath)-5]] = fullpath
+	for _, basedir := range BaseFolders() {
+		for _, metafile := range pathlib.Glob(basedir, "*.meta") {
+			fullpath := filepath.Join(basedir, metafile)
+			result[fullpath[:len(fullpath)-5]] = fullpath
+		}
 	}
 	return result
 }

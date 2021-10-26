@@ -9,6 +9,8 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
+	"sort"
+	"sync"
 	"time"
 
 	"github.com/robocorp/rcc/anywork"
@@ -308,6 +310,36 @@ func RemoveDirectory(dirname string) anywork.Work {
 	}
 }
 
+type TreeStats struct {
+	sync.Mutex
+	Directories uint64
+	Files       uint64
+	Bytes       uint64
+	Identity    string
+}
+
+func guessLocation(digest string) string {
+	return filepath.Join("hololib", "library", digest[:2], digest[2:4], digest[4:6], digest)
+}
+
+func CalculateTreeStats() (Dirtask, *TreeStats) {
+	result := &TreeStats{}
+	return func(path string, it *Dir) anywork.Work {
+		return func() {
+			result.Lock()
+			defer result.Unlock()
+			result.Directories += 1
+			result.Files += uint64(len(it.Files))
+			for _, file := range it.Files {
+				result.Bytes += uint64(file.Size)
+				if file.Name == "identity.yaml" {
+					result.Identity = guessLocation(file.Digest)
+				}
+			}
+		}
+	}, result
+}
+
 func RestoreDirectory(library Library, fs *Root, current map[string]string, stats *stats) Dirtask {
 	return func(path string, it *Dir) anywork.Work {
 		return func() {
@@ -432,6 +464,20 @@ func LoadCatalogs() ([]string, []*Root) {
 	runtime.Gosched()
 	anywork.Sync()
 	return catalogs, roots
+}
+
+func BaseFolders() []string {
+	_, roots := LoadCatalogs()
+	folders := make(map[string]bool)
+	result := []string{}
+	for _, root := range roots {
+		folders[filepath.Dir(root.Path)] = true
+	}
+	for folder, _ := range folders {
+		result = append(result, folder)
+	}
+	sort.Strings(result)
+	return result
 }
 
 func CatalogLoader(catalog string, at int, roots []*Root) anywork.Work {
