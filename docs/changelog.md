@@ -1,5 +1,10 @@
 # rcc change log
 
+## v11.5.2 (date: 27.10.2021)
+
+- added `--json` option and output to catalogs listing
+- bug fix: added missing file detection to holotree check
+
 ## v11.5.1 (date: 26.10.2021)
 
 - adding holotree catalogs command to list available catalogs with more detail

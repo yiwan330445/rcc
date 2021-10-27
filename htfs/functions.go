@@ -75,7 +75,7 @@ func DigestRecorder(target map[string]string) Treetop {
 	return tool
 }
 
-func IntegrityCheck(result map[string]string) Treetop {
+func IntegrityCheck(result map[string]string, needed map[string]map[string]bool) Treetop {
 	var tool Treetop
 	tool = func(path string, it *Dir) error {
 		for name, subdir := range it.Dirs {
@@ -84,6 +84,8 @@ func IntegrityCheck(result map[string]string) Treetop {
 		for name, file := range it.Files {
 			if file.Name != file.Digest {
 				result[filepath.Join(path, name)] = file.Digest
+			} else {
+				delete(needed, file.Digest)
 			}
 		}
 		return nil
@@ -415,18 +417,25 @@ func ZipRoot(library MutableLibrary, fs *Root, sink Zipper) Treetop {
 	return tool
 }
 
-func LoadHololibHashes() map[string]map[string]bool {
+func LoadHololibHashes() (map[string]map[string]bool, map[string]map[string]bool) {
 	catalogs, roots := LoadCatalogs()
 	slots := make([]map[string]string, len(roots))
 	for at, root := range roots {
 		anywork.Backlog(DigestLoader(root, at, slots))
 	}
 	result := make(map[string]map[string]bool)
+	needed := make(map[string]map[string]bool)
 	runtime.Gosched()
 	anywork.Sync()
 	for at, slot := range slots {
 		catalog := catalogs[at]
 		for k, _ := range slot {
+			who, ok := needed[k]
+			if !ok {
+				who = make(map[string]bool)
+				needed[k] = who
+			}
+			who[catalog] = true
 			found, ok := result[k]
 			if !ok {
 				found = make(map[string]bool)
@@ -435,7 +444,7 @@ func LoadHololibHashes() map[string]map[string]bool {
 			found[catalog] = true
 		}
 	}
-	return result
+	return result, needed
 }
 
 func DigestLoader(root *Root, at int, slots []map[string]string) anywork.Work {

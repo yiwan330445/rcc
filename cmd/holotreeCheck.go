@@ -20,22 +20,26 @@ func checkHolotreeIntegrity() {
 	err = fs.Lift()
 	pretty.Guard(err == nil, 2, "%s", err)
 	common.Timeline("holotree integrity hasher")
-	known := htfs.LoadHololibHashes()
+	known, needed := htfs.LoadHololibHashes()
 	err = fs.AllFiles(htfs.Hasher(known))
 	pretty.Guard(err == nil, 3, "%s", err)
 	collector := make(map[string]string)
 	common.Timeline("holotree integrity collector")
-	err = fs.Treetop(htfs.IntegrityCheck(collector))
+	err = fs.Treetop(htfs.IntegrityCheck(collector, needed))
 	common.Timeline("holotree integrity report")
 	pretty.Guard(err == nil, 4, "%s", err)
 	purge := make(map[string]bool)
-	for k, v := range collector {
-		fmt.Println(k, v)
+	for k, _ := range collector {
 		found, ok := known[filepath.Base(k)]
 		if !ok {
 			continue
 		}
 		for catalog, _ := range found {
+			purge[catalog] = true
+		}
+	}
+	for _, v := range needed {
+		for catalog, _ := range v {
 			purge[catalog] = true
 		}
 	}
