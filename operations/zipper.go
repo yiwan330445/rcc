@@ -113,7 +113,7 @@ func (it *unzipper) Explode(workers int, directory string) error {
 		}
 		todo <- &WriteTarget{
 			Source: entry,
-			Target: filepath.Join(directory, entry.Name),
+			Target: filepath.Join(directory, filepath.ToSlash(entry.Name)),
 		}
 	}
 
@@ -156,7 +156,7 @@ func (it *unzipper) Extract(directory string) error {
 		if entry.FileInfo().IsDir() {
 			continue
 		}
-		target := filepath.Join(directory, entry.Name)
+		target := filepath.Join(directory, filepath.ToSlash(entry.Name))
 		todo := WriteTarget{
 			Source: entry,
 			Target: target,
@@ -206,7 +206,7 @@ func (it *zipper) Add(fullpath, relativepath string, details os.FileInfo) {
 		return
 	}
 	defer source.Close()
-	target, err := it.writer.Create(relativepath)
+	target, err := it.writer.Create(filepath.ToSlash(relativepath))
 	if err != nil {
 		it.Note(err)
 		return
@@ -218,7 +218,7 @@ func (it *zipper) Add(fullpath, relativepath string, details os.FileInfo) {
 }
 
 func (it *zipper) AddBlob(relativepath string, blob []byte) {
-	target, err := it.writer.Create(relativepath)
+	target, err := it.writer.Create(filepath.ToSlash(relativepath))
 	if err != nil {
 		it.Note(err)
 		return

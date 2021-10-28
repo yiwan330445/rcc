@@ -1,5 +1,9 @@
 # rcc change log
 
+## v11.5.3 (date: 28.10.2021)
+
+- bugfix: path handling in robot wrap commands
+
 ## v11.5.2 (date: 27.10.2021)
 
 - added `--json` option and output to catalogs listing
