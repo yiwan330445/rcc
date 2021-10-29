@@ -6,12 +6,22 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/robocorp/rcc/common"
 	"github.com/robocorp/rcc/pathlib"
 	"github.com/robocorp/rcc/pretty"
 	"github.com/robocorp/rcc/robot"
 )
+
+const (
+	backslash = `\`
+	slash     = `/`
+)
+
+func slashed(text string) string {
+	return strings.Replace(text, backslash, slash, -1)
+}
 
 type WriteTarget struct {
 	Source *zip.File
@@ -113,7 +123,7 @@ func (it *unzipper) Explode(workers int, directory string) error {
 		}
 		todo <- &WriteTarget{
 			Source: entry,
-			Target: filepath.Join(directory, filepath.ToSlash(entry.Name)),
+			Target: filepath.Join(directory, slashed(entry.Name)),
 		}
 	}
 
@@ -156,7 +166,7 @@ func (it *unzipper) Extract(directory string) error {
 		if entry.FileInfo().IsDir() {
 			continue
 		}
-		target := filepath.Join(directory, filepath.ToSlash(entry.Name))
+		target := filepath.Join(directory, slashed(entry.Name))
 		todo := WriteTarget{
 			Source: entry,
 			Target: target,
@@ -206,7 +216,7 @@ func (it *zipper) Add(fullpath, relativepath string, details os.FileInfo) {
 		return
 	}
 	defer source.Close()
-	target, err := it.writer.Create(filepath.ToSlash(relativepath))
+	target, err := it.writer.Create(slashed(relativepath))
 	if err != nil {
 		it.Note(err)
 		return
@@ -218,7 +228,7 @@ func (it *zipper) Add(fullpath, relativepath string, details os.FileInfo) {
 }
 
 func (it *zipper) AddBlob(relativepath string, blob []byte) {
-	target, err := it.writer.Create(filepath.ToSlash(relativepath))
+	target, err := it.writer.Create(slashed(relativepath))
 	if err != nil {
 		it.Note(err)
 		return

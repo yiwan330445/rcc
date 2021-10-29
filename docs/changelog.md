@@ -1,6 +1,10 @@
 # rcc change log
 
-## v11.5.3 (date: 28.10.2021)
+## v11.5.4 (date: 29.10.2021)
+
+- bugfix: path handling in robot wrap commands (now cross-platform)
+
+## v11.5.3 (date: 28.10.2021) broken
 
 - bugfix: path handling in robot wrap commands
 
