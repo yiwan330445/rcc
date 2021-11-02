@@ -67,6 +67,15 @@ type task struct {
 	Task    string   `yaml:"robotTaskName,omitempty"`
 	Shell   string   `yaml:"shell,omitempty"`
 	Command []string `yaml:"command,omitempty"`
+	robot   *robot
+}
+
+func (it *robot) relink() {
+	for _, task := range it.Tasks {
+		if task != nil {
+			task.robot = it
+		}
+	}
 }
 
 func (it *robot) diagnoseTasks(diagnose common.Diagnoser) {
@@ -455,11 +464,15 @@ func (it *task) shellCommand() []string {
 }
 
 func (it *task) taskCommand() []string {
+	output := "output"
+	if it.robot != nil {
+		output = it.robot.Artifacts
+	}
 	return []string{
 		"python",
 		"-m", "robot",
 		"--report", "NONE",
-		"--outputdir", "output",
+		"--outputdir", output,
 		"--logtitle", "Task log",
 		"--task", it.Task,
 		".",
@@ -482,6 +495,7 @@ func robotFrom(content []byte) (*robot, error) {
 	if err != nil {
 		return nil, err
 	}
+	config.relink()
 	return &config, nil
 }
 

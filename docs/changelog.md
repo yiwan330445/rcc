@@ -1,5 +1,9 @@
 # rcc change log
 
+## v11.5.5 (date: 2.11.2021)
+
+- bugfix: robot task format ignored artifacts directory, but now it uses it
+
 ## v11.5.4 (date: 29.10.2021)
 
 - bugfix: path handling in robot wrap commands (now cross-platform)
