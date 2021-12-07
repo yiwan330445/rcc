@@ -1,5 +1,10 @@
 # rcc change log
 
+## v11.6.0 (date: 7.12.2021)
+
+- micromamba update to version 0.19.0
+- now `artifactsDir` is explicitely created before robot execution
+
 ## v11.5.5 (date: 2.11.2021)
 
 - bugfix: robot task format ignored artifacts directory, but now it uses it

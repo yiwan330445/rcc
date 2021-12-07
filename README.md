@@ -8,6 +8,8 @@ Together with [robot.yaml](https://robocorp.com/docs/setup/robot-yaml-format) co
   <img width="400" src="./docs/robocorp_stack.png">
 </p>
 
+RCC is actively maintained by [Robocorp](https://www.robocorp.com/).
+
 
 ## Why use rcc?
 

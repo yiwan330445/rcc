@@ -173,7 +173,10 @@ func ExecuteSimpleTask(flags *RunFlags, template []string, config robot.Robot, t
 			environment = append(environment, fmt.Sprintf("%s=%s", key, value))
 		}
 	}
-	outputDir := config.ArtifactDirectory()
+	outputDir, err := pathlib.EnsureDirectory(config.ArtifactDirectory())
+	if err != nil {
+		pretty.Exit(9, "Error: %v", err)
+	}
 	common.Debug("about to run command - %v", task)
 	if common.NoOutputCapture {
 		_, err = shell.New(environment, directory, task...).Execute(interactive)
@@ -181,7 +184,7 @@ func ExecuteSimpleTask(flags *RunFlags, template []string, config robot.Robot, t
 		_, err = shell.New(environment, directory, task...).Tee(outputDir, interactive)
 	}
 	if err != nil {
-		pretty.Exit(9, "Error: %v", err)
+		pretty.Exit(10, "Error: %v", err)
 	}
 	pretty.Ok()
 }
@@ -232,7 +235,10 @@ func ExecuteTask(flags *RunFlags, template []string, config robot.Robot, todo ro
 	}
 	before := make(map[string]string)
 	beforeHash, beforeErr := conda.DigestFor(label, before)
-	outputDir := config.ArtifactDirectory()
+	outputDir, err := pathlib.EnsureDirectory(config.ArtifactDirectory())
+	if err != nil {
+		pretty.Exit(9, "Error: %v", err)
+	}
 	if !flags.NoPipFreeze && !flags.Assistant && !common.Silent && !interactive {
 		wantedfile, _ := config.DependenciesFile()
 		ExecutionEnvironmentListing(wantedfile, label, searchPath, directory, outputDir, environment)
@@ -248,7 +254,7 @@ func ExecuteTask(flags *RunFlags, template []string, config robot.Robot, todo ro
 	afterHash, afterErr := conda.DigestFor(label, after)
 	conda.DiagnoseDirty(label, label, beforeHash, afterHash, beforeErr, afterErr, before, after, true)
 	if err != nil {
-		pretty.Exit(9, "Error: %v", err)
+		pretty.Exit(10, "Error: %v", err)
 	}
 	pretty.Ok()
 }
