@@ -5,7 +5,9 @@ import (
 	"io"
 	"os"
 	"os/exec"
+	"os/signal"
 	"path/filepath"
+	"syscall"
 
 	"github.com/robocorp/rcc/common"
 )
@@ -55,8 +57,15 @@ func (it *Task) execute(stdin io.Reader, stdout, stderr io.Writer) (int, error) 
 	}
 	common.Timeline("exec %q started", it.executable)
 	common.Debug("PID #%d is %q.", command.Process.Pid, command)
+	c := make(chan os.Signal)
+	signal.Notify(c, os.Interrupt, syscall.SIGINT)
+	go func() {
+		<-c
+		signal.Stop(c)
+	}()
 	defer func() {
 		common.Debug("PID #%d finished: %v.", command.Process.Pid, command.ProcessState)
+		signal.Stop(c)
 	}()
 	err = command.Wait()
 	exit, ok := err.(*exec.ExitError)
