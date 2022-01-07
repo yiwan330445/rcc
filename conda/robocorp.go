@@ -17,7 +17,7 @@ import (
 )
 
 var (
-	ignoredPaths   = []string{"python", "conda"}
+	ignoredPaths   = []string{"python", "conda", "pyenv", "venv"}
 	hashPattern    = regexp.MustCompile("^[0-9a-f]{16}(?:\\.meta)?$")
 	versionPattern = regexp.MustCompile("^[^0-9.]*([0-9.]+)\\s*$")
 )

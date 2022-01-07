@@ -1,5 +1,10 @@
 # rcc change log
 
+## v11.6.2 (date: 7.1.2022)
+
+- added "pyenv" and "venv" to patterns removed from PATH, since they can
+  break isolation of our environments
+
 ## v11.6.1 (date: 7.1.2022)
 
 - fixing micromamba version number parsing
