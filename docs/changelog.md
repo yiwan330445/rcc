@@ -1,6 +1,10 @@
 # rcc change log
 
-## v11.6.0 (date: 7.12.2021)
+## v11.6.1 (date: 7.1.2022)
+
+- fixing micromamba version number parsing
+
+## v11.6.0 (date: 7.12.2021) broken
 
 - micromamba update to version 0.19.0
 - now `artifactsDir` is explicitely created before robot execution

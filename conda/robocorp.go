@@ -17,8 +17,9 @@ import (
 )
 
 var (
-	ignoredPaths = []string{"python", "conda"}
-	hashPattern  = regexp.MustCompile("^[0-9a-f]{16}(?:\\.meta)?$")
+	ignoredPaths   = []string{"python", "conda"}
+	hashPattern    = regexp.MustCompile("^[0-9a-f]{16}(?:\\.meta)?$")
+	versionPattern = regexp.MustCompile("^[^0-9.]*([0-9.]+)\\s*$")
 )
 
 func sorted(files []os.FileInfo) {
@@ -112,13 +113,18 @@ func EnvironmentFor(location string) []string {
 	return append(os.Environ(), EnvironmentExtensionFor(location)...)
 }
 
-func asVersion(text string) (uint64, string) {
-	text = strings.TrimSpace(text)
-	multiline := strings.SplitN(text, "\n", 2)
-	if len(multiline) > 0 {
-		text = strings.TrimSpace(multiline[0])
+func AsVersion(incoming string) (uint64, string) {
+	incoming = strings.TrimSpace(incoming)
+	versionText := "0"
+search:
+	for _, line := range strings.SplitN(incoming, "\n", -1) {
+		found := versionPattern.FindStringSubmatch(line)
+		if found != nil {
+			versionText = found[1]
+			break search
+		}
 	}
-	parts := strings.SplitN(text, ".", 4)
+	parts := strings.SplitN(versionText, ".", 4)
 	steps := len(parts)
 	multipliers := []uint64{1000000, 1000, 1}
 	version := uint64(0)
@@ -132,7 +138,7 @@ func asVersion(text string) (uint64, string) {
 		}
 		version += multiplier * value
 	}
-	return version, text
+	return version, versionText
 }
 
 func MicromambaVersion() string {
@@ -140,7 +146,7 @@ func MicromambaVersion() string {
 	if err != nil {
 		return err.Error()
 	}
-	_, versionText = asVersion(versionText)
+	_, versionText = AsVersion(versionText)
 	return versionText
 }
 
@@ -148,7 +154,7 @@ func HasMicroMamba() bool {
 	if !pathlib.IsFile(BinMicromamba()) {
 		return false
 	}
-	version, versionText := asVersion(MicromambaVersion())
+	version, versionText := AsVersion(MicromambaVersion())
 	goodEnough := version >= 19000
 	common.Debug("%q version is %q -> %v (good enough: %v)", BinMicromamba(), versionText, version, goodEnough)
 	common.Timeline("µmamba version is %q (at %q).", versionText, BinMicromamba())
