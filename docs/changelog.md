@@ -1,5 +1,10 @@
 # rcc change log
 
+## v11.6.3 (date: 10.1.2022)
+
+- more patterns added ("pypoetry" and "virtualenv") to be removed from PATH,
+  since they also can break isolation of our environments
+
 ## v11.6.2 (date: 7.1.2022)
 
 - added "pyenv" and "venv" to patterns removed from PATH, since they can
