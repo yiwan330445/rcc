@@ -93,7 +93,6 @@ Goal: See variables from specific environment with robot.yaml knowledge in JSON 
 Goal: Liveonly works and uses virtual holotree
   Step        build/rcc holotree vars --liveonly --space jam --controller citests robot_tests/certificates.yaml --config tmp/alternative.yaml --timeline
   Must Have   ROBOCORP_HOME=
-  Must Have   PYTHON_EXE=
   Must Have   CONDA_DEFAULT_ENV=rcc
   Must Have   CONDA_PREFIX=
   Must Have   CONDA_PROMPT_MODIFIER=(rcc)
@@ -107,6 +106,7 @@ Goal: Liveonly works and uses virtual holotree
   Must Have   RCC_ENVIRONMENT_HASH=
   Must Have   RCC_INSTALLATION_ID=
   Must Have   RCC_TRACKING_ALLOWED=
+  Wont Have   PYTHON_EXE=
   Wont Have   PYTHONPATH=
   Wont Have   ROBOT_ROOT=
   Wont Have   ROBOT_ARTIFACTS=

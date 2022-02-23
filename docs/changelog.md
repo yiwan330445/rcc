@@ -1,5 +1,11 @@
 # rcc change log
 
+## v11.6.4 (date: 23.2.2022)
+
+- GH#27 fixing issue where rcc finds executables outside of holotree
+  environment.
+- this closes #27
+
 ## v11.6.3 (date: 10.1.2022)
 
 - more patterns added ("pypoetry" and "virtualenv") to be removed from PATH,

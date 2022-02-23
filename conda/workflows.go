@@ -26,9 +26,8 @@ func metafile(folder string) string {
 }
 
 func livePrepare(liveFolder string, command ...string) (*shell.Task, error) {
-	searchPath := FindPath(liveFolder)
 	commandName := command[0]
-	task, ok := searchPath.Which(commandName, FileExtensions)
+	task, ok := HolotreePath(liveFolder).Which(commandName, FileExtensions)
 	if !ok {
 		return nil, fmt.Errorf("Cannot find command: %v", commandName)
 	}

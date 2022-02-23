@@ -76,6 +76,10 @@ func DigestFor(folder string, collect map[string]string) ([]byte, error) {
 	return result, nil
 }
 
+func HolotreePath(environment string) pathlib.PathParts {
+	return pathlib.PathFrom(CondaPaths(environment)...)
+}
+
 func FindPath(environment string) pathlib.PathParts {
 	target := pathlib.TargetPath()
 	target = target.Remove(ignoredPaths)
@@ -85,7 +89,7 @@ func FindPath(environment string) pathlib.PathParts {
 
 func EnvironmentExtensionFor(location string) []string {
 	environment := make([]string, 0, 20)
-	searchPath := FindPath(location)
+	searchPath := HolotreePath(location)
 	python, ok := searchPath.Which("python3", FileExtensions)
 	if !ok {
 		python, ok = searchPath.Which("python", FileExtensions)
@@ -110,7 +114,7 @@ func EnvironmentExtensionFor(location string) []string {
 		"RCC_TRACKING_ALLOWED="+fmt.Sprintf("%v", xviper.CanTrack()),
 		"TEMP="+common.RobocorpTemp(),
 		"TMP="+common.RobocorpTemp(),
-		searchPath.AsEnvironmental("PATH"),
+		FindPath(location).AsEnvironmental("PATH"),
 	)
 	environment = append(environment, LoadActivationEnvironment(location)...)
 	return environment
