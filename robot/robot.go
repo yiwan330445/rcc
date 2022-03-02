@@ -420,14 +420,15 @@ func (it *robot) ExecutionEnvironment(location string, inject []string, full boo
 		environment = append(environment, os.Environ()...)
 	}
 	environment = append(environment, inject...)
-	searchPath := it.SearchPath(location)
-	python, ok := searchPath.Which("python3", conda.FileExtensions)
+	holotreePath := conda.HolotreePath(location)
+	python, ok := holotreePath.Which("python3", conda.FileExtensions)
 	if !ok {
-		python, ok = searchPath.Which("python", conda.FileExtensions)
+		python, ok = holotreePath.Which("python", conda.FileExtensions)
 	}
 	if ok {
 		environment = append(environment, "PYTHON_EXE="+python)
 	}
+	searchPath := it.SearchPath(location)
 	environment = append(environment,
 		"CONDA_DEFAULT_ENV=rcc",
 		"CONDA_PREFIX="+location,

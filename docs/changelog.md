@@ -1,5 +1,10 @@
 # rcc change log
 
+## v11.6.5 (date: 2.3.2022)
+
+- Still continuing GH#27 fixing issue where rcc finds executables outside of
+  holotree environment.
+
 ## v11.6.4 (date: 23.2.2022)
 
 - GH#27 fixing issue where rcc finds executables outside of holotree
