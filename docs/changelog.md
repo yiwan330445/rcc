@@ -1,5 +1,9 @@
 # rcc change log
 
+## v11.6.6 (date: 7.3.2022)
+
+- JSON/YAML diagnostics is now ignoring anything that contains ".vscode"
+
 ## v11.6.5 (date: 2.3.2022)
 
 - Still continuing GH#27 fixing issue where rcc finds executables outside of

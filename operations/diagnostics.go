@@ -35,6 +35,20 @@ const (
 	statusFatal    = `fatal`
 )
 
+var (
+	ignorePathContains = []string{".vscode", ".ipynb_checkpoints", ".virtual_documents"}
+)
+
+func shouldIgnorePath(fullpath string) bool {
+	lowpath := strings.ToLower(fullpath)
+	for _, ignore := range ignorePathContains {
+		if strings.Contains(lowpath, ignore) {
+			return true
+		}
+	}
+	return false
+}
+
 type stringerr func() (string, error)
 
 func justText(source stringerr) string {
@@ -330,7 +344,7 @@ func diagnoseFilesUnmarshal(tool Unmarshaler, label, rootdir string, paths []str
 	for _, tail := range paths {
 		investigated = true
 		fullpath := filepath.Join(rootdir, tail)
-		if strings.Contains(fullpath, ".ipynb_checkpoints") || strings.Contains(fullpath, ".virtual_documents") {
+		if shouldIgnorePath(fullpath) {
 			continue
 		}
 		content, err := ioutil.ReadFile(fullpath)
