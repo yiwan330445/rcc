@@ -87,11 +87,10 @@ func markTempForRecycling() {
 }
 
 func main() {
-	common.TimelineBegin("Start.")
-	defer common.EndOfTimeline()
-
 	defer ExitProtection()
 
+	common.TimelineBegin("Start.")
+	defer common.EndOfTimeline()
 	go startTempRecycling()
 	defer markTempForRecycling()
 	defer os.Stderr.Sync()

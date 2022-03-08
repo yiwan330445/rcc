@@ -55,10 +55,12 @@ var speedtestCmd = &cobra.Command{
 		common.Log("This may take several minutes, please be patient.")
 		signal := make(chan bool)
 		timing := make(chan int)
-		go workingWorm(signal, timing)
 		silent, trace, debug := common.Silent, common.TraceFlag, common.DebugFlag
-		common.Silent = true
-		common.UnifyVerbosityFlags()
+		if !debug {
+			go workingWorm(signal, timing)
+			common.Silent = true
+			common.UnifyVerbosityFlags()
+		}
 		folder := common.RobocorpTemp()
 		content, err := blobs.Asset("assets/speedtest.yaml")
 		if err != nil {
@@ -83,8 +85,12 @@ var speedtestCmd = &cobra.Command{
 		}
 		score.Done()
 		close(signal)
-		elapsed := <-timing
-		common.Log("%s", score.Score(elapsed))
+		if !debug {
+			elapsed := <-timing
+			common.Log("%s", score.Score(elapsed))
+		} else {
+			common.Log("%s", score.Score(0.0))
+		}
 		pretty.Ok()
 	},
 }

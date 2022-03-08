@@ -1,5 +1,11 @@
 # rcc change log
 
+## v11.7.1 (date: 8.3.2022)
+
+- when timeline option is given, and operation fails, timeline was not shown
+  and this change now makes timeline happen before exit is done
+- speed test now allows using debug flag to actually see what is going on
+
 ## v11.7.0 (date: 8.3.2022)
 
 - micromamba update to version 0.22.0
