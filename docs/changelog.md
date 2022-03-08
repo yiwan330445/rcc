@@ -1,5 +1,10 @@
 # rcc change log
 
+## v11.8.0 (date: 8.3.2022)
+
+- added initial alpha support for pre-run scripts from robot.yaml and executed
+  right before actual task is run
+
 ## v11.7.1 (date: 8.3.2022)
 
 - when timeline option is given, and operation fails, timeline was not shown

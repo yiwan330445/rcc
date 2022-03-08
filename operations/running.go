@@ -5,6 +5,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/google/shlex"
 	"github.com/robocorp/rcc/common"
 	"github.com/robocorp/rcc/conda"
 	"github.com/robocorp/rcc/htfs"
@@ -244,6 +245,23 @@ func ExecuteTask(flags *RunFlags, template []string, config robot.Robot, todo ro
 		ExecutionEnvironmentListing(wantedfile, label, searchPath, directory, outputDir, environment)
 	}
 	FreezeEnvironmentListing(label, config)
+
+	preRunScripts := config.PreRunScripts()
+	if preRunScripts != nil && len(preRunScripts) > 0 {
+		common.Debug("===  pre run script phase ===")
+		for _, script := range preRunScripts {
+			scriptCommand, err := shlex.Split(script)
+			if err != nil {
+				pretty.Exit(11, "%sScript '%s' parsing failure: %v%s", pretty.Red, script, err, pretty.Reset)
+			}
+			common.Debug("Running pre run script '%s' ...", script)
+			_, err = shell.New(environment, directory, scriptCommand...).Execute(interactive)
+			if err != nil {
+				pretty.Exit(12, "%sScript '%s' failure: %v%s", pretty.Red, script, err, pretty.Reset)
+			}
+		}
+	}
+
 	common.Debug("about to run command - %v", task)
 	if common.NoOutputCapture {
 		_, err = shell.New(environment, directory, task...).Execute(interactive)

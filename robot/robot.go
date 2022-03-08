@@ -32,6 +32,7 @@ type Robot interface {
 	TaskByName(string) Task
 	UsesConda() bool
 	CondaConfigFile() string
+	PreRunScripts() []string
 	RootDirectory() string
 	HasHolozip() bool
 	Holozip() string
@@ -55,6 +56,7 @@ type Task interface {
 type robot struct {
 	Tasks        map[string]*task `yaml:"tasks"`
 	Conda        string           `yaml:"condaConfigFile,omitempty"`
+	PreRun       []string         `yaml:"preRunScripts,omitempty"`
 	Environments []string         `yaml:"environmentConfigs,omitempty"`
 	Ignored      []string         `yaml:"ignoreFiles"`
 	Artifacts    string           `yaml:"artifactsDir"`
@@ -328,6 +330,10 @@ func (it *robot) CondaConfigFile() string {
 		return available[0]
 	}
 	return filepath.Join(it.Root, it.Conda)
+}
+
+func (it *robot) PreRunScripts() []string {
+	return it.PreRun
 }
 
 func (it *robot) WorkingDirectory() string {
