@@ -1,5 +1,9 @@
 # rcc change log
 
+## v11.7.0 (date: 8.3.2022)
+
+- micromamba update to version 0.22.0
+
 ## v11.6.6 (date: 7.3.2022)
 
 - JSON/YAML diagnostics is now ignoring anything that contains ".vscode"
