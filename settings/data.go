@@ -209,3 +209,17 @@ type Meta struct {
 	Source  string `yaml:"source" json:"source"`
 	Version string `yaml:"version" json:"version"`
 }
+
+type Network struct {
+	HttpsProxy string `yaml:"https-proxy" json:"https-proxy"`
+	HttpProxy  string `yaml:"http-proxy" json:"http-proxy"`
+}
+
+type Profile struct {
+	Name        string    `yaml:"name" json:"name"`
+	Description string    `yaml:"description" json:"description"`
+	Settings    *Settings `yaml:"settings,omitempty" json:"settings,omitempty"`
+	Network     *Network  `yaml:"network,omitempty" json:"network,omitempty"`
+	Piprc       string    `yaml:"piprc,omitempty" json:"piprc,omitempty"`
+	Condarc     string    `yaml:"condarc,omitempty" json:"condarc,omitempty"`
+}

@@ -1,5 +1,12 @@
 # rcc change log
 
+## v11.9.0 (date: 9.3.2022) UNSTABLE
+
+- new work started around network configuration topics and this will be
+  WIP (work in progress) for a while, and so it is marked as unstable
+- added new command placeholders (no-op): `interactive configuration`,
+  `configuration export`, `configuration import`, and `configuration switch`
+
 ## v11.8.0 (date: 8.3.2022)
 
 - added initial alpha support for pre-run scripts from robot.yaml and executed

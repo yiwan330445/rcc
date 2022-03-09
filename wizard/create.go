@@ -1,9 +1,7 @@
 package wizard
 
 import (
-	"bufio"
 	"fmt"
-	"os"
 	"path/filepath"
 	"regexp"
 	"sort"
@@ -21,30 +19,8 @@ const (
 )
 
 var (
-	namePattern  = regexp.MustCompile("^[\\w-]*$")
 	digitPattern = regexp.MustCompile("^\\d+$")
 )
-
-func ask(question, defaults string, validator *regexp.Regexp, erratic string) (string, error) {
-	for {
-		common.Stdout("%s? %s%s %s[%s]:%s ", pretty.Green, pretty.White, question, pretty.Grey, defaults, pretty.Reset)
-		source := bufio.NewReader(os.Stdin)
-		reply, err := source.ReadString(newline)
-		common.Stdout("\n")
-		if err != nil {
-			return "", err
-		}
-		reply = strings.TrimSpace(reply)
-		if !validator.MatchString(reply) {
-			common.Stdout("%s%s%s\n\n", pretty.Red, erratic, pretty.Reset)
-			continue
-		}
-		if len(reply) == 0 {
-			return defaults, nil
-		}
-		return reply, nil
-	}
-}
 
 func choose(question, label string, candidates []string) (string, error) {
 	keys := []string{}
