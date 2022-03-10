@@ -36,7 +36,7 @@ func choose(question, label string, candidates []string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	reply, err := ask(question, "1", pattern, "Give selections number from above list.")
+	reply, err := ask(question, "1", regexpValidation(pattern, "Give selections number from above list."))
 	if err != nil {
 		return "", err
 	}
@@ -51,7 +51,7 @@ func Create(arguments []string) error {
 	common.Stdout("\n")
 
 	warning(len(arguments) > 1, "You provided more than one argument, but only the first one will be\nused as the name.")
-	robotName, err := ask("Give robot name", firstOf(arguments, "my-first-robot"), namePattern, "Use just normal english word characters and no spaces!")
+	robotName, err := ask("Give robot name", firstOf(arguments, "my-first-robot"), regexpValidation(namePattern, "Use just normal english word characters and no spaces!"))
 
 	if err != nil {
 		return err

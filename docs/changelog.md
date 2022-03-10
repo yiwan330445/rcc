@@ -1,5 +1,10 @@
 # rcc change log
 
+## v11.9.1 (date: 10.3.2022) UNSTABLE
+
+- added condarc and piprc to be asked from user as configuration options
+- refactoring some wizard code to better support new functionality
+
 ## v11.9.0 (date: 9.3.2022) UNSTABLE
 
 - new work started around network configuration topics and this will be
