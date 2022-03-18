@@ -3,6 +3,7 @@ package settings
 import (
 	"encoding/json"
 	"net/url"
+	"os"
 	"sort"
 	"strings"
 
@@ -16,13 +17,57 @@ const (
 
 type StringMap map[string]string
 
+func (it StringMap) Lookup(key string) string {
+	return it[key]
+}
+
+// layer 0 is defaults from assets
+// layer 1 is settings.yaml from disk
+// layer 2 is "temporary" update layer
+type SettingsLayers [3]*Settings
+
+func (it SettingsLayers) Effective() *Settings {
+	result := &Settings{
+		Autoupdates:  make(StringMap),
+		Branding:     make(StringMap),
+		Certificates: &Certificates{},
+		Network:      &Network{},
+		Endpoints:    make(StringMap),
+		Hosts:        make([]string, 0, 100),
+		Meta: &Meta{
+			Name:        "generated",
+			Description: "generated",
+			Source:      "generated",
+			Version:     "unknown",
+		},
+	}
+	for _, layer := range it {
+		if layer != nil {
+			layer.onTopOf(result)
+		}
+	}
+	return result
+}
+
 type Settings struct {
-	Autoupdates  StringMap     `yaml:"autoupdates" json:"autoupdates"`
-	Branding     StringMap     `yaml:"branding" json:"branding"`
-	Certificates *Certificates `yaml:"certificates" json:"certificates"`
-	Endpoints    *Endpoints    `yaml:"endpoints" json:"endpoints"`
-	Hosts        []string      `yaml:"diagnostics-hosts" json:"diagnostics-hosts"`
-	Meta         *Meta         `yaml:"meta" json:"meta"`
+	Autoupdates  StringMap     `yaml:"autoupdates,omitempty" json:"autoupdates,omitempty"`
+	Branding     StringMap     `yaml:"branding,omitempty" json:"branding,omitempty"`
+	Certificates *Certificates `yaml:"certificates,omitempty" json:"certificates,omitempty"`
+	Network      *Network      `yaml:"network,omitempty" json:"network,omitempty"`
+	Endpoints    StringMap     `yaml:"endpoints,omitempty" json:"endpoints,omitempty"`
+	Hosts        []string      `yaml:"diagnostics-hosts,omitempty" json:"diagnostics-hosts,omitempty"`
+	Meta         *Meta         `yaml:"meta,omitempty" json:"meta,omitempty"`
+}
+
+func Empty() *Settings {
+	return &Settings{
+		Meta: &Meta{
+			Name:        "generated",
+			Description: "generated",
+			Source:      "generated",
+			Version:     "unknown",
+		},
+	}
 }
 
 func FromBytes(raw []byte) (*Settings, error) {
@@ -32,6 +77,36 @@ func FromBytes(raw []byte) (*Settings, error) {
 		return nil, err
 	}
 	return &settings, nil
+}
+
+func (it *Settings) onTopOf(target *Settings) {
+	for key, value := range it.Autoupdates {
+		if len(value) > 0 {
+			target.Autoupdates[key] = value
+		}
+	}
+	for key, value := range it.Branding {
+		if len(value) > 0 {
+			target.Branding[key] = value
+		}
+	}
+	for key, value := range it.Endpoints {
+		if len(value) > 0 {
+			target.Endpoints[key] = value
+		}
+	}
+	for _, host := range it.Hosts {
+		target.Hosts = append(target.Hosts, host)
+	}
+	if it.Certificates != nil {
+		it.Certificates.onTopOf(target)
+	}
+	if it.Network != nil {
+		it.Network.onTopOf(target)
+	}
+	if it.Meta != nil {
+		it.Meta.onTopOf(target)
+	}
 }
 
 func (it *Settings) AsYaml() ([]byte, error) {
@@ -52,8 +127,8 @@ func (it *Settings) Source(filename string) *Settings {
 func (it *Settings) Hostnames() []string {
 	collector := make(map[string]bool)
 	if it.Endpoints != nil {
-		for _, name := range it.Endpoints.Hostnames() {
-			collector[name] = true
+		for _, name := range it.Endpoints {
+			hostFromUrl(name, collector)
 		}
 	}
 	if it.Hosts != nil {
@@ -109,8 +184,8 @@ func (it *Settings) CriticalEnvironmentDiagnostics(target *common.DiagnosticStat
 		diagnose.Fatal("", "endpoints section is totally missing")
 		correct = false
 	} else {
-		correct = diagnoseUrl(it.Endpoints.CloudApi, "endpoints/cloud-api", diagnose, correct)
-		correct = diagnoseUrl(it.Endpoints.Downloads, "endpoints/downloads", diagnose, correct)
+		correct = diagnoseUrl(it.Endpoints["cloud-api"], "endpoints/cloud-api", diagnose, correct)
+		correct = diagnoseUrl(it.Endpoints["downloads"], "endpoints/downloads", diagnose, correct)
 	}
 	if correct {
 		diagnose.Ok("Toplevel settings are ok.")
@@ -128,17 +203,17 @@ func (it *Settings) Diagnostics(target *common.DiagnosticStatus) {
 		diagnose.Warning("", "settings.yaml: endpoints section is totally missing")
 		correct = false
 	} else {
-		correct = diagnoseUrl(it.Endpoints.CloudApi, "endpoints/cloud-api", diagnose, correct)
-		correct = diagnoseUrl(it.Endpoints.Downloads, "endpoints/downloads", diagnose, correct)
+		correct = diagnoseUrl(it.Endpoints["cloud-api"], "endpoints/cloud-api", diagnose, correct)
+		correct = diagnoseUrl(it.Endpoints["downloads"], "endpoints/downloads", diagnose, correct)
 
-		correct = diagnoseOptionalUrl(it.Endpoints.CloudUi, "endpoints/cloud-ui", diagnose, correct)
-		correct = diagnoseOptionalUrl(it.Endpoints.CloudLinking, "endpoints/cloud-linking", diagnose, correct)
-		correct = diagnoseOptionalUrl(it.Endpoints.Issues, "endpoints/issues", diagnose, correct)
-		correct = diagnoseOptionalUrl(it.Endpoints.Telemetry, "endpoints/telemetry", diagnose, correct)
-		correct = diagnoseOptionalUrl(it.Endpoints.Docs, "endpoints/docs", diagnose, correct)
-		correct = diagnoseOptionalUrl(it.Endpoints.Conda, "endpoints/conda", diagnose, correct)
-		correct = diagnoseOptionalUrl(it.Endpoints.Pypi, "endpoints/pypi", diagnose, correct)
-		correct = diagnoseOptionalUrl(it.Endpoints.PypiTrusted, "endpoints/pypi-trusted", diagnose, correct)
+		correct = diagnoseOptionalUrl(it.Endpoints["cloud-ui"], "endpoints/cloud-ui", diagnose, correct)
+		correct = diagnoseOptionalUrl(it.Endpoints["cloud-linking"], "endpoints/cloud-linking", diagnose, correct)
+		correct = diagnoseOptionalUrl(it.Endpoints["issues"], "endpoints/issues", diagnose, correct)
+		correct = diagnoseOptionalUrl(it.Endpoints["telemetry"], "endpoints/telemetry", diagnose, correct)
+		correct = diagnoseOptionalUrl(it.Endpoints["docs"], "endpoints/docs", diagnose, correct)
+		correct = diagnoseOptionalUrl(it.Endpoints["conda"], "endpoints/conda", diagnose, correct)
+		correct = diagnoseOptionalUrl(it.Endpoints["pypi"], "endpoints/pypi", diagnose, correct)
+		correct = diagnoseOptionalUrl(it.Endpoints["pypi-trusted"], "endpoints/pypi-trusted", diagnose, correct)
 	}
 	if it.Meta == nil {
 		diagnose.Warning("", "settings.yaml: meta section is totally missing")
@@ -153,17 +228,24 @@ type Certificates struct {
 	VerifySsl bool `yaml:"verify-ssl" json:"verify-ssl"`
 }
 
+func (it *Certificates) onTopOf(target *Settings) {
+	if target.Certificates == nil {
+		target.Certificates = &Certificates{}
+	}
+	target.Certificates.VerifySsl = it.VerifySsl
+}
+
 type Endpoints struct {
-	CloudApi     string `yaml:"cloud-api" json:"cloud-api"`
-	CloudLinking string `yaml:"cloud-linking" json:"cloud-linking"`
-	CloudUi      string `yaml:"cloud-ui" json:"cloud-ui"`
-	Conda        string `yaml:"conda" json:"conda"`
-	Docs         string `yaml:"docs" json:"docs"`
-	Downloads    string `yaml:"downloads" json:"downloads"`
-	Issues       string `yaml:"issues" json:"issues"`
-	Pypi         string `yaml:"pypi" json:"pypi"`
-	PypiTrusted  string `yaml:"pypi-trusted" json:"pypi-trusted"`
-	Telemetry    string `yaml:"telemetry" json:"telemetry"`
+	CloudApi     string `yaml:"cloud-api,omitempty" json:"cloud-api,omitempty"`
+	CloudLinking string `yaml:"cloud-linking,omitempty" json:"cloud-linking,omitempty"`
+	CloudUi      string `yaml:"cloud-ui,omitempty" json:"cloud-ui,omitempty"`
+	Conda        string `yaml:"conda,omitempty" json:"conda,omitempty"`
+	Docs         string `yaml:"docs,omitempty" json:"docs,omitempty"`
+	Downloads    string `yaml:"downloads,omitempty" json:"downloads,omitempty"`
+	Issues       string `yaml:"issues,omitempty" json:"issues,omitempty"`
+	Pypi         string `yaml:"pypi,omitempty" json:"pypi,omitempty"`
+	PypiTrusted  string `yaml:"pypi-trusted,omitempty" json:"pypi-trusted,omitempty"`
+	Telemetry    string `yaml:"telemetry,omitempty" json:"telemetry,omitempty"`
 }
 
 func justHostAndPort(link string) string {
@@ -206,8 +288,28 @@ func (it *Endpoints) Hostnames() []string {
 }
 
 type Meta struct {
-	Source  string `yaml:"source" json:"source"`
-	Version string `yaml:"version" json:"version"`
+	Name        string `yaml:"name" json:"name"`
+	Description string `yaml:"description" json:"description"`
+	Source      string `yaml:"source" json:"source"`
+	Version     string `yaml:"version" json:"version"`
+}
+
+func (it *Meta) onTopOf(target *Settings) {
+	if target.Meta == nil {
+		target.Meta = &Meta{}
+	}
+	if len(it.Name) > 0 {
+		target.Meta.Name = it.Name
+	}
+	if len(it.Description) > 0 {
+		target.Meta.Description = it.Description
+	}
+	if len(it.Source) > 0 {
+		target.Meta.Source = it.Source
+	}
+	if len(it.Version) > 0 {
+		target.Meta.Version = it.Version
+	}
 }
 
 type Network struct {
@@ -215,11 +317,38 @@ type Network struct {
 	HttpProxy  string `yaml:"http-proxy" json:"http-proxy"`
 }
 
+func (it *Network) onTopOf(target *Settings) {
+	if target.Network == nil {
+		target.Network = &Network{}
+	}
+	if len(it.HttpsProxy) > 0 {
+		target.Network.HttpsProxy = it.HttpsProxy
+	}
+	if len(it.HttpProxy) > 0 {
+		target.Network.HttpProxy = it.HttpProxy
+	}
+}
+
 type Profile struct {
 	Name        string    `yaml:"name" json:"name"`
 	Description string    `yaml:"description" json:"description"`
 	Settings    *Settings `yaml:"settings,omitempty" json:"settings,omitempty"`
-	Network     *Network  `yaml:"network,omitempty" json:"network,omitempty"`
-	Piprc       string    `yaml:"piprc,omitempty" json:"piprc,omitempty"`
-	Condarc     string    `yaml:"condarc,omitempty" json:"condarc,omitempty"`
+	PipRc       string    `yaml:"piprc,omitempty" json:"piprc,omitempty"`
+	CondaRc     string    `yaml:"condarc,omitempty" json:"condarc,omitempty"`
+}
+
+func (it *Profile) AsYaml() ([]byte, error) {
+	content, err := yaml.Marshal(it)
+	if err != nil {
+		return nil, err
+	}
+	return content, nil
+}
+
+func (it *Profile) SaveAs(filename string) error {
+	body, err := it.AsYaml()
+	if err != nil {
+		return err
+	}
+	return os.WriteFile(filename, body, 0o666)
 }

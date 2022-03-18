@@ -1,5 +1,13 @@
 # rcc change log
 
+## v11.9.2 (date: 18.3.2022) UNSTABLE
+
+- settings are now layered, so that partial custom settings.yaml also works
+- settings now have flat API interface, that is used instead of direct access
+- settings.yaml version upgrade with new fields (still incomplete)
+- endpoints in settings are now a map and not separate structure anymore
+- partial "demo" work on interactive configuration (work in progress)
+
 ## v11.9.1 (date: 10.3.2022) UNSTABLE
 
 - added condarc and piprc to be asked from user as configuration options

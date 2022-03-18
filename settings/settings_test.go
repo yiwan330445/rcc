@@ -20,3 +20,20 @@ func TestCanCallEntropyFunction(t *testing.T) {
 	must_be.Equal("https://robocorp.com/docs/hello.html", settings.Global.DocsLink("hello.html"))
 	must_be.Equal("https://robocorp.com/docs/products/manual.html", settings.Global.DocsLink("products/manual.html"))
 }
+
+func TestThatSomeDefaultValuesAreVisible(t *testing.T) {
+	must_be, wont_be := hamlet.Specifications(t)
+
+	sut, err := settings.SummonSettings()
+	must_be.Nil(err)
+	wont_be.Nil(sut)
+
+	must_be.Equal("https://api.eu1.robocorp.com/", settings.Global.DefaultEndpoint())
+	must_be.Equal("https://telemetry.robocorp.com/", settings.Global.TelemetryURL())
+	must_be.Equal("", settings.Global.PypiURL())
+	must_be.Equal("", settings.Global.PypiTrustedHost())
+	must_be.Equal("", settings.Global.CondaURL())
+	must_be.Equal("", settings.Global.HttpProxy())
+	must_be.Equal("", settings.Global.HttpsProxy())
+	must_be.Equal(10, len(settings.Global.Hostnames()))
+}

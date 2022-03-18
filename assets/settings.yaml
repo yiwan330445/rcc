@@ -24,11 +24,19 @@ autoupdates:
 
 certificates:
   verify-ssl: true
+  no-revocation: false
+  custom-cert: # no custom certificate by default
+
+network:
+  https-proxy: # no proxy by default
+  http-proxy: # no proxy by default
 
 branding:
   logo: https://downloads.robocorp.com/company/press-kit/logos/robocorp-logo-black.svg
   theme-color: FF0000
 
 meta:
+  name: default
+  description: default settings.yaml internal to rcc
   source: builtin
-  version: 2021.10
+  version: 2022.03

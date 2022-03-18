@@ -25,6 +25,7 @@ var (
 	httpTransport  *http.Transport
 	cachedSettings *Settings
 	Global         gateway
+	chain          SettingsLayers
 )
 
 func cacheSettings(result *Settings) (*Settings, error) {
@@ -46,30 +47,44 @@ func DefaultSettings() ([]byte, error) {
 	return blobs.Asset("assets/settings.yaml")
 }
 
-func rawSettings() (content []byte, location string, err error) {
-	if HasCustomSettings() {
-		location = SettingsFileLocation()
-		content, err = ioutil.ReadFile(location)
-		return content, location, err
-	} else {
-		content, err = DefaultSettings()
-		return content, "builtin", err
+func DefaultSettingsLayer() *Settings {
+	content, err := DefaultSettings()
+	pretty.Guard(err == nil, 111, "Could not read default settings, reason: %v", err)
+	config, err := FromBytes(content)
+	pretty.Guard(err == nil, 111, "Could not parse default settings, reason: %v", err)
+	return config
+}
+
+func CustomSettingsLayer() *Settings {
+	if !HasCustomSettings() {
+		return nil
 	}
+	content, err := ioutil.ReadFile(SettingsFileLocation())
+	pretty.Guard(err == nil, 111, "Could not read custom settings, reason: %v", err)
+	config, err := FromBytes(content)
+	pretty.Guard(err == nil, 111, "Could not parse custom settings, reason: %v", err)
+	return config
+}
+
+func TemporalSettingsLayer(filename string) error {
+	content, err := ioutil.ReadFile(filename)
+	if err != nil {
+		return err
+	}
+	config, err := FromBytes(content)
+	if err != nil {
+		return err
+	}
+	chain[2] = config
+	cachedSettings = nil
+	return nil
 }
 
 func SummonSettings() (*Settings, error) {
 	if cachedSettings != nil {
 		return cachedSettings, nil
 	}
-	content, source, err := rawSettings()
-	if err != nil {
-		return nil, err
-	}
-	config, err := FromBytes(content)
-	if err != nil {
-		return nil, err
-	}
-	return cacheSettings(config.Source(source))
+	return cacheSettings(chain.Effective())
 }
 
 func showDiagnosticsChecks(sink io.Writer, details *common.DiagnosticStatus) {
@@ -114,6 +129,18 @@ func resolveLink(link, page string) string {
 
 type gateway bool
 
+func (it gateway) Name() string {
+	config, err := SummonSettings()
+	pretty.Guard(err == nil, 111, "Could not get settings, reason: %v", err)
+	return config.Meta.Name
+}
+
+func (it gateway) Description() string {
+	config, err := SummonSettings()
+	pretty.Guard(err == nil, 111, "Could not get settings, reason: %v", err)
+	return config.Meta.Description
+}
+
 func (it gateway) TemplatesYamlURL() string {
 	config, err := SummonSettings()
 	pretty.Guard(err == nil, 111, "Could not get settings, reason: %v", err)
@@ -126,47 +153,59 @@ func (it gateway) Diagnostics(target *common.DiagnosticStatus) {
 	config.Diagnostics(target)
 }
 
-func (it gateway) Endpoints() *Endpoints {
+func (it gateway) Endpoint(key string) string {
 	config, err := SummonSettings()
 	pretty.Guard(err == nil, 111, "Could not get settings, reason: %v", err)
-	pretty.Guard(config.Endpoints != nil, 111, "settings.yaml: endpoints are missing")
-	return config.Endpoints
+	//pretty.Guard(config.Endpoints != nil, 111, "settings.yaml: endpoints are missing")
+	return config.Endpoints[key]
 }
 
 func (it gateway) DefaultEndpoint() string {
-	return it.Endpoints().CloudApi
+	return it.Endpoint("cloud-api")
 }
 
 func (it gateway) IssuesURL() string {
-	return it.Endpoints().Issues
+	return it.Endpoint("issues")
 }
 
 func (it gateway) TelemetryURL() string {
-	return it.Endpoints().Telemetry
+	return it.Endpoint("telemetry")
 }
 
 func (it gateway) PypiURL() string {
-	return it.Endpoints().Pypi
+	return it.Endpoint("pypi")
 }
 
 func (it gateway) PypiTrustedHost() string {
-	return justHostAndPort(it.Endpoints().PypiTrusted)
+	return justHostAndPort(it.Endpoint("pypi-trusted"))
 }
 
 func (it gateway) CondaURL() string {
-	return it.Endpoints().Conda
+	return it.Endpoint("conda")
+}
+
+func (it gateway) HttpsProxy() string {
+	config, err := SummonSettings()
+	pretty.Guard(err == nil, 111, "Could not get settings, reason: %v", err)
+	return config.Network.HttpsProxy
+}
+
+func (it gateway) HttpProxy() string {
+	config, err := SummonSettings()
+	pretty.Guard(err == nil, 111, "Could not get settings, reason: %v", err)
+	return config.Network.HttpProxy
 }
 
 func (it gateway) DownloadsLink(resource string) string {
-	return resolveLink(it.Endpoints().Downloads, resource)
+	return resolveLink(it.Endpoint("downloads"), resource)
 }
 
 func (it gateway) DocsLink(page string) string {
-	return resolveLink(it.Endpoints().Docs, page)
+	return resolveLink(it.Endpoint("docs"), page)
 }
 
 func (it gateway) PypiLink(page string) string {
-	endpoint := it.Endpoints().Pypi
+	endpoint := it.Endpoint("pypi")
 	if len(endpoint) == 0 {
 		endpoint = pypiDefault
 	}
@@ -174,7 +213,7 @@ func (it gateway) PypiLink(page string) string {
 }
 
 func (it gateway) CondaLink(page string) string {
-	endpoint := it.Endpoints().Conda
+	endpoint := it.Endpoint("conda")
 	if len(endpoint) == 0 {
 		endpoint = condaDefault
 	}
@@ -192,6 +231,11 @@ func (it gateway) ConfiguredHttpTransport() *http.Transport {
 }
 
 func init() {
+	chain = SettingsLayers{
+		DefaultSettingsLayer(),
+		CustomSettingsLayer(),
+		nil,
+	}
 	verifySsl := true
 	Global = gateway(true)
 	httpTransport = http.DefaultTransport.(*http.Transport).Clone()
