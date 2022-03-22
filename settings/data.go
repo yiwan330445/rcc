@@ -3,7 +3,6 @@ package settings
 import (
 	"encoding/json"
 	"net/url"
-	"os"
 	"sort"
 	"strings"
 
@@ -327,28 +326,4 @@ func (it *Network) onTopOf(target *Settings) {
 	if len(it.HttpProxy) > 0 {
 		target.Network.HttpProxy = it.HttpProxy
 	}
-}
-
-type Profile struct {
-	Name        string    `yaml:"name" json:"name"`
-	Description string    `yaml:"description" json:"description"`
-	Settings    *Settings `yaml:"settings,omitempty" json:"settings,omitempty"`
-	PipRc       string    `yaml:"piprc,omitempty" json:"piprc,omitempty"`
-	CondaRc     string    `yaml:"condarc,omitempty" json:"condarc,omitempty"`
-}
-
-func (it *Profile) AsYaml() ([]byte, error) {
-	content, err := yaml.Marshal(it)
-	if err != nil {
-		return nil, err
-	}
-	return content, nil
-}
-
-func (it *Profile) SaveAs(filename string) error {
-	body, err := it.AsYaml()
-	if err != nil {
-		return err
-	}
-	return os.WriteFile(filename, body, 0o666)
 }

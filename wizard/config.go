@@ -68,7 +68,7 @@ func Configure(arguments []string) error {
 		{"profile-description", "Give a short description of this profile", regexpValidation(anyPattern, "Description cannot be empty!")},
 		{"https-proxy", "URL for https proxy", regexpValidation(proxyPattern, "Must be empty or start with 'http' and should not contain spaces!")},
 		{"http-proxy", "URL for http proxy", regexpValidation(proxyPattern, "Must be empty or start with 'http' and should not contain spaces!")},
-		{"conda-rc", "Path to condarc file", optionalFileValidation("Value should be valid file in filesystem.")},
+		{"micromamba-rc", "Path to micromambarc file", optionalFileValidation("Value should be valid file in filesystem.")},
 		{"pip-rc", "Path to piprc/pip.ini file", optionalFileValidation("Value should be valid file in filesystem.")},
 	}, answers)
 	if err != nil {
@@ -96,9 +96,9 @@ func Configure(arguments []string) error {
 	profile.Settings.Meta.Name = name
 	profile.Settings.Meta.Description = answers["profile-description"]
 
-	blob, ok = pullFile(answers["conda-rc"])
+	blob, ok = pullFile(answers["micromamba-rc"])
 	if ok {
-		profile.CondaRc = string(blob)
+		profile.MicroMambaRc = string(blob)
 	}
 
 	blob, ok = pullFile(answers["pip-rc"])

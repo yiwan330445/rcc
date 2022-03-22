@@ -238,6 +238,7 @@ value there is `user`. Here it is up to user or application to decide their
 strategy of use of different names to separate environments to their logical
 used partitions. If you choose to use just defaults (user/user) then there
 is going to be only one real environment available.
+```
 
 But above three controls gives you good ways to control how you and your
 applications manage their usage of different python environments for
@@ -263,6 +264,62 @@ Identity            Controller  Space  Blueprint         Full path
 5a1fac3c5_9fcd2534  rcc.user    user   c34ed96c2d8a459a  /tmp/rchome/holotree/5a1fac3c5_9fcd2534
 9e7018022_2daaa295  rcc.tricks  tips   c34ed96c2d8a459a  /tmp/rchome/holotree/9e7018022_2daaa295
 ```
+
+### How to get understanding on holotree?
+
+See: https://github.com/robocorp/rcc/blob/master/docs/environment-caching.md
+
+### How to activate holotree environment?
+
+On Linux/MacOSX:
+
+```
+source <(rcc holotree variables --space mine --robot path/to/robot.yaml)
+```
+
+On Windows
+
+```
+rcc holotree variables --space mine --robot path/to/robot.yaml > mine_activate.bat
+call mine_activate.bat
+```
+
+You can also try
+
+```
+rcc task shell --robot path/to/robot.yaml
+```
+
+## What can be controlled using environment variables?
+
+- `ROBOCORP_HOME` points to directory where rcc keeps most of Robocorp related
+  files and directories are kept
+- `ROBOCORP_OVERRIDE_SYSTEM_REQUIREMENTS` makes rcc more relaxed on system
+  requirements (like long path support requirement on Windows) but it also
+  means that if set, responsibility of resolving failures are on user side
+- `RCC_VERBOSE_ENVIRONMENT_BUILDING` makes environment creation more verbose,
+  so that failing environment creation can be seen with more details
+- `RCC_CREDENTIALS_ID` is way to provide Control Room credentials using
+  environment variables
+
+## How to troubleshoot rcc setup and robots?
+
+```sh
+# to get generic setup diagnostics
+rcc configure diagnostics
+
+# to get robot and environment setup diagnostics
+rcc configure diagnostics --robot path/to/robot.yaml
+
+# to see how well rcc performs in your machine
+rcc configure speedtest
+```
+
+### Additional debugging options
+
+- generic flag `--debug` shows debug messages during execution
+- generic flag `--trace` shows more verbose debugging messages during execution
+- flag `--timeline` can be used to see execution timeline and where time was spent
 
 ## Where can I find updates for rcc?
 

@@ -7,7 +7,7 @@
 * easily run software robots (automations) based on declarative robot.yaml files
 * test robots in isolated environments before uploading them to Control Room
 * provide commands for Robocorp runtime and developer tools (Workforce Agent,
-  Assistant, Lab, Code, ...)
+  Assistant, Code, ...)
 * provides commands to communicate with Robocorp Control Room from command line
 * enable caching dormant environments in efficiently and activating them locally
   when required without need to reinstall anything

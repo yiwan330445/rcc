@@ -3,6 +3,7 @@ package cmd
 import (
 	"github.com/robocorp/rcc/common"
 	"github.com/robocorp/rcc/pretty"
+	"github.com/robocorp/rcc/settings"
 
 	"github.com/spf13/cobra"
 )
@@ -15,6 +16,11 @@ var configureImportCmd = &cobra.Command{
 		if common.DebugFlag {
 			defer common.Stopwatch("Configuration import lasted").Report()
 		}
+		profile := &settings.Profile{}
+		err := profile.LoadFrom(configFile)
+		pretty.Guard(err == nil, 1, "Error while loading profile: %v", err)
+		err = profile.Import()
+		pretty.Guard(err == nil, 2, "Error while importing profile: %v", err)
 		pretty.Ok()
 	},
 }

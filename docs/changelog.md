@@ -1,5 +1,10 @@
 # rcc change log
 
+## v11.9.3 (date: 22.3.2022) UNSTABLE
+
+- started to add real support for profile switching/importing
+- some documentation updates
+
 ## v11.9.2 (date: 18.3.2022) UNSTABLE
 
 - settings are now layered, so that partial custom settings.yaml also works

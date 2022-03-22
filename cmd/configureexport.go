@@ -8,8 +8,9 @@ import (
 )
 
 var (
-	configFile  string
-	profileName string
+	configFile   string
+	profileName  string
+	clearProfile bool
 )
 
 var configureExportCmd = &cobra.Command{
@@ -26,6 +27,6 @@ var configureExportCmd = &cobra.Command{
 
 func init() {
 	configureCmd.AddCommand(configureExportCmd)
-	configureExportCmd.Flags().StringVarP(&configFile, "filename", "f", "local_config.yaml", "The filename where configuration profile is exported.")
+	configureExportCmd.Flags().StringVarP(&configFile, "filename", "f", "exported_profile.yaml", "The filename where configuration profile is exported.")
 	configureExportCmd.Flags().StringVarP(&profileName, "profile", "p", "unknown", "The name of configuration profile to export.")
 }

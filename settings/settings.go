@@ -8,7 +8,6 @@ import (
 	"net/http"
 	"net/url"
 	"os"
-	"path/filepath"
 
 	"github.com/robocorp/rcc/blobs"
 	"github.com/robocorp/rcc/common"
@@ -35,12 +34,8 @@ func cacheSettings(result *Settings) (*Settings, error) {
 	return result, nil
 }
 
-func SettingsFileLocation() string {
-	return filepath.Join(common.RobocorpHome(), "settings.yaml")
-}
-
 func HasCustomSettings() bool {
-	return pathlib.IsFile(SettingsFileLocation())
+	return pathlib.IsFile(common.SettingsFile())
 }
 
 func DefaultSettings() ([]byte, error) {
@@ -59,19 +54,25 @@ func CustomSettingsLayer() *Settings {
 	if !HasCustomSettings() {
 		return nil
 	}
-	content, err := ioutil.ReadFile(SettingsFileLocation())
-	pretty.Guard(err == nil, 111, "Could not read custom settings, reason: %v", err)
-	config, err := FromBytes(content)
-	pretty.Guard(err == nil, 111, "Could not parse custom settings, reason: %v", err)
+	config, err := LoadSetting(common.SettingsFile())
+	pretty.Guard(err == nil, 111, "Could not load/parse custom settings, reason: %v", err)
 	return config
 }
 
-func TemporalSettingsLayer(filename string) error {
+func LoadSetting(filename string) (*Settings, error) {
 	content, err := ioutil.ReadFile(filename)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	config, err := FromBytes(content)
+	if err != nil {
+		return nil, err
+	}
+	return config, nil
+}
+
+func TemporalSettingsLayer(filename string) error {
+	config, err := LoadSetting(filename)
 	if err != nil {
 		return err
 	}
@@ -104,7 +105,7 @@ func CriticalEnvironmentSettingsCheck() {
 	config.CriticalEnvironmentDiagnostics(result)
 	diagnose := result.Diagnose("Settings")
 	if HasCustomSettings() {
-		diagnose.Ok("Uses custom settings at %q.", SettingsFileLocation())
+		diagnose.Ok("Uses custom settings at %q.", common.SettingsFile())
 	} else {
 		diagnose.Ok("Uses builtin settings.")
 	}
@@ -156,7 +157,6 @@ func (it gateway) Diagnostics(target *common.DiagnosticStatus) {
 func (it gateway) Endpoint(key string) string {
 	config, err := SummonSettings()
 	pretty.Guard(err == nil, 111, "Could not get settings, reason: %v", err)
-	//pretty.Guard(config.Endpoints != nil, 111, "settings.yaml: endpoints are missing")
 	return config.Endpoints[key]
 }
 

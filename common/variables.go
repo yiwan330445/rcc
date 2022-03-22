@@ -154,6 +154,18 @@ func MambaPackages() string {
 	return ExpandPath(filepath.Join(RobocorpHome(), "pkgs"))
 }
 
+func PipRcFile() string {
+	return ExpandPath(filepath.Join(RobocorpHome(), "piprc"))
+}
+
+func MicroMambaRcFile() string {
+	return ExpandPath(filepath.Join(RobocorpHome(), "micromambarc"))
+}
+
+func SettingsFile() string {
+	return ExpandPath(filepath.Join(RobocorpHome(), "settings.yaml"))
+}
+
 func UnifyVerbosityFlags() {
 	if Silent {
 		DebugFlag = false
