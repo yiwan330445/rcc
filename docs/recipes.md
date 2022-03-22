@@ -238,7 +238,6 @@ value there is `user`. Here it is up to user or application to decide their
 strategy of use of different names to separate environments to their logical
 used partitions. If you choose to use just defaults (user/user) then there
 is going to be only one real environment available.
-```
 
 But above three controls gives you good ways to control how you and your
 applications manage their usage of different python environments for

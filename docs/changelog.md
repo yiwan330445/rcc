@@ -1,5 +1,9 @@
 # rcc change log
 
+## v11.9.4 (date: 22.3.2022) UNSTABLE
+
+- profile exporting now works
+
 ## v11.9.3 (date: 22.3.2022) UNSTABLE
 
 - started to add real support for profile switching/importing

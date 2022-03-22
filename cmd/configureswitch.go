@@ -44,13 +44,18 @@ func listProfiles() {
 	common.Stdout("\n")
 }
 
-func switchProfileTo(name string) {
+func loadNamedProfile(name string) *settings.Profile {
 	filename := fmt.Sprintf("profile_%s.yaml", strings.ToLower(name))
 	fullpath := common.ExpandPath(filepath.Join(common.RobocorpHome(), filename))
-	profile := settings.Profile{}
+	profile := &settings.Profile{}
 	err := profile.LoadFrom(fullpath)
 	pretty.Guard(err == nil, 3, "Error while loading/parsing profile, reason: %v", err)
-	err = profile.Activate()
+	return profile
+}
+
+func switchProfileTo(name string) {
+	profile := loadNamedProfile(name)
+	err := profile.Activate()
 	pretty.Guard(err == nil, 4, "Error while activating profile, reason: %v", err)
 }
 

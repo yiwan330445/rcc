@@ -28,4 +28,6 @@ type Api interface {
 	ConfiguredHttpTransport() *http.Transport
 	HttpsProxy() string
 	HttpProxy() string
+	HasPipRc() bool
+	HasMicroMambaRc() bool
 }

@@ -21,6 +21,9 @@ var configureExportCmd = &cobra.Command{
 		if common.DebugFlag {
 			defer common.Stopwatch("Configuration export lasted").Report()
 		}
+		profile := loadNamedProfile(profileName)
+		err := profile.SaveAs(configFile)
+		pretty.Guard(err == nil, 1, "Error while exporting profile, reason: %v", err)
 		pretty.Ok()
 	},
 }
@@ -28,5 +31,6 @@ var configureExportCmd = &cobra.Command{
 func init() {
 	configureCmd.AddCommand(configureExportCmd)
 	configureExportCmd.Flags().StringVarP(&configFile, "filename", "f", "exported_profile.yaml", "The filename where configuration profile is exported.")
-	configureExportCmd.Flags().StringVarP(&profileName, "profile", "p", "unknown", "The name of configuration profile to export.")
+	configureExportCmd.Flags().StringVarP(&profileName, "profile", "p", "", "The name of configuration profile to export.")
+	configureExportCmd.MarkFlagRequired("profile")
 }

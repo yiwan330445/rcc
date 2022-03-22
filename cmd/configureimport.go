@@ -27,5 +27,6 @@ var configureImportCmd = &cobra.Command{
 
 func init() {
 	configureCmd.AddCommand(configureImportCmd)
-	configureImportCmd.Flags().StringVarP(&configFile, "filename", "f", "local_config.yaml", "The filename to import as configuration profile.")
+	configureImportCmd.Flags().StringVarP(&configFile, "filename", "f", "exported_profile.yaml", "The filename to import as configuration profile.")
+	configureImportCmd.MarkFlagRequired("filename")
 }

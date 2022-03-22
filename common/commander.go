@@ -14,9 +14,9 @@ func (it *Commander) Option(name, value string) *Commander {
 	return it
 }
 
-func (it *Commander) ConditionalFlag(condition bool, name string) *Commander {
+func (it *Commander) ConditionalFlag(condition bool, details ...string) *Commander {
 	if condition {
-		it.command = append(it.command, name)
+		it.command = append(it.command, details...)
 	}
 	return it
 }

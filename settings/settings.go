@@ -195,6 +195,13 @@ func (it gateway) HttpProxy() string {
 	pretty.Guard(err == nil, 111, "Could not get settings, reason: %v", err)
 	return config.Network.HttpProxy
 }
+func (it gateway) HasPipRc() bool {
+	return pathlib.IsFile(common.PipRcFile())
+}
+
+func (it gateway) HasMicroMambaRc() bool {
+	return pathlib.IsFile(common.MicroMambaRcFile())
+}
 
 func (it gateway) DownloadsLink(resource string) string {
 	return resolveLink(it.Endpoint("downloads"), resource)
