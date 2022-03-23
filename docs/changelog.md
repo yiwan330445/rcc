@@ -1,5 +1,11 @@
 # rcc change log
 
+## v11.9.5 (date: 23.3.2022) UNSTABLE
+
+- refactoring variables exporting into one place
+- adding `PIP_CONFIG_FILE`, `HTTP_PROXY`, and `HTTPS_PROXY` variables into
+  conda environment if they are configured
+
 ## v11.9.4 (date: 22.3.2022) UNSTABLE
 
 - profile exporting now works

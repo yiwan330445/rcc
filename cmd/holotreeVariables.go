@@ -90,11 +90,11 @@ func holotreeExpandEnvironment(userFiles []string, packfile, environment, worksp
 	}
 
 	common.Timeline("load robot environment")
-	env := conda.EnvironmentExtensionFor(path)
+	var env []string
 	if config != nil {
-		env = config.ExecutionEnvironment(path, extra, false)
+		env = config.RobotExecutionEnvironment(path, extra, false)
 	} else {
-		env = append(extra, env...)
+		env = conda.CondaExecutionEnvironment(path, extra, false)
 	}
 
 	if Has(workspace) {

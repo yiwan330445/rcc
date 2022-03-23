@@ -217,7 +217,7 @@ func ExecuteTask(flags *RunFlags, template []string, config robot.Robot, todo ro
 	}
 	task[0] = fullpath
 	directory := config.WorkingDirectory()
-	environment := config.ExecutionEnvironment(label, developmentEnvironment.AsEnvironment(), true)
+	environment := config.RobotExecutionEnvironment(label, developmentEnvironment.AsEnvironment(), true)
 	if len(data) > 0 {
 		endpoint := data["endpoint"]
 		for _, key := range rcHosts {

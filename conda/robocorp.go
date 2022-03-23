@@ -12,6 +12,7 @@ import (
 
 	"github.com/robocorp/rcc/common"
 	"github.com/robocorp/rcc/pathlib"
+	"github.com/robocorp/rcc/settings"
 	"github.com/robocorp/rcc/shell"
 	"github.com/robocorp/rcc/xviper"
 )
@@ -87,12 +88,18 @@ func FindPath(environment string) pathlib.PathParts {
 	return target
 }
 
-func EnvironmentExtensionFor(location string) []string {
-	environment := make([]string, 0, 20)
-	searchPath := HolotreePath(location)
-	python, ok := searchPath.Which("python3", FileExtensions)
+func CondaExecutionEnvironment(location string, inject []string, full bool) []string {
+	environment := make([]string, 0, 100)
+	if full {
+		environment = append(environment, os.Environ()...)
+	}
+	if inject != nil && len(inject) > 0 {
+		environment = append(environment, inject...)
+	}
+	holotreePath := HolotreePath(location)
+	python, ok := holotreePath.Which("python3", FileExtensions)
 	if !ok {
-		python, ok = searchPath.Which("python", FileExtensions)
+		python, ok = holotreePath.Which("python", FileExtensions)
 	}
 	if ok {
 		environment = append(environment, "PYTHON_EXE="+python)
@@ -112,16 +119,27 @@ func EnvironmentExtensionFor(location string) []string {
 		"RCC_ENVIRONMENT_HASH="+common.EnvironmentHash,
 		"RCC_INSTALLATION_ID="+xviper.TrackingIdentity(),
 		"RCC_TRACKING_ALLOWED="+fmt.Sprintf("%v", xviper.CanTrack()),
+		"RCC_VERSION="+common.Version,
 		"TEMP="+common.RobocorpTemp(),
 		"TMP="+common.RobocorpTemp(),
 		FindPath(location).AsEnvironmental("PATH"),
 	)
 	environment = append(environment, LoadActivationEnvironment(location)...)
+	environment = appendIfValue(environment, "https_proxy", settings.Global.HttpsProxy())
+	environment = appendIfValue(environment, "HTTPS_PROXY", settings.Global.HttpsProxy())
+	environment = appendIfValue(environment, "http_proxy", settings.Global.HttpProxy())
+	environment = appendIfValue(environment, "HTTP_PROXY", settings.Global.HttpProxy())
+	if settings.Global.HasPipRc() {
+		environment = appendIfValue(environment, "PIP_CONFIG_FILE", common.PipRcFile())
+	}
 	return environment
 }
 
-func EnvironmentFor(location string) []string {
-	return append(os.Environ(), EnvironmentExtensionFor(location)...)
+func appendIfValue(environment []string, key, value string) []string {
+	if len(value) > 0 {
+		return append(environment, key+"="+value)
+	}
+	return environment
 }
 
 func AsVersion(incoming string) (uint64, string) {

@@ -14,7 +14,6 @@ import (
 	"github.com/robocorp/rcc/common"
 	"github.com/robocorp/rcc/conda"
 	"github.com/robocorp/rcc/pathlib"
-	"github.com/robocorp/rcc/xviper"
 
 	"github.com/google/shlex"
 	"gopkg.in/yaml.v2"
@@ -46,7 +45,7 @@ type Robot interface {
 	Paths() pathlib.PathParts
 	PythonPaths() pathlib.PathParts
 	SearchPath(location string) pathlib.PathParts
-	ExecutionEnvironment(location string, inject []string, full bool) []string
+	RobotExecutionEnvironment(location string, inject []string, full bool) []string
 }
 
 type Task interface {
@@ -420,45 +419,14 @@ func (it *robot) SearchPath(location string) pathlib.PathParts {
 	return conda.FindPath(location).Prepend(it.Paths()...)
 }
 
-func (it *robot) ExecutionEnvironment(location string, inject []string, full bool) []string {
-	environment := make([]string, 0, 100)
-	if full {
-		environment = append(environment, os.Environ()...)
-	}
-	environment = append(environment, inject...)
-	holotreePath := conda.HolotreePath(location)
-	python, ok := holotreePath.Which("python3", conda.FileExtensions)
-	if !ok {
-		python, ok = holotreePath.Which("python", conda.FileExtensions)
-	}
-	if ok {
-		environment = append(environment, "PYTHON_EXE="+python)
-	}
-	searchPath := it.SearchPath(location)
-	environment = append(environment,
-		"CONDA_DEFAULT_ENV=rcc",
-		"CONDA_PREFIX="+location,
-		"CONDA_PROMPT_MODIFIER=(rcc) ",
-		"CONDA_SHLVL=1",
-		"PYTHONHOME=",
-		"PYTHONSTARTUP=",
-		"PYTHONEXECUTABLE=",
-		"PYTHONNOUSERSITE=1",
-		"PYTHONDONTWRITEBYTECODE=x",
-		"PYTHONPYCACHEPREFIX="+common.RobocorpTemp(),
-		"ROBOCORP_HOME="+common.RobocorpHome(),
-		"RCC_ENVIRONMENT_HASH="+common.EnvironmentHash,
-		"RCC_INSTALLATION_ID="+xviper.TrackingIdentity(),
-		"RCC_TRACKING_ALLOWED="+fmt.Sprintf("%v", xviper.CanTrack()),
-		"TEMP="+common.RobocorpTemp(),
-		"TMP="+common.RobocorpTemp(),
-		searchPath.AsEnvironmental("PATH"),
+func (it *robot) RobotExecutionEnvironment(location string, inject []string, full bool) []string {
+	environment := conda.CondaExecutionEnvironment(location, inject, full)
+	return append(environment,
+		it.SearchPath(location).AsEnvironmental("PATH"),
 		it.PythonPaths().AsEnvironmental("PYTHONPATH"),
 		fmt.Sprintf("ROBOT_ROOT=%s", it.WorkingDirectory()),
 		fmt.Sprintf("ROBOT_ARTIFACTS=%s", it.ArtifactDirectory()),
 	)
-	environment = append(environment, conda.LoadActivationEnvironment(location)...)
-	return environment
 }
 
 func (it *task) shellCommand() []string {

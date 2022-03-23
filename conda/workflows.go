@@ -33,7 +33,7 @@ func livePrepare(liveFolder string, command ...string) (*shell.Task, error) {
 	}
 	common.Debug("Using %v as command %v.", task, commandName)
 	command[0] = task
-	environment := EnvironmentFor(liveFolder)
+	environment := CondaExecutionEnvironment(liveFolder, nil, true)
 	return shell.New(environment, ".", command...), nil
 }
 
