@@ -166,6 +166,10 @@ func SettingsFile() string {
 	return ExpandPath(filepath.Join(RobocorpHome(), "settings.yaml"))
 }
 
+func CaBundleFile() string {
+	return ExpandPath(filepath.Join(RobocorpHome(), "ca-bundle.pem"))
+}
+
 func UnifyVerbosityFlags() {
 	if Silent {
 		DebugFlag = false

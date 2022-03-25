@@ -46,6 +46,9 @@ func Configure(arguments []string) error {
 	common.Stdout("\n")
 
 	note("You are now configuring a profile to be used in Robocorp toolchain.\n")
+	note("If you want to clear some value, try giving just one space as a value.\n")
+	note("If you want to use default value, just press enter.\n")
+
 	answers := make(answers)
 
 	warning(len(arguments) > 1, "You provided more than one argument, but only the first one will be\nused as the name.")
@@ -62,14 +65,19 @@ func Configure(arguments []string) error {
 	answers["profile-description"] = settings.Global.Description()
 	answers["https-proxy"] = settings.Global.HttpsProxy()
 	answers["http-proxy"] = settings.Global.HttpProxy()
+	answers["ssl-verify"] = fmt.Sprintf("%v", settings.Global.VerifySsl())
+	answers["ssl-no-revoke"] = fmt.Sprintf("%v", settings.Global.NoRevocation())
 
 	err = questionaire(questions{
 		{"profile-name", "Give profile a name", regexpValidation(namePattern, "Use just normal english word characters and no spaces!")},
 		{"profile-description", "Give a short description of this profile", regexpValidation(anyPattern, "Description cannot be empty!")},
 		{"https-proxy", "URL for https proxy", regexpValidation(proxyPattern, "Must be empty or start with 'http' and should not contain spaces!")},
 		{"http-proxy", "URL for http proxy", regexpValidation(proxyPattern, "Must be empty or start with 'http' and should not contain spaces!")},
-		{"micromamba-rc", "Path to micromambarc file", optionalFileValidation("Value should be valid file in filesystem.")},
-		{"pip-rc", "Path to piprc/pip.ini file", optionalFileValidation("Value should be valid file in filesystem.")},
+		{"ssl-verify", "Verify SSL certificated (ssl-verify)", memberValidation([]string{"true", "false"}, "Must be either true or false")},
+		{"ssl-no-revoke", "Do not check SSL revocations (ssl-no-revoke)", memberValidation([]string{"true", "false"}, "Must be either true or false")},
+		{"micromamba-rc", "Optional path to micromambarc file", optionalFileValidation("Value should be valid file in filesystem.")},
+		{"pip-rc", "Optional path to piprc/pip.ini file", optionalFileValidation("Value should be valid file in filesystem.")},
+		{"ca-bundle", "Optional path to CA bundle [pem format] file", optionalFileValidation("Value should be valid file in filesystem.")},
 	}, answers)
 	if err != nil {
 		return err
@@ -93,6 +101,11 @@ func Configure(arguments []string) error {
 		HttpProxy:  answers["http-proxy"],
 	}
 
+	profile.Settings.Certificates = &settings.Certificates{
+		VerifySsl:   answers["ssl-verify"] == "true",
+		SslNoRevoke: answers["ssl-no-revoke"] == "true",
+	}
+
 	profile.Settings.Meta.Name = name
 	profile.Settings.Meta.Description = answers["profile-description"]
 
@@ -106,8 +119,15 @@ func Configure(arguments []string) error {
 		profile.PipRc = string(blob)
 	}
 
-	// FIXME: following is just temporary "work in progress" save
-	profile.SaveAs(fmt.Sprintf("profile_%s.yaml", strings.ToLower(name)))
+	blob, ok = pullFile(answers["ca-bundle"])
+	if ok {
+		profile.CaBundle = string(blob)
+	}
+
+	profilename := fmt.Sprintf("profile_%s.yaml", strings.ToLower(name))
+	profile.SaveAs(profilename)
+
+	note(fmt.Sprintf("Saved profile into file %q.", profilename))
 
 	return nil
 }

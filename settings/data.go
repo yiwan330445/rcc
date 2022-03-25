@@ -224,7 +224,8 @@ func (it *Settings) Diagnostics(target *common.DiagnosticStatus) {
 }
 
 type Certificates struct {
-	VerifySsl bool `yaml:"verify-ssl" json:"verify-ssl"`
+	VerifySsl   bool `yaml:"verify-ssl" json:"verify-ssl"`
+	SslNoRevoke bool `yaml:"ssl-no-revoke" json:"ssl-no-revoke"`
 }
 
 func (it *Certificates) onTopOf(target *Settings) {

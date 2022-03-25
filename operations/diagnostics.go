@@ -84,6 +84,8 @@ func RunDiagnostics() *common.DiagnosticStatus {
 	result.Details["config-active-profile"] = settings.Global.Name()
 	result.Details["config-https-proxy"] = settings.Global.HttpsProxy()
 	result.Details["config-http-proxy"] = settings.Global.HttpProxy()
+	result.Details["config-ssl-verify"] = fmt.Sprintf("%v", settings.Global.VerifySsl())
+	result.Details["config-ssl-no-revoke"] = fmt.Sprintf("%v", settings.Global.NoRevocation())
 	result.Details["os"] = common.Platform()
 	result.Details["cpus"] = fmt.Sprintf("%d", runtime.NumCPU())
 	result.Details["when"] = time.Now().Format(time.RFC3339 + " (MST)")

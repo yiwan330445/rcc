@@ -125,12 +125,22 @@ func CondaExecutionEnvironment(location string, inject []string, full bool) []st
 		FindPath(location).AsEnvironmental("PATH"),
 	)
 	environment = append(environment, LoadActivationEnvironment(location)...)
+	if settings.Global.NoRevocation() {
+		environment = append(environment, "MAMBA_SSL_NO_REVOKE=true")
+	}
+	if settings.Global.VerifySsl() {
+		environment = append(environment, "MAMBA_SSL_VERIFY=false")
+	}
 	environment = appendIfValue(environment, "https_proxy", settings.Global.HttpsProxy())
 	environment = appendIfValue(environment, "HTTPS_PROXY", settings.Global.HttpsProxy())
 	environment = appendIfValue(environment, "http_proxy", settings.Global.HttpProxy())
 	environment = appendIfValue(environment, "HTTP_PROXY", settings.Global.HttpProxy())
 	if settings.Global.HasPipRc() {
 		environment = appendIfValue(environment, "PIP_CONFIG_FILE", common.PipRcFile())
+	}
+	if settings.Global.HasCaBundle() {
+		environment = appendIfValue(environment, "REQUESTS_CA_BUNDLE", common.CaBundleFile())
+		environment = appendIfValue(environment, "CURL_CA_BUNDLE", common.CaBundleFile())
 	}
 	return environment
 }

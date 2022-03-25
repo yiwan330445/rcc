@@ -130,34 +130,30 @@ func resolveLink(link, page string) string {
 
 type gateway bool
 
-func (it gateway) Name() string {
+func (it gateway) settings() *Settings {
 	config, err := SummonSettings()
 	pretty.Guard(err == nil, 111, "Could not get settings, reason: %v", err)
-	return config.Meta.Name
+	return config
+}
+
+func (it gateway) Name() string {
+	return it.settings().Meta.Name
 }
 
 func (it gateway) Description() string {
-	config, err := SummonSettings()
-	pretty.Guard(err == nil, 111, "Could not get settings, reason: %v", err)
-	return config.Meta.Description
+	return it.settings().Meta.Description
 }
 
 func (it gateway) TemplatesYamlURL() string {
-	config, err := SummonSettings()
-	pretty.Guard(err == nil, 111, "Could not get settings, reason: %v", err)
-	return config.Autoupdates["templates"]
+	return it.settings().Autoupdates["templates"]
 }
 
 func (it gateway) Diagnostics(target *common.DiagnosticStatus) {
-	config, err := SummonSettings()
-	pretty.Guard(err == nil, 111, "Could not get settings, reason: %v", err)
-	config.Diagnostics(target)
+	it.settings().Diagnostics(target)
 }
 
 func (it gateway) Endpoint(key string) string {
-	config, err := SummonSettings()
-	pretty.Guard(err == nil, 111, "Could not get settings, reason: %v", err)
-	return config.Endpoints[key]
+	return it.settings().Endpoints[key]
 }
 
 func (it gateway) DefaultEndpoint() string {
@@ -185,15 +181,11 @@ func (it gateway) CondaURL() string {
 }
 
 func (it gateway) HttpsProxy() string {
-	config, err := SummonSettings()
-	pretty.Guard(err == nil, 111, "Could not get settings, reason: %v", err)
-	return config.Network.HttpsProxy
+	return it.settings().Network.HttpsProxy
 }
 
 func (it gateway) HttpProxy() string {
-	config, err := SummonSettings()
-	pretty.Guard(err == nil, 111, "Could not get settings, reason: %v", err)
-	return config.Network.HttpProxy
+	return it.settings().Network.HttpProxy
 }
 func (it gateway) HasPipRc() bool {
 	return pathlib.IsFile(common.PipRcFile())
@@ -201,6 +193,10 @@ func (it gateway) HasPipRc() bool {
 
 func (it gateway) HasMicroMambaRc() bool {
 	return pathlib.IsFile(common.MicroMambaRcFile())
+}
+
+func (it gateway) HasCaBundle() bool {
+	return pathlib.IsFile(common.CaBundleFile())
 }
 
 func (it gateway) DownloadsLink(resource string) string {
@@ -228,9 +224,14 @@ func (it gateway) CondaLink(page string) string {
 }
 
 func (it gateway) Hostnames() []string {
-	config, err := SummonSettings()
-	pretty.Guard(err == nil, 111, "Could not get settings, reason: %v", err)
-	return config.Hostnames()
+	return it.settings().Hostnames()
+}
+func (it gateway) VerifySsl() bool {
+	return it.settings().Certificates.VerifySsl
+}
+
+func (it gateway) NoRevocation() bool {
+	return it.settings().Certificates.SslNoRevoke
 }
 
 func (it gateway) ConfiguredHttpTransport() *http.Transport {

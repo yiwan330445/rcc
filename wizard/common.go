@@ -11,6 +11,11 @@ import (
 	"github.com/robocorp/rcc/pretty"
 )
 
+const (
+	UNIX_NEWLINE    = "\n"
+	WINDOWS_NEWLINE = "\r\n"
+)
+
 var (
 	namePattern = regexp.MustCompile("^[\\w-]*$")
 )
@@ -18,6 +23,18 @@ var (
 type Validator func(string) bool
 
 type WizardFn func([]string) error
+
+func memberValidation(members []string, erratic string) Validator {
+	return func(input string) bool {
+		for _, member := range members {
+			if input == member {
+				return true
+			}
+		}
+		common.Stdout("%s%s%s\n\n", pretty.Red, erratic, pretty.Reset)
+		return false
+	}
+}
 
 func regexpValidation(validator *regexp.Regexp, erratic string) Validator {
 	return func(input string) bool {
@@ -68,12 +85,12 @@ func ask(question, defaults string, validator Validator) (string, error) {
 		if err != nil {
 			return "", err
 		}
+		if reply == UNIX_NEWLINE || reply == WINDOWS_NEWLINE {
+			reply = defaults
+		}
 		reply = strings.TrimSpace(reply)
 		if !validator(reply) {
 			continue
-		}
-		if len(reply) == 0 {
-			return defaults, nil
 		}
 		return reply, nil
 	}

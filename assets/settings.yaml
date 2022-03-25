@@ -24,8 +24,7 @@ autoupdates:
 
 certificates:
   verify-ssl: true
-  no-revocation: false
-  custom-cert: # no custom certificate by default
+  ssl-no-revoke: false
 
 network:
   https-proxy: # no proxy by default

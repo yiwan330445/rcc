@@ -18,6 +18,7 @@ type Profile struct {
 	Settings     *Settings `yaml:"settings,omitempty" json:"settings,omitempty"`
 	PipRc        string    `yaml:"piprc,omitempty" json:"piprc,omitempty"`
 	MicroMambaRc string    `yaml:"micromambarc,omitempty" json:"micromambarc,omitempty"`
+	CaBundle     string    `yaml:"ca-bundle,omitempty" json:"ca-bundle,omitempty"`
 }
 
 func (it *Profile) AsYaml() ([]byte, error) {
@@ -65,6 +66,8 @@ func (it *Profile) Activate() (err error) {
 	fail.On(err != nil, "Failed to save piprc, reason: %v", err)
 	err = saveIfBody(common.MicroMambaRcFile(), []byte(it.MicroMambaRc))
 	fail.On(err != nil, "Failed to save micromambarc, reason: %v", err)
+	err = saveIfBody(common.CaBundleFile(), []byte(it.CaBundle))
+	fail.On(err != nil, "Failed to save ca-bundle.pem, reason: %v", err)
 	return nil
 }
 
@@ -77,6 +80,8 @@ func (it *Profile) Remove() (err error) {
 	fail.On(err != nil, "Failed to remove micromambarc, reason: %v", err)
 	err = removeIfExists(common.SettingsFile())
 	fail.On(err != nil, "Failed to remove settings.yaml, reason: %v", err)
+	err = removeIfExists(common.CaBundleFile())
+	fail.On(err != nil, "Failed to remove ca-bundle.pem, reason: %v", err)
 	return nil
 }
 

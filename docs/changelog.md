@@ -1,5 +1,10 @@
 # rcc change log
 
+## v11.9.6 (date: 25.3.2022) UNSTABLE
+
+- adding more setting options and environment variables
+- added support for CA-bundles in pem format
+
 ## v11.9.5 (date: 23.3.2022) UNSTABLE
 
 - refactoring variables exporting into one place

@@ -30,4 +30,7 @@ type Api interface {
 	HttpProxy() string
 	HasPipRc() bool
 	HasMicroMambaRc() bool
+	HasCaBundle() bool
+	VerifySsl() bool
+	NoRevocation() bool
 }
