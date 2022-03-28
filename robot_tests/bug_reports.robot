@@ -11,7 +11,6 @@ Github issue 7 about initial call with do-not-track
   Must Have   anonymous health tracking is: disabled
 
 Bug in virtual holotree with gzipped files
-  [Tags]      WIP
   Step        build/rcc holotree blueprint --controller citests robot_tests/spellbug/conda.yaml
   Use STDERR
   Must Have   Blueprint "ef0163b57ff44cd5" is available: false

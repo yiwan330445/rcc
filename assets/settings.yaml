@@ -18,6 +18,7 @@ diagnostics-hosts:
 
 autoupdates:
   assistant: https://downloads.robocorp.com/assistant/releases/
+  automation-studio: https://downloads.robocorp.com/automation-studio/releases/
   workforce-agent: https://downloads.robocorp.com/workforce-agent/releases/
   lab: https://downloads.robocorp.com/lab/releases/
   templates: https://downloads.robocorp.com/templates/templates.yaml

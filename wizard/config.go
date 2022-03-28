@@ -8,6 +8,7 @@ import (
 
 	"github.com/robocorp/rcc/common"
 	"github.com/robocorp/rcc/pathlib"
+	"github.com/robocorp/rcc/pretty"
 	"github.com/robocorp/rcc/settings"
 )
 
@@ -45,8 +46,9 @@ func questionaire(questions questions, answers answers) error {
 func Configure(arguments []string) error {
 	common.Stdout("\n")
 
+	note("Read documentation at %shttps://github.com/robocorp/rcc/blob/master/docs/profile_configuration.md%s\n", pretty.Green, pretty.White)
 	note("You are now configuring a profile to be used in Robocorp toolchain.\n")
-	note("If you want to clear some value, try giving just one space as a value.\n")
+	note("If you want to clear some value, try giving just one space as a value.")
 	note("If you want to use default value, just press enter.\n")
 
 	answers := make(answers)
@@ -127,7 +129,14 @@ func Configure(arguments []string) error {
 	profilename := fmt.Sprintf("profile_%s.yaml", strings.ToLower(name))
 	profile.SaveAs(profilename)
 
-	note(fmt.Sprintf("Saved profile into file %q.", profilename))
+	note("Saved profile into file %q.\n", profilename)
+	note("Next steps:")
+	note("  1. command  `%srcc configuration import --filename %s%s`  imports created profile.", pretty.Grey, profilename, pretty.White)
+	note("  2. command  `%srcc configuration switch --profile %s%s`  switches to that profile.", pretty.Grey, name, pretty.White)
+	note("  3. command  `%srcc configuration diagnostics%s`  shows diagnostics with that configuration.", pretty.Grey, pretty.White)
+	note("  4. command  `%srcc configuration speedtest%s`  can verify full environment creation.", pretty.Grey, pretty.White)
+	note("  5. command  `%srcc interactive configuration %s%s`  runs this interactive command again.", pretty.Grey, name, pretty.White)
+	note("  6. command  `%srcc configuration switch --noprofile%s`  inactivates all profiles.\n", pretty.Grey, pretty.White)
 
 	return nil
 }

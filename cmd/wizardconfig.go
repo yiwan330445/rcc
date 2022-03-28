@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"github.com/robocorp/rcc/common"
-	"github.com/robocorp/rcc/operations"
 	"github.com/robocorp/rcc/pretty"
 	"github.com/robocorp/rcc/wizard"
 
@@ -24,10 +23,6 @@ var wizardConfigCommand = &cobra.Command{
 		err := wizard.Configure(args)
 		if err != nil {
 			pretty.Exit(2, "%v", err)
-		}
-		_, err = operations.ProduceDiagnostics("", "", false, true)
-		if err != nil {
-			pretty.Exit(3, "Error: %v", err)
 		}
 		pretty.Ok()
 	},

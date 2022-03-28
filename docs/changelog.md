@@ -1,5 +1,14 @@
 # rcc change log
 
+## v11.9.7 (date: 28.3.2022)
+
+- profiles should now be good enough to start testing them
+- interactive configuration now has instructions for next steps (kind of
+  scripted but not automated; copy-paste instructions)
+- added placeholder `docs/profile_configuration.md` for future documentation
+- settings.yaml now has Automation Studio autoupdate URL
+- added `robot_tests/profiles.robot` to test new functionality
+
 ## v11.9.6 (date: 25.3.2022) UNSTABLE
 
 - adding more setting options and environment variables

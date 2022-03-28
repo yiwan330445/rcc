@@ -2,6 +2,7 @@ package settings
 
 import (
 	"crypto/tls"
+	"crypto/x509"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -238,6 +239,25 @@ func (it gateway) ConfiguredHttpTransport() *http.Transport {
 	return httpTransport
 }
 
+func (it gateway) loadRootCAs() *x509.CertPool {
+	if !it.HasCaBundle() {
+		return nil
+	}
+	certificates, err := os.ReadFile(common.CaBundleFile())
+	if err != nil {
+		common.Log("Warning! Problem reading %q, reason: %v", common.CaBundleFile(), err)
+		return nil
+	}
+
+	roots := x509.NewCertPool()
+	ok := roots.AppendCertsFromPEM(certificates)
+	if !ok {
+		common.Log("Warning! Problem appending sertificated from %q.", common.CaBundleFile())
+		return nil
+	}
+	return roots
+}
+
 func init() {
 	chain = SettingsLayers{
 		DefaultSettingsLayer(),
@@ -251,7 +271,23 @@ func init() {
 	if err == nil && settings.Certificates != nil {
 		verifySsl = settings.Certificates.VerifySsl
 	}
-	if !verifySsl {
-		httpTransport.TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
+	proxyUrl := ""
+	if len(Global.HttpProxy()) > 0 {
+		proxyUrl = Global.HttpProxy()
+	}
+	if len(Global.HttpsProxy()) > 0 {
+		proxyUrl = Global.HttpsProxy()
+	}
+	if len(proxyUrl) > 0 {
+		link, err := url.Parse(proxyUrl)
+		if err != nil {
+			common.Log("Warning! Problem parsing proxy URL %q, reason: %v.", proxyUrl, err)
+		} else {
+			httpTransport.Proxy = http.ProxyURL(link)
+		}
+	}
+	httpTransport.TLSClientConfig = &tls.Config{
+		InsecureSkipVerify: !verifySsl,
+		RootCAs:            Global.loadRootCAs(),
 	}
 }
