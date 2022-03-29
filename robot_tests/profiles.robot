@@ -45,6 +45,17 @@ Goal: Can switch to Alpha profile
   Use STDERR
   Must Have   OK.
 
+Goal: Diagnostics can show alpha profile information
+  Step        build/rcc configuration diagnostics --json
+  Must Be Json Response
+  Must Have   "config-micromambarc-used": "false"
+  Must Have   "config-piprc-used": "false"
+  Must Have   "config-settings-yaml-used": "true"
+  Must Have   "config-ssl-no-revoke": "false"
+  Must Have   "config-ssl-verify": "true"
+  Must Have   "config-https-proxy": ""
+  Must Have   "config-http-proxy": ""
+
 Goal: Can switch to Beta profile
   Step        build/rcc configuration switch --profile Beta
   Use STDERR
@@ -55,6 +66,17 @@ Goal: Can switch to Beta profile
   Must Have   Currently active profile is: Beta
   Use STDERR
   Must Have   OK.
+
+Goal: Diagnostics can show beta profile information
+  Step        build/rcc configuration diagnostics --json
+  Must Be Json Response
+  Must Have   "config-micromambarc-used": "true"
+  Must Have   "config-piprc-used": "true"
+  Must Have   "config-settings-yaml-used": "true"
+  Must Have   "config-ssl-no-revoke": "true"
+  Must Have   "config-ssl-verify": "false"
+  Must Have   "config-https-proxy": "http://bad.betaputkinen.net:1234/"
+  Must Have   "config-http-proxy": "http://bad.betaputkinen.net:2345/"
 
 Goal: Can switch to no profile
   Step        build/rcc configuration switch --noprofile

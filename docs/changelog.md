@@ -1,5 +1,12 @@
 # rcc change log
 
+## v11.9.8 (date: 29.3.2022)
+
+- updated profile documentation
+- added integrity check on hololib to space extraction
+- more robot tests added
+- fixed ssl-no-revoke bug (found thru new robot tests)
+
 ## v11.9.7 (date: 28.3.2022)
 
 - profiles should now be good enough to start testing them

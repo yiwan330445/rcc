@@ -278,8 +278,17 @@ func DropFile(library Library, digest, sinkname string, details *File, rewrite [
 		sink, err := os.Create(partname)
 		anywork.OnErrPanicCloseAll(err)
 
-		_, err = io.Copy(sink, reader)
+		digester := sha256.New()
+		many := io.MultiWriter(sink, digester)
+
+		_, err = io.Copy(many, reader)
 		anywork.OnErrPanicCloseAll(err, sink)
+
+		hexdigest := fmt.Sprintf("%02x", digester.Sum(nil))
+		if digest != hexdigest {
+			err := fmt.Errorf("Corrupted hololib, expected %s, actual %s", digest, hexdigest)
+			anywork.OnErrPanicCloseAll(err, sink)
+		}
 
 		for _, position := range details.Rewrite {
 			_, err = sink.Seek(position, 0)

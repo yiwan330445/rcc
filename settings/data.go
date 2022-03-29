@@ -233,6 +233,7 @@ func (it *Certificates) onTopOf(target *Settings) {
 		target.Certificates = &Certificates{}
 	}
 	target.Certificates.VerifySsl = it.VerifySsl
+	target.Certificates.SslNoRevoke = it.SslNoRevoke
 }
 
 type Endpoints struct {
