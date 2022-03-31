@@ -128,6 +128,45 @@ rcc task script --silent -- pip list
 rcc task script --interactive -- ipython
 ```
 
+## How to convert existing python project to rcc?
+
+### Basic workflow to get it up and running
+
+1. Create a new robot using `rcc create` with `Basic Python template`.
+2. Remove task.py and and copy files from your existing project to this new
+   rcc/robot project.
+3. Discover all your publicly available dependencies (including your python
+   version) and try find as many as possible from https://anaconda.org/conda-forge/
+   and take rest from https://pypi.org/ and put those dependencies
+   into `conda.yaml`. And remove all those dependencies that you do not actually
+   need in your project.
+4. Do not add any private dependencies into `conda.yaml`, and also no passwords
+   in that `conda.yaml` either (passwords belong to secure place, like Vault).
+5. Modify your `robot.yaml` task definitions so, that it is how your python
+   project should be executed.
+6. If you have additional private libraries, put them inside robot directory
+   structure (like under `libraries` or something similar) and edit PYTHONPATH
+   settings in `robot.yaml` to include those paths (relative paths only).
+7. If you have additional scripts/small binaries that your robot dependes on,
+   add them inside robot directory structure (like under `scripts` directory)
+   and edit PATH settings in `robot.yaml` to include that (relative) path.
+8. If your python project needs external dependencies (like Word or Excel)
+   then those dependencies must be present in machine where robot is executed
+   and they are not part of this conversion.
+9. Run robot and test if it works, and iterate to make needed changes.
+
+### What next?
+
+* Your python project is now converted to rcc and should be locally "runnable".
+* Setup Assistant or Workforce Agent in your machine and create Assistant or
+  Robot in Robocorp Control Room, and try to run it from there.
+* If your robot is "headless", has all dependencies, and should be runnable
+  in Linux, then you can try to run it in container from Control Room.
+* If your project is python2 project, then consider converting it to python3.
+* If you want to use `rpaframework` in your robot (like dialogs for example),
+  then you have to start converting to use those features in your code.
+* etc.
+
 ## Is rcc limited to Python and Robot Framework?
 
 Absolutely not! Here is something completely different for you to think about.
@@ -272,20 +311,24 @@ See: https://github.com/robocorp/rcc/blob/master/docs/environment-caching.md
 
 On Linux/MacOSX:
 
-```
+```sh
+# full robot environment
 source <(rcc holotree variables --space mine --robot path/to/robot.yaml)
+
+# or with just conda.yaml
+source <(rcc holotree variables --space mine path/to/conda.yaml)
 ```
 
 On Windows
 
-```
+```sh
 rcc holotree variables --space mine --robot path/to/robot.yaml > mine_activate.bat
 call mine_activate.bat
 ```
 
 You can also try
 
-```
+```sh
 rcc task shell --robot path/to/robot.yaml
 ```
 

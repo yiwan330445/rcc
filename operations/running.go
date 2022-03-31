@@ -104,7 +104,7 @@ func LoadTaskWithEnvironment(packfile, theTask string, force bool) (bool, robot.
 
 	todo := config.TaskByName(theTask)
 	if todo == nil {
-		pretty.Exit(3, "Error: Could not resolve task to run. Available tasks are: %v", strings.Join(config.AvailableTasks(), ", "))
+		pretty.Exit(3, "Error: Could not resolve what task to run. Select one using --task option.\nAvailable task names are: %v.", strings.Join(config.AvailableTasks(), ", "))
 	}
 
 	if config.HasHolozip() && !common.UsesHolotree() {

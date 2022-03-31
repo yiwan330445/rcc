@@ -92,6 +92,7 @@ func Create(arguments []string) error {
 
 	common.Stdout("%s$ %scd %s%s\n", pretty.Grey, pretty.Cyan, robotName, pretty.Reset)
 	common.Stdout("%s$ %srcc run%s\n", pretty.Grey, pretty.Cyan, pretty.Reset)
+	common.Stdout("%s# or with name in case of multiple tasks in one robot\n$ %srcc run --task \"<name of tasks>\"%s\n", pretty.Grey, pretty.Cyan, pretty.Reset)
 	common.Stdout("\n")
 
 	return nil

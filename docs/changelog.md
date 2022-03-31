@@ -1,5 +1,12 @@
 # rcc change log
 
+## v11.9.9 (date: 31.3.2022)
+
+- updated interactive create with `--task` option alternative
+- updated run error message with `--task` option instructions
+- this closes #28
+- updated `recipes.md` with python conversion instructions
+
 ## v11.9.8 (date: 29.3.2022)
 
 - updated profile documentation
