@@ -1,5 +1,10 @@
 # rcc change log
 
+## v11.9.10 (date: 4.4.2022)
+
+- added current profile in JSON response from configuration switch command
+- fixing bugs and typos in code and texts
+
 ## v11.9.9 (date: 31.3.2022)
 
 - updated interactive create with `--task` option alternative

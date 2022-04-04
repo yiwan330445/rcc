@@ -31,6 +31,8 @@ Goal: Can see imported profiles
 Goal: Can see imported profiles as json
   Step        build/rcc configuration switch --json
   Must Be Json Response
+  Must Have   "current"
+  Must Have   "profiles"
   Must Have   "Alpha settings"
   Must Have   "Beta settings"
 

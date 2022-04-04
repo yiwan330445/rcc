@@ -17,19 +17,22 @@ func profileMap() map[string]string {
 	pattern := common.ExpandPath(filepath.Join(common.RobocorpHome(), "profile_*.yaml"))
 	found, err := filepath.Glob(pattern)
 	pretty.Guard(err == nil, 1, "Error while searching profiles: %v", err)
-	result := make(map[string]string)
+	profiles := make(map[string]string)
 	for _, name := range found {
 		profile := settings.Profile{}
 		err = profile.LoadFrom(name)
 		if err == nil {
-			result[profile.Name] = profile.Description
+			profiles[profile.Name] = profile.Description
 		}
 	}
-	return result
+	return profiles
 }
 
 func jsonListProfiles() {
-	content, err := operations.NiceJsonOutput(profileMap())
+	profiles := make(map[string]interface{})
+	profiles["profiles"] = profileMap()
+	profiles["current"] = settings.Global.Name()
+	content, err := operations.NiceJsonOutput(profiles)
 	pretty.Guard(err == nil, 1, "Error serializing profiles: %v", err)
 	common.Stdout("%s\n", content)
 }

@@ -55,12 +55,13 @@ func Configure(arguments []string) error {
 
 	warning(len(arguments) > 1, "You provided more than one argument, but only the first one will be\nused as the name.")
 
-	filename, err := ask("Path to (otional) settings.yaml", "", optionalFileValidation("Value should be valid file in filesystem."))
+	filename, err := ask("Path to (optional) settings.yaml", "", optionalFileValidation("Value should be valid file in filesystem."))
 	if err != nil {
 		return err
 	}
 	if len(filename) > 0 {
 		settings.TemporalSettingsLayer(filename)
+		answers["settings-yaml"] = filename
 	}
 
 	answers["profile-name"] = firstOf(arguments, settings.Global.Name())
@@ -72,7 +73,7 @@ func Configure(arguments []string) error {
 
 	err = questionaire(questions{
 		{"profile-name", "Give profile a name", regexpValidation(namePattern, "Use just normal english word characters and no spaces!")},
-		{"profile-description", "Give a short description of this profile", regexpValidation(anyPattern, "Description cannot be empty!")},
+		{"profile-description", "Give a short description for this profile", regexpValidation(anyPattern, "Description cannot be empty!")},
 		{"https-proxy", "URL for https proxy", regexpValidation(proxyPattern, "Must be empty or start with 'http' and should not contain spaces!")},
 		{"http-proxy", "URL for http proxy", regexpValidation(proxyPattern, "Must be empty or start with 'http' and should not contain spaces!")},
 		{"ssl-verify", "Verify SSL certificated (ssl-verify)", memberValidation([]string{"true", "false"}, "Must be either true or false")},
