@@ -1,5 +1,6 @@
 # Tips, tricks, and recipies
 
+
 ## How to see dependency changes?
 
 Since version 10.2.2, rcc can show dependency listings using
@@ -42,6 +43,7 @@ rcc robot dependencies --space user --export
 rcc robot dependencies --space user
 ```
 
+
 ## How to freeze dependencies?
 
 Starting from rcc 10.3.2, there is now possibility to freeze dependencies.
@@ -75,6 +77,7 @@ This is how you can experiment with it.
 - for better visibility on configuration drift, you should also have
   `dependencies.yaml` inside your robot (see other recipe for it)
 
+
 ## How pass arguments to robot from CLI?
 
 Since version 9.15.0, rcc supports passing arguments from CLI to underlying
@@ -107,6 +110,7 @@ ignoreFiles:
 rcc task run --interactive --task scripting -- --loglevel TRACE --variable answer:42 tasks.robot
 ```
 
+
 ## How to run any command inside robot environment?
 
 Since version 9.20.0, rcc now supports running any command inside robot space
@@ -127,6 +131,7 @@ rcc task script --silent -- pip list
 # start interactive ipython session
 rcc task script --interactive -- ipython
 ```
+
 
 ## How to convert existing python project to rcc?
 
@@ -166,6 +171,7 @@ rcc task script --interactive -- ipython
 * If you want to use `rpaframework` in your robot (like dialogs for example),
   then you have to start converting to use those features in your code.
 * etc.
+
 
 ## Is rcc limited to Python and Robot Framework?
 
@@ -259,6 +265,7 @@ mkdir -p output
 cp target/build/micromamba output/micromamba-$version
 ```
 
+
 ## How to control holotree environments?
 
 There is three controlling factors for where holotree spaces are created.
@@ -332,6 +339,7 @@ You can also try
 rcc task shell --robot path/to/robot.yaml
 ```
 
+
 ## What can be controlled using environment variables?
 
 - `ROBOCORP_HOME` points to directory where rcc keeps most of Robocorp related
@@ -343,6 +351,7 @@ rcc task shell --robot path/to/robot.yaml
   so that failing environment creation can be seen with more details
 - `RCC_CREDENTIALS_ID` is way to provide Control Room credentials using
   environment variables
+
 
 ## How to troubleshoot rcc setup and robots?
 
@@ -363,6 +372,233 @@ rcc configure speedtest
 - generic flag `--trace` shows more verbose debugging messages during execution
 - flag `--timeline` can be used to see execution timeline and where time was spent
 
+
+## What is in `robot.yaml`?
+
+### Example
+
+```yaml
+tasks:
+  Just a task:
+    robotTaskName: Just a task
+  Version command:
+    shell: python -m robot --version
+  Multiline command:
+    command:
+      - python
+      - -m
+      - robot
+      - --report
+      - NONE
+      - -d
+      - output
+      - --logtitle
+      - Task log
+      - tasks.robot
+
+condaConfigFile: conda.yaml
+
+environmentConfigs:
+- environment_linux_amd64_freeze.yaml
+- environment_windows_amd64_freeze.yaml
+- common_linux_amd64.yaml
+- common_windows_amd64.yaml
+- common_linux.yaml
+- common_windows.yaml
+- conda.yaml
+
+preRunScripts:
+- privatePipInstall.sh
+- initializeKeystore.sh
+
+artifactsDir: output
+
+ignoreFiles:
+- .gitignore
+
+PATH:
+- .
+- bin
+
+PYTHONPATH:
+- .
+- libraries
+```
+
+### What is this `robot.yaml` thing?
+
+It is declarative description in [YAML format](https://en.wikipedia.org/wiki/YAML)
+of what robot is and what it can do.
+
+It is also a pointer to "a robot center of universe" for directory it resides.
+So it is marker of "current working folder" when robot starts to execute and
+that will be indicated in `ROBOT_ROOT` environment variable. All declarations
+inside `robot.yaml` should be relative to this location, so do not use
+absolute paths here.
+
+Also note that `robot.yaml` is just a name of a file. Other names can be used
+and then given to commands using `--robot othername.yaml` CLI option.
+
+### What are `tasks:`?
+
+One robot can do multiple tasks. Each task is a single declaration of named
+task that robot can do.
+
+There are three types of task declarations:
+
+1. The `robotTaskName` form, which is simplest and there only name of a task
+   is given. In above example `Just a task` is a such thing. This is Robot
+   Framework specific form.
+2. The `shell` form, where full CLI command is given as oneliner. In above
+   example, `Version command` is example of this.
+3. The `command` form is oldest. It is given as list of command and its
+   arguments, and it is most accurate way to declare CLI form, but it is also
+   most spacious form.
+
+### What is `condaConfigFile:`?
+
+This is actual name used as `conda.yaml` environment configuration file.
+See next topic about details of `conda.yaml` file.
+This is just single file that describes dependencies for all operating systems.
+For more versatile selection, see `environmentConfigs` below. If that
+`environmentConfigs` exists and one of those files matches machine running
+rcc, then this config is ignored.
+
+### What are `environmentConfigs:`?
+
+These are like condaConfigFile above, but as priority list form. First matching
+and existing item from that list is used as environment configuration file.
+
+These files are matched by operating system (windows/darwin/linux) and by
+architecture (amd64/arm64). If filename contains word "freeze", it must
+match OS and architecture exactly. Other variations allow just some or none
+of those parts.
+
+And if there is no such file, then those entries are just ignored. And if
+none of files match or exist, then as final resort, `condaConfigFile` value
+is used if present.
+
+### What are `preRunScripts:`?
+
+This is set of scripts or commands that are run before actual robot task
+execution. Idea with these scripts is that they can be used to customize
+runtime environment right after it has been restored from hololib, and just
+before actual robot execution is done.
+
+All these scripts are run in "robot" context with all same environment
+variables available as in robot run.
+
+These scripts can pollute the environment, and it is ok. Next rcc operation
+on same holotree space will first do the cleanup though.
+
+All scripts must be executed successfully or otherwise full robot run is
+considered failure and not even tried. Scripts should use exit code zero
+to indicate success and everything else is failure.
+
+Some ideas for scripts could be:
+
+- install custom packages from private pip repository
+- use Vault secrets to prepare system for actual robot run
+- setup and customize used tools with secret or other private details that
+  should not be visible inside hololib catalogs (public caches etc)
+
+### What is `artifactsDir:`?
+
+This is location of technical artifacts, like log and freezefiles, that are
+created during robot execution and which can be used to find out technical
+details about run afterwards. Do not confuse these with work-item data, which
+are more business related and do not belong here.
+
+During robot run, this locations is available using `ROBOT_ARTIFACTS`
+environment variable, if you want to store some additional artifacts there.
+
+### What are `ignoreFiles:`?
+
+These files are patterns of file and directory names that should not be
+stored insided wrapped robots (robot.zip files). Patterns are like git
+ignore patterns but less powerful.
+
+### What are `PATH:`?
+
+This allows adding entries into `PATH` environment variable. Intention
+is to allow something like `bin` directory inside robot, where custom
+scripts and binaries can be located and available for execution during
+robot run.
+
+### What are `PYTHONPATH:`?
+
+This allows adding entries into `PYTHONPATH` environment variable. Intention
+is to allow something like `libraries` directory inside robot, where custom
+libraries can be located and automatically loaded by python and robot.
+
+
+## What is in `conda.yaml`?
+
+### Example
+
+```yaml
+channels:
+- conda-forge
+
+dependencies:
+- python=3.7.5
+- nodejs=16.14.2
+- pip=20.1
+- pip:
+  - robotframework-browser==12.3.0
+  - rpaframework==13.0.0
+
+rccPostInstall:
+  - rfbrowser init
+```
+
+### What is this `conda.yaml` thing?
+
+It is declarative description in [YAML format](https://en.wikipedia.org/wiki/YAML)
+of environment that should be set up.
+
+### What are `channels:`?
+
+Channels are conda sources where to get packages to be used in setting up
+environment. It is recommended to use `conda-forge` channel, but there are
+others also. Other recommendation is that only one channel is used, to get
+consistently build environments.
+
+Channels should be in priority order, where first one has highest priority.
+
+Example above uses `conda-forge` as its only channel.
+For more details about conda-forge, see this [link.](https://anaconda.org/conda-forge)
+
+### What are `dependencies:`?
+
+These are libraries that are needed to be installed in environment that is
+declared in this `conda.yaml` file. By default they come from locations
+setup in `channels:` part of file.
+
+But there is also `- pip:` part and those dependenies come from
+[PyPI](https://pypi.org/) and they are installed after dependencies from
+`channels:` have been installed.
+
+In above example, `python=3.7.5` comes from `conda-forge` channel.
+And `rpaframework==13.0.0` comes from [PyPI](https://pypi.org/project/rpaframework/).
+
+### What are `rccPostInstall:` scripts?
+
+Once environment dependencies have been installed, but before it is frozen as
+hololib catalog, there is option to run some additional commands to customize
+that environment. It is list of "shell" commands that are executed in order,
+and if any of those fail, environment creation will fail.
+
+All those scripts must come from package declared in `dependencies:` section,
+and should not use any "local" knowledge outside of environment under
+construction. This makes environment creation repeatable and cacheable.
+
+Do not use any private or sensitive information in those post install scripts,
+since result of environment build could be cached and visible to everybody
+who has access to that cache. If you need to have private or sensitive packages
+in your environment, see `preRunScripts` in `robot.yaml` file.
+
+
 ## Where can I find updates for rcc?
 
 https://downloads.robocorp.com/rcc/releases/index.html
@@ -370,6 +606,7 @@ https://downloads.robocorp.com/rcc/releases/index.html
 That is rcc download site with two categories of:
 - tested versions (these are ones we ship with our tools)
 - latest 20 versions (which are not battle tested yet, but are bleeding edge)
+
 
 ## What has changed on rcc?
 
@@ -382,6 +619,7 @@ https://github.com/robocorp/rcc/blob/master/docs/changelog.md
 ```sh
 rcc docs changelog
 ```
+
 
 ## Can I see these tips as web page?
 

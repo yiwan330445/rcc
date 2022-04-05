@@ -1,5 +1,9 @@
 # rcc change log
 
+## v11.9.11 (date: 5.4.2022)
+
+- documentation updates
+
 ## v11.9.10 (date: 4.4.2022)
 
 - added current profile in JSON response from configuration switch command

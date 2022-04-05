@@ -1,5 +1,27 @@
 # Profile Configuration
 
+## What is profile?
+
+Profile is way to capture configuration information related to specific
+network location. System can have multiple profiles defined, but only one
+can be active at any moment.
+
+### When do you need profiles?
+
+- if you are in restricted network where direct network access is not available
+- if you are working in multiple locations with different access policies
+  (for example switching between office, hotel, airport, or remote locations)
+- if you want to share your working setup with others in same network
+
+### What does it contain?
+
+- information from `settings.yaml` (can be partial)
+- configuration for micromamba ("micromambarc" is almost like "condarc")
+- configuration for pip (pip.ini or piprc)
+- root certificate bundle in pem format
+- proxy settings (`HTTP_PROXY` and `HTTPS_PROXY`)
+- options for `ssl-verify` and `ssl-no-revoke`
+
 ## Quick start guide
 
 ```sh
@@ -27,7 +49,7 @@ rcc configuration export --profile Office --filename shared.yaml
 
 ## What is needed?
 
-- you need rcc 11.9.7 or later
+- you need rcc 11.9.10 or later
 - your existing `settings.yaml` file (optional)
 - your existing `micromambarc` file (optional)
 - your existing `pip.ini` file (optional)
