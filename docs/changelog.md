@@ -1,5 +1,9 @@
 # rcc change log
 
+## v11.9.15 (date: 6.4.2022)
+
+- improved table of contents with more clearer numbering
+
 ## v11.9.14 (date: 6.4.2022)
 
 - improved table of contents with numbering

@@ -3,7 +3,7 @@
 import glob
 import re
 
-NONCHAR_PATTERN = re.compile(r'[^a-z]+')
+NONCHAR_PATTERN = re.compile(r'[^.a-z-]+')
 HEADING_PATTERN = re.compile(r'^\s*(#{1,3})\s+(.*?)\s*$')
 CODE_PATTERN = re.compile(r'^\s*[`]{3}')
 
@@ -26,8 +26,8 @@ PRIORITY_LIST = (
         )
 
 def unify(value):
-    low = str(value).lower().replace('.', '')
-    return DASH.join(filter(bool, NONCHAR_PATTERN.split(low)))
+    low = str(value).lower()
+    return DASH.join(filter(bool, NONCHAR_PATTERN.split(low))).replace('.', '')
 
 class Toc:
     def __init__(self, title, baseurl):
@@ -52,7 +52,7 @@ class Toc:
         url = f'{self.baseurl}{filename}'
         prefix = '#' * level
         ref = unify(title)
-        self.toc.append(f'#{prefix} [{numbering} {title}]({self.baseurl}{filename}#{ref})')
+        self.toc.append(f'#{prefix} {numbering} [{title}]({self.baseurl}{filename}#{ref})')
 
     def write(self, filename):
         with open(filename, 'w+') as sink:
