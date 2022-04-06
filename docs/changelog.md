@@ -1,5 +1,10 @@
 # rcc change log
 
+## v11.9.13 (date: 6.4.2022)
+
+- added new script for generating table of contents for docs
+- generated first table of contents as `docs/README.md` file
+
 ## v11.9.12 (date: 6.4.2022)
 
 - added new `rcc man profiles` documentation command
