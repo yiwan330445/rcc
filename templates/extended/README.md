@@ -11,12 +11,12 @@ Run the robot locally:
 rcc run
 ```
 
-Provide access credentials for Robocorp Cloud connectivity:
+Provide access credentials for Robocorp Control Room connectivity:
 ```
 rcc configure credentials <your_credentials>
 ```
 
-Upload to Robocorp Cloud:
+Upload to Robocorp Control Room:
 ```
 rcc cloud push --workspace <workspace_id> --robot <robot_id>
 ```

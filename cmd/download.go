@@ -11,8 +11,8 @@ import (
 
 var downloadCmd = &cobra.Command{
 	Use:   "download",
-	Short: "Fetch an existing robot from Robocorp Cloud.",
-	Long:  "Fetch an existing robot from Robocorp Cloud.",
+	Short: "Fetch an existing robot from Robocorp Control Room.",
+	Long:  "Fetch an existing robot from Robocorp Control Room.",
 	Run: func(cmd *cobra.Command, args []string) {
 		if common.DebugFlag {
 			defer common.Stopwatch("Download lasted").Report()

@@ -11,8 +11,8 @@ import (
 
 var uploadCmd = &cobra.Command{
 	Use:   "upload",
-	Short: "Push an existing robot to Robocorp Cloud.",
-	Long:  "Push an existing robot to Robocorp Cloud.",
+	Short: "Push an existing robot to Robocorp Control Room.",
+	Long:  "Push an existing robot to Robocorp Control Room.",
 	Run: func(cmd *cobra.Command, args []string) {
 		if common.DebugFlag {
 			defer common.Stopwatch("Upload lasted").Report()

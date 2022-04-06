@@ -11,8 +11,8 @@ import (
 
 var newCloudCmd = &cobra.Command{
 	Use:   "new",
-	Short: "Create a new robot into Robocorp Cloud.",
-	Long:  "Create a new robot into Robocorp Cloud.",
+	Short: "Create a new robot into Robocorp Control Room.",
+	Long:  "Create a new robot into Robocorp Control Room.",
 	Run: func(cmd *cobra.Command, args []string) {
 		if common.DebugFlag {
 			defer common.Stopwatch("New robot creation lasted").Report()

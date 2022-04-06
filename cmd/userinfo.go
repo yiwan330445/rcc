@@ -14,8 +14,8 @@ import (
 var userinfoCmd = &cobra.Command{
 	Use:     "userinfo",
 	Aliases: []string{"user"},
-	Short:   "Query user information from Robocorp Cloud.",
-	Long:    "Query user information from Robocorp Cloud.",
+	Short:   "Query user information from Robocorp Control Room.",
+	Long:    "Query user information from Robocorp Control Room.",
 	Run: func(cmd *cobra.Command, args []string) {
 		if common.DebugFlag {
 			defer common.Stopwatch("Userinfo query lasted").Report()

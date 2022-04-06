@@ -15,8 +15,8 @@ import (
 
 var pushCmd = &cobra.Command{
 	Use:   "push",
-	Short: "Wrap the local directory and push it into Robocorp Cloud as a specific robot.",
-	Long:  "Wrap the local directory and push it into Robocorp Cloud as a specific robot.",
+	Short: "Wrap the local directory and push it into Robocorp Control Room as a specific robot.",
+	Long:  "Wrap the local directory and push it into Robocorp Control Room as a specific robot.",
 	Run: func(cmd *cobra.Command, args []string) {
 		if common.DebugFlag {
 			defer common.Stopwatch("Push lasted").Report()

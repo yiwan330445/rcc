@@ -12,6 +12,7 @@
   for ideas what is available)
 * provide above things in computers, where internet access is restricted or
   prohibited (using pre-made hololib.zip environments)
+* pull and run community created robots without Control Room requirement
 
 ## What is available from conda-forge?
 

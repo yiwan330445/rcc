@@ -56,7 +56,7 @@ var rootCmd = &cobra.Command{
 	Use:   "rcc",
 	Short: "rcc is environment manager for Robocorp Automation Stack",
 	Long: `rcc provides support for creating and managing tasks,
-communicating with Robocorp Cloud, and managing virtual environments where
+communicating with Robocorp Control Room, and managing virtual environments where
 tasks can be developed, debugged, and run.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		commandTree(0, "", cmd.Root())

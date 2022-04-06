@@ -11,3 +11,8 @@
 * provides commands to communicate with Robocorp Control Room from command line
 * enable caching dormant environments in efficiently and activating them locally
   when required without need to reinstall anything
+* diagnose robots and network settings to see if there is something that prevents
+  using robots in specific environment
+* support multiple configuration profiles for different network locations and
+  conditions (remote, office, restricted networks, ...)
+* running assistants from command line

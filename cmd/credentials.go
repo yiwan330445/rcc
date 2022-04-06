@@ -18,8 +18,8 @@ var (
 
 var credentialsCmd = &cobra.Command{
 	Use:   "credentials [credentials]",
-	Short: "Manage Robocorp Cloud API credentials.",
-	Long:  "Manage Robocorp Cloud API credentials for later use.",
+	Short: "Manage Robocorp Control Room API credentials.",
+	Long:  "Manage Robocorp Control Room API credentials for later use.",
 	Args:  cobra.MaximumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		if common.DebugFlag {
@@ -54,7 +54,7 @@ var credentialsCmd = &cobra.Command{
 		}
 		parts := strings.Split(credentials, ":")
 		if len(parts) != 2 {
-			pretty.Exit(1, "Error: No valid credentials detected. Copy them from Robocorp Cloud.")
+			pretty.Exit(1, "Error: No valid credentials detected. Copy them from Robocorp Control Room.")
 		}
 		common.Log("Adding credentials: %v", parts)
 		operations.UpdateCredentials(account, https, parts[0], parts[1])
@@ -80,9 +80,9 @@ func localDelete(accountName string) {
 func init() {
 	configureCmd.AddCommand(credentialsCmd)
 
-	credentialsCmd.Flags().BoolVarP(&deleteCredentialsFlag, "delete", "", false, "Delete this account and corresponding Cloud credentials! DANGER!")
+	credentialsCmd.Flags().BoolVarP(&deleteCredentialsFlag, "delete", "", false, "Delete this account and corresponding Control Room credentials! DANGER!")
 	credentialsCmd.Flags().BoolVarP(&defaultFlag, "default", "d", false, "Set this as the default account.")
 	credentialsCmd.Flags().BoolVarP(&jsonFlag, "json", "j", false, "Output in JSON format.")
 	credentialsCmd.Flags().BoolVarP(&verifiedFlag, "verified", "v", false, "Updates the verified timestamp, if the credentials are still active.")
-	credentialsCmd.Flags().StringVarP(&endpointUrl, "endpoint", "e", "", "Robocorp Cloud endpoint used with the given account (or default).")
+	credentialsCmd.Flags().StringVarP(&endpointUrl, "endpoint", "e", "", "Robocorp Control Room endpoint used with the given account (or default).")
 }

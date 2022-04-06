@@ -1,5 +1,11 @@
 # rcc change log
 
+## v11.9.12 (date: 6.4.2022)
+
+- added new `rcc man profiles` documentation command
+- more documentation updates
+- `Robocorp Cloud` to `Robocorp Control Room` related documentation changes
+
 ## v11.9.11 (date: 5.4.2022)
 
 - documentation updates

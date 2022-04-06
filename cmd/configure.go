@@ -14,5 +14,5 @@ var configureCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(configureCmd)
 
-	configureCmd.PersistentFlags().StringVarP(&accountName, "account", "a", "", "Account used for Robocorp Cloud task.")
+	configureCmd.PersistentFlags().StringVarP(&accountName, "account", "a", "", "Account used for Robocorp Control Room task.")
 }

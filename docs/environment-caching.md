@@ -18,7 +18,7 @@ The [hotel analogy below](/docs/environment-caching.md#a-better-analogy-accommod
 
 The solution that goes by the working title `Holotree` is a big step up when it comes to efficiency, and it opens up a few significant doors for the future. The name for `Holotree` comes from the analogy to the [Holodeck in Star Trek](https://en.wikipedia.org/wiki/Holodeck). When things changed in the Holodeck, the "reload" only meant that, for example, a chair transformed into a table while the surroundings did not change.
 
-Holotree is an environment cache that stores each unique file only once. When restoring an execution environment, it moves only the files that need to be moved or removed, reducing the disk usage and file I/O (input/output) actions. Fewer files to move and handle means fewer actions for the virus scanner in the local development setup, and in Robocorp Cloud, reduced CPU time. 
+Holotree is an environment cache that stores each unique file only once. When restoring an execution environment, it moves only the files that need to be moved or removed, reducing the disk usage and file I/O (input/output) actions. Fewer files to move and handle means fewer actions for the virus scanner in the local development setup, and in Robocorp Control Room, reduced CPU time. 
 
 Holotree can fit hundreds of unique environments in a small space.
 
@@ -28,7 +28,7 @@ Holotree can fit hundreds of unique environments in a small space.
 
 There are other significant changes and improvements in Holotree regarding [relocation](<https://en.wikipedia.org/wiki/Relocation_(computing)>) and [file locking](https://en.wikipedia.org/wiki/File_locking).
 
-The implementation is already available in [RCC v10](https://github.com/robocorp/rcc/blob/master/docs/changelog.md), and we are rolling out it to our developer tools, applications and Cloud during Q3 2021.
+The implementation is already available in [RCC v10](https://github.com/robocorp/rcc/blob/master/docs/changelog.md), and we are rolling out it to our developer tools, applications and Control Room during Q3 2021.
 
 ### Relocation and file locking
 
@@ -38,7 +38,7 @@ To move or [relocate](<https://en.wikipedia.org/wiki/Relocation_(computing)>) th
 
 [File locking](https://en.wikipedia.org/wiki/File_locking) affects mainly Windows but can affect macOS and Linux, too. Trying to change a file simultaneously in more than one process is usually harmful and requires individual files for different executors for the execution environments.
 
-For example, when using Robocorp Lab and VS Code extensions on the same machine, it would be nice if the environment files do not get locked.
+For example, when using Robocorp VS Code extensions on the same machine, it would be nice if the environment files do not get locked.
 
 For this reason, RCC with Holotree provides a `space` -context so that each execution or client can choose a space where the execution happens. Furthermore, with the partial relocation support described above, the client's space is only made for and used by the clients' discretion, avoiding file collisions and giving control over disk space usage and file I/O to the client applications.
 

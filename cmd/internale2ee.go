@@ -87,7 +87,7 @@ func version2encryption(args []string) {
 
 func init() {
 	internalCmd.AddCommand(e2eeCmd)
-	e2eeCmd.Flags().StringVarP(&accountName, "account", "a", "", "Account used for Robocorp Cloud operations.")
+	e2eeCmd.Flags().StringVarP(&accountName, "account", "a", "", "Account used for Robocorp Control Room operations.")
 	e2eeCmd.Flags().IntVarP(&encryptionVersion, "use", "u", 1, "Which version of encryption method to test (1 or 2)")
 	e2eeCmd.Flags().StringVarP(&workspaceId, "workspace", "", "", "Workspace id to get assistant information.")
 	e2eeCmd.Flags().StringVarP(&assistantId, "assistant", "", "", "Assistant id to execute.")
