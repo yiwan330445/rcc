@@ -288,7 +288,7 @@ is going to be only one real environment available.
 But above three controls gives you good ways to control how you and your
 applications manage their usage of different python environments for
 different purposes. You can share environments if you want, but you can also
-give dedicates space for thos things that need full control of their space.
+give a dedicated space for those things that need full control of their space.
 
 So running following commands demonstrate different levels of control for
 space creation.
