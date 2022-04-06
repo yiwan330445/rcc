@@ -1,5 +1,9 @@
 # rcc change log
 
+## v11.9.14 (date: 6.4.2022)
+
+- improved table of contents with numbering
+
 ## v11.9.13 (date: 6.4.2022)
 
 - added new script for generating table of contents for docs

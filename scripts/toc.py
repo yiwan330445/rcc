@@ -7,6 +7,7 @@ NONCHAR_PATTERN = re.compile(r'[^a-z]+')
 HEADING_PATTERN = re.compile(r'^\s*(#{1,3})\s+(.*?)\s*$')
 CODE_PATTERN = re.compile(r'^\s*[`]{3}')
 
+DOT = '.'
 DASH = '-'
 NEWLINE = '\n'
 
@@ -25,21 +26,33 @@ PRIORITY_LIST = (
         )
 
 def unify(value):
-    return DASH.join(filter(bool, NONCHAR_PATTERN.split(str(value).lower())))
+    low = str(value).lower().replace('.', '')
+    return DASH.join(filter(bool, NONCHAR_PATTERN.split(low)))
 
 class Toc:
     def __init__(self, title, baseurl):
         self.title = title
         self.baseurl = baseurl
-        self.levels = [0,0,0,0]
-        self.level = 0
-        self.toc = [f'# [{title}]({baseurl})']
+        self.levels = [0]
+        self.toc = [f'# {title}']
+
+    def leveling(self, level):
+        levelup = True
+        while len(self.levels) > level:
+            self.levels.pop()
+        while len(self.levels) < level:
+            self.levels.append(1)
+            levelup = False
+        if levelup:
+            self.levels[-1] += 1
 
     def add(self, filename, level, title):
+        self.leveling(level)
+        numbering = DOT.join(map(str, self.levels))
         url = f'{self.baseurl}{filename}'
         prefix = '#' * level
         ref = unify(title)
-        self.toc.append(f'#{prefix} [{title}]({self.baseurl}{filename}#{ref})')
+        self.toc.append(f'#{prefix} [{numbering} {title}]({self.baseurl}{filename}#{ref})')
 
     def write(self, filename):
         with open(filename, 'w+') as sink:
