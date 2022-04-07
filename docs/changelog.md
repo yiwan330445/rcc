@@ -1,5 +1,9 @@
 # rcc change log
 
+## v11.9.16 (date: 7.4.2022)
+
+- took pull request with documentation fixes
+
 ## v11.9.15 (date: 6.4.2022)
 
 - improved table of contents with more clearer numbering
