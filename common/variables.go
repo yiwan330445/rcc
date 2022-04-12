@@ -130,7 +130,7 @@ func FixedHolotreeLocation() bool {
 
 func HolotreeLocation() string {
 	if FixedHolotreeLocation() {
-		return filepath.Join(HoloLocation(), userHomeIdentity())
+		return HoloLocation()
 	}
 	return filepath.Join(RobocorpHome(), "holotree")
 }
@@ -239,11 +239,11 @@ func ensureDirectory(name string) {
 	}
 }
 
-func userHomeIdentity() string {
+func UserHomeIdentity() string {
 	location, err := os.UserHomeDir()
 	if err != nil {
-		return "1badcafe"
+		return "badcafe"
 	}
 	digest := fmt.Sprintf("%02x", siphash.Hash(9007799254740993, 2147487647, []byte(location)))
-	return digest[:8]
+	return digest[:7]
 }

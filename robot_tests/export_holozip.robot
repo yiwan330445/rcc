@@ -29,7 +29,7 @@ Goal: Create environment for standalone robot
   Step        build/rcc ht vars -s author --controller citests -r tmp/standalone/robot.yaml
   Must Have   RCC_ENVIRONMENT_HASH=
   Must Have   RCC_INSTALLATION_ID=
-  Must Have   4e67cd8d4_fcb4b859
+  Must Have   4e67cd8_fcb4b859
   Use STDERR
   Must Have   Downloading micromamba
   Must Have   Progress: 01/13
@@ -38,7 +38,7 @@ Goal: Create environment for standalone robot
 Goal: Must have author space visible
   Step        build/rcc ht ls
   Use STDERR
-  Must Have   4e67cd8d4_fcb4b859
+  Must Have   4e67cd8_fcb4b859
   Must Have   rcc.citests
   Must Have   author
   Must Have   55aacd3b136421fd
@@ -69,10 +69,10 @@ Goal: See contents of that robot
   Must Have   hololib.zip
 
 Goal: Can delete author space
-  Step        build/rcc ht delete 4e67cd8d4_fcb4b859
+  Step        build/rcc ht delete 4e67cd8_fcb4b859
   Step        build/rcc ht ls
   Use STDERR
-  Wont Have   4e67cd8d4_fcb4b859
+  Wont Have   4e67cd8_fcb4b859
   Wont Have   rcc.citests
   Wont Have   author
   Wont Have   55aacd3b136421fd
@@ -89,20 +89,20 @@ Goal: No spaces created under guest
   Set Environment Variable  ROBOCORP_HOME  tmp/guest
   Step        build/rcc ht ls
   Use STDERR
-  Wont Have   4e67cd8d4_fcb4b859
+  Wont Have   4e67cd8_fcb4b859
   Wont Have   rcc.citests
   Wont Have   author
   Wont Have   55aacd3b136421fd
-  Wont Have   4e67cd8d4_559e19be
+  Wont Have   4e67cd8_559e19be
   Wont Have   guest
 
 Goal: Space created under author for guest
   Set Environment Variable  ROBOCORP_HOME  tmp/developer
   Step        build/rcc ht ls
   Use STDERR
-  Wont Have   4e67cd8d4_fcb4b859
+  Wont Have   4e67cd8_fcb4b859
   Wont Have   author
   Must Have   rcc.citests
   Must Have   55aacd3b136421fd
-  Must Have   4e67cd8d4_aacf1552
+  Must Have   4e67cd8_aacf1552
   Must Have   guest

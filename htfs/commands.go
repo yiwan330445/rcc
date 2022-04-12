@@ -28,6 +28,9 @@ func NewEnvironment(condafile, holozip string, restore, force bool) (label strin
 	defer locker.Release()
 
 	haszip := len(holozip) > 0
+	if haszip {
+		common.Debug("New zipped environment from %q!", holozip)
+	}
 
 	_, holotreeBlueprint, err := ComposeFinalBlueprint([]string{condafile}, "")
 	fail.On(err != nil, "%s", err)

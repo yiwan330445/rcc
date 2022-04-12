@@ -60,7 +60,7 @@ Goal: Correct holotree spaces were created.
   Wont Have   rcc.user
 
 Goal: Can get plan for used environment.
-  Step        build/rcc holotree plan 4e67cd8d4_c6880905
+  Step        build/rcc holotree plan 4e67cd8_c6880905
   Must Have   micromamba plan
   Must Have   pip plan
   Must Have   post install plan

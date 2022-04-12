@@ -129,11 +129,11 @@ Goal: Merge two different conda.yaml files with conflict fails
 Goal: Merge two different conda.yaml files without conflict passes
   Step        build/rcc holotree vars --controller citests conda/testdata/other.yaml conda/testdata/third.yaml --silent
   Must Have   5bea0c1d2419493e
-  Must Have   4e67cd8d4_9fcd2534
+  Must Have   4e67cd8_9fcd2534
 
 Goal: Can list environments as JSON
   Step        build/rcc holotree list --controller citests --json
-  Must Have   4e67cd8d4_9fcd2534
+  Must Have   4e67cd8_9fcd2534
   Must Have   5bea0c1d2419493e
   Must Be Json Response
 

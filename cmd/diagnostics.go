@@ -14,9 +14,10 @@ var (
 )
 
 var diagnosticsCmd = &cobra.Command{
-	Use:   "diagnostics",
-	Short: "Run system diagnostics to help resolve rcc issues.",
-	Long:  "Run system diagnostics to help resolve rcc issues.",
+	Use:     "diagnostics",
+	Aliases: []string{"diagnostic", "diag"},
+	Short:   "Run system diagnostics to help resolve rcc issues.",
+	Long:    "Run system diagnostics to help resolve rcc issues.",
 	Run: func(cmd *cobra.Command, args []string) {
 		if common.DebugFlag {
 			defer common.Stopwatch("Diagnostic run lasted").Report()

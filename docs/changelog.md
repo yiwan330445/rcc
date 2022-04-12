@@ -1,6 +1,12 @@
 # rcc change log
 
-## v11.10.0 (date: 11.4.2022) UNSTABLE
+## v11.10.1 (date: 12.4.2022) UNSTABLE
+
+- adding support for user identity in relocation
+- added holotree locations into diagnostics
+- usage of hololib.zip now has debug entry in log files
+
+## v11.10.0 (date: 12.4.2022) UNSTABLE
 
 - work in progess: holotree relocation revisiting started
 - now holotree library and catalog can be on shared location

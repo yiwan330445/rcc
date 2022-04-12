@@ -83,7 +83,8 @@ func (it *hololib) ExactLocation(digest string) string {
 }
 
 func (it *hololib) Identity() string {
-	return fmt.Sprintf("h%016xt", it.identity)
+	suffix := fmt.Sprintf("%016x", it.identity)
+	return fmt.Sprintf("h%s_%st", common.UserHomeIdentity(), suffix[:14])
 }
 
 func (it *hololib) Stage() string {
@@ -263,9 +264,9 @@ func Spaces() []*Root {
 }
 
 func ControllerSpaceName(client, tag []byte) string {
-	prefix := textual(sipit(client), 9)
+	prefix := textual(sipit(client), 7)
 	suffix := textual(sipit(tag), 8)
-	return prefix + "_" + suffix
+	return common.UserHomeIdentity() + "_" + prefix + "_" + suffix
 }
 
 func (it *hololib) Restore(blueprint, client, tag []byte) (result string, err error) {

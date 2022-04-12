@@ -26,7 +26,8 @@ func Virtual() MutableLibrary {
 }
 
 func (it *virtual) Identity() string {
-	return fmt.Sprintf("v%016xh", it.identity)
+	suffix := fmt.Sprintf("%016x", it.identity)
+	return fmt.Sprintf("v%s_%sh", common.UserHomeIdentity(), suffix[:14])
 }
 
 func (it *virtual) Stage() string {
