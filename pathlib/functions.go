@@ -2,9 +2,12 @@ package pathlib
 
 import (
 	"fmt"
+	"io/fs"
 	"os"
 	"path/filepath"
 	"time"
+
+	"github.com/robocorp/rcc/fail"
 )
 
 func Exists(pathname string) bool {
@@ -46,12 +49,56 @@ func Modtime(pathname string) (time.Time, error) {
 	return stat.ModTime(), nil
 }
 
-func EnsureDirectory(directory string) (string, error) {
+func ensureCorrectMode(fullpath string, stat fs.FileInfo, correct fs.FileMode) (string, error) {
+	mode := stat.Mode() & correct
+	if mode == correct {
+		return fullpath, nil
+	}
+	err := os.Chmod(fullpath, correct)
+	if err != nil {
+		return "", err
+	}
+	return fullpath, nil
+}
+
+func makeModedDir(fullpath string, correct fs.FileMode) (path string, err error) {
+	defer fail.Around(&err)
+
+	stat, err := os.Stat(fullpath)
+	if err == nil && stat.IsDir() {
+		return ensureCorrectMode(fullpath, stat, correct)
+	}
+	fail.On(err == nil, "Path %q exists, but is not a directory!", fullpath)
+	_, err = MakeSharedDir(filepath.Dir(fullpath))
+	fail.On(err != nil, "%v", err)
+	err = os.Mkdir(fullpath, correct)
+	fail.On(err != nil, "Failed to create directory %q, reason: %v", fullpath, err)
+	stat, err = os.Stat(fullpath)
+	fail.On(err != nil, "Failed to stat created directory %q, reason: %v", fullpath, err)
+	_, err = ensureCorrectMode(fullpath, stat, correct)
+	fail.On(err != nil, "Failed to make created directory shared %q, reason: %v", fullpath, err)
+	return fullpath, nil
+}
+
+func MakeSharedFile(fullpath string) (string, error) {
+	stat, err := os.Stat(fullpath)
+	fail.On(err != nil, "Failed to stat file %q, reason: %v", fullpath, err)
+	return ensureCorrectMode(fullpath, stat, 0666)
+}
+
+func MakeSharedDir(fullpath string) (string, error) {
+	return makeModedDir(fullpath, 0777)
+}
+
+func doEnsureDirectory(directory string, mode fs.FileMode) (string, error) {
 	fullpath, err := filepath.Abs(directory)
 	if err != nil {
 		return "", err
 	}
-	err = os.MkdirAll(fullpath, 0o750)
+	if IsDir(fullpath) {
+		return fullpath, nil
+	}
+	err = os.MkdirAll(fullpath, mode)
 	if err != nil {
 		return "", err
 	}
@@ -60,6 +107,10 @@ func EnsureDirectory(directory string) (string, error) {
 		return "", fmt.Errorf("Path %s is not a directory!", fullpath)
 	}
 	return fullpath, nil
+}
+
+func EnsureDirectory(directory string) (string, error) {
+	return doEnsureDirectory(directory, 0o750)
 }
 
 func EnsureParentDirectory(resource string) (string, error) {

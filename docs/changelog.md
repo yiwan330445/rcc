@@ -1,5 +1,10 @@
 # rcc change log
 
+## v11.10.0 (date: 11.4.2022) UNSTABLE
+
+- work in progess: holotree relocation revisiting started
+- now holotree library and catalog can be on shared location
+
 ## v11.9.16 (date: 7.4.2022)
 
 - took pull request with documentation fixes

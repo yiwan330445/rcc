@@ -14,7 +14,7 @@ const (
 	binSuffix      = "/bin"
 	activateScript = `#!/bin/bash
 
-export MAMBA_ROOT_PREFIX={{.Robocorphome}}
+export MAMBA_ROOT_PREFIX={{.MambaRootPrefix}}
 eval "$('{{.Micromamba}}' shell activate -s bash -p {{.Live}})"
 "{{.Rcc}}" internal env -l after
 `
@@ -28,7 +28,7 @@ var (
 
 func CondaEnvironment() []string {
 	env := os.Environ()
-	env = append(env, fmt.Sprintf("MAMBA_ROOT_PREFIX=%s", common.RobocorpHome()))
+	env = append(env, fmt.Sprintf("MAMBA_ROOT_PREFIX=%s", common.MambaRootPrefix()))
 	tempFolder := common.RobocorpTemp()
 	env = append(env, fmt.Sprintf("TEMP=%s", tempFolder))
 	env = append(env, fmt.Sprintf("TMP=%s", tempFolder))

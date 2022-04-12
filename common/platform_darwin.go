@@ -7,6 +7,7 @@ import (
 
 const (
 	defaultRobocorpLocation = "$HOME/.robocorp"
+	defaultHoloLocation     = "/Users/Shared/robocorp/ht"
 )
 
 func ExpandPath(entry string) string {

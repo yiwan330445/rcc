@@ -174,7 +174,7 @@ func ScheduleLifters(library MutableLibrary, stats *stats) Treetop {
 			seen[file.Digest] = true
 			directory := library.Location(file.Digest)
 			if !seen[directory] && !pathlib.IsDir(directory) {
-				os.MkdirAll(directory, 0o755)
+				pathlib.MakeSharedDir(directory)
 			}
 			seen[directory] = true
 			sinkpath := filepath.Join(directory, file.Digest)
@@ -264,6 +264,7 @@ func LiftFile(sourcename, sinkname string) anywork.Work {
 		runtime.Gosched()
 
 		anywork.OnErrPanicCloseAll(TryRename("liftfile", partname, sinkname))
+		pathlib.MakeSharedFile(sinkname)
 	}
 }
 

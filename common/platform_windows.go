@@ -8,6 +8,7 @@ import (
 
 const (
 	defaultRobocorpLocation = "%LOCALAPPDATA%\\robocorp"
+	defaultHoloLocation     = "c:\\ProgramData\\robocorp\\ht"
 )
 
 var (

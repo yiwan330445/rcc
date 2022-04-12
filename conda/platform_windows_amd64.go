@@ -21,7 +21,7 @@ const (
 	usrSuffix      = "\\usr"
 	binSuffix      = "\\bin"
 	activateScript = "@echo off\n" +
-		"set \"MAMBA_ROOT_PREFIX={{.Robocorphome}}\"\n" +
+		"set \"MAMBA_ROOT_PREFIX={{.MambaRootPrefix}}\"\n" +
 		"for /f \"tokens=* usebackq\" %%a in ( `call \"{{.Robocorphome}}\\bin\\micromamba.exe\" shell -s cmd.exe activate -p \"{{.Live}}\"` ) do ( call \"%%a\" )\n" +
 		"call \"{{.Rcc}}\" internal env -l after\n"
 	commandSuffix = ".cmd"
@@ -38,7 +38,7 @@ var (
 
 func CondaEnvironment() []string {
 	env := os.Environ()
-	env = append(env, fmt.Sprintf("MAMBA_ROOT_PREFIX=%s", common.RobocorpHome()))
+	env = append(env, fmt.Sprintf("MAMBA_ROOT_PREFIX=%s", common.MambaRootPrefix()))
 	tempFolder := common.RobocorpTemp()
 	env = append(env, fmt.Sprintf("TEMP=%s", tempFolder))
 	env = append(env, fmt.Sprintf("TMP=%s", tempFolder))

@@ -356,7 +356,7 @@ func makedirs(prefix string, suffixes ...string) error {
 	}
 	for _, suffix := range suffixes {
 		fullpath := filepath.Join(prefix, suffix)
-		err := os.MkdirAll(fullpath, 0o755)
+		_, err := pathlib.MakeSharedDir(fullpath)
 		if err != nil {
 			return err
 		}

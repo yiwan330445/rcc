@@ -28,6 +28,10 @@ func init() {
 	killfile[".hg"] = true
 	killfile[".svn"] = true
 	killfile[".gitignore"] = true
+
+	pathlib.MakeSharedDir(common.HoloLocation())
+	pathlib.MakeSharedDir(common.HololibCatalogLocation())
+	pathlib.MakeSharedDir(common.HololibLibraryLocation())
 }
 
 type Filetask func(string, *File) anywork.Work

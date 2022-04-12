@@ -8,9 +8,12 @@ import (
 	"runtime"
 	"strings"
 	"time"
+
+	"github.com/dchest/siphash"
 )
 
 const (
+	FIXED_HOLOTREE                        = `FIXED_HOLOTREE`
 	ROBOCORP_HOME_VARIABLE                = `ROBOCORP_HOME`
 	VERBOSE_ENVIRONMENT_BUILDING          = `RCC_VERBOSE_ENVIRONMENT_BUILDING`
 	ROBOCORP_OVERRIDE_SYSTEM_REQUIREMENTS = `ROBOCORP_OVERRIDE_SYSTEM_REQUIREMENTS`
@@ -43,11 +46,14 @@ func init() {
 	ProgressMark = time.Now()
 
 	randomIdentifier = fmt.Sprintf("%016x", rand.Uint64()^uint64(os.Getpid()))
+
+	// Note: HololibCatalogLocation and HololibLibraryLocation are force
+	//       created from "htfs" direcotry.go init function
+	// Also: HolotreeLocation creation is left for actual holotree commands
+	//       to prevent accidental access right problem during usage
+
 	ensureDirectory(TemplateLocation())
 	ensureDirectory(BinLocation())
-	ensureDirectory(HolotreeLocation())
-	ensureDirectory(HololibCatalogLocation())
-	ensureDirectory(HololibLibraryLocation())
 	ensureDirectory(PipCache())
 	ensureDirectory(WheelCache())
 	ensureDirectory(RobotCache())
@@ -114,7 +120,25 @@ func BinLocation() string {
 	return filepath.Join(RobocorpHome(), "bin")
 }
 
+func HoloLocation() string {
+	return ExpandPath(defaultHoloLocation)
+}
+
+func FixedHolotreeLocation() bool {
+	return len(os.Getenv(FIXED_HOLOTREE)) > 0
+}
+
+func HolotreeLocation() string {
+	if FixedHolotreeLocation() {
+		return filepath.Join(HoloLocation(), userHomeIdentity())
+	}
+	return filepath.Join(RobocorpHome(), "holotree")
+}
+
 func HololibLocation() string {
+	if FixedHolotreeLocation() {
+		return HoloLocation()
+	}
 	return filepath.Join(RobocorpHome(), "hololib")
 }
 
@@ -128,10 +152,6 @@ func HololibLibraryLocation() string {
 
 func HolotreeLock() string {
 	return fmt.Sprintf("%s.lck", HolotreeLocation())
-}
-
-func HolotreeLocation() string {
-	return filepath.Join(RobocorpHome(), "holotree")
 }
 
 func UsesHolotree() bool {
@@ -150,8 +170,12 @@ func RobotCache() string {
 	return filepath.Join(RobocorpHome(), "robots")
 }
 
+func MambaRootPrefix() string {
+	return RobocorpHome()
+}
+
 func MambaPackages() string {
-	return ExpandPath(filepath.Join(RobocorpHome(), "pkgs"))
+	return ExpandPath(filepath.Join(MambaRootPrefix(), "pkgs"))
 }
 
 func PipRcFile() string {
@@ -204,6 +228,22 @@ func ControllerIdentity() string {
 	return strings.ToLower(fmt.Sprintf("rcc.%s", ControllerType))
 }
 
+func isDir(pathname string) bool {
+	stat, err := os.Stat(pathname)
+	return err == nil && stat.IsDir()
+}
+
 func ensureDirectory(name string) {
-	Error("mkdir", os.MkdirAll(name, 0o750))
+	if !isDir(name) {
+		Error("mkdir", os.MkdirAll(name, 0o750))
+	}
+}
+
+func userHomeIdentity() string {
+	location, err := os.UserHomeDir()
+	if err != nil {
+		return "1badcafe"
+	}
+	digest := fmt.Sprintf("%02x", siphash.Hash(9007799254740993, 2147487647, []byte(location)))
+	return digest[:8]
 }
