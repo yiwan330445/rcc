@@ -11,6 +11,7 @@ import (
 	"github.com/robocorp/rcc/conda"
 	"github.com/robocorp/rcc/fail"
 	"github.com/robocorp/rcc/pathlib"
+	"github.com/robocorp/rcc/pretty"
 	"github.com/robocorp/rcc/robot"
 	"github.com/robocorp/rcc/xviper"
 )
@@ -18,7 +19,17 @@ import (
 func NewEnvironment(condafile, holozip string, restore, force bool) (label string, scorecard common.Scorecard, err error) {
 	defer fail.Around(&err)
 
-	defer common.Progress(13, "Fresh holotree done [with %d workers].", anywork.Scale())
+	haszip := len(holozip) > 0
+	if haszip {
+		common.Debug("New zipped environment from %q!", holozip)
+	}
+
+	defer func() {
+		common.Progress(13, "Fresh holotree done [with %d workers].", anywork.Scale())
+		if haszip {
+			pretty.Note("There is hololib.zip present at: %q", holozip)
+		}
+	}()
 	common.Progress(1, "Fresh holotree environment %v.", xviper.TrackingIdentity())
 
 	callback := pathlib.LockWaitMessage("Serialized environment creation")
@@ -26,11 +37,6 @@ func NewEnvironment(condafile, holozip string, restore, force bool) (label strin
 	callback()
 	fail.On(err != nil, "Could not get lock for holotree. Quiting.")
 	defer locker.Release()
-
-	haszip := len(holozip) > 0
-	if haszip {
-		common.Debug("New zipped environment from %q!", holozip)
-	}
 
 	_, holotreeBlueprint, err := ComposeFinalBlueprint([]string{condafile}, "")
 	fail.On(err != nil, "%s", err)
@@ -65,6 +71,7 @@ func NewEnvironment(condafile, holozip string, restore, force bool) (label strin
 	} else {
 		common.Progress(12, "Restoring space skipped.")
 	}
+
 	return path, scorecard, nil
 }
 

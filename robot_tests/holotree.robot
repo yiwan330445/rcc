@@ -2,6 +2,11 @@
 Library  OperatingSystem
 Library  supporting.py
 Resource  resources.robot
+Suite Setup  Holotree setup
+
+*** Keywords ***
+Holotree setup
+  Fire And Forget   build/rcc ht delete 4e67cd8
 
 *** Test cases ***
 
@@ -121,9 +126,7 @@ Goal: Liveonly works and uses virtual holotree
 Goal: Do quick cleanup on environments
   Step        build/rcc config cleanup --controller citests --quick
   Must Exist  %{ROBOCORP_HOME}/bin/micromamba
-  Must Exist  %{ROBOCORP_HOME}/hololib/
   Must Exist  %{ROBOCORP_HOME}/pkgs/
-  Wont Exist  %{ROBOCORP_HOME}/holotree/
   Wont Exist  %{ROBOCORP_HOME}/pipcache/
   Use STDERR
   Must Have   OK

@@ -21,6 +21,12 @@ Prepare Local
   Must Exist  %{ROBOCORP_HOME}/wheels/
   Must Exist  %{ROBOCORP_HOME}/pipcache/
 
+Fire And Forget
+  [Arguments]  ${command}
+  ${code}  ${output}  ${error}=  Run and return code output error  ${command}
+  Log  <b>STDOUT</b><pre>${output}</pre>  html=yes
+  Log  <b>STDERR</b><pre>${error}</pre>  html=yes
+
 Step
   [Arguments]  ${command}  ${expected}=0
   ${code}  ${output}  ${error}=  Run and return code output error  ${command}

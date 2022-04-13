@@ -2,6 +2,11 @@
 Library  OperatingSystem
 Library  supporting.py
 Resource  resources.robot
+Suite Setup  Fullrun setup
+
+*** Keywords ***
+Fullrun setup
+  Fire And Forget   build/rcc ht delete 4e67cd8
 
 *** Test cases ***
 
@@ -79,7 +84,6 @@ Goal: Run task in place in debug mode and with timeline.
   Use STDERR
   Must Have   Progress: 01/13
   Must Have   Progress: 02/13
-  Must Have   Progress: 03/13
   Must Have   Progress: 13/13
   Must Have   rpaframework
   Must Have   PID #
@@ -89,7 +93,6 @@ Goal: Run task in place in debug mode and with timeline.
   Wont Have   Running against old environment
   Wont Have   WARNING
   Wont Have   NOT pristine
-  Must Have   Golden EE file at:
   Must Have   Installation plan is:
   Must Have   Command line is: [
   Must Have   rcc timeline

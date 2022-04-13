@@ -11,6 +11,7 @@ Export setup
   Remove Directory  tmp/guest  True
   Remove Directory  tmp/standalone  True
   Set Environment Variable  ROBOCORP_HOME  tmp/developer
+  Fire And Forget   build/rcc ht delete 4e67cd8
 
 Export teardown
   Set Environment Variable  ROBOCORP_HOME  tmp/robocorp
@@ -31,7 +32,6 @@ Goal: Create environment for standalone robot
   Must Have   RCC_INSTALLATION_ID=
   Must Have   4e67cd8_fcb4b859
   Use STDERR
-  Must Have   Downloading micromamba
   Must Have   Progress: 01/13
   Must Have   Progress: 13/13
 
@@ -79,22 +79,11 @@ Goal: Can delete author space
   Wont Have   guest
 
 Goal: Can run as guest
+  Fire And Forget   build/rcc ht delete 4e67cd8
   Set Environment Variable  ROBOCORP_HOME  tmp/guest
   Step        build/rcc task run --controller citests -s guest -r tmp/standalone/robot.yaml -t 'run example task'
   Use STDERR
-  Wont Have   Downloading micromamba
   Must Have   OK.
-
-Goal: No spaces created under guest
-  Set Environment Variable  ROBOCORP_HOME  tmp/guest
-  Step        build/rcc ht ls
-  Use STDERR
-  Wont Have   4e67cd8_fcb4b859
-  Wont Have   rcc.citests
-  Wont Have   author
-  Wont Have   55aacd3b136421fd
-  Wont Have   4e67cd8_559e19be
-  Wont Have   guest
 
 Goal: Space created under author for guest
   Set Environment Variable  ROBOCORP_HOME  tmp/developer

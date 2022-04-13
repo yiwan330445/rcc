@@ -1,5 +1,10 @@
 # rcc change log
 
+## v11.10.2 (date: 13.4.2022) UNSTABLE
+
+- made presence of hololib.zip more visible on environment creation
+- test changed so that new holotree relocation can be tested
+
 ## v11.10.1 (date: 12.4.2022) UNSTABLE
 
 - adding support for user identity in relocation
