@@ -1,5 +1,11 @@
 # rcc change log
 
+## v11.10.3 (date: 19.4.2022)
+
+- fixed panic when settings.yaml is broken, now it will be blunt fatal failure
+- fixed search path problem with preRunScripts (now robot.yaml PATH is used)
+- removed direct mentions of Robocorp App (old name)
+
 ## v11.10.2 (date: 13.4.2022) UNSTABLE
 
 - made presence of hololib.zip more visible on environment creation

@@ -190,6 +190,18 @@ func ExecuteSimpleTask(flags *RunFlags, template []string, config robot.Robot, t
 	pretty.Ok()
 }
 
+func findExecutableOrDie(searchPath pathlib.PathParts, executable string) string {
+	found, ok := searchPath.Which(executable, conda.FileExtensions)
+	if !ok {
+		pretty.Exit(6, "Error: Cannot find command: %v", executable)
+	}
+	fullpath, err := filepath.EvalSymlinks(found)
+	if err != nil {
+		pretty.Exit(7, "Error: %v", err)
+	}
+	return fullpath
+}
+
 func ExecuteTask(flags *RunFlags, template []string, config robot.Robot, todo robot.Task, label string, interactive bool, extraEnv map[string]string) {
 	common.Debug("Command line is: %v", template)
 	developmentEnvironment, err := robot.LoadEnvironmentSetup(flags.EnvironmentFile)
@@ -199,14 +211,7 @@ func ExecuteTask(flags *RunFlags, template []string, config robot.Robot, todo ro
 	task := make([]string, len(template))
 	copy(task, template)
 	searchPath := config.SearchPath(label)
-	found, ok := searchPath.Which(task[0], conda.FileExtensions)
-	if !ok {
-		pretty.Exit(6, "Error: Cannot find command: %v", task[0])
-	}
-	fullpath, err := filepath.EvalSymlinks(found)
-	if err != nil {
-		pretty.Exit(7, "Error: %v", err)
-	}
+	task[0] = findExecutableOrDie(searchPath, task[0])
 	var data Token
 	if !flags.Assistant && len(flags.WorkspaceId) > 0 {
 		claims := RunRobotClaims(flags.ValidityTime*60, flags.WorkspaceId)
@@ -215,7 +220,6 @@ func ExecuteTask(flags *RunFlags, template []string, config robot.Robot, todo ro
 	if err != nil {
 		pretty.Exit(8, "Error: %v", err)
 	}
-	task[0] = fullpath
 	directory := config.WorkingDirectory()
 	environment := config.RobotExecutionEnvironment(label, developmentEnvironment.AsEnvironment(), true)
 	if len(data) > 0 {
@@ -254,6 +258,7 @@ func ExecuteTask(flags *RunFlags, template []string, config robot.Robot, todo ro
 			if err != nil {
 				pretty.Exit(11, "%sScript '%s' parsing failure: %v%s", pretty.Red, script, err, pretty.Reset)
 			}
+			scriptCommand[0] = findExecutableOrDie(searchPath, scriptCommand[0])
 			common.Debug("Running pre run script '%s' ...", script)
 			_, err = shell.New(environment, directory, scriptCommand...).Execute(interactive)
 			if err != nil {

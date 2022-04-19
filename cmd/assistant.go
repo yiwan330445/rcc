@@ -9,7 +9,7 @@ var assistantCmd = &cobra.Command{
 	Aliases: []string{"assist", "a"},
 	Short:   "Group of commands related to `robot assistant`.",
 	Long: `This set of commands relate to Robocorp Robot Assistant related tasks.
-They are either local, or in relation to Robocorp Control Room and Robocorp App.`,
+They are either local, or in relation to Robocorp Control Room and tooling.`,
 }
 
 func init() {

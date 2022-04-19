@@ -58,7 +58,7 @@ See [Docs](https://robocorp.com/docs/development-howtos/variables-and-secrets/) 
 Give the task name and startup commands in `robot.yaml` with some additional configuration. See [Docs](https://robocorp.com/docs/setup/robot-structure#robot-configuration-file-robot-yaml) for more.
 
 
-Put all the robot dependencies in `conda.yaml`. Robocorp App (and rcc) uses [Conda](https://docs.conda.io) for managing the execution environment. For development you can also install packages manually with `pip`.
+Put all the robot dependencies in `conda.yaml`. Robocorp tools (and rcc) uses [Conda](https://docs.conda.io) for managing the execution environment. For development you can also install packages manually with `pip`.
 
 ### Additional documentation
 See [Robocorp Docs](https://robocorp.com/docs/) for more documentation.

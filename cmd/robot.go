@@ -9,7 +9,7 @@ var robotCmd = &cobra.Command{
 	Aliases: []string{"r"},
 	Short:   "Group of commands related to `robot`.",
 	Long: `This set of commands relate to Robocorp Control Room related tasks. They are
-executed either locally, or in connection to Robocorp Control Room and Robocorp App.`,
+executed either locally, or in connection to Robocorp Control Room and tooling.`,
 }
 
 func init() {

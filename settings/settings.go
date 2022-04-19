@@ -258,7 +258,18 @@ func (it gateway) loadRootCAs() *x509.CertPool {
 	return roots
 }
 
+func initProtection() {
+	status := recover()
+	if status != nil {
+		fmt.Fprintf(os.Stderr, "Fatal failure with '%v', see: %v\n", common.SettingsFile(), status)
+		fmt.Fprintln(os.Stderr, "Sorry. Cannot recover, will exit now!")
+		os.Exit(111)
+	}
+}
+
 func init() {
+	defer initProtection()
+
 	chain = SettingsLayers{
 		DefaultSettingsLayer(),
 		CustomSettingsLayer(),
