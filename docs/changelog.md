@@ -1,5 +1,9 @@
 # rcc change log
 
+## v11.10.5 (date: 20.4.2022)
+
+- settings certificates section now has full path to CA bundle if available
+
 ## v11.10.4 (date: 20.4.2022)
 
 - different preRunScripts for different operating systems
