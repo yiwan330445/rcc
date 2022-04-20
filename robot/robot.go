@@ -348,6 +348,10 @@ func submatch(pattern *regexp.Regexp, expected, text string) bool {
 	return match == nil || len(match) == 0 || match[0] == expected
 }
 
+func PlatformAcceptableFile(architecture, operatingSystem, filename string) bool {
+	return submatch(GoarchPattern, architecture, filename) && submatch(GoosPattern, operatingSystem, filename)
+}
+
 func (it *robot) availableEnvironmentConfigurations(marker string) []string {
 	result := make([]string, 0, len(it.Environments))
 	common.Trace("Available environment configurations:")
@@ -358,10 +362,7 @@ func (it *robot) availableEnvironmentConfigurations(marker string) []string {
 		if (underscored || freezed) && !marked {
 			continue
 		}
-		if !submatch(GoosPattern, runtime.GOOS, part) {
-			continue
-		}
-		if !submatch(GoarchPattern, runtime.GOARCH, part) {
+		if !PlatformAcceptableFile(runtime.GOARCH, runtime.GOOS, part) {
 			continue
 		}
 		fullpath := filepath.Join(it.Root, part)

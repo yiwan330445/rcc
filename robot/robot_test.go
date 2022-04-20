@@ -16,6 +16,43 @@ func TestCannotReadMissingRobotYaml(t *testing.T) {
 	must.Nil(sut)
 }
 
+func TestCanAcceptPlatformFiles(t *testing.T) {
+	must, wont := hamlet.Specifications(t)
+
+	for _, filename := range []string{"anyscript", "anyscript.bat", "anyscript.cmd"} {
+		must.True(robot.PlatformAcceptableFile("amd64", "linux", filename))
+		must.True(robot.PlatformAcceptableFile("amd64", "windows", filename))
+		must.True(robot.PlatformAcceptableFile("amd64", "darwin", filename))
+		must.True(robot.PlatformAcceptableFile("arm64", "linux", filename))
+		must.True(robot.PlatformAcceptableFile("arm64", "windows", filename))
+		must.True(robot.PlatformAcceptableFile("arm64", "darwin", filename))
+	}
+
+	for _, filename := range []string{"any.bat", "any.cmd", "any.sh", "at_linux.sh", "at_arm64.sh", "at_arm64_linux.sh"} {
+		must.True(robot.PlatformAcceptableFile("arm64", "linux", filename))
+	}
+
+	for _, filename := range []string{"any.bat", "any.cmd", "any.sh", "at_darwin.sh", "at_arm64.sh", "at_arm64_darwin.sh"} {
+		must.True(robot.PlatformAcceptableFile("arm64", "darwin", filename))
+	}
+
+	for _, filename := range []string{"any.bat", "any.cmd", "any.sh", "at_windows.sh", "at_amd64.sh", "at_amd64_windows.sh"} {
+		must.True(robot.PlatformAcceptableFile("amd64", "windows", filename))
+	}
+
+	for _, filename := range []string{"at_arm64.sh", "at_windows.bat", "at_darwin.sh", "at_arm64_linux.sh"} {
+		wont.True(robot.PlatformAcceptableFile("amd64", "linux", filename))
+	}
+
+	for _, filename := range []string{"at_linux.sh", "at_arm64.sh", "at_amd64_darwin.sh", "at_amd64_linux.sh", "at_arm64_windows.sh"} {
+		wont.True(robot.PlatformAcceptableFile("amd64", "windows", filename))
+	}
+
+	for _, filename := range []string{"at_linux.sh", "at_arm64.sh", "at_arm64_darwin.sh", "at_amd64_linux.sh", "at_amd64_windows.sh"} {
+		wont.True(robot.PlatformAcceptableFile("amd64", "darwin", filename))
+	}
+}
+
 func TestCanMatchArchitecture(t *testing.T) {
 	must, wont := hamlet.Specifications(t)
 

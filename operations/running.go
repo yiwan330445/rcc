@@ -3,6 +3,7 @@ package operations
 import (
 	"fmt"
 	"path/filepath"
+	"runtime"
 	"strings"
 
 	"github.com/google/shlex"
@@ -254,6 +255,9 @@ func ExecuteTask(flags *RunFlags, template []string, config robot.Robot, todo ro
 	if preRunScripts != nil && len(preRunScripts) > 0 {
 		common.Debug("===  pre run script phase ===")
 		for _, script := range preRunScripts {
+			if !robot.PlatformAcceptableFile(runtime.GOARCH, runtime.GOOS, script) {
+				continue
+			}
 			scriptCommand, err := shlex.Split(script)
 			if err != nil {
 				pretty.Exit(11, "%sScript '%s' parsing failure: %v%s", pretty.Red, script, err, pretty.Reset)

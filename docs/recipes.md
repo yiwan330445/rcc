@@ -485,6 +485,11 @@ execution. Idea with these scripts is that they can be used to customize
 runtime environment right after it has been restored from hololib, and just
 before actual robot execution is done.
 
+If script names contains some of "amd64", "arm64", "darwin", "windows" and/or
+"linux" words (like `script_for_amd64_linux.sh`) then other architectures
+and operating systems will skip those scripts, and only amd64 linux systems
+will execute them.
+
 All these scripts are run in "robot" context with all same environment
 variables available as in robot run.
 

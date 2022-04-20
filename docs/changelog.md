@@ -1,5 +1,10 @@
 # rcc change log
 
+## v11.10.4 (date: 20.4.2022)
+
+- different preRunScripts for different operating systems
+- acceptable differentiation patterns are: amd64/arm64/darwin/windows/linux
+
 ## v11.10.3 (date: 19.4.2022)
 
 - fixed panic when settings.yaml is broken, now it will be blunt fatal failure
