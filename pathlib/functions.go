@@ -109,6 +109,14 @@ func doEnsureDirectory(directory string, mode fs.FileMode) (string, error) {
 	return fullpath, nil
 }
 
+func EnsureSharedDirectory(directory string) (string, error) {
+	return MakeSharedDir(directory)
+}
+
+func EnsureSharedParentDirectory(resource string) (string, error) {
+	return EnsureSharedDirectory(filepath.Dir(resource))
+}
+
 func EnsureDirectory(directory string) (string, error) {
 	return doEnsureDirectory(directory, 0o750)
 }

@@ -40,7 +40,7 @@ func Locker(filename string, trycount int) (Releaser, error) {
 		}()
 	}
 	common.Trace("LOCKER: Want lock on: %v", filename)
-	_, err = EnsureParentDirectory(filename)
+	_, err = EnsureSharedParentDirectory(filename)
 	if err != nil {
 		return nil, err
 	}
@@ -55,6 +55,7 @@ func Locker(filename string, trycount int) (Releaser, error) {
 			continue
 		}
 		break
+		MakeSharedFile(filename)
 	}
 	for {
 		trycount -= 1

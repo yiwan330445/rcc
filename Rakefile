@@ -16,7 +16,7 @@ task :tooling do
   puts "PATH is #{ENV['PATH']}"
   puts "GOPATH is #{ENV['GOPATH']}"
   puts "GOROOT is #{ENV['GOROOT']}"
-  sh "go get -u github.com/go-bindata/go-bindata/..."
+  sh "go install github.com/go-bindata/go-bindata/..."
   sh "which -a zip || echo NA"
   sh "which -a go-bindata || echo NA"
   sh "ls -l $HOME/go/bin"

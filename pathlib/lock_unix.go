@@ -18,7 +18,7 @@ func Locker(filename string, trycount int) (Releaser, error) {
 		defer common.Stopwatch("LOCKER: Got lock on %v in", filename).Report()
 	}
 	common.Trace("LOCKER: Want lock on: %v", filename)
-	_, err := EnsureParentDirectory(filename)
+	_, err := EnsureSharedParentDirectory(filename)
 	if err != nil {
 		return nil, err
 	}
@@ -26,6 +26,7 @@ func Locker(filename string, trycount int) (Releaser, error) {
 	if err != nil {
 		return nil, err
 	}
+	defer MakeSharedFile(filename)
 	err = syscall.Flock(int(file.Fd()), int(syscall.LOCK_EX))
 	if err != nil {
 		return nil, err
