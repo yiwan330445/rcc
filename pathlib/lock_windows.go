@@ -54,8 +54,11 @@ func Locker(filename string, trycount int) (Releaser, error) {
 			time.Sleep(40 * time.Millisecond)
 			continue
 		}
+		_, err = MakeSharedFile(filename)
+		if err != nil {
+			return nil, err
+		}
 		break
-		MakeSharedFile(filename)
 	}
 	for {
 		trycount -= 1

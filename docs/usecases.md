@@ -6,6 +6,7 @@
   communicate to Robocorp Control Room
 * provide commands that can be used in CI pipelines (Jenkins, Gitlab CI, ...)
   to push robots into Robocorp Control Room
+* can also be used to run robot tests in CI/CD environments
 * provide isolated environments to run python scripts and applications
 * to use other scripting languages and tools available from conda-forge (or
   conda in general) with isolated and easily installed manner (see list below
@@ -23,10 +24,11 @@
 * r and libraries
 * julia and libraries
 * make, cmake and compilers (C++, Fortran, ...)
-* nginx
 * nodejs
+* nginx
 * rust
 * php
+* go
 * gawk, sed, and emacs, vim
 * ROS libraries (robot operating system)
 * firefox

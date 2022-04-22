@@ -9,8 +9,8 @@ import (
 
 var scriptCmd = &cobra.Command{
 	Use:   "script",
-	Short: "Run script inside robot task envrionment.",
-	Long:  "Run script inside robot task envrionment.",
+	Short: "Run script inside robot task environment.",
+	Long:  "Run script inside robot task environment.",
 	Example: `
   rcc task script -- pip list
   rcc task script --silent -- python --version

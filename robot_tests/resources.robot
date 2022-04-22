@@ -15,6 +15,8 @@ Prepare Local
   Create Directory  tmp/robocorp
   Set Environment Variable  ROBOCORP_HOME  tmp/robocorp
 
+  Fire And Forget   build/rcc ht delete 4e67cd8
+
   Comment     Verify micromamba is installed or download and install it.
   Step        build/rcc ht vars --controller citests robot_tests/conda.yaml
   Must Exist  %{ROBOCORP_HOME}/bin/

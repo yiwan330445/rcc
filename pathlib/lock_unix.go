@@ -26,7 +26,10 @@ func Locker(filename string, trycount int) (Releaser, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer MakeSharedFile(filename)
+	_, err = MakeSharedFile(filename)
+	if err != nil {
+		return nil, err
+	}
 	err = syscall.Flock(int(file.Fd()), int(syscall.LOCK_EX))
 	if err != nil {
 		return nil, err

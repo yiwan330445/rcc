@@ -1,5 +1,11 @@
 # rcc change log
 
+## v11.10.7 (date: 22.4.2022)
+
+- bugfix/retry: lock files are now marked as shared files (actually this
+  will not work on Windows on multi-user setup)
+- changed robot test setup cleanup
+
 ## v11.10.6 (date: 21.4.2022)
 
 - bugfix: lock files are now marked as shared files
