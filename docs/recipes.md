@@ -455,6 +455,23 @@ There are three types of task declarations:
    arguments, and it is most accurate way to declare CLI form, but it is also
    most spacious form.
 
+### What are `devTasks:`?
+
+They are tasks like above `tasks:` define. But they have two major differences
+compared to normal `tasks:` definitions:
+
+1. They are for developers at development machine, for doing development time
+   activities and tasks. They should never be available in cloud containers,
+   Assistants or Agents. Developer tools can provide support for them, but
+   their semantics should be only valid in development context.
+2. They can be run like normal tasks, by providing `--dev` flag. But durng
+   their run, all `preRunScripts:` are ignored. Otherwise environment is
+   created and managed as normal tasks, but without pre-run scripts applied.
+
+Their primary goal is provide developers way to use same tooling to automate
+their development process, like normal `tasks:` provide ways to automate
+robot actions.
+
 ### What is `condaConfigFile:`?
 
 This is actual name used as `conda.yaml` environment configuration file.

@@ -1,5 +1,10 @@
 # rcc change log
 
+## v11.11.0 (date: 25.4.2022)
+
+- in addition to normal tasks, now robot.yaml can also contain devTasks
+- it is activated with flag `--dev` and only available in task run command
+
 ## v11.10.7 (date: 22.4.2022)
 
 - bugfix/retry: lock files are now marked as shared files (actually this

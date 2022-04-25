@@ -252,7 +252,7 @@ func ExecuteTask(flags *RunFlags, template []string, config robot.Robot, todo ro
 	FreezeEnvironmentListing(label, config)
 
 	preRunScripts := config.PreRunScripts()
-	if preRunScripts != nil && len(preRunScripts) > 0 {
+	if !common.DeveloperFlag && preRunScripts != nil && len(preRunScripts) > 0 {
 		common.Debug("===  pre run script phase ===")
 		for _, script := range preRunScripts {
 			if !robot.PlatformAcceptableFile(runtime.GOARCH, runtime.GOOS, script) {

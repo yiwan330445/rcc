@@ -23,6 +23,7 @@ var (
 	Silent             bool
 	DebugFlag          bool
 	TraceFlag          bool
+	DeveloperFlag      bool
 	StrictFlag         bool
 	LogLinenumbers     bool
 	NoCache            bool
