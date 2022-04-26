@@ -396,6 +396,12 @@ tasks:
       - Task log
       - tasks.robot
 
+devTasks:
+  Editor setup:
+    shell: python scripts/editor_setup.py
+  Repository update:
+    shell: python scripts/repository_update.py
+
 condaConfigFile: conda.yaml
 
 environmentConfigs:
@@ -460,17 +466,24 @@ There are three types of task declarations:
 They are tasks like above `tasks:` define. But they have two major differences
 compared to normal `tasks:` definitions:
 
-1. They are for developers at development machine, for doing development time
+1. They are for developers at development machines, for doing development time
    activities and tasks. They should never be available in cloud containers,
    Assistants or Agents. Developer tools can provide support for them, but
    their semantics should be only valid in development context.
-2. They can be run like normal tasks, by providing `--dev` flag. But durng
+2. They can be run like normal tasks, by providing `--dev` flag. But during
    their run, all `preRunScripts:` are ignored. Otherwise environment is
-   created and managed as normal tasks, but without pre-run scripts applied.
+   created and managed as with normal tasks, but without pre-run scripts
+   applied.
 
 Their primary goal is provide developers way to use same tooling to automate
 their development process, like normal `tasks:` provide ways to automate
-robot actions.
+robot actions. Some examples could be common editor setups and version control
+repository updates.
+
+Currently `--dev` option is only available in `rcc run` and `rcc task run`
+commands.  And when that `--dev` option is given on command line, only
+`devTasks:` are available for running and all normal `tasks:` are missing.
+And when that option is missing, then also `devTasks:` are invisible/missing.
 
 ### What is `condaConfigFile:`?
 

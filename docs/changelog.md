@@ -1,5 +1,11 @@
 # rcc change log
 
+## v11.11.1 (date: 26.4.2022)
+
+- bugfix: added v12 indicator in new form of holotree catalogs (to separate
+  from old ones) to allow old and new versions to co-exist
+- documentation update for devTasks and ToC
+
 ## v11.11.0 (date: 25.4.2022)
 
 - in addition to normal tasks, now robot.yaml can also contain devTasks

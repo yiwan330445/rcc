@@ -71,7 +71,7 @@ def headings(filename):
                 yield filename, len(level), title
 
 def process():
-    toc = Toc("ToC for rcc documentation", "https://github.com/robocorp/rcc/blob/master/")
+    toc = Toc("Table of contents: rcc documentation", "https://github.com/robocorp/rcc/blob/master/")
     documentation = list(glob.glob('docs/*.md'))
     for filename in PRIORITY_LIST:
         if filename in documentation:

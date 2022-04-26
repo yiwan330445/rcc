@@ -186,7 +186,7 @@ func (it *hololib) Record(blueprint []byte) error {
 }
 
 func (it *hololib) CatalogPath(key string) string {
-	name := fmt.Sprintf("%s.%s", key, common.Platform())
+	name := fmt.Sprintf("%sv12.%s", key, common.Platform())
 	return filepath.Join(common.HololibCatalogLocation(), name)
 }
 
@@ -229,7 +229,7 @@ func (it *hololib) queryBlueprint(key string) bool {
 
 func Catalogs() []string {
 	result := make([]string, 0, 10)
-	for _, catalog := range pathlib.Glob(common.HololibCatalogLocation(), "[0-9a-f]*.*") {
+	for _, catalog := range pathlib.Glob(common.HololibCatalogLocation(), "[0-9a-f]*v12.*") {
 		result = append(result, catalog)
 	}
 	sort.Strings(result)
