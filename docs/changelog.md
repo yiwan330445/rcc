@@ -1,5 +1,9 @@
 # rcc change log
 
+## v11.11.2 (date: 26.4.2022)
+
+- more documentation update for devTasks
+
 ## v11.11.1 (date: 26.4.2022)
 
 - bugfix: added v12 indicator in new form of holotree catalogs (to separate

@@ -475,15 +475,16 @@ compared to normal `tasks:` definitions:
    created and managed as with normal tasks, but without pre-run scripts
    applied.
 
-Their primary goal is provide developers way to use same tooling to automate
-their development process, like normal `tasks:` provide ways to automate
-robot actions. Some examples could be common editor setups and version control
-repository updates.
+The `devTasks:` primary goal is to provide developers a way to use the same
+tooling to automate their development process as normal `tasks:` provide ways
+to automate robot actions. Some examples could be: common editor setups,
+version control repository updates.
 
-Currently `--dev` option is only available in `rcc run` and `rcc task run`
-commands.  And when that `--dev` option is given on command line, only
-`devTasks:` are available for running and all normal `tasks:` are missing.
-And when that option is missing, then also `devTasks:` are invisible/missing.
+Currently `--dev` option is only available for `rcc run` and `rcc task run`
+commands. With the `--dev` option the only available tasks for execution will
+be the `devTasks:`. The normal `tasks:` will be skipped/missing. If the `--dev`
+option is missing, the `devTasks:` will be skipped/missing, and the normal
+`tasks:` will be the ones available for execution.
 
 ### What is `condaConfigFile:`?
 
