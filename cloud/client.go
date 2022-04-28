@@ -211,10 +211,12 @@ func Download(url, filename string) error {
 
 	common.Debug("Downloading %s <%s> -> %s", url, response.Status, filename)
 
-	_, err = io.Copy(many, response.Body)
+	bytecount, err := io.Copy(many, response.Body)
 	if err != nil {
 		return err
 	}
+
+	common.Timeline("downloaded %d bytes to %s", bytecount, filename)
 
 	err = out.Sync()
 	if err != nil {

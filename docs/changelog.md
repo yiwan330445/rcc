@@ -1,5 +1,9 @@
 # rcc change log
 
+## v11.12.0 (date: 28.4.2022)
+
+- `rcc holotree import` now supports URL imports
+
 ## v11.11.2 (date: 26.4.2022)
 
 - more documentation update for devTasks
