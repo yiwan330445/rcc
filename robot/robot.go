@@ -73,9 +73,11 @@ type task struct {
 	robot   *robot
 }
 
-func (it *robot) taskMap() map[string]*task {
+func (it *robot) taskMap(note bool) map[string]*task {
 	if common.DeveloperFlag {
-		pretty.Note("Operating in developer mode. Using 'devTasks:' instead of 'tasks:'.")
+		if note {
+			pretty.Note("Operating in developer mode. Using 'devTasks:' instead of 'tasks:'.")
+		}
 		return it.Devtasks
 	} else {
 		return it.Tasks
@@ -297,7 +299,7 @@ func (it *robot) IgnoreFiles() []string {
 }
 
 func (it *robot) AvailableTasks() []string {
-	tasks := it.taskMap()
+	tasks := it.taskMap(false)
 	result := make([]string, 0, len(tasks))
 	for name, _ := range tasks {
 		result = append(result, fmt.Sprintf("%q", name))
@@ -307,7 +309,7 @@ func (it *robot) AvailableTasks() []string {
 }
 
 func (it *robot) DefaultTask() Task {
-	tasks := it.taskMap()
+	tasks := it.taskMap(true)
 	if len(tasks) != 1 {
 		return nil
 	}
@@ -323,7 +325,7 @@ func (it *robot) TaskByName(name string) Task {
 	if len(name) == 0 {
 		return it.DefaultTask()
 	}
-	tasks := it.taskMap()
+	tasks := it.taskMap(true)
 	key := strings.TrimSpace(name)
 	found, ok := tasks[key]
 	if ok {
