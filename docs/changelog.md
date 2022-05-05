@@ -1,6 +1,10 @@
 # rcc change log
 
-## v11.12.2 (date: 5.5.2022)
+## v11.12.3 (date: 5.5.2022)
+
+- Reverted the change in v11.12.2 based on further testing.
+
+## v11.12.2 (date: 5.5.2022) UNSTABLE
 
 - legacyfix: Adding `x-` prefix to custom header, due to some enterprise network proxies stripping headers.
 
