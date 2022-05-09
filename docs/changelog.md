@@ -1,6 +1,11 @@
 # rcc change log
 
-## v11.12.3 (date: 5.5.2022)
+## v11.12.4 (date: 9.5.2022)
+
+- bugfix: rcc task script could not find any task (reason: internal quoting)
+- this closes #32
+
+## v11.12.3 (date: 5.5.2022) UNSTABLE
 
 - Reverted the change in v11.12.2 based on further testing.
 

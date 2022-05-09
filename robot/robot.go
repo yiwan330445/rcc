@@ -326,7 +326,7 @@ func (it *robot) TaskByName(name string) Task {
 		return it.DefaultTask()
 	}
 	tasks := it.taskMap(true)
-	key := strings.TrimSpace(name)
+	key := strings.Trim(name, "\t\r\n\"' ")
 	found, ok := tasks[key]
 	if ok {
 		return found

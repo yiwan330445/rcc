@@ -2,7 +2,6 @@
 Library  OperatingSystem
 Library  supporting.py
 Resource  resources.robot
-Default Tags      WIP
 
 *** Test cases ***
 

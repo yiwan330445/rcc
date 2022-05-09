@@ -31,6 +31,14 @@ Bug in virtual holotree with gzipped files
   Use STDERR
   Must Have   Blueprint "ef0163b57ff44cd5" is available: true
 
+Github issue 32 about rcc task script command failing
+  [Tags]        WIP
+
+  Step        build/rcc task script --controller citests --robot robot_tests/spellbug/robot.yaml -- pip list
+  Use STDOUT
+  Must Have   pyspellchecker
+  Must Have   0.6.2
+
 
 *** Keywords ***
 
