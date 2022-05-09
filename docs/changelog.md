@@ -1,5 +1,9 @@
 # rcc change log
 
+## v11.12.5 (date: 9.5.2022)
+
+- micromamba upgrade to v0.23.0
+
 ## v11.12.4 (date: 9.5.2022)
 
 - bugfix: rcc task script could not find any task (reason: internal quoting)
