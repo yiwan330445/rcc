@@ -1,6 +1,12 @@
 # rcc change log
 
-## v11.12.5 (date: 9.5.2022)
+## v11.12.6 (date: 10.5.2022) UNSTABLE
+
+- bugfix: added additional directory for hololib, since it helps mounting
+  on servers
+- one recipe addition, for idea generation ...
+
+## v11.12.5 (date: 9.5.2022) UNSTABLE
 
 - micromamba upgrade to v0.23.0
 

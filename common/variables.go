@@ -138,7 +138,7 @@ func HolotreeLocation() string {
 
 func HololibLocation() string {
 	if FixedHolotreeLocation() {
-		return HoloLocation()
+		return filepath.Join(HoloLocation(), "lib")
 	}
 	return filepath.Join(RobocorpHome(), "hololib")
 }

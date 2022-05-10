@@ -266,6 +266,26 @@ cp target/build/micromamba output/micromamba-$version
 ```
 
 
+## Think what you can do with this conda.yaml?
+
+```
+channels:
+  # Just using conda-forge, nothing else.
+  - conda-forge
+
+dependencies:
+  # I'm not going to have python directly installed here ..
+  # But let's go wild with conda-forge ...
+
+  - nginx=1.21.6     # https://anaconda.org/conda-forge/nginx
+  - php=8.1.5        # https://anaconda.org/conda-forge/php
+  - go=1.17.8        # https://anaconda.org/conda-forge/go
+  - postgresql=14.2  # https://anaconda.org/conda-forge/postgresql
+  - terraform=1.1.9  # https://anaconda.org/conda-forge/terraform
+  - awscli=1.23.9    # https://anaconda.org/conda-forge/awscli
+  - firefox=100.0    # https://anaconda.org/conda-forge/firefox
+```
+
 ## How to control holotree environments?
 
 There is three controlling factors for where holotree spaces are created.
