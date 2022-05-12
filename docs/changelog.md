@@ -1,5 +1,10 @@
 # rcc change log
 
+## v11.12.7 (date: 12.5.2022) UNSTABLE
+
+- micromamba upgrade to v0.23.1
+- added checks for hololib shared locations mode requirements
+
 ## v11.12.6 (date: 10.5.2022) UNSTABLE
 
 - bugfix: added additional directory for hololib, since it helps mounting

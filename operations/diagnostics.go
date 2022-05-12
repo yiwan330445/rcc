@@ -102,6 +102,12 @@ func RunDiagnostics() *common.DiagnosticStatus {
 	}
 
 	// checks
+	if common.FixedHolotreeLocation() {
+		result.Checks = append(result.Checks, verifySharedDirectory(common.HoloLocation()))
+		result.Checks = append(result.Checks, verifySharedDirectory(common.HololibLocation()))
+		result.Checks = append(result.Checks, verifySharedDirectory(common.HololibCatalogLocation()))
+		result.Checks = append(result.Checks, verifySharedDirectory(common.HololibLibraryLocation()))
+	}
 	result.Checks = append(result.Checks, robocorpHomeCheck())
 	result.Checks = append(result.Checks, anyPathCheck("PYTHONPATH"))
 	result.Checks = append(result.Checks, anyPathCheck("PLAYWRIGHT_BROWSERS_PATH"))
@@ -162,6 +168,25 @@ func anyPathCheck(key string) *common.DiagnosticCheck {
 		Type:    "OS",
 		Status:  statusOk,
 		Message: fmt.Sprintf("%s is not set, which is good.", key),
+		Link:    supportGeneralUrl,
+	}
+}
+
+func verifySharedDirectory(fullpath string) *common.DiagnosticCheck {
+	shared := pathlib.IsSharedDir(fullpath)
+	supportGeneralUrl := settings.Global.DocsLink("troubleshooting")
+	if !shared {
+		return &common.DiagnosticCheck{
+			Type:    "OS",
+			Status:  statusWarning,
+			Message: fmt.Sprintf("%q is not shared. This may cause problems.", fullpath),
+			Link:    supportGeneralUrl,
+		}
+	}
+	return &common.DiagnosticCheck{
+		Type:    "OS",
+		Status:  statusOk,
+		Message: fmt.Sprintf("%q is shared, which is ok.", fullpath),
 		Link:    supportGeneralUrl,
 	}
 }

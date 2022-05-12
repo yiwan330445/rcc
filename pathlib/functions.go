@@ -49,9 +49,12 @@ func Modtime(pathname string) (time.Time, error) {
 	return stat.ModTime(), nil
 }
 
+func hasCorrectMode(stat fs.FileInfo, expected fs.FileMode) bool {
+	return expected == (stat.Mode() & expected)
+}
+
 func ensureCorrectMode(fullpath string, stat fs.FileInfo, correct fs.FileMode) (string, error) {
-	mode := stat.Mode() & correct
-	if mode == correct {
+	if hasCorrectMode(stat, correct) {
 		return fullpath, nil
 	}
 	err := os.Chmod(fullpath, correct)
@@ -88,6 +91,14 @@ func MakeSharedFile(fullpath string) (string, error) {
 
 func MakeSharedDir(fullpath string) (string, error) {
 	return makeModedDir(fullpath, 0777)
+}
+
+func IsSharedDir(fullpath string) bool {
+	stat, err := os.Stat(fullpath)
+	if err != nil {
+		return false
+	}
+	return stat.IsDir() && hasCorrectMode(stat, 0777)
 }
 
 func doEnsureDirectory(directory string, mode fs.FileMode) (string, error) {
