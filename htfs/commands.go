@@ -30,7 +30,11 @@ func NewEnvironment(condafile, holozip string, restore, force bool) (label strin
 			pretty.Note("There is hololib.zip present at: %q", holozip)
 		}
 	}()
-	common.Progress(1, "Fresh holotree environment %v.", xviper.TrackingIdentity())
+	if common.SharedHolotree {
+		common.Progress(1, "Fresh [shared mode] holotree environment %v.", xviper.TrackingIdentity())
+	} else {
+		common.Progress(1, "Fresh [private mode] holotree environment %v.", xviper.TrackingIdentity())
+	}
 
 	callback := pathlib.LockWaitMessage("Serialized environment creation")
 	locker, err := pathlib.Locker(common.HolotreeLock(), 30000)

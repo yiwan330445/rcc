@@ -89,7 +89,11 @@ func markTempForRecycling() {
 func main() {
 	defer ExitProtection()
 
-	common.TimelineBegin("Start.")
+	if common.SharedHolotree {
+		common.TimelineBegin("Start [shared mode].")
+	} else {
+		common.TimelineBegin("Start [private mode].")
+	}
 	defer common.EndOfTimeline()
 	go startTempRecycling()
 	defer markTempForRecycling()

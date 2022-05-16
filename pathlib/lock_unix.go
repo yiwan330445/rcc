@@ -26,7 +26,7 @@ func Locker(filename string, trycount int) (Releaser, error) {
 	if err != nil {
 		return nil, err
 	}
-	_, err = MakeSharedFile(filename)
+	_, err = shared.MakeSharedFile(filename)
 	if err != nil {
 		return nil, err
 	}

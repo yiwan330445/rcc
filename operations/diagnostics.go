@@ -102,7 +102,7 @@ func RunDiagnostics() *common.DiagnosticStatus {
 	}
 
 	// checks
-	if common.FixedHolotreeLocation() {
+	if common.SharedHolotree {
 		result.Checks = append(result.Checks, verifySharedDirectory(common.HoloLocation()))
 		result.Checks = append(result.Checks, verifySharedDirectory(common.HololibLocation()))
 		result.Checks = append(result.Checks, verifySharedDirectory(common.HololibCatalogLocation()))

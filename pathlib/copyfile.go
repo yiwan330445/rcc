@@ -23,7 +23,7 @@ func CopyFile(source, target string, overwrite bool) error {
 }
 
 func copyFile(source, target string, overwrite bool, copier copyfunc) error {
-	_, err := MakeSharedDir(filepath.Dir(target))
+	_, err := shared.MakeSharedDir(filepath.Dir(target))
 	if err != nil {
 		return err
 	}

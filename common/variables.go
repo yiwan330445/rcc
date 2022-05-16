@@ -13,7 +13,6 @@ import (
 )
 
 const (
-	FIXED_HOLOTREE                        = `FIXED_HOLOTREE`
 	ROBOCORP_HOME_VARIABLE                = `ROBOCORP_HOME`
 	VERBOSE_ENVIRONMENT_BUILDING          = `RCC_VERBOSE_ENVIRONMENT_BUILDING`
 	ROBOCORP_OVERRIDE_SYSTEM_REQUIREMENTS = `ROBOCORP_OVERRIDE_SYSTEM_REQUIREMENTS`
@@ -25,6 +24,7 @@ var (
 	TraceFlag          bool
 	DeveloperFlag      bool
 	StrictFlag         bool
+	SharedHolotree     bool
 	LogLinenumbers     bool
 	NoCache            bool
 	NoOutputCapture    bool
@@ -52,6 +52,8 @@ func init() {
 	//       created from "htfs" direcotry.go init function
 	// Also: HolotreeLocation creation is left for actual holotree commands
 	//       to prevent accidental access right problem during usage
+
+	SharedHolotree = isFile(HoloInitUserFile())
 
 	ensureDirectory(TemplateLocation())
 	ensureDirectory(BinLocation())
@@ -125,19 +127,27 @@ func HoloLocation() string {
 	return ExpandPath(defaultHoloLocation)
 }
 
-func FixedHolotreeLocation() bool {
-	return len(os.Getenv(FIXED_HOLOTREE)) > 0
+func HoloInitLocation() string {
+	return filepath.Join(HoloLocation(), "lib", "catalog", "init")
+}
+
+func HoloInitUserFile() string {
+	return filepath.Join(HoloInitLocation(), UserHomeIdentity())
+}
+
+func HoloInitCommonFile() string {
+	return filepath.Join(HoloInitLocation(), "commons.tof")
 }
 
 func HolotreeLocation() string {
-	if FixedHolotreeLocation() {
+	if SharedHolotree {
 		return HoloLocation()
 	}
 	return filepath.Join(RobocorpHome(), "holotree")
 }
 
 func HololibLocation() string {
-	if FixedHolotreeLocation() {
+	if SharedHolotree {
 		return filepath.Join(HoloLocation(), "lib")
 	}
 	return filepath.Join(RobocorpHome(), "hololib")
@@ -227,6 +237,11 @@ func UserAgent() string {
 
 func ControllerIdentity() string {
 	return strings.ToLower(fmt.Sprintf("rcc.%s", ControllerType))
+}
+
+func isFile(pathname string) bool {
+	stat, err := os.Stat(pathname)
+	return err == nil && stat.Mode().IsRegular()
 }
 
 func isDir(pathname string) bool {

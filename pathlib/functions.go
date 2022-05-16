@@ -72,7 +72,7 @@ func makeModedDir(fullpath string, correct fs.FileMode) (path string, err error)
 		return ensureCorrectMode(fullpath, stat, correct)
 	}
 	fail.On(err == nil, "Path %q exists, but is not a directory!", fullpath)
-	_, err = MakeSharedDir(filepath.Dir(fullpath))
+	_, err = shared.MakeSharedDir(filepath.Dir(fullpath))
 	fail.On(err != nil, "%v", err)
 	err = os.Mkdir(fullpath, correct)
 	fail.On(err != nil, "Failed to create directory %q, reason: %v", fullpath, err)
@@ -84,12 +84,14 @@ func makeModedDir(fullpath string, correct fs.FileMode) (path string, err error)
 }
 
 func MakeSharedFile(fullpath string) (string, error) {
-	stat, err := os.Stat(fullpath)
-	fail.On(err != nil, "Failed to stat file %q, reason: %v", fullpath, err)
-	return ensureCorrectMode(fullpath, stat, 0666)
+	return shared.MakeSharedFile(fullpath)
 }
 
 func MakeSharedDir(fullpath string) (string, error) {
+	return shared.MakeSharedDir(fullpath)
+}
+
+func ForceSharedDir(fullpath string) (string, error) {
 	return makeModedDir(fullpath, 0777)
 }
 
@@ -121,7 +123,7 @@ func doEnsureDirectory(directory string, mode fs.FileMode) (string, error) {
 }
 
 func EnsureSharedDirectory(directory string) (string, error) {
-	return MakeSharedDir(directory)
+	return shared.MakeSharedDir(directory)
 }
 
 func EnsureSharedParentDirectory(resource string) (string, error) {

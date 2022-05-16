@@ -1,5 +1,12 @@
 # rcc change log
 
+## v11.12.8 (date: 16.5.2022) UNSTABLE
+
+- bugfix: making shared directories shared only when they really are
+- new command `rcc holotree shared --enable` to enable shared holotrees
+  in specific machine
+- command `rcc holotree init` is now for normal users after shared command
+
 ## v11.12.7 (date: 12.5.2022) UNSTABLE
 
 - micromamba upgrade to v0.23.1
