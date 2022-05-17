@@ -1,5 +1,10 @@
 # rcc change log
 
+## v11.12.9 (date: 17.5.2022) UNSTABLE
+
+- bugfix: effective user id did not work on windows, removing it for all OSs
+- diagnostics now has true/false flag to indicated shared/private holotrees
+
 ## v11.12.8 (date: 16.5.2022) UNSTABLE
 
 - bugfix: making shared directories shared only when they really are

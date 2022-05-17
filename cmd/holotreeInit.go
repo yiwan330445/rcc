@@ -41,7 +41,6 @@ var holotreeInitCmd = &cobra.Command{
 			defer common.Stopwatch("Initialize shared holotree location lasted").Report()
 		}
 		pretty.Warning("Running this command might need 'rcc holotree shared --enable' first. Still, trying ...")
-		pretty.Guard(os.Geteuid() > 0, 9, "Do not run _this_ command as root. This is for normal users only.")
 		if revokeInit {
 			disableHolotreeSharing()
 		} else {

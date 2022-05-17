@@ -91,6 +91,7 @@ func RunDiagnostics() *common.DiagnosticStatus {
 	result.Details["hololib-catalog-location"] = common.HololibCatalogLocation()
 	result.Details["hololib-library-location"] = common.HololibLibraryLocation()
 	result.Details["holotree-location"] = common.HolotreeLocation()
+	result.Details["holotree-shared"] = fmt.Sprintf("%v", common.SharedHolotree)
 	result.Details["holotree-user-id"] = common.UserHomeIdentity()
 	result.Details["os"] = common.Platform()
 	result.Details["cpus"] = fmt.Sprintf("%d", runtime.NumCPU())
