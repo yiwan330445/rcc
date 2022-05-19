@@ -1,5 +1,11 @@
 # rcc change log
 
+## v11.13.0 (date: 19.5.2022)
+
+- new shared holotree should now be effective
+- some instructions on recipes for enabling shared holotree
+- micromamba upgrade to v0.23.2
+
 ## v11.12.9 (date: 17.5.2022) UNSTABLE
 
 - bugfix: effective user id did not work on windows, removing it for all OSs

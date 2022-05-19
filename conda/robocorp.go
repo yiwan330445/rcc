@@ -194,7 +194,7 @@ func HasMicroMamba() bool {
 		return false
 	}
 	version, versionText := AsVersion(MicromambaVersion())
-	goodEnough := version >= 23001
+	goodEnough := version >= 23002
 	common.Debug("%q version is %q -> %v (good enough: %v)", BinMicromamba(), versionText, version, goodEnough)
 	common.Timeline("µmamba version is %q (at %q).", versionText, BinMicromamba())
 	return goodEnough

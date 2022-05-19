@@ -360,6 +360,41 @@ rcc task shell --robot path/to/robot.yaml
 ```
 
 
+## What is shared holotree?
+
+Shared holotree is way to multiple users use same environment blueprint in
+same machine, or even in different machines with same, once it is built or
+imported into hololib.
+
+## How to setup rcc to use shared holotree?
+
+### One time setup
+
+On each machine, where you want to use shared holotree, you needs once to
+enable using it. It probably needs elevated rights to run, if operating system
+limits your access to shared resource. You can do it following way.
+
+```sh
+sudo rcc holotree shared --enable
+```
+
+### Per user initialization
+
+If user wants to use shared holotrees, then they have to initialize to use
+those shared settings. That can be done using following command.
+
+```sh
+rcc holotree init
+```
+
+### Reverting back to private holotrees
+
+If user wants to go back to private holotrees, they can run following command.
+
+```sh
+rcc holotree init --revoke
+```
+
 ## What can be controlled using environment variables?
 
 - `ROBOCORP_HOME` points to directory where rcc keeps most of Robocorp related
