@@ -1,5 +1,11 @@
 # rcc change log
 
+## v11.14.0 (date: 7.6.2022)
+
+- experimenting on setting `VIRTUAL_ENV` environment variable to point into
+  environment rcc created environment
+- made OS and architecture visible in rcc "Progress 2" marker
+
 ## v11.13.0 (date: 19.5.2022)
 
 - new shared holotree should now be effective

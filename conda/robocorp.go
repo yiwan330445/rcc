@@ -101,8 +101,10 @@ func CondaExecutionEnvironment(location string, inject []string, full bool) []st
 	if !ok {
 		python, ok = holotreePath.Which("python", FileExtensions)
 	}
+	virtualenv := ""
 	if ok {
 		environment = append(environment, "PYTHON_EXE="+python)
+		virtualenv = location
 	}
 	environment = append(environment,
 		"CONDA_DEFAULT_ENV=rcc",
@@ -112,6 +114,7 @@ func CondaExecutionEnvironment(location string, inject []string, full bool) []st
 		"PYTHONHOME=",
 		"PYTHONSTARTUP=",
 		"PYTHONEXECUTABLE=",
+		"VIRTUAL_ENV="+virtualenv,
 		"PYTHONNOUSERSITE=1",
 		"PYTHONDONTWRITEBYTECODE=x",
 		"PYTHONPYCACHEPREFIX="+common.RobocorpTemp(),
