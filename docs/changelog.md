@@ -1,5 +1,10 @@
 # rcc change log
 
+## v11.14.1 (date: 8.6.2022)
+
+- fixing codeql-analysis settings and problems
+- no codeql analysis for ruby or python in this repo
+
 ## v11.14.0 (date: 7.6.2022)
 
 - experimenting on setting `VIRTUAL_ENV` environment variable to point into

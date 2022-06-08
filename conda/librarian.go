@@ -42,7 +42,8 @@ func Index(search string, members []string) int {
 }
 
 func updateChannels(environment *Environment, changes *Changes) {
-	result := make([]string, 0, len(changes.Add)+len(environment.Channels))
+	predicted := uint64(len(changes.Add) + len(environment.Channels))
+	result := make([]string, 0, predicted)
 	for _, current := range environment.Channels {
 		if Index(current, changes.Remove) > -1 {
 			continue
@@ -78,7 +79,8 @@ func updatePackages(environment *Environment, changes *Changes) error {
 }
 
 func composePackages(target []*Dependency, add []*Dependency, remove []*Dependency) ([]*Dependency, error) {
-	result := make([]*Dependency, 0, len(target)+len(add))
+	predicted := uint64(len(target) + len(add))
+	result := make([]*Dependency, 0, predicted)
 	for _, current := range target {
 		if current.Index(remove) > -1 {
 			continue
