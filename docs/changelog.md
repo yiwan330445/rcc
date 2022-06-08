@@ -1,5 +1,9 @@
 # rcc change log
 
+## v11.14.2 (date: 8.6.2022)
+
+- retry on fixing codeql-analysis problem
+
 ## v11.14.1 (date: 8.6.2022)
 
 - fixing codeql-analysis settings and problems

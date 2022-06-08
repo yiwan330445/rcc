@@ -41,8 +41,12 @@ func Index(search string, members []string) int {
 	return -1
 }
 
+func bitGuard(size int) uint64 {
+	return uint64(size & 0x0000_3fff_ffff_ffff)
+}
+
 func updateChannels(environment *Environment, changes *Changes) {
-	predicted := uint64(len(changes.Add) + len(environment.Channels))
+	predicted := uint64(bitGuard(len(changes.Add)) + bitGuard(len(environment.Channels)))
 	result := make([]string, 0, predicted)
 	for _, current := range environment.Channels {
 		if Index(current, changes.Remove) > -1 {
@@ -79,7 +83,7 @@ func updatePackages(environment *Environment, changes *Changes) error {
 }
 
 func composePackages(target []*Dependency, add []*Dependency, remove []*Dependency) ([]*Dependency, error) {
-	predicted := uint64(len(target) + len(add))
+	predicted := uint64(bitGuard(len(target)) + bitGuard(len(add)))
 	result := make([]*Dependency, 0, predicted)
 	for _, current := range target {
 		if current.Index(remove) > -1 {
