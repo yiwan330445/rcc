@@ -370,18 +370,28 @@ imported into hololib.
 
 ### One time setup
 
-On each machine, where you want to use shared holotree, you needs once to
-enable using it. It probably needs elevated rights to run, if operating system
-limits your access to shared resource. You can do it following way.
+On each machine, where you want to use shared holotree, the shared location
+needs to be enabled once. 
+This depends on the operating system so the commands below are OS specific
+and do require elevated rights from the user that runs them. 
 
-```sh
-sudo rcc holotree shared --enable
+The commands to enable the shared locations are:
+* Windows: `rcc holotree shared --enable`
+  * Shared location: `C:\ProgramData\robocorp`
+* MacOS: `sudo rcc holotree shared --enable`
+  * Shared location: `/Users/Shared/robocorp`
+* Linux: `sudo rcc holotree shared --enable`
+  * Shared location: `/opt/robocorp`
+
+Note: On Windows the command below assumes the standard `BUILTIN\Users`
+user group is present. 
+If your organization has replaced this you can grant the permission with:
+
+```
+icacls "C:\ProgramData\robocorp" /grant "BUILTIN\Users":(OI)(CI)M /T
 ```
 
-### Per user initialization
-
-If user wants to use shared holotrees, then they have to initialize to use
-those shared settings. That can be done using following command.
+To switch the user to using shared holotrees use the following command.
 
 ```sh
 rcc holotree init
