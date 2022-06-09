@@ -1,5 +1,9 @@
 # rcc change log
 
+## v11.14.3 (date: 9.6.2022)
+
+- upgraded rcc to be build using go v1.18.x
+
 ## v11.14.2 (date: 8.6.2022)
 
 - retry on fixing codeql-analysis problem
