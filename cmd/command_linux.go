@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"os"
 	"path/filepath"
 
 	"github.com/robocorp/rcc/common"
@@ -9,10 +10,15 @@ import (
 )
 
 func osSpecificHolotreeSharing(enable bool) {
+	if !enable {
+		return
+	}
 	pathlib.ForceShared()
 	parent := filepath.Dir(common.HoloLocation())
 	_, err := pathlib.ForceSharedDir(parent)
 	pretty.Guard(err == nil, 1, "Could not enable shared location at %q, reason: %v", parent, err)
 	_, err = pathlib.ForceSharedDir(common.HoloLocation())
 	pretty.Guard(err == nil, 2, "Could not enable shared location at %q, reason: %v", common.HoloLocation(), err)
+	err = os.WriteFile(common.SharedMarkerLocation(), []byte(common.Version), 0644)
+	pretty.Guard(err == nil, 3, "Could not write %q, reason: %v", common.SharedMarkerLocation(), err)
 }

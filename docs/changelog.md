@@ -1,5 +1,10 @@
 # rcc change log
 
+## v11.14.4 (date: 15.6.2022)
+
+- holotree share enabling now uses "icals" in Windows to set default properties
+- added marker file "shared.yes" when shared has been executed
+
 ## v11.14.3 (date: 9.6.2022)
 
 - upgraded rcc to be build using go v1.18.x

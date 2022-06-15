@@ -123,6 +123,10 @@ func BinLocation() string {
 	return filepath.Join(RobocorpHome(), "bin")
 }
 
+func SharedMarkerLocation() string {
+	return filepath.Join(HoloLocation(), "shared.yes")
+}
+
 func HoloLocation() string {
 	return ExpandPath(defaultHoloLocation)
 }

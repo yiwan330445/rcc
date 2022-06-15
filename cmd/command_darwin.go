@@ -1,7 +1,18 @@
 package cmd
 
-import "github.com/robocorp/rcc/pretty"
+import (
+	"os"
+
+	"github.com/robocorp/rcc/common"
+	"github.com/robocorp/rcc/pathlib"
+	"github.com/robocorp/rcc/pretty"
+)
 
 func osSpecificHolotreeSharing(enable bool) {
-	pretty.Warning("Good to go. Nothing to do on Mac OS.")
+	if !enable {
+		return
+	}
+	pathlib.ForceShared()
+	err := os.WriteFile(common.SharedMarkerLocation(), []byte(common.Version), 0644)
+	pretty.Guard(err == nil, 3, "Could not write %q, reason: %v", common.SharedMarkerLocation(), err)
 }
