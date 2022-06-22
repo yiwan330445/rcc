@@ -1,5 +1,10 @@
 # rcc change log
 
+## v11.14.5 (date: 22.6.2022)
+
+- added `--once` flag to holotree shared enabling, in cases where costly
+  sharing is required only once
+
 ## v11.14.4 (date: 15.6.2022)
 
 - holotree share enabling now uses "icals" in Windows to set default properties
