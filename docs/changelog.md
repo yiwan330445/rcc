@@ -1,5 +1,9 @@
 # rcc change log
 
+## v11.15.0 (date: 7.7.2022)
+
+- micromamba upgrade to v0.24.0
+
 ## v11.14.5 (date: 22.6.2022)
 
 - added `--once` flag to holotree shared enabling, in cases where costly
