@@ -700,6 +700,77 @@ who has access to that cache. If you need to have private or sensitive packages
 in your environment, see `preRunScripts` in `robot.yaml` file.
 
 
+## How to do "old-school" CI/CD pipeline integration with rcc?
+
+If you have CI/CD pipeline and want to updated your robots from there, this
+recipe should give you ideas how to do it. This example works in linux, and
+you probably have to modify it to work on Mac or Windows, but idea will be same.
+
+Basic requirements are:
+- have well formed robot in version control
+- have rcc command available or possibility to fetch it
+- possibility on CI/CD pipeline to run just simple CLI commands
+
+### The oldschoolci.sh script
+
+```sh
+#!/bin/sh -ex
+
+curl -o rcc https://downloads.robocorp.com/rcc/releases/v11.14.3/linux64/rcc
+chmod 755 rcc
+./rcc cloud push --account ${ACCOUNT_ID} --directory ${ROBOT_DIR} --workspace ${WORKSPACE_ID} --robot ${ROBOT_ID}
+```
+
+So above script uses `curl` command to download rcc from download site, and
+makes it executable. And then it simply calls that `rcc` command, and expects
+that CI system has provided few variables.
+
+### A setup.sh script for simulating variable injection.
+
+```sh
+#!/bin/sh
+
+export ACCOUNT_ID=4242:cafe9d9c0dadag00d37b9577babe1575b67bc1bbad3ce9484dead36a649c865beef26297e67c8d94f0f0057f0100ab64:https://api.eu1.robocorp.com
+export WORKSPACE_ID=1717
+export ROBOT_ID=2121
+export ROBOT_DIR=$(pwd)/therobot
+```
+
+Expectations for above setup are:
+- robot to be updated is in EU1 (behind https://api.eu1.robocorp.com API)
+- Control Room account has "Access creadentials" 4242 available and active
+- account has access to workspace 1717
+- there exist previously created robot 2121 in that workspace
+- robot is located in "therobot" directory directly under "current working
+  directory" (centered around `robot.yaml` file)
+- and account has suitable rights to actually push robot to Control Room
+
+### Simulating actual CI/CD step in local machine.
+
+```sh
+#!/bin/sh -ex
+
+source setup.sh
+./oldschoolci.sh
+```
+
+Above script brings "setup" and "old school CI" together, but just for
+demonstration purposes. For real life use, adapt and remember security (no
+compromising variable content inside repository).
+
+### Additional notes
+
+- if CI/CD worker/container can be custom build, then it is recommended to
+  download rcc just once and not on every run (like oldschoolci.sh script now
+  does)
+- that `ACCOUNT_ID` should be stored in credentials store/vault in CI system,
+  because that is secret that you need to use to be able to push to cloud
+- that `ACCOUNT_ID` is "ephemeral" account, and will not be saved in `rcc.yaml`
+- also consider saving other variables in secure way
+- in actual CI/CD pipeline, you might want to embed actual commands into
+  CI step recipe and not have external scripts (but you decide that)
+
+
 ## Where can I find updates for rcc?
 
 https://downloads.robocorp.com/rcc/releases/index.html

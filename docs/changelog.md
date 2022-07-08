@@ -1,5 +1,9 @@
 # rcc change log
 
+## v11.15.1 (date: 8.7.2022)
+
+- added "old school CI" recipe into documentation
+
 ## v11.15.0 (date: 7.7.2022)
 
 - micromamba upgrade to v0.24.0
