@@ -1,5 +1,10 @@
 # rcc change log
 
+## v11.15.2 (date: 11.7.2022)
+
+- fixed table of contents links to match Github generated ones
+- also tried to make toc.py more OS neutral (was failing on Windows)
+
 ## v11.15.1 (date: 8.7.2022)
 
 - added "old school CI" recipe into documentation

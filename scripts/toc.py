@@ -2,7 +2,9 @@
 
 import glob
 import re
+from os.path import basename
 
+DELETE_PATTERN = re.compile(r'[/:]+')
 NONCHAR_PATTERN = re.compile(r'[^.a-z-]+')
 HEADING_PATTERN = re.compile(r'^\s*(#{1,3})\s+(.*?)\s*$')
 CODE_PATTERN = re.compile(r'^\s*[`]{3}')
@@ -11,11 +13,7 @@ DOT = '.'
 DASH = '-'
 NEWLINE = '\n'
 
-IGNORE_LIST = (
-        'docs/changelog.md',
-        'docs/toc.md',
-        'docs/README.md',
-        )
+IGNORE_LIST = ('changelog.md', 'toc.md', 'README.md')
 
 PRIORITY_LIST = (
         'docs/usecases.md',
@@ -26,7 +24,7 @@ PRIORITY_LIST = (
         )
 
 def unify(value):
-    low = str(value).lower()
+    low = DELETE_PATTERN.sub('', str(value).lower())
     return DASH.join(filter(bool, NONCHAR_PATTERN.split(low))).replace('.', '')
 
 class Toc:
@@ -72,16 +70,17 @@ def headings(filename):
 
 def process():
     toc = Toc("Table of contents: rcc documentation", "https://github.com/robocorp/rcc/blob/master/")
-    documentation = list(glob.glob('docs/*.md'))
+    flatnames = list(map(basename, glob.glob('docs/*.md')))
     for filename in PRIORITY_LIST:
-        if filename in documentation:
-            documentation.remove(filename)
+        flatname = basename(filename)
+        if flatname in flatnames:
+            flatnames.remove(flatname)
         for filename, level, title in headings(filename):
             toc.add(filename, level, title)
-    for filename in documentation:
-        if filename in IGNORE_LIST:
+    for flatname in flatnames:
+        if flatname in IGNORE_LIST:
             continue
-        for filename, level, title in headings(filename):
+        for filename, level, title in headings(f'docs/{flatname}'):
             toc.add(filename, level, title)
     toc.write('docs/README.md')
 
