@@ -1,6 +1,10 @@
 # rcc change log
 
-## v11.15.3 (date: 13.7.2022)
+## v11.15.4 (date: 13.7.2022)
+
+- go-bindata was accidentally removed, adding it back
+
+## v11.15.3 (date: 13.7.2022) BROKEN
 
 - refactoring module dependencies to help reusing parts of rcc in other apps
 
