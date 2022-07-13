@@ -15,8 +15,8 @@ import (
 	"github.com/robocorp/rcc/conda"
 	"github.com/robocorp/rcc/pathlib"
 	"github.com/robocorp/rcc/pretty"
+	"github.com/robocorp/rcc/shell"
 
-	"github.com/google/shlex"
 	"gopkg.in/yaml.v2"
 )
 
@@ -452,7 +452,7 @@ func (it *robot) RobotExecutionEnvironment(location string, inject []string, ful
 }
 
 func (it *task) shellCommand() []string {
-	result, err := shlex.Split(it.Shell)
+	result, err := shell.Split(it.Shell)
 	if err != nil {
 		common.Log("Shell parsing failure: %v with command %v", err, it.Shell)
 		return []string{}

@@ -3,8 +3,6 @@ package common
 import (
 	"fmt"
 	"time"
-
-	"github.com/robocorp/rcc/anywork"
 )
 
 const (
@@ -23,7 +21,7 @@ type Scorecard interface {
 	Start() Scorecard
 	Midpoint() Scorecard
 	Done() Scorecard
-	Score(int) string
+	Score(uint64, int) string
 }
 
 type scorecard struct {
@@ -32,7 +30,7 @@ type scorecard struct {
 	filesystem time.Time
 }
 
-func (it *scorecard) Score(seconds int) string {
+func (it *scorecard) Score(scale uint64, seconds int) string {
 	network := it.network.Sub(it.start).Milliseconds()
 	filesystem := it.filesystem.Sub(it.network).Milliseconds()
 	Debug("Raw score values: network=%d and filesystem=%d", network, filesystem)
@@ -40,7 +38,7 @@ func (it *scorecard) Score(seconds int) string {
 		return "Score: N/A [measurement not done]"
 	}
 
-	return fmt.Sprintf(perfMessage, topScale-(network/netScale), topScale-(filesystem/fsScale), seconds, anywork.Scale(), Platform())
+	return fmt.Sprintf(perfMessage, topScale-(network/netScale), topScale-(filesystem/fsScale), seconds, scale, Platform())
 }
 
 func (it *scorecard) Start() Scorecard {

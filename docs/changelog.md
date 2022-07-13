@@ -1,5 +1,9 @@
 # rcc change log
 
+## v11.15.3 (date: 13.7.2022)
+
+- refactoring module dependencies to help reusing parts of rcc in other apps
+
 ## v11.15.2 (date: 11.7.2022)
 
 - fixed table of contents links to match Github generated ones

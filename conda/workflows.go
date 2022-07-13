@@ -11,7 +11,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/google/shlex"
 	"github.com/robocorp/rcc/cloud"
 	"github.com/robocorp/rcc/common"
 	"github.com/robocorp/rcc/pathlib"
@@ -186,7 +185,7 @@ func newLiveInternal(yaml, condaYaml, requirementsText, key string, force, fresh
 		common.Progress(7, "Post install scripts phase started.")
 		common.Debug("===  post install phase ===")
 		for _, script := range postInstall {
-			scriptCommand, err := shlex.Split(script)
+			scriptCommand, err := shell.Split(script)
 			if err != nil {
 				common.Fatal("post-install", err)
 				common.Log("%sScript '%s' parsing failure: %v%s", pretty.Red, script, err, pretty.Reset)

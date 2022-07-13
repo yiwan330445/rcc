@@ -22,7 +22,7 @@ import (
 	"github.com/robocorp/rcc/robot"
 	"github.com/robocorp/rcc/settings"
 	"github.com/robocorp/rcc/xviper"
-	"gopkg.in/yaml.v1"
+	"gopkg.in/yaml.v2"
 )
 
 const (

@@ -7,8 +7,15 @@ import (
 	"os/exec"
 	"path/filepath"
 
+	"github.com/google/shlex"
 	"github.com/robocorp/rcc/common"
 )
+
+type Common interface {
+	Debug(string, ...interface{}) error
+	Trace(string, ...interface{}) error
+	Timeline(string, ...interface{})
+}
 
 type Task struct {
 	environment []string
@@ -16,6 +23,10 @@ type Task struct {
 	executable  string
 	args        []string
 	stderronly  bool
+}
+
+func Split(commandline string) ([]string, error) {
+	return shlex.Split(commandline)
 }
 
 func New(environment []string, directory string, task ...string) *Task {

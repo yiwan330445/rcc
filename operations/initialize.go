@@ -16,7 +16,7 @@ import (
 	"github.com/robocorp/rcc/pathlib"
 	"github.com/robocorp/rcc/pretty"
 	"github.com/robocorp/rcc/settings"
-	"gopkg.in/yaml.v1"
+	"gopkg.in/yaml.v2"
 )
 
 type StringMap map[string]string

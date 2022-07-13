@@ -9,7 +9,7 @@ import (
 	"github.com/robocorp/rcc/common"
 	"github.com/robocorp/rcc/fail"
 	"github.com/robocorp/rcc/pathlib"
-	"gopkg.in/yaml.v1"
+	"gopkg.in/yaml.v2"
 )
 
 type Profile struct {

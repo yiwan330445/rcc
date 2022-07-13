@@ -4,6 +4,8 @@ import (
 	"crypto/sha256"
 	"fmt"
 	"math"
+
+	"github.com/dchest/siphash"
 )
 
 func Entropy(input []byte) float64 {
@@ -36,4 +38,8 @@ func ShortDigest(content string) string {
 	digester.Write([]byte(content))
 	result := Hexdigest(digester.Sum(nil))
 	return result[:16]
+}
+
+func Siphash(left, right uint64, body []byte) uint64 {
+	return siphash.Hash(left, right, body)
 }

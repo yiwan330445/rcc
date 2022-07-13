@@ -87,9 +87,9 @@ var speedtestCmd = &cobra.Command{
 		close(signal)
 		if !debug {
 			elapsed := <-timing
-			common.Log("%s", score.Score(elapsed))
+			common.Log("%s", score.Score(anywork.Scale(), elapsed))
 		} else {
-			common.Log("%s", score.Score(0.0))
+			common.Log("%s", score.Score(anywork.Scale(), 0.0))
 		}
 		pretty.Ok()
 	},

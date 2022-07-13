@@ -12,7 +12,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/dchest/siphash"
 	"github.com/robocorp/rcc/cloud"
 	"github.com/robocorp/rcc/common"
 	"github.com/robocorp/rcc/fail"
@@ -340,7 +339,7 @@ func BlueprintHash(blueprint []byte) string {
 }
 
 func sipit(key []byte) uint64 {
-	return siphash.Hash(9007199254740993, 2147483647, key)
+	return common.Siphash(9007199254740993, 2147483647, key)
 }
 
 func textual(key uint64, size int) string {

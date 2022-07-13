@@ -6,7 +6,6 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/google/shlex"
 	"github.com/robocorp/rcc/common"
 	"github.com/robocorp/rcc/conda"
 	"github.com/robocorp/rcc/htfs"
@@ -258,7 +257,7 @@ func ExecuteTask(flags *RunFlags, template []string, config robot.Robot, todo ro
 			if !robot.PlatformAcceptableFile(runtime.GOARCH, runtime.GOOS, script) {
 				continue
 			}
-			scriptCommand, err := shlex.Split(script)
+			scriptCommand, err := shell.Split(script)
 			if err != nil {
 				pretty.Exit(11, "%sScript '%s' parsing failure: %v%s", pretty.Red, script, err, pretty.Reset)
 			}

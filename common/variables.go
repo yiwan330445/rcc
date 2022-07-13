@@ -8,8 +8,6 @@ import (
 	"runtime"
 	"strings"
 	"time"
-
-	"github.com/dchest/siphash"
 )
 
 const (
@@ -264,6 +262,6 @@ func UserHomeIdentity() string {
 	if err != nil {
 		return "badcafe"
 	}
-	digest := fmt.Sprintf("%02x", siphash.Hash(9007799254740993, 2147487647, []byte(location)))
+	digest := fmt.Sprintf("%02x", Siphash(9007799254740993, 2147487647, []byte(location)))
 	return digest[:7]
 }
