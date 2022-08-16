@@ -642,12 +642,12 @@ channels:
 - conda-forge
 
 dependencies:
-- python=3.7.5
+- python=3.9.13
 - nodejs=16.14.2
-- pip=20.1
+- pip=22.1.2
 - pip:
   - robotframework-browser==12.3.0
-  - rpaframework==13.0.0
+  - rpaframework==15.6.0
 
 rccPostInstall:
   - rfbrowser init
@@ -680,8 +680,8 @@ But there is also `- pip:` part and those dependenies come from
 [PyPI](https://pypi.org/) and they are installed after dependencies from
 `channels:` have been installed.
 
-In above example, `python=3.7.5` comes from `conda-forge` channel.
-And `rpaframework==13.0.0` comes from [PyPI](https://pypi.org/project/rpaframework/).
+In above example, `python=3.9.13` comes from `conda-forge` channel.
+And `rpaframework==15.6.0` comes from [PyPI](https://pypi.org/project/rpaframework/).
 
 ### What are `rccPostInstall:` scripts?
 

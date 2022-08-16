@@ -12,7 +12,7 @@ Goal: Initialize new standard robot.
 
 Goal: Standard robot has correct hash.
   Step        build/rcc holotree hash --silent --controller citests tmp/standardi/conda.yaml
-  Must Have   55aacd3b136421fd
+  Must Have   1cdd0b852854fe5b
 
 Goal: Running standard robot is succesful.
   Step        build/rcc task run --space templates --controller citests --robot tmp/standardi/robot.yaml
@@ -26,7 +26,7 @@ Goal: Initialize new python robot.
 
 Goal: Python robot has correct hash.
   Step        build/rcc holotree hash --silent --controller citests tmp/pythoni/conda.yaml
-  Must Have   55aacd3b136421fd
+  Must Have   1cdd0b852854fe5b
 
 Goal: Running python robot is succesful.
   Step        build/rcc task run --space templates --controller citests --robot tmp/pythoni/robot.yaml
@@ -40,7 +40,7 @@ Goal: Initialize new extended robot.
 
 Goal: Extended robot has correct hash.
   Step        build/rcc holotree hash --silent --controller citests tmp/extendedi/conda.yaml
-  Must Have   55aacd3b136421fd
+  Must Have   1cdd0b852854fe5b
 
 Goal: Running extended robot is succesful. (Run All Tasks)
   Step        build/rcc task run --space templates --task "Run All Tasks" --controller citests --robot tmp/extendedi/robot.yaml

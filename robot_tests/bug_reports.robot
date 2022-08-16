@@ -13,7 +13,7 @@ Github issue 7 about initial call with do-not-track
 Bug in virtual holotree with gzipped files
   Step        build/rcc holotree blueprint --controller citests robot_tests/spellbug/conda.yaml
   Use STDERR
-  Must Have   Blueprint "ef0163b57ff44cd5" is available: false
+  Must Have   Blueprint "8b2083d262262cbd" is available: false
 
   Step        build/rcc run --liveonly --controller citests --robot robot_tests/spellbug/robot.yaml
   Use STDOUT
@@ -21,7 +21,7 @@ Bug in virtual holotree with gzipped files
 
   Step        build/rcc holotree blueprint --controller citests robot_tests/spellbug/conda.yaml
   Use STDERR
-  Must Have   Blueprint "ef0163b57ff44cd5" is available: false
+  Must Have   Blueprint "8b2083d262262cbd" is available: false
 
   Step        build/rcc run --controller citests --robot robot_tests/spellbug/robot.yaml
   Use STDOUT
@@ -29,7 +29,7 @@ Bug in virtual holotree with gzipped files
 
   Step        build/rcc holotree blueprint --controller citests robot_tests/spellbug/conda.yaml
   Use STDERR
-  Must Have   Blueprint "ef0163b57ff44cd5" is available: true
+  Must Have   Blueprint "8b2083d262262cbd" is available: true
 
 Github issue 32 about rcc task script command failing
   [Tags]        WIP

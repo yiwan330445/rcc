@@ -15,7 +15,7 @@ func TestCanParseDependencies(t *testing.T) {
 	must_be.Equal("python", conda.AsDependency("python").Name)
 	must_be.Equal("", conda.AsDependency("python").Qualifier)
 	must_be.Equal("", conda.AsDependency("python").Versions)
-	wont_be.Nil(conda.AsDependency("python=3.7.5"))
+	wont_be.Nil(conda.AsDependency("python=3.9.13"))
 	must_be.Equal("python=3.7.4", conda.AsDependency("python=3.7.4").Original)
 	must_be.Equal("python", conda.AsDependency("python=3.7.4").Name)
 	must_be.Equal("=", conda.AsDependency("python=3.7.4").Qualifier)
@@ -28,7 +28,7 @@ func TestCanCompareDependencies(t *testing.T) {
 
 	first := conda.AsDependency("python")
 	second := conda.AsDependency("python=3.7.7")
-	third := conda.AsDependency("python=3.7.5")
+	third := conda.AsDependency("python=3.9.13")
 	fourth := conda.AsDependency("robotframework=3.2")
 
 	wont_be.True(first.IsExact())
@@ -55,7 +55,7 @@ func TestCanCompareDependencies(t *testing.T) {
 
 	chosen, err = second.ChooseSpecific(third)
 	wont_be.Nil(err)
-	must_be.Equal("Wont choose between dependencies: python=3.7.7 vs. python=3.7.5", err.Error())
+	must_be.Equal("Wont choose between dependencies: python=3.7.7 vs. python=3.9.13", err.Error())
 	must_be.Nil(chosen)
 }
 

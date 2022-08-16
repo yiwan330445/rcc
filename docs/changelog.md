@@ -1,5 +1,13 @@
 # rcc change log
 
+## v11.16.0 (date: 16.8.2022)
+
+- micromamba upgrade to v0.25.1
+- template upgrade of python to 3.9.13
+- template upgrade of pip to 22.1.2
+- template upgrade of rpaframework to 15.6.0
+- upgraded tests to match above version changes and their effects
+
 ## v11.15.4 (date: 13.7.2022)
 
 - go-bindata was accidentally removed, adding it back

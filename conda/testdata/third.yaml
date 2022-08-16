@@ -1,8 +1,8 @@
 channels:
-  - defaults
   - conda-forge
+  - defaults
 dependencies:
-  - python=3.7.5
+  - python=3.9.13
   - pip
   - robotframework=3.2
   - robotframework-seleniumlibrary
