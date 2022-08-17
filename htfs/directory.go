@@ -60,7 +60,7 @@ func NewRoot(path string) (*Root, error) {
 		Path:     fullpath,
 		Platform: common.Platform(),
 		Lifted:   false,
-		Tree:     newDir(""),
+		Tree:     newDir("", ""),
 	}, nil
 }
 
@@ -183,10 +183,15 @@ func (it *Root) LoadFrom(filename string) error {
 }
 
 type Dir struct {
-	Name  string           `json:"name"`
-	Mode  fs.FileMode      `json:"mode"`
-	Dirs  map[string]*Dir  `json:"subdirs"`
-	Files map[string]*File `json:"files"`
+	Name    string           `json:"name"`
+	Symlink string           `json:"symlink,omitempty"`
+	Mode    fs.FileMode      `json:"mode"`
+	Dirs    map[string]*Dir  `json:"subdirs"`
+	Files   map[string]*File `json:"files"`
+}
+
+func (it *Dir) IsSymlink() bool {
+	return len(it.Symlink) > 0
 }
 
 func (it *Dir) AllDirs(path string, task Dirtask) {
@@ -222,16 +227,18 @@ func (it *Dir) Lift(path string) error {
 		if killfile[part.Name()] || killfile[filepath.Ext(part.Name())] {
 			continue
 		}
+		fullpath := filepath.Join(path, part.Name())
 		// following must be done to get by symbolic links
-		info, err := os.Stat(filepath.Join(path, part.Name()))
+		info, err := os.Stat(fullpath)
 		if err != nil {
 			return err
 		}
+		symlink, _ := pathlib.Symlink(fullpath)
 		if info.IsDir() {
-			it.Dirs[part.Name()] = newDir(info.Name())
+			it.Dirs[part.Name()] = newDir(info.Name(), symlink)
 			continue
 		}
-		it.Files[part.Name()] = newFile(info)
+		it.Files[part.Name()] = newFile(info, symlink)
 	}
 	for name, dir := range it.Dirs {
 		err = dir.Lift(filepath.Join(path, name))
@@ -244,10 +251,15 @@ func (it *Dir) Lift(path string) error {
 
 type File struct {
 	Name    string      `json:"name"`
+	Symlink string      `json:"symlink,omitempty"`
 	Size    int64       `json:"size"`
 	Mode    fs.FileMode `json:"mode"`
 	Digest  string      `json:"digest"`
 	Rewrite []int64     `json:"rewrite"`
+}
+
+func (it *File) IsSymlink() bool {
+	return len(it.Symlink) > 0
 }
 
 func (it *File) Match(info fs.FileInfo) bool {
@@ -257,17 +269,19 @@ func (it *File) Match(info fs.FileInfo) bool {
 	return name && size && mode
 }
 
-func newDir(name string) *Dir {
+func newDir(name, symlink string) *Dir {
 	return &Dir{
-		Name:  name,
-		Dirs:  make(map[string]*Dir),
-		Files: make(map[string]*File),
+		Name:    name,
+		Symlink: symlink,
+		Dirs:    make(map[string]*Dir),
+		Files:   make(map[string]*File),
 	}
 }
 
-func newFile(info fs.FileInfo) *File {
+func newFile(info fs.FileInfo, symlink string) *File {
 	return &File{
 		Name:    info.Name(),
+		Symlink: symlink,
 		Mode:    info.Mode(),
 		Size:    info.Size(),
 		Digest:  "N/A",

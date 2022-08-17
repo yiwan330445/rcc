@@ -1,5 +1,10 @@
 # rcc change log
 
+## v11.17.0 (date: 17.8.2022) UNSTABLE
+
+- fix started: adding missing symbolic link handling of files and directories
+- this will be UNSTABLE, work in progress, for now
+
 ## v11.16.0 (date: 16.8.2022)
 
 - micromamba upgrade to v0.25.1

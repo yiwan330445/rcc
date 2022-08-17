@@ -23,6 +23,22 @@ func Abs(path string) (string, error) {
 	return filepath.Clean(fullpath), nil
 }
 
+func Symlink(pathname string) (string, bool) {
+	stat, err := os.Lstat(pathname)
+	if err != nil {
+		return "", false
+	}
+	mode := stat.Mode()
+	if mode&fs.ModeSymlink == 0 {
+		return "", false
+	}
+	name, err := os.Readlink(pathname)
+	if err != nil {
+		return "", false
+	}
+	return name, true
+}
+
 func IsDir(pathname string) bool {
 	stat, err := os.Stat(pathname)
 	return err == nil && stat.IsDir()
