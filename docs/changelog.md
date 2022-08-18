@@ -1,5 +1,9 @@
 # rcc change log
 
+## v11.17.1 (date: 18.8.2022) UNSTABLE
+
+- fix continued: adding missing symbolic link handling of files and directories
+
 ## v11.17.0 (date: 17.8.2022) UNSTABLE
 
 - fix started: adding missing symbolic link handling of files and directories

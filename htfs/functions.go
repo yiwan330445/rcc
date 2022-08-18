@@ -144,6 +144,24 @@ func Locator(seek string) Filetask {
 }
 
 func MakeBranches(path string, it *Dir) error {
+	if it.IsSymlink() {
+		anywork.OnErrPanicCloseAll(restoreSymlink(it.Symlink, path))
+		return nil
+	}
+	hasSymlinks := false
+detector:
+	for _, subdir := range it.Dirs {
+		if subdir.IsSymlink() {
+			hasSymlinks = true
+			break detector
+		}
+	}
+	if hasSymlinks {
+		err := os.MkdirAll(path, 0o750)
+		if err != nil {
+			return err
+		}
+	}
 	for _, subdir := range it.Dirs {
 		err := MakeBranches(filepath.Join(path, subdir.Name), subdir)
 		if err != nil {
@@ -163,10 +181,16 @@ func ScheduleLifters(library MutableLibrary, stats *stats) Treetop {
 	var scheduler Treetop
 	seen := make(map[string]bool)
 	scheduler = func(path string, it *Dir) error {
+		if it.IsSymlink() {
+			return nil
+		}
 		for name, subdir := range it.Dirs {
 			scheduler(filepath.Join(path, name), subdir)
 		}
 		for name, file := range it.Files {
+			if file.IsSymlink() {
+				continue
+			}
 			if seen[file.Digest] {
 				common.Trace("LiftFile %s %q already scheduled.", file.Digest, name)
 				continue
@@ -270,6 +294,10 @@ func LiftFile(sourcename, sinkname string) anywork.Work {
 
 func DropFile(library Library, digest, sinkname string, details *File, rewrite []byte) anywork.Work {
 	return func() {
+		if details.IsSymlink() {
+			anywork.OnErrPanicCloseAll(restoreSymlink(details.Symlink, sinkname))
+			return
+		}
 		reader, closer, err := library.Open(digest)
 		anywork.OnErrPanicCloseAll(err)
 
@@ -352,13 +380,29 @@ func CalculateTreeStats() (Dirtask, *TreeStats) {
 	}, result
 }
 
+func restoreSymlink(source, target string) error {
+	old, ok := pathlib.Symlink(target)
+	if ok && old == target {
+		return nil
+	}
+	os.Remove(target)
+	return os.Symlink(source, target)
+}
+
 func RestoreDirectory(library Library, fs *Root, current map[string]string, stats *stats) Dirtask {
 	return func(path string, it *Dir) anywork.Work {
 		return func() {
-			content, err := os.ReadDir(path)
+			if it.Shadow {
+				return
+			}
+			if it.IsSymlink() {
+				anywork.OnErrPanicCloseAll(restoreSymlink(it.Symlink, path))
+				return
+			}
+			existingEntries, err := os.ReadDir(path)
 			anywork.OnErrPanicCloseAll(err)
 			files := make(map[string]bool)
-			for _, part := range content {
+			for _, part := range existingEntries {
 				directpath := filepath.Join(path, part.Name())
 				if part.IsDir() {
 					_, ok := it.Dirs[part.Name()]

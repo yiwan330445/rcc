@@ -60,7 +60,7 @@ func NewRoot(path string) (*Root, error) {
 		Path:     fullpath,
 		Platform: common.Platform(),
 		Lifted:   false,
-		Tree:     newDir("", ""),
+		Tree:     newDir("", "", false),
 	}, nil
 }
 
@@ -188,6 +188,7 @@ type Dir struct {
 	Mode    fs.FileMode      `json:"mode"`
 	Dirs    map[string]*Dir  `json:"subdirs"`
 	Files   map[string]*File `json:"files"`
+	Shadow  bool             `json:"shadow,omitempty"`
 }
 
 func (it *Dir) IsSymlink() bool {
@@ -223,6 +224,7 @@ func (it *Dir) Lift(path string) error {
 	if err != nil {
 		return err
 	}
+	shadow := it.Shadow || it.IsSymlink()
 	for _, part := range content {
 		if killfile[part.Name()] || killfile[filepath.Ext(part.Name())] {
 			continue
@@ -235,7 +237,7 @@ func (it *Dir) Lift(path string) error {
 		}
 		symlink, _ := pathlib.Symlink(fullpath)
 		if info.IsDir() {
-			it.Dirs[part.Name()] = newDir(info.Name(), symlink)
+			it.Dirs[part.Name()] = newDir(info.Name(), symlink, shadow)
 			continue
 		}
 		it.Files[part.Name()] = newFile(info, symlink)
@@ -269,12 +271,13 @@ func (it *File) Match(info fs.FileInfo) bool {
 	return name && size && mode
 }
 
-func newDir(name, symlink string) *Dir {
+func newDir(name, symlink string, shadow bool) *Dir {
 	return &Dir{
 		Name:    name,
 		Symlink: symlink,
 		Dirs:    make(map[string]*Dir),
 		Files:   make(map[string]*File),
+		Shadow:  shadow,
 	}
 }
 
