@@ -1,5 +1,11 @@
 # rcc change log
 
+## v11.17.2 (date: 19.8.2022)
+
+- bugfix: adding missing symbolic link handling of files and directories
+- hololib catalogs now have rcc version information included
+- added timeout to account deletion, to speed up unit tests
+
 ## v11.17.1 (date: 18.8.2022) UNSTABLE
 
 - fix continued: adding missing symbolic link handling of files and directories

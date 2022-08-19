@@ -5,6 +5,7 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/robocorp/rcc/hamlet"
 	"github.com/robocorp/rcc/operations"
@@ -66,7 +67,7 @@ func TestCanCreateAndDeleteAccount(t *testing.T) {
 	wont_be.Nil(sut)
 	must_be.True(strings.HasSuffix(xviper.ConfigFileUsed(), "rcctest.yaml"))
 	must_be.Equal("42.long_a", sut.CacheKey())
-	sut.Delete()
+	sut.Delete(50 * time.Millisecond)
 	sut = operations.AccountByName("dele")
 	must_be.Nil(sut)
 }

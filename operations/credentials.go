@@ -132,7 +132,7 @@ func (it *account) Cached(name, url string) (string, bool) {
 	return found.Token, true
 }
 
-func (it *account) Delete() error {
+func (it *account) Delete(timeout time.Duration) error {
 	prefix := accountsPrefix + it.Account
 	defer xviper.Set(prefix, "deleted")
 
@@ -140,6 +140,7 @@ func (it *account) Delete() error {
 	if err != nil {
 		return err
 	}
+	client = client.WithTimeout(timeout)
 	return DeleteAccount(client, it)
 }
 

@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"strings"
+	"time"
 
 	"github.com/robocorp/rcc/cloud"
 	"github.com/robocorp/rcc/common"
@@ -70,7 +71,7 @@ func localDelete(accountName string) {
 	if account == nil {
 		pretty.Exit(1, "Could not find account by name: %q", accountName)
 	}
-	err := account.Delete()
+	err := account.Delete(10 * time.Second)
 	if err != nil {
 		pretty.Exit(3, "Error: %v", err)
 	}

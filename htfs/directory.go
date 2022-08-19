@@ -39,6 +39,7 @@ type Dirtask func(string, *Dir) anywork.Work
 type Treetop func(string, *Dir) error
 
 type Root struct {
+	RccVersion string `json:"rcc"`
 	Identity   string `json:"identity"`
 	Path       string `json:"path"`
 	Controller string `json:"controller"`
@@ -56,11 +57,12 @@ func NewRoot(path string) (*Root, error) {
 	}
 	basename := filepath.Base(fullpath)
 	return &Root{
-		Identity: basename,
-		Path:     fullpath,
-		Platform: common.Platform(),
-		Lifted:   false,
-		Tree:     newDir("", "", false),
+		Identity:   basename,
+		Path:       fullpath,
+		Platform:   common.Platform(),
+		Lifted:     false,
+		Tree:       newDir("", "", false),
+		RccVersion: common.Version,
 	}, nil
 }
 
