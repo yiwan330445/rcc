@@ -1,5 +1,14 @@
 # rcc change log
 
+## v11.18.0 (date: 23.8.2022)
+
+- new cleanup option `--downloads` to remove downloads caches (conda, pip,
+  and templates)
+- change: now conda pkgs is cleaned up also in quick cleanup (which now
+  includes all "downloads" cleanups)
+- robot cache is now part of full cleanup
+- run commands now cleanup their temp folders immediately
+
 ## v11.17.2 (date: 19.8.2022)
 
 - bugfix: adding missing symbolic link handling of files and directories

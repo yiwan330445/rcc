@@ -80,10 +80,13 @@ func markTempForRecycling() {
 	if markedAlready {
 		return
 	}
-	markedAlready = true
-	filename := filepath.Join(common.RobocorpTemp(), "recycle.now")
-	ioutil.WriteFile(filename, []byte("True"), 0o644)
-	common.Debug("Marked %q for recycling.", common.RobocorpTemp())
+	target := common.RobocorpTempName()
+	if pathlib.Exists(target) {
+		filename := filepath.Join(target, "recycle.now")
+		ioutil.WriteFile(filename, []byte("True"), 0o644)
+		common.Debug("Marked %q for recycling.", target)
+		markedAlready = true
+	}
 }
 
 func main() {

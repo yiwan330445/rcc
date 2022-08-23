@@ -8,6 +8,7 @@ import (
 
 	"github.com/robocorp/rcc/cloud"
 	"github.com/robocorp/rcc/common"
+	"github.com/robocorp/rcc/conda"
 	"github.com/robocorp/rcc/operations"
 	"github.com/robocorp/rcc/pathlib"
 	"github.com/robocorp/rcc/pretty"
@@ -23,6 +24,7 @@ var testrunCmd = &cobra.Command{
 	Short:   "Run a task in a clean environment and clean directory.",
 	Long:    "Run a task in a clean environment and clean directory.",
 	Run: func(cmd *cobra.Command, args []string) {
+		defer conda.RemoveCurrentTemp()
 		if common.DebugFlag {
 			defer common.Stopwatch("Task testrun lasted").Report()
 		}

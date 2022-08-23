@@ -104,8 +104,12 @@ func RobocorpTempRoot() string {
 	return filepath.Join(RobocorpHome(), "temp")
 }
 
+func RobocorpTempName() string {
+	return filepath.Join(RobocorpTempRoot(), randomIdentifier)
+}
+
 func RobocorpTemp() string {
-	tempLocation := filepath.Join(RobocorpTempRoot(), randomIdentifier)
+	tempLocation := RobocorpTempName()
 	fullpath, err := filepath.Abs(tempLocation)
 	if err != nil {
 		fullpath = tempLocation

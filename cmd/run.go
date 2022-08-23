@@ -3,6 +3,7 @@ package cmd
 import (
 	"github.com/robocorp/rcc/cloud"
 	"github.com/robocorp/rcc/common"
+	"github.com/robocorp/rcc/conda"
 	"github.com/robocorp/rcc/operations"
 	"github.com/robocorp/rcc/xviper"
 
@@ -22,6 +23,7 @@ var runCmd = &cobra.Command{
 	Long: `Local task run, in place, to see how full run execution works
 in your own machine.`,
 	Run: func(cmd *cobra.Command, args []string) {
+		defer conda.RemoveCurrentTemp()
 		if common.DebugFlag {
 			defer common.Stopwatch("Task run lasted").Report()
 		}

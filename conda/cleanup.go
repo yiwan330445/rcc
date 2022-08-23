@@ -57,16 +57,26 @@ func alwaysCleanup(dryrun bool) {
 	safeRemove("legacy", miniconda3)
 }
 
-func quickCleanup(dryrun bool) error {
+func downloadCleanup(dryrun bool) error {
 	if dryrun {
 		common.Log("- %v", common.TemplateLocation())
 		common.Log("- %v", common.PipCache())
+		common.Log("- %v", common.MambaPackages())
+	} else {
+		safeRemove("templates", common.TemplateLocation())
+		safeRemove("cache", common.PipCache())
+		safeRemove("cache", common.MambaPackages())
+	}
+	return nil
+}
+
+func quickCleanup(dryrun bool) error {
+	downloadCleanup(dryrun)
+	if dryrun {
 		common.Log("- %v", common.HolotreeLocation())
 		common.Log("- %v", common.RobocorpTempRoot())
 		return nil
 	}
-	safeRemove("templates", common.TemplateLocation())
-	safeRemove("cache", common.PipCache())
 	err := safeRemove("cache", common.HolotreeLocation())
 	if err != nil {
 		return err
@@ -80,13 +90,13 @@ func spotlessCleanup(dryrun bool) error {
 		return err
 	}
 	if dryrun {
-		common.Log("- %v", common.MambaPackages())
 		common.Log("- %v", BinMicromamba())
+		common.Log("- %v", common.RobotCache())
 		common.Log("- %v", common.HololibLocation())
 		return nil
 	}
-	safeRemove("cache", common.MambaPackages())
 	safeRemove("executable", BinMicromamba())
+	safeRemove("cache", common.RobotCache())
 	return safeRemove("cache", common.HololibLocation())
 }
 
@@ -123,7 +133,7 @@ func cleanupTemp(deadline time.Time, dryrun bool) error {
 	return nil
 }
 
-func Cleanup(daylimit int, dryrun, quick, all, micromamba bool) error {
+func Cleanup(daylimit int, dryrun, quick, all, micromamba, downloads bool) error {
 	lockfile := common.RobocorpLock()
 	locker, err := pathlib.Locker(lockfile, 30000)
 	if err != nil {
@@ -134,6 +144,10 @@ func Cleanup(daylimit int, dryrun, quick, all, micromamba bool) error {
 
 	alwaysCleanup(dryrun)
 
+	if downloads {
+		return downloadCleanup(dryrun)
+	}
+
 	if quick {
 		return quickCleanup(dryrun)
 	}
@@ -142,7 +156,7 @@ func Cleanup(daylimit int, dryrun, quick, all, micromamba bool) error {
 		return spotlessCleanup(dryrun)
 	}
 
-	deadline := time.Now().Add(-48 * time.Duration(daylimit) * time.Hour)
+	deadline := time.Now().Add(-24 * time.Duration(daylimit) * time.Hour)
 	cleanupTemp(deadline, dryrun)
 
 	if micromamba && err == nil {
@@ -152,4 +166,14 @@ func Cleanup(daylimit int, dryrun, quick, all, micromamba bool) error {
 		err = doCleanup(BinMicromamba(), dryrun)
 	}
 	return err
+}
+
+func RemoveCurrentTemp() {
+	target := common.RobocorpTempName()
+	common.Debug("removing current temp %v", target)
+	common.Timeline("removing current temp: %v", target)
+	err := safeRemove("temp", target)
+	if err != nil {
+		common.Timeline("removing current temp failed, reason: %v", err)
+	}
 }
