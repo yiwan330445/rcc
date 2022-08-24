@@ -96,6 +96,7 @@ func RunDiagnostics() *common.DiagnosticStatus {
 	result.Details["os"] = common.Platform()
 	result.Details["cpus"] = fmt.Sprintf("%d", runtime.NumCPU())
 	result.Details["when"] = time.Now().Format(time.RFC3339 + " (MST)")
+	result.Details["no-build"] = fmt.Sprintf("%v", settings.Global.NoBuild())
 
 	who, err := user.Current()
 	if err == nil {

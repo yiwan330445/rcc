@@ -16,6 +16,7 @@ const (
 )
 
 type StringMap map[string]string
+type BoolMap map[string]bool
 
 func (it StringMap) Lookup(key string) string {
 	return it[key]
@@ -33,6 +34,7 @@ func (it SettingsLayers) Effective() *Settings {
 		Certificates: &Certificates{},
 		Network:      &Network{},
 		Endpoints:    make(StringMap),
+		Options:      make(BoolMap),
 		Hosts:        make([]string, 0, 100),
 		Meta: &Meta{
 			Name:        "generated",
@@ -56,6 +58,7 @@ type Settings struct {
 	Network      *Network      `yaml:"network,omitempty" json:"network,omitempty"`
 	Endpoints    StringMap     `yaml:"endpoints,omitempty" json:"endpoints,omitempty"`
 	Hosts        []string      `yaml:"diagnostics-hosts,omitempty" json:"diagnostics-hosts,omitempty"`
+	Options      BoolMap       `yaml:"options,omitempty" json:"options,omitempty"`
 	Meta         *Meta         `yaml:"meta,omitempty" json:"meta,omitempty"`
 }
 
@@ -94,6 +97,9 @@ func (it *Settings) onTopOf(target *Settings) {
 		if len(value) > 0 {
 			target.Endpoints[key] = value
 		}
+	}
+	for key, value := range it.Options {
+		target.Options[key] = value
 	}
 	for _, host := range it.Hosts {
 		target.Hosts = append(target.Hosts, host)

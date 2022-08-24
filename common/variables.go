@@ -17,6 +17,7 @@ const (
 )
 
 var (
+	NoBuild            bool
 	Silent             bool
 	DebugFlag          bool
 	TraceFlag          bool

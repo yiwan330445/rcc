@@ -157,6 +157,11 @@ func (it gateway) Endpoint(key string) string {
 	return it.settings().Endpoints[key]
 }
 
+func (it gateway) Option(key string) bool {
+	value, ok := it.settings().Options[key]
+	return ok && value
+}
+
 func (it gateway) DefaultEndpoint() string {
 	return it.Endpoint("cloud-api")
 }
@@ -233,6 +238,10 @@ func (it gateway) VerifySsl() bool {
 
 func (it gateway) NoRevocation() bool {
 	return it.settings().Certificates.SslNoRevoke
+}
+
+func (it gateway) NoBuild() bool {
+	return common.NoBuild || it.Option("no-build")
 }
 
 func (it gateway) ConfiguredHttpTransport() *http.Transport {

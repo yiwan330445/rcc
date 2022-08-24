@@ -14,6 +14,7 @@ type Api interface {
 	TemplatesYamlURL() string
 	Diagnostics(target *common.DiagnosticStatus)
 	Endpoint(string) string
+	Option(string) bool
 	DefaultEndpoint() string
 	IssuesURL() string
 	TelemetryURL() string
@@ -33,4 +34,5 @@ type Api interface {
 	HasCaBundle() bool
 	VerifySsl() bool
 	NoRevocation() bool
+	NoBuid() bool
 }

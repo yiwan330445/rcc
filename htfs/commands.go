@@ -13,11 +13,16 @@ import (
 	"github.com/robocorp/rcc/pathlib"
 	"github.com/robocorp/rcc/pretty"
 	"github.com/robocorp/rcc/robot"
+	"github.com/robocorp/rcc/settings"
 	"github.com/robocorp/rcc/xviper"
 )
 
 func NewEnvironment(condafile, holozip string, restore, force bool) (label string, scorecard common.Scorecard, err error) {
 	defer fail.Around(&err)
+
+	if settings.Global.NoBuild() {
+		pretty.Note("'no-build' setting is active. Only cached, prebuild, or imported environments are allowed!")
+	}
 
 	haszip := len(holozip) > 0
 	if haszip {
@@ -102,6 +107,7 @@ func RecordEnvironment(tree MutableLibrary, blueprint []byte, force bool, scorec
 
 	if force || !exists {
 		common.Progress(3, "Cleanup holotree stage for fresh install.")
+		fail.On(settings.Global.NoBuild(), "Building new holotree environment is blocked by settings, and could not be found from hololib cache!")
 		err = CleanupHolotreeStage(tree)
 		fail.On(err != nil, "Failed to clean stage, reason %v.", err)
 

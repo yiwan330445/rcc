@@ -27,6 +27,9 @@ certificates:
   verify-ssl: true
   ssl-no-revoke: false
 
+options:
+  no-build: false
+
 network:
   https-proxy: # no proxy by default
   http-proxy: # no proxy by default

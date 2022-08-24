@@ -1,5 +1,12 @@
 # rcc change log
 
+## v11.19.0 (date: 24.8.2022)
+
+- new global flag `--no-build` which prevents building environments, and
+  only allows using previously cached, prebuild or imported holotrees
+- there is also "no-build" option in "settings.yaml" options section
+- added "no-build" information to diagnostics output
+
 ## v11.18.0 (date: 23.8.2022)
 
 - new cleanup option `--downloads` to remove downloads caches (conda, pip,
