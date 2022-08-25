@@ -156,9 +156,20 @@ func (it *robot) diagnoseVariousPaths(diagnose common.Diagnoser) {
 		diagnose.Warning("", "No ignoreFiles defined, so everything ends up inside robot.zip file.")
 		ok = false
 	} else {
-		for _, path := range it.Ignored {
+		for at, path := range it.Ignored {
+			if len(strings.TrimSpace(path)) == 0 {
+				diagnose.Fail("", "there is empty entry in ignoreFiles at position %d", at+1)
+				ok = false
+				continue
+			}
 			if filepath.IsAbs(path) {
 				diagnose.Fail("", "ignoreFiles entry %q seems to be absolute, which makes robot machine dependent.", path)
+				ok = false
+			}
+		}
+		for _, path := range it.IgnoreFiles() {
+			if !pathlib.IsFile(path) {
+				diagnose.Fail("", "ignoreFiles entry %q is not a file.", path)
 				ok = false
 			}
 		}
@@ -292,8 +303,16 @@ func (it *robot) IgnoreFiles() []string {
 		return []string{}
 	}
 	result := make([]string, 0, len(it.Ignored))
-	for _, entry := range it.Ignored {
-		result = append(result, filepath.Join(it.Root, entry))
+	for at, entry := range it.Ignored {
+		if len(strings.TrimSpace(entry)) == 0 {
+			pretty.Warning("Ignore file entry at position %d is empty string!", at+1)
+			continue
+		}
+		fullpath := filepath.Join(it.Root, entry)
+		if !pathlib.IsFile(fullpath) {
+			pretty.Warning("Ignore file %q is not a file!", fullpath)
+		}
+		result = append(result, fullpath)
 	}
 	return result
 }

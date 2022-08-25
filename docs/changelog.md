@@ -1,5 +1,11 @@
 # rcc change log
 
+## v11.19.1 (date: 25.8.2022)
+
+- bug: empty entry on ignoreFiles caused unclear error
+- fix: now empty entries are diagnosed and noted
+- fix: also non-existing ignore files are diagnosed
+
 ## v11.19.0 (date: 24.8.2022)
 
 - new global flag `--no-build` which prevents building environments, and
