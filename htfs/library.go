@@ -134,6 +134,8 @@ func (it *hololib) Export(catalogs []string, archive string) (err error) {
 		make(map[string]bool),
 	}
 
+	exported := false
+
 	for _, name := range catalogs {
 		catalog := filepath.Join(common.HololibCatalogLocation(), name)
 		relative, err := filepath.Rel(common.HololibLocation(), catalog)
@@ -147,7 +149,9 @@ func (it *hololib) Export(catalogs []string, archive string) (err error) {
 		fail.On(err != nil, "Could not load catalog from %s -> %v.", catalog, err)
 		err = fs.Treetop(ZipRoot(it, fs, zipper))
 		fail.On(err != nil, "Could not zip catalog %s -> %v.", catalog, err)
+		exported = true
 	}
+	fail.On(!exported, "None of given catalogs were available for export!")
 	return nil
 }
 
@@ -184,9 +188,12 @@ func (it *hololib) Record(blueprint []byte) error {
 	return err
 }
 
+func CatalogName(key string) string {
+	return fmt.Sprintf("%sv12.%s", key, common.Platform())
+}
+
 func (it *hololib) CatalogPath(key string) string {
-	name := fmt.Sprintf("%sv12.%s", key, common.Platform())
-	return filepath.Join(common.HololibCatalogLocation(), name)
+	return filepath.Join(common.HololibCatalogLocation(), CatalogName(key))
 }
 
 func (it *hololib) HasBlueprint(blueprint []byte) bool {

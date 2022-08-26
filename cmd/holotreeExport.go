@@ -11,7 +11,8 @@ import (
 )
 
 var (
-	holozip string
+	holozip     string
+	exportRobot string
 )
 
 func holotreeExport(catalogs []string, archive string) {
@@ -61,6 +62,12 @@ var holotreeExportCmd = &cobra.Command{
 		if common.DebugFlag {
 			defer common.Stopwatch("Holotree export command lasted").Report()
 		}
+		if len(exportRobot) > 0 {
+			_, holotreeBlueprint, err := htfs.ComposeFinalBlueprint(nil, exportRobot)
+			pretty.Guard(err == nil, 1, "Blueprint calculation failed: %v", err)
+			hash := htfs.BlueprintHash(holotreeBlueprint)
+			args = append(args, htfs.CatalogName(hash))
+		}
 		if len(args) == 0 {
 			listCatalogs(jsonFlag)
 		} else {
@@ -74,4 +81,5 @@ func init() {
 	holotreeCmd.AddCommand(holotreeExportCmd)
 	holotreeExportCmd.Flags().StringVarP(&holozip, "zipfile", "z", "hololib.zip", "Name of zipfile to export.")
 	holotreeExportCmd.Flags().BoolVarP(&jsonFlag, "json", "j", false, "Output in JSON format")
+	holotreeExportCmd.Flags().StringVarP(&exportRobot, "robot", "r", "", "Full path to 'robot.yaml' configuration file to export as catalog. <optional>")
 }

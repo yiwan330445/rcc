@@ -1,5 +1,9 @@
 # rcc change log
 
+## v11.20.0 (date: 26.8.2022)
+
+- feature: allow holotree exporting using robot.yaml file.
+
 ## v11.19.1 (date: 25.8.2022)
 
 - bug: empty entry on ignoreFiles caused unclear error
