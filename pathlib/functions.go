@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 	"time"
 
+	"github.com/robocorp/rcc/common"
 	"github.com/robocorp/rcc/fail"
 )
 
@@ -47,6 +48,14 @@ func IsDir(pathname string) bool {
 func IsFile(pathname string) bool {
 	stat, err := os.Stat(pathname)
 	return err == nil && !stat.IsDir()
+}
+
+func DaysSinceModified(filename string) (int, error) {
+	stat, err := os.Stat(filename)
+	if err != nil {
+		return -1, err
+	}
+	return common.DayCountSince(stat.ModTime()), nil
 }
 
 func Size(pathname string) (int64, bool) {

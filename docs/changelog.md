@@ -1,5 +1,13 @@
 # rcc change log
 
+## v11.21.0 (date: 29.8.2022)
+
+- added support to tracking when catalog blueprints are used
+- if there is no tracking info on existing catalog, first reporting will
+  reset it to zero (and report it as -1)
+- added catalog age in days, and days since last used to catalog listing
+- fixed bug on shared hololib location on catalog listing
+
 ## v11.20.0 (date: 26.8.2022)
 
 - feature: allow holotree exporting using robot.yaml file.

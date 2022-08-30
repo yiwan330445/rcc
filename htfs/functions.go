@@ -359,7 +359,7 @@ type TreeStats struct {
 }
 
 func guessLocation(digest string) string {
-	return filepath.Join("hololib", "library", digest[:2], digest[2:4], digest[4:6], digest)
+	return filepath.Join(digest[:2], digest[2:4], digest[4:6], digest)
 }
 
 func CalculateTreeStats() (Dirtask, *TreeStats) {

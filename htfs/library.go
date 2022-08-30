@@ -275,6 +275,12 @@ func ControllerSpaceName(client, tag []byte) string {
 	return common.UserHomeIdentity() + "_" + prefix + "_" + suffix
 }
 
+func touchUsedHash(hash string) {
+	filename := fmt.Sprintf("%s.%s", hash, common.UserHomeIdentity())
+	fullpath := filepath.Join(common.HololibUsageLocation(), filename)
+	pathlib.ForceTouchWhen(fullpath, common.ProgressMark)
+}
+
 func (it *hololib) Restore(blueprint, client, tag []byte) (result string, err error) {
 	defer fail.Around(&err)
 	defer common.Stopwatch("Holotree restore took:").Debug()
@@ -338,6 +344,7 @@ func (it *hololib) Restore(blueprint, client, tag []byte) (result string, err er
 	if pathlib.FileExist(identityfile) {
 		common.Log("%sEnvironment configuration descriptor is: %v%s", pretty.Yellow, identityfile, pretty.Reset)
 	}
+	touchUsedHash(key)
 	return targetdir, nil
 }
 

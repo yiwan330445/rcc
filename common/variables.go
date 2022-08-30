@@ -47,8 +47,8 @@ func init() {
 
 	randomIdentifier = fmt.Sprintf("%016x", rand.Uint64()^uint64(os.Getpid()))
 
-	// Note: HololibCatalogLocation and HololibLibraryLocation are force
-	//       created from "htfs" direcotry.go init function
+	// Note: HololibCatalogLocation, HololibLibraryLocation and HololibUsageLocation
+	//       are force created from "htfs" direcotry.go init function
 	// Also: HolotreeLocation creation is left for actual holotree commands
 	//       to prevent accidental access right problem during usage
 
@@ -166,6 +166,10 @@ func HololibCatalogLocation() string {
 
 func HololibLibraryLocation() string {
 	return filepath.Join(HololibLocation(), "library")
+}
+
+func HololibUsageLocation() string {
+	return filepath.Join(HololibLocation(), "used")
 }
 
 func HolotreeLock() string {

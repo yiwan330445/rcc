@@ -32,6 +32,7 @@ func init() {
 	pathlib.MakeSharedDir(common.HoloLocation())
 	pathlib.MakeSharedDir(common.HololibCatalogLocation())
 	pathlib.MakeSharedDir(common.HololibLibraryLocation())
+	pathlib.MakeSharedDir(common.HololibUsageLocation())
 }
 
 type Filetask func(string, *File) anywork.Work
@@ -64,6 +65,10 @@ func NewRoot(path string) (*Root, error) {
 		Tree:       newDir("", "", false),
 		RccVersion: common.Version,
 	}, nil
+}
+
+func (it *Root) Touch() {
+	touchUsedHash(it.Blueprint)
 }
 
 func (it *Root) HolotreeBase() string {

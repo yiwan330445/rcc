@@ -4,6 +4,7 @@ import (
 	"crypto/sha256"
 	"fmt"
 	"math"
+	"time"
 
 	"github.com/dchest/siphash"
 )
@@ -42,4 +43,10 @@ func ShortDigest(content string) string {
 
 func Siphash(left, right uint64, body []byte) uint64 {
 	return siphash.Hash(left, right, body)
+}
+
+func DayCountSince(timestamp time.Time) int {
+	duration := time.Since(timestamp)
+	days := math.Floor(duration.Hours() / 24.0)
+	return int(days)
 }
