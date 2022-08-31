@@ -1,6 +1,9 @@
 package fail
 
-import "fmt"
+import (
+	"errors"
+	"fmt"
+)
 
 func Around(err *error) {
 	original := recover()
@@ -23,7 +26,10 @@ func On(condition bool, form string, details ...interface{}) {
 }
 
 func failure(form string, details ...interface{}) delimited {
-	err := fmt.Errorf(form, details...)
+	err := errors.New(form)
+	if len(details) > 0 {
+		err = fmt.Errorf(form, details...)
+	}
 	return func() error {
 		return err
 	}

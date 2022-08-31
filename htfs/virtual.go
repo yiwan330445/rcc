@@ -39,6 +39,10 @@ func (it *virtual) Stage() string {
 	return stage
 }
 
+func (it *virtual) Remove([]string) error {
+	return fmt.Errorf("Not supported yet on virtual holotree.")
+}
+
 func (it *virtual) Export([]string, string) error {
 	return fmt.Errorf("Not supported yet on virtual holotree.")
 }

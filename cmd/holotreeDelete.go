@@ -22,9 +22,10 @@ func deleteByPartialIdentity(partials []string) {
 }
 
 var holotreeDeleteCmd = &cobra.Command{
-	Use:   "delete <partial identity>*",
-	Short: "Delete holotree controller space.",
-	Long:  "Delete holotree controller space.",
+	Use:     "delete <partial identity>*",
+	Short:   "Delete holotree controller space.",
+	Long:    "Delete holotree controller space.",
+	Aliases: []string{"del"},
 	Run: func(cmd *cobra.Command, args []string) {
 		partials := make([]string, 0, len(args)+1)
 		if len(args) > 0 {

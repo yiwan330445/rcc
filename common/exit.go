@@ -14,8 +14,12 @@ func (it ExitCode) ShowMessage() {
 }
 
 func Exit(code int, format string, rest ...interface{}) {
+	message := format
+	if len(rest) > 0 {
+		message = fmt.Sprintf(format, rest...)
+	}
 	panic(ExitCode{
 		Code:    code,
-		Message: fmt.Sprintf(format, rest...),
+		Message: message,
 	})
 }

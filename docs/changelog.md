@@ -1,5 +1,11 @@
 # rcc change log
 
+## v11.22.0 (date: 31.8.2022)
+
+- new command `rcc holotree remove` added, and this will remove catalogs
+  from holotree library (hololib)
+- added repeat count to holotree check command (used also from remove command)
+
 ## v11.21.0 (date: 29.8.2022)
 
 - added support to tracking when catalog blueprints are used

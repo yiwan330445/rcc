@@ -58,6 +58,7 @@ type MutableLibrary interface {
 	Identity() string
 	ExactLocation(string) string
 	Export([]string, string) error
+	Remove([]string) error
 	Location(string) string
 	Record([]byte) error
 	Stage() string
@@ -115,6 +116,24 @@ func (it zipseen) Add(fullpath, relativepath string) (err error) {
 	fail.On(err != nil, "Could not create: %q -> %v", relativepath, err)
 	_, err = io.Copy(target, source)
 	fail.On(err != nil, "Copy failure: %q -> %q -> %v", fullpath, relativepath, err)
+	return nil
+}
+
+func (it *hololib) Remove(catalogs []string) (err error) {
+	defer fail.Around(&err)
+
+	common.TimelineBegin("holotree remove start")
+	defer common.TimelineEnd()
+
+	for _, name := range catalogs {
+		catalog := filepath.Join(common.HololibCatalogLocation(), name)
+		if !pathlib.IsFile(catalog) {
+			pretty.Warning("Catalog %s (%s) is not a file! Ignored!", name, catalog)
+			continue
+		}
+		err := os.Remove(catalog)
+		fail.On(err != nil, "Could not remove catalog %s [filename: %q]", name, catalog)
+	}
 	return nil
 }
 
