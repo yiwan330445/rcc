@@ -133,6 +133,24 @@ func folderEntries(directory string) ([]os.FileInfo, error) {
 	return entries, nil
 }
 
+func recursiveDirWalk(here os.FileInfo, directory, prefix string, report Report) error {
+	entries, err := folderEntries(directory)
+	if err != nil {
+		return err
+	}
+	sorted(entries)
+	for _, entry := range entries {
+		if !entry.IsDir() {
+			continue
+		}
+		nextPrefix := filepath.Join(prefix, entry.Name())
+		entryPath := filepath.Join(directory, entry.Name())
+		recursiveDirWalk(entry, entryPath, nextPrefix, report)
+	}
+	report(directory, prefix, here)
+	return nil
+}
+
 func recursiveWalk(directory, prefix string, force Forced, ignore Ignore, report Report) error {
 	entries, err := folderEntries(directory)
 	if err != nil {
@@ -160,6 +178,18 @@ func ForceWalk(directory string, force Forced, ignore Ignore, report Report) err
 		return err
 	}
 	return recursiveWalk(fullpath, ".", force, ignore, report)
+}
+
+func DirWalk(directory string, report Report) error {
+	fullpath, err := filepath.Abs(directory)
+	if err != nil {
+		return err
+	}
+	entry, err := os.Stat(fullpath)
+	if err != nil {
+		return err
+	}
+	return recursiveDirWalk(entry, fullpath, ".", report)
 }
 
 func Walk(directory string, ignore Ignore, report Report) error {

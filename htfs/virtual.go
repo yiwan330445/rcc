@@ -39,6 +39,10 @@ func (it *virtual) Stage() string {
 	return stage
 }
 
+func (it *virtual) CatalogPath(key string) string {
+	return "Virtual Does Not Support Catalog Path Request"
+}
+
 func (it *virtual) Remove([]string) error {
 	return fmt.Errorf("Not supported yet on virtual holotree.")
 }

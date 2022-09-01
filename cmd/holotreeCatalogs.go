@@ -66,7 +66,7 @@ func jsonCatalogDetails(roots []*htfs.Root) {
 		data["files"] = stats.Files
 		data["bytes"] = stats.Bytes
 		holder[catalog.Blueprint] = data
-		age, _ := pathlib.DaysSinceModified(identity)
+		age, _ := pathlib.DaysSinceModified(catalog.Source())
 		data["age_in_days"] = age
 		data["days_since_last_use"] = lastUse
 	}
@@ -88,8 +88,7 @@ func listCatalogDetails(roots []*htfs.Root) {
 		}
 		stats, err := catalog.Stats()
 		pretty.Guard(err == nil, 1, "Could not get stats for %s, reason: %s", catalog.Blueprint, err)
-		identity := filepath.Join(common.HololibLibraryLocation(), stats.Identity)
-		days, _ := pathlib.DaysSinceModified(identity)
+		days, _ := pathlib.DaysSinceModified(catalog.Source())
 		data := fmt.Sprintf("%s\t%s\t% 6d\t% 7d\t% 6dM\t%s\t%s\t%10d\t%11d\n", catalog.Blueprint, catalog.Platform, stats.Directories, stats.Files, megas(stats.Bytes), stats.Identity, catalog.HolotreeBase(), days, lastUse)
 		tabbed.Write([]byte(data))
 	}

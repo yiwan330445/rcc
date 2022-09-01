@@ -93,7 +93,7 @@ func IntegrityCheck(result map[string]string, needed map[string]map[string]bool)
 	return tool
 }
 
-func Hasher(known map[string]map[string]bool) Filetask {
+func CheckHasher(known map[string]map[string]bool) Filetask {
 	return func(fullpath string, details *File) anywork.Work {
 		return func() {
 			_, ok := known[details.Name]
@@ -102,7 +102,8 @@ func Hasher(known map[string]map[string]bool) Filetask {
 			}
 			source, err := os.Open(fullpath)
 			if err != nil {
-				panic(fmt.Sprintf("Open %q, reason: %v", fullpath, err))
+				anywork.Backlog(RemoveFile(fullpath))
+				panic(fmt.Sprintf("Open[check] %q, reason: %v", fullpath, err))
 			}
 			defer source.Close()
 
@@ -116,7 +117,8 @@ func Hasher(known map[string]map[string]bool) Filetask {
 			digest := sha256.New()
 			_, err = io.Copy(digest, reader)
 			if err != nil {
-				panic(fmt.Sprintf("Copy %q, reason: %v", fullpath, err))
+				anywork.Backlog(RemoveFile(fullpath))
+				panic(fmt.Sprintf("Copy[check] %q, reason: %v", fullpath, err))
 			}
 			details.Digest = fmt.Sprintf("%02x", digest.Sum(nil))
 		}
@@ -128,14 +130,14 @@ func Locator(seek string) Filetask {
 		return func() {
 			source, err := os.Open(fullpath)
 			if err != nil {
-				panic(fmt.Sprintf("Open %q, reason: %v", fullpath, err))
+				panic(fmt.Sprintf("Open[Locator] %q, reason: %v", fullpath, err))
 			}
 			defer source.Close()
 			digest := sha256.New()
 			locator := trollhash.LocateWriter(digest, seek)
 			_, err = io.Copy(locator, source)
 			if err != nil {
-				panic(fmt.Sprintf("Copy %q, reason: %v", fullpath, err))
+				panic(fmt.Sprintf("Copy[Locator] %q, reason: %v", fullpath, err))
 			}
 			details.Rewrite = locator.Locations()
 			details.Digest = fmt.Sprintf("%02x", digest.Sum(nil))

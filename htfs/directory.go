@@ -49,6 +49,7 @@ type Root struct {
 	Blueprint  string `json:"blueprint"`
 	Lifted     bool   `json:"lifted"`
 	Tree       *Dir   `json:"tree"`
+	source     string
 }
 
 func NewRoot(path string) (*Root, error) {
@@ -64,7 +65,12 @@ func NewRoot(path string) (*Root, error) {
 		Lifted:     false,
 		Tree:       newDir("", "", false),
 		RccVersion: common.Version,
+		source:     fullpath,
 	}, nil
+}
+
+func (it *Root) Source() string {
+	return it.source
 }
 
 func (it *Root) Touch() {
@@ -185,6 +191,7 @@ func (it *Root) LoadFrom(filename string) error {
 	if err != nil {
 		return err
 	}
+	it.source = filename
 	defer reader.Close()
 	return it.ReadFrom(reader)
 }

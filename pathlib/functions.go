@@ -45,6 +45,17 @@ func IsDir(pathname string) bool {
 	return err == nil && stat.IsDir()
 }
 
+func IsEmptyDir(pathname string) bool {
+	if !IsDir(pathname) {
+		return false
+	}
+	content, err := os.ReadDir(pathname)
+	if err != nil {
+		return false
+	}
+	return len(content) == 0
+}
+
 func IsFile(pathname string) bool {
 	stat, err := os.Stat(pathname)
 	return err == nil && !stat.IsDir()

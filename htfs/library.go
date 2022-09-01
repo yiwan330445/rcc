@@ -62,6 +62,7 @@ type MutableLibrary interface {
 	Location(string) string
 	Record([]byte) error
 	Stage() string
+	CatalogPath(string) string
 }
 
 type hololib struct {

@@ -34,12 +34,12 @@ var holotreeRemoveCmd = &cobra.Command{
 		if common.DebugFlag {
 			defer common.Stopwatch("Holotree remove command lasted").Report()
 		}
+		holotreeRemove(selectCatalogs(args))
 		if removeCheckRetries > 0 {
 			checkLoop(removeCheckRetries)
 		} else {
 			pretty.Warning("Remember to run `rcc holotree check` after you have removed all desired catalogs!")
 		}
-		holotreeRemove(selectCatalogs(args))
 		pretty.Ok()
 	},
 }

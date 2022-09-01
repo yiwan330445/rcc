@@ -2,12 +2,14 @@ package cmd
 
 import (
 	"fmt"
+	"os"
 	"path/filepath"
 
 	"github.com/robocorp/rcc/anywork"
 	"github.com/robocorp/rcc/common"
 	"github.com/robocorp/rcc/fail"
 	"github.com/robocorp/rcc/htfs"
+	"github.com/robocorp/rcc/pathlib"
 	"github.com/robocorp/rcc/pretty"
 	"github.com/spf13/cobra"
 )
@@ -28,7 +30,7 @@ func checkHolotreeIntegrity() (err error) {
 	fail.On(err != nil, "%s", err)
 	common.Timeline("holotree integrity hasher")
 	known, needed := htfs.LoadHololibHashes()
-	err = fs.AllFiles(htfs.Hasher(known))
+	err = fs.AllFiles(htfs.CheckHasher(known))
 	fail.On(err != nil, "%s", err)
 	collector := make(map[string]string)
 	common.Timeline("holotree integrity collector")
@@ -60,6 +62,13 @@ func checkHolotreeIntegrity() (err error) {
 	fail.On(err != nil, "%s", err)
 	fail.On(redo, "Some catalogs were purged. Run this check command again, please!")
 	fail.On(len(collector) > 0, "Size: %d", len(collector))
+	err = pathlib.DirWalk(common.HololibLibraryLocation(), func(fullpath, relative string, entry os.FileInfo) {
+		if pathlib.IsEmptyDir(fullpath) {
+			err = os.Remove(fullpath)
+			fail.On(err != nil, "%s", err)
+		}
+	})
+	fail.On(err != nil, "%s", err)
 	return nil
 }
 
