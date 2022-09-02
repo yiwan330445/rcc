@@ -173,3 +173,14 @@ func EnsureDirectory(directory string) (string, error) {
 func EnsureParentDirectory(resource string) (string, error) {
 	return EnsureDirectory(filepath.Dir(resource))
 }
+
+func RemoveEmptyDirectores(starting string) (err error) {
+	defer fail.Around(&err)
+
+	return DirWalk(starting, func(fullpath, relative string, entry os.FileInfo) {
+		if IsEmptyDir(fullpath) {
+			err = os.Remove(fullpath)
+			fail.On(err != nil, "%s", err)
+		}
+	})
+}

@@ -36,6 +36,7 @@ Run rcc docs tutorial                0    build/rcc docs tutorial --controller c
 Run rcc holotree list                0    build/rcc holotree list --controller citests
 Run rcc tutorial                     0    build/rcc tutorial --controller citests
 Run rcc version                      0    build/rcc version --controller citests
+Run rcc --version                    0    build/rcc --version --controller citests
 
 *** Keywords ***
 

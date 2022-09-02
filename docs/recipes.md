@@ -416,6 +416,9 @@ rcc holotree init --revoke
   so that failing environment creation can be seen with more details
 - `RCC_CREDENTIALS_ID` is way to provide Control Room credentials using
   environment variables
+- `RCC_NO_BUILD` with any non-empty value will prevent rcc for creating
+  new environments (also available as `--no-build` CLI flag, and as
+  an option in `settings.yaml` file)
 
 
 ## How to troubleshoot rcc setup and robots?

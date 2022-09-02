@@ -20,6 +20,7 @@ import (
 var (
 	profilefile string
 	profiling   *os.File
+	versionFlag bool
 )
 
 func toplevelCommands(parent *cobra.Command) {
@@ -59,8 +60,12 @@ var rootCmd = &cobra.Command{
 communicating with Robocorp Control Room, and managing virtual environments where
 tasks can be developed, debugged, and run.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		commandTree(0, "", cmd.Root())
-		toplevelCommands(cmd.Root())
+		if versionFlag {
+			common.Stdout("%s\n", common.Version)
+		} else {
+			commandTree(0, "", cmd.Root())
+			toplevelCommands(cmd.Root())
+		}
 	},
 }
 
@@ -92,6 +97,8 @@ func Execute() {
 
 func init() {
 	cobra.OnInitialize(initConfig)
+
+	rootCmd.Flags().BoolVarP(&versionFlag, "version", "v", false, "Show rcc version and exit.")
 
 	rootCmd.PersistentFlags().StringVar(&profilefile, "pprof", "", "Filename to save profiling information.")
 	rootCmd.PersistentFlags().StringVar(&common.ControllerType, "controller", "user", "internal, DO NOT USE (unless you know what you are doing)")

@@ -144,6 +144,7 @@ Goal: See variables from specific environment without robot.yaml knowledge
   Step        build/rcc holotree variables --controller citests conda/testdata/conda.yaml
   Must Have   ROBOCORP_HOME=
   Must Have   PYTHON_EXE=
+  Must Have   RCC_EXE=
   Must Have   CONDA_DEFAULT_ENV=rcc
   Must Have   CONDA_PREFIX=
   Must Have   CONDA_PROMPT_MODIFIER=(rcc)
@@ -167,6 +168,7 @@ Goal: See variables from specific environment with robot.yaml but without task
   Step        build/rcc holotree variables --controller citests -r tmp/fluffy/robot.yaml
   Must Have   ROBOCORP_HOME=
   Must Have   PYTHON_EXE=
+  Must Have   RCC_EXE=
   Must Have   CONDA_DEFAULT_ENV=rcc
   Must Have   CONDA_PREFIX=
   Must Have   CONDA_PROMPT_MODIFIER=(rcc)
@@ -193,6 +195,7 @@ Goal: See variables from specific environment with robot.yaml knowledge
   Step        build/rcc holotree variables --controller citests conda/testdata/conda.yaml --config tmp/alternative.yaml -r tmp/fluffy/robot.yaml -e tmp/fluffy/devdata/env.json
   Must Have   ROBOCORP_HOME=
   Must Have   PYTHON_EXE=
+  Must Have   RCC_EXE=
   Must Have   CONDA_DEFAULT_ENV=rcc
   Must Have   CONDA_PREFIX=
   Must Have   CONDA_PROMPT_MODIFIER=(rcc)

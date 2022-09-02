@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"fmt"
-	"os"
 	"path/filepath"
 
 	"github.com/robocorp/rcc/anywork"
@@ -62,12 +61,7 @@ func checkHolotreeIntegrity() (err error) {
 	fail.On(err != nil, "%s", err)
 	fail.On(redo, "Some catalogs were purged. Run this check command again, please!")
 	fail.On(len(collector) > 0, "Size: %d", len(collector))
-	err = pathlib.DirWalk(common.HololibLibraryLocation(), func(fullpath, relative string, entry os.FileInfo) {
-		if pathlib.IsEmptyDir(fullpath) {
-			err = os.Remove(fullpath)
-			fail.On(err != nil, "%s", err)
-		}
-	})
+	err = pathlib.RemoveEmptyDirectores(common.HololibLibraryLocation())
 	fail.On(err != nil, "%s", err)
 	return nil
 }

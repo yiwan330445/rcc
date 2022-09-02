@@ -1,5 +1,15 @@
 # rcc change log
 
+## v11.24.0 (date: 2.9.2022)
+
+- refactoring some utility functions to more common locations
+- adding rcc and micromamba binary locations to diagnostics
+- added `RCC_EXE` environment variable available for robots
+- added `RCC_NO_BUILD` environment variable support (in addition to
+  previous settings options and CLI flag; see v11.19.0)
+- some documentation updates
+- added support for toplevel `--version` option
+
 ## v11.23.0 (date: 2.9.2022)
 
 - added unused option to holotree catalog removal command

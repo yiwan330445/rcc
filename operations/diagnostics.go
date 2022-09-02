@@ -61,11 +61,12 @@ func RunDiagnostics() *common.DiagnosticStatus {
 		Details: make(map[string]string),
 		Checks:  []*common.DiagnosticCheck{},
 	}
-	executable, _ := os.Executable()
-	result.Details["executable"] = executable
+	result.Details["executable"] = common.BinRcc()
 	result.Details["rcc"] = common.Version
+	result.Details["rcc.bin"] = common.BinRcc()
 	result.Details["stats"] = rccStatusLine()
 	result.Details["micromamba"] = conda.MicromambaVersion()
+	result.Details["micromamba.bin"] = conda.BinMicromamba()
 	result.Details["ROBOCORP_HOME"] = common.RobocorpHome()
 	result.Details["ROBOCORP_OVERRIDE_SYSTEM_REQUIREMENTS"] = fmt.Sprintf("%v", common.OverrideSystemRequirements())
 	result.Details["RCC_VERBOSE_ENVIRONMENT_BUILDING"] = fmt.Sprintf("%v", common.VerboseEnvironmentBuilding())

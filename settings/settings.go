@@ -241,7 +241,8 @@ func (it gateway) NoRevocation() bool {
 }
 
 func (it gateway) NoBuild() bool {
-	return common.NoBuild || it.Option("no-build")
+	nobuild := len(os.Getenv("RCC_NO_BUILD")) > 0
+	return nobuild || common.NoBuild || it.Option("no-build")
 }
 
 func (it gateway) ConfiguredHttpTransport() *http.Transport {
