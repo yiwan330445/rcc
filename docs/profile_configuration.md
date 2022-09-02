@@ -40,7 +40,8 @@ rcc configuration diagnostics
 # when basics work, see if full environment creation works
 rcc configuration speedtest
 
-# when you want to reset profile to "default" state
+# when you want to reset profile to "system default" state
+# in practice this means that all settings files removed
 rcc configuration switch --noprofile
 
 # if you want to export profile and deliver to others

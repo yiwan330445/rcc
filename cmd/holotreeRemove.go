@@ -9,9 +9,14 @@ import (
 
 var (
 	removeCheckRetries int
+	unusedDays         int
 )
 
 func holotreeRemove(catalogs []string) {
+	if len(catalogs) == 0 {
+		pretty.Warning("No catalogs given, so nothing to do. Quitting!")
+		return
+	}
 	common.Debug("Trying to remove following catalogs:")
 	for _, catalog := range catalogs {
 		common.Debug("- %s", catalog)
@@ -24,15 +29,28 @@ func holotreeRemove(catalogs []string) {
 	pretty.Guard(err == nil, 3, "%s", err)
 }
 
+func allUnusedCatalogs(limit int) []string {
+	result := []string{}
+	used := catalogUsedStats()
+	for name, idle := range used {
+		if idle > limit {
+			result = append(result, name)
+		}
+	}
+	return result
+}
+
 var holotreeRemoveCmd = &cobra.Command{
-	Use:     "remove catalog+",
+	Use:     "remove catalogid*",
 	Short:   "Remove existing holotree catalogs.",
 	Long:    "Remove existing holotree catalogs. Partial identities are ok.",
 	Aliases: []string{"rm"},
-	Args:    cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		if common.DebugFlag {
 			defer common.Stopwatch("Holotree remove command lasted").Report()
+		}
+		if unusedDays > 0 {
+			args = append(args, allUnusedCatalogs(unusedDays)...)
 		}
 		holotreeRemove(selectCatalogs(args))
 		if removeCheckRetries > 0 {
@@ -46,5 +64,6 @@ var holotreeRemoveCmd = &cobra.Command{
 
 func init() {
 	holotreeRemoveCmd.Flags().IntVarP(&removeCheckRetries, "check", "c", 0, "Additionally run holotree check with this many times.")
+	holotreeRemoveCmd.Flags().IntVarP(&unusedDays, "unused", "", 0, "Remove idle/unused catalog entries based on idle days when value is above given limit.")
 	holotreeCmd.AddCommand(holotreeRemoveCmd)
 }

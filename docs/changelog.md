@@ -1,5 +1,11 @@
 # rcc change log
 
+## v11.23.0 (date: 2.9.2022)
+
+- added unused option to holotree catalog removal command
+- added maintenance related robot test suite
+- minor documentation updates
+
 ## v11.22.1 (date: 1.9.2022)
 
 - fix: using wrong file for age calculation on holotree catalogs
