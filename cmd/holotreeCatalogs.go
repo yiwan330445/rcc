@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 	"text/tabwriter"
 
 	"github.com/robocorp/rcc/common"
@@ -12,6 +13,10 @@ import (
 	"github.com/robocorp/rcc/pathlib"
 	"github.com/robocorp/rcc/pretty"
 	"github.com/spf13/cobra"
+)
+
+var (
+	showIdentityYaml bool
 )
 
 const mega = 1024 * 1024
@@ -45,6 +50,23 @@ func catalogUsedStats() map[string]int {
 	return result
 }
 
+func identityContent(catalog *htfs.Root) string {
+	blob, err := catalog.Show("identity.yaml")
+	if err != nil {
+		return err.Error()
+	}
+	return string(blob)
+}
+
+func identityContentLines(catalog *htfs.Root) []string {
+	content := identityContent(catalog)
+	result := strings.SplitAfter(content, "\n")
+	for at, value := range result {
+		result[at] = strings.Replace(strings.TrimRight(value, "\r\n\t "), "\t", "  ", -1)
+	}
+	return result
+}
+
 func jsonCatalogDetails(roots []*htfs.Root) {
 	used := catalogUsedStats()
 	holder := make(map[string]map[string]interface{})
@@ -61,6 +83,9 @@ func jsonCatalogDetails(roots []*htfs.Root) {
 		data["holotree"] = catalog.HolotreeBase()
 		identity := filepath.Join(common.HololibLibraryLocation(), stats.Identity)
 		data["identity.yaml"] = identity
+		if showIdentityYaml {
+			data["identity-content"] = identityContent(catalog)
+		}
 		data["platform"] = catalog.Platform
 		data["directories"] = stats.Directories
 		data["files"] = stats.Files
@@ -91,6 +116,11 @@ func listCatalogDetails(roots []*htfs.Root) {
 		days, _ := pathlib.DaysSinceModified(catalog.Source())
 		data := fmt.Sprintf("%s\t%s\t% 6d\t% 7d\t% 6dM\t%s\t%s\t%10d\t%11d\n", catalog.Blueprint, catalog.Platform, stats.Directories, stats.Files, megas(stats.Bytes), stats.Identity, catalog.HolotreeBase(), days, lastUse)
 		tabbed.Write([]byte(data))
+		if showIdentityYaml {
+			for _, line := range identityContentLines(catalog) {
+				tabbed.Write([]byte(fmt.Sprintf("\t\t\t\t\t%s\n", line)))
+			}
+		}
 	}
 	tabbed.Flush()
 }
@@ -116,4 +146,5 @@ var holotreeCatalogsCmd = &cobra.Command{
 func init() {
 	holotreeCmd.AddCommand(holotreeCatalogsCmd)
 	holotreeCatalogsCmd.Flags().BoolVarP(&jsonFlag, "json", "j", false, "Output in JSON format")
+	holotreeCatalogsCmd.Flags().BoolVarP(&showIdentityYaml, "identity", "i", false, "Show identity.yaml in catalog context.")
 }

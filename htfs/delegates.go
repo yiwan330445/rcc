@@ -8,10 +8,9 @@ import (
 	"github.com/robocorp/rcc/fail"
 )
 
-func delegateOpen(it MutableLibrary, digest string, ungzip bool) (readable io.Reader, closer Closer, err error) {
+func gzDelegateOpen(filename string, ungzip bool) (readable io.Reader, closer Closer, err error) {
 	defer fail.Around(&err)
 
-	filename := it.ExactLocation(digest)
 	source, err := os.Open(filename)
 	fail.On(err != nil, "Failed to open %q -> %v", filename, err)
 
@@ -27,4 +26,8 @@ func delegateOpen(it MutableLibrary, digest string, ungzip bool) (readable io.Re
 		return source.Close()
 	}
 	return reader, closer, nil
+}
+
+func delegateOpen(it MutableLibrary, digest string, ungzip bool) (readable io.Reader, closer Closer, err error) {
+	return gzDelegateOpen(it.ExactLocation(digest), ungzip)
 }

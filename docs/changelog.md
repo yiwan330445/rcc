@@ -1,5 +1,11 @@
 # rcc change log
 
+## v11.25.0 (date: 5.9.2022)
+
+- flag to show identity.yaml (conda.yaml) in holotree catalogs listing
+  and functionality then just show it as part of output, both human readable
+  and machine readable (JSON)
+
 ## v11.24.0 (date: 2.9.2022)
 
 - refactoring some utility functions to more common locations

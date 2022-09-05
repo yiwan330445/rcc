@@ -1,6 +1,7 @@
 package htfs
 
 import (
+	"bytes"
 	"compress/gzip"
 	"encoding/json"
 	"fmt"
@@ -12,6 +13,7 @@ import (
 
 	"github.com/robocorp/rcc/anywork"
 	"github.com/robocorp/rcc/common"
+	"github.com/robocorp/rcc/fail"
 	"github.com/robocorp/rcc/pathlib"
 )
 
@@ -67,6 +69,10 @@ func NewRoot(path string) (*Root, error) {
 		RccVersion: common.Version,
 		source:     fullpath,
 	}, nil
+}
+
+func (it *Root) Show(filename string) ([]byte, error) {
+	return it.Tree.Show(filepath.SplitList(filename), filename)
 }
 
 func (it *Root) Source() string {
@@ -203,6 +209,36 @@ type Dir struct {
 	Dirs    map[string]*Dir  `json:"subdirs"`
 	Files   map[string]*File `json:"files"`
 	Shadow  bool             `json:"shadow,omitempty"`
+}
+
+func showFile(filename string) (content []byte, err error) {
+	defer fail.Around(&err)
+
+	reader, closer, err := gzDelegateOpen(filename, true)
+	fail.On(err != nil, "Failed to open %q, reason: %v", filename, err)
+	defer closer()
+
+	sink := bytes.NewBuffer(nil)
+	_, err = io.Copy(sink, reader)
+	fail.On(err != nil, "Failed to read %q, reason: %v", filename, err)
+	return sink.Bytes(), nil
+}
+
+func (it *Dir) Show(path []string, fullpath string) ([]byte, error) {
+	if len(path) > 1 {
+		subtree, ok := it.Dirs[path[0]]
+		if !ok {
+			return nil, fmt.Errorf("Not found: %s", fullpath)
+		}
+		return subtree.Show(path[1:], fullpath)
+	}
+	file, ok := it.Files[path[0]]
+	if !ok {
+		return nil, fmt.Errorf("Not found: %s", fullpath)
+	}
+	location := guessLocation(file.Digest)
+	rawfile := filepath.Join(common.HololibLibraryLocation(), location)
+	return showFile(rawfile)
 }
 
 func (it *Dir) IsSymlink() bool {
