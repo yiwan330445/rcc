@@ -146,9 +146,11 @@ func Locator(seek string) Filetask {
 }
 
 func MakeBranches(path string, it *Dir) error {
-	if it.IsSymlink() {
-		anywork.OnErrPanicCloseAll(restoreSymlink(it.Symlink, path))
+	if it.Shadow || it.IsSymlink() {
 		return nil
+	}
+	if _, ok := pathlib.Symlink(path); ok {
+		os.Remove(path)
 	}
 	hasSymlinks := false
 detector:
@@ -382,12 +384,16 @@ func CalculateTreeStats() (Dirtask, *TreeStats) {
 	}, result
 }
 
-func restoreSymlink(source, target string) error {
+func isCorrectSymlink(source, target string) bool {
 	old, ok := pathlib.Symlink(target)
-	if ok && old == target {
+	return ok && old == source
+}
+
+func restoreSymlink(source, target string) error {
+	if isCorrectSymlink(source, target) {
 		return nil
 	}
-	os.Remove(target)
+	os.RemoveAll(target)
 	return os.Symlink(source, target)
 }
 
@@ -415,12 +421,21 @@ func RestoreDirectory(library Library, fs *Root, current map[string]string, stat
 					stats.Dirty(!ok)
 					continue
 				}
+				link, ok := it.Dirs[part.Name()]
+				if ok && link.IsSymlink() {
+					stats.Dirty(false)
+					continue
+				}
 				files[part.Name()] = true
 				found, ok := it.Files[part.Name()]
 				if !ok {
 					common.Trace("* Holotree: remove extra file      %q", directpath)
 					anywork.Backlog(RemoveFile(directpath))
 					stats.Dirty(true)
+					continue
+				}
+				if found.IsSymlink() && isCorrectSymlink(found.Symlink, directpath) {
+					stats.Dirty(false)
 					continue
 				}
 				shadow, ok := current[directpath]

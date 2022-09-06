@@ -1,5 +1,9 @@
 # rcc change log
 
+## v11.25.1 (date: 6.9.2022)
+
+- fix: symbolic link restoration, when target is actually non-symlink
+
 ## v11.25.0 (date: 5.9.2022)
 
 - flag to show identity.yaml (conda.yaml) in holotree catalogs listing
