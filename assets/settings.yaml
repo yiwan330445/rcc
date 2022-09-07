@@ -1,6 +1,6 @@
 endpoints:
   cloud-api: https://api.eu1.robocorp.com/
-  cloud-linking: https://id.robocorp.com/
+  cloud-linking: https://cloud.robocorp.com/link/
   cloud-ui: https://cloud.robocorp.com/
   pypi: # https://pypi.org/simple/
   pypi-trusted: # https://pypi.org/
@@ -42,4 +42,4 @@ meta:
   name: default
   description: default settings.yaml internal to rcc
   source: builtin
-  version: 2022.03
+  version: 2022.09

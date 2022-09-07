@@ -1,5 +1,12 @@
 # rcc change log
 
+## v11.26.0 (date: 6.9.2022)
+
+- experiment: pyvenv.cfg file written into created holotree before lifting
+- update: cloud-linking in setting.yaml now points to new default location:
+  https://cloud.robocorp.com/link/
+- bugfix: settings.yaml version updated to 2022.09 (because options section)
+
 ## v11.25.1 (date: 6.9.2022)
 
 - fix: symbolic link restoration, when target is actually non-symlink
