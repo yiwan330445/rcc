@@ -1,6 +1,11 @@
 # rcc change log
 
-## v11.26.0 (date: 6.9.2022)
+## v11.26.1 (date: 7.9.2022)
+
+- minor documentation improvement, highlighting configuration settings help,
+  that plain commands are showing vanilla rcc setting by default.
+
+## v11.26.0 (date: 7.9.2022)
 
 - experiment: pyvenv.cfg file written into created holotree before lifting
 - update: cloud-linking in setting.yaml now points to new default location:

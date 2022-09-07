@@ -11,8 +11,9 @@ import (
 
 var settingsCmd = &cobra.Command{
 	Use:   "settings",
-	Short: "Show default settings.yaml content.",
-	Long:  "Show default settings.yaml content.",
+	Short: "Show DEFAULT settings.yaml content. Vanilla rcc settings.",
+	Long: `Show DEFAULT settings.yaml content. Vanilla rcc settings.
+If you need active status, either use --json option, or "rcc configuration diagnostics".`,
 	Run: func(cmd *cobra.Command, args []string) {
 		if jsonFlag {
 			config, err := settings.SummonSettings()
@@ -30,5 +31,5 @@ var settingsCmd = &cobra.Command{
 
 func init() {
 	configureCmd.AddCommand(settingsCmd)
-	settingsCmd.Flags().BoolVarP(&jsonFlag, "json", "j", false, "Show effective settings as JSON stream.")
+	settingsCmd.Flags().BoolVarP(&jsonFlag, "json", "j", false, "Show EFFECTIVE settings as JSON stream. For applications to use.")
 }
