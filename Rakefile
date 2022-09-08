@@ -16,21 +16,28 @@ task :tooling do
   puts "PATH is #{ENV['PATH']}"
   puts "GOPATH is #{ENV['GOPATH']}"
   puts "GOROOT is #{ENV['GOROOT']}"
-  sh "go install github.com/go-bindata/go-bindata/..."
   sh "which -a zip || echo NA"
-  sh "which -a go-bindata || echo NA"
   sh "ls -l $HOME/go/bin"
 end
 
-task :assets do
+task :noassets do
+  rm_f FileList['blobs/assets/*.zip']
+  rm_f FileList['blobs/assets/*.yaml']
+  rm_f FileList['blobs/assets/man/*.txt']
+  rm_f FileList['blobs/docs/*.md']
+end
+
+task :assets => [:noassets] do
   FileList['templates/*/'].each do |directory|
     basename = File.basename(directory)
-    assetname = File.absolute_path(File.join("assets", "#{basename}.zip"))
+    assetname = File.absolute_path(File.join("blobs", "assets", "#{basename}.zip"))
     rm_rf assetname
     puts "Directory #{directory} => #{assetname}"
     sh "cd #{directory} && zip -ryqD9 #{assetname} ."
   end
-  sh "$HOME/go/bin/go-bindata -o blobs/assets.go -pkg blobs assets/*.yaml assets/*.zip assets/man/* docs/*.md"
+  cp FileList['assets/*.yaml'], 'blobs/assets/'
+  cp FileList['assets/man/*.txt'], 'blobs/assets/man/'
+  cp FileList['docs/*.md'], 'blobs/docs/'
 end
 
 task :clean do

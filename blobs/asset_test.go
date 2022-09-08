@@ -12,10 +12,8 @@ func TestCanSeeBaseZipAsset(t *testing.T) {
 	must_be, wont_be := hamlet.Specifications(t)
 
 	must_be.Panic(func() { blobs.MustAsset("assets/missing.zip") })
-	wont_be.Panic(func() { blobs.MustAsset("assets/templates.yaml") })
 	wont_be.Panic(func() { blobs.MustAsset("assets/standard.zip") })
 	wont_be.Panic(func() { blobs.MustAsset("assets/python.zip") })
-	wont_be.Panic(func() { blobs.MustAsset("assets/settings.yaml") })
 
 	_, err := blobs.Asset("assets/missing.zip")
 	wont_be.Nil(err)
@@ -23,6 +21,28 @@ func TestCanSeeBaseZipAsset(t *testing.T) {
 	asset, err := blobs.Asset("assets/standard.zip")
 	must_be.Nil(err)
 	wont_be.Nil(asset)
+}
+
+func TestCanOtherAssets(t *testing.T) {
+	must_be, wont_be := hamlet.Specifications(t)
+
+	must_be.Panic(func() { blobs.MustAsset("assets/missing.yaml") })
+
+	wont_be.Panic(func() { blobs.MustAsset("assets/templates.yaml") })
+	wont_be.Panic(func() { blobs.MustAsset("assets/settings.yaml") })
+	wont_be.Panic(func() { blobs.MustAsset("assets/speedtest.yaml") })
+
+	wont_be.Panic(func() { blobs.MustAsset("assets/man/LICENSE.txt") })
+	wont_be.Panic(func() { blobs.MustAsset("assets/man/tutorial.txt") })
+
+	wont_be.Panic(func() { blobs.MustAsset("docs/BUILD.md") })
+	wont_be.Panic(func() { blobs.MustAsset("docs/README.md") })
+	wont_be.Panic(func() { blobs.MustAsset("docs/changelog.md") })
+	wont_be.Panic(func() { blobs.MustAsset("docs/environment-caching.md") })
+	wont_be.Panic(func() { blobs.MustAsset("docs/features.md") })
+	wont_be.Panic(func() { blobs.MustAsset("docs/profile_configuration.md") })
+	wont_be.Panic(func() { blobs.MustAsset("docs/recipes.md") })
+	wont_be.Panic(func() { blobs.MustAsset("docs/usecases.md") })
 }
 
 func TestCanGetTemplateNamesThruOperations(t *testing.T) {

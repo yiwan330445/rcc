@@ -1,5 +1,10 @@
 # rcc change log
 
+## v11.26.2 (date: 8.9.2022)
+
+- converted assets to embedded resources (golang builtin embed module)
+- go-bindata is not used anymore (replaced by "embed")
+
 ## v11.26.1 (date: 7.9.2022)
 
 - minor documentation improvement, highlighting configuration settings help,
