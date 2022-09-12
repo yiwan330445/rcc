@@ -774,6 +774,85 @@ compromising variable content inside repository).
   CI step recipe and not have external scripts (but you decide that)
 
 
+## How to setup custom templates?
+
+Custom templates allows making your own templates that can be used when
+new robot is created. So if you have your standard way of doing things,
+then custom template is good way to codify it.
+
+You then need to do these steps:
+
+- setup custom settings.yaml that point location where template configuration
+  file is located (the templates.yaml file)
+- create that custom templates.yaml configuration file that lists available
+  templates, and where template bundle can be found (the templates.zip file)
+- and finally build that templates.zip to bundle together all those templates
+  that were listed in configuration file
+- and finally both templates.yaml and templates.zip must be somewhere behind
+  URL that starts with https:
+
+Note: templates are needed only on development context, and they are not used
+or needed in Assistant or Workforce Agent context.
+
+### Custom template configuration in `settings.yaml`.
+
+In settings.yaml, there is `autoupdates:` section, and there is entry for
+`templates:` where you should put exact name and location where active
+templates configuration file is located.
+
+Example:
+
+```yaml
+autoupdates:
+  templates: https://special.acme.com/robot/templates-1.0.1.yaml
+```
+
+As above example shows, name is configurable, and can even contain some
+versioning information, if so needed.
+
+### Custom template configuration file as `templates.yaml`.
+
+In that `templates.yaml` following things must be provided:
+
+- `hash:` (sha256) of "templates.zip" file (so that integrity of templates.zip
+  can be verified)
+- `url:` to exact name and location where that templates.zip can be downloaded
+- `date:` when this template.yaml file was last updated
+- `templates:` as key/value pairs of templates and their "one liner"
+  description seen in UIs
+- so, if there is `shell.zip` inside templates.zip, then that should have
+  `shell: Shell Robot Template` or something similar in that `templates:`
+  section
+
+Example:
+
+```yaml
+hash: c7b1ba0863d9f7559de599e3811e31ddd7bdb72ce862d1a033f5396c92c5c4ec
+url: https://special.acme.com/robot/templates-1.0.1.zip
+date: 2022-09-12
+templates:
+  shell: Simple Shell Robot template
+  extended: Extended Robot Framework template
+  playwright: Playwright template
+  producer-consumer: Producer-consumer model template
+```
+
+### Custom template content in `templates.zip` file.
+
+Then that `templates.zip` is zip-of-zips. So for each key from templates.yaml
+`templates:` sections should have matching .zip file inside that master zip.
+
+### Shared using `https:` protocol ...
+
+Then both `templates.yaml` and `templates.zip` should be hosted somewhere
+which can be accessed using https protocol. Names there should match those
+defined in above steps.
+
+And that `settings.yaml` should either be delivered standalone into those
+developer machines that need to use those templates, or better yet, be part
+of "profile" that developers can use to setup all of required configurations.
+
+
 ## Where can I find updates for rcc?
 
 https://downloads.robocorp.com/rcc/releases/index.html

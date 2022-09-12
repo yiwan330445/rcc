@@ -173,7 +173,7 @@ func HololibUsageLocation() string {
 }
 
 func HolotreeLock() string {
-	return fmt.Sprintf("%s.lck", HolotreeLocation())
+	return filepath.Join(HolotreeLocation(), "global.lck")
 }
 
 func UsesHolotree() bool {

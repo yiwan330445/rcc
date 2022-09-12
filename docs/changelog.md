@@ -1,5 +1,13 @@
 # rcc change log
 
+## v11.26.3 (date: 12.9.2022)
+
+- bugfix: moved "ht.lck" inside holotree location, and renamed it to be
+  `global.lck` file.
+- added environment variable `SSL_CERT_FILE` to point into certificate bundle
+  if one is provided by profile
+- documentation updates
+
 ## v11.26.2 (date: 8.9.2022)
 
 - converted assets to embedded resources (golang builtin embed module)
@@ -43,7 +51,7 @@
 - added maintenance related robot test suite
 - minor documentation updates
 
-## v11.22.1 (date: 1.9.2022)
+## v11.22.1 (date: 1.9.2022) BROKEN
 
 - fix: using wrong file for age calculation on holotree catalogs
 - fix: holotree check failed to recover on corrupted files; now failure
