@@ -5,7 +5,7 @@ import re
 from os.path import basename
 
 DELETE_PATTERN = re.compile(r'[/:]+')
-NONCHAR_PATTERN = re.compile(r'[^.a-z-]+')
+NONCHAR_PATTERN = re.compile(r'[^.a-z0-9-]+')
 HEADING_PATTERN = re.compile(r'^\s*(#{1,3})\s+(.*?)\s*$')
 CODE_PATTERN = re.compile(r'^\s*[`]{3}')
 
@@ -13,7 +13,7 @@ DOT = '.'
 DASH = '-'
 NEWLINE = '\n'
 
-IGNORE_LIST = ('changelog.md', 'toc.md', 'README.md')
+IGNORE_LIST = ('changelog.md', 'toc.md', 'BUILD.md', 'README.md')
 
 PRIORITY_LIST = (
         'docs/usecases.md',
@@ -21,6 +21,8 @@ PRIORITY_LIST = (
         'docs/recipes.md',
         'docs/profile_configuration.md',
         'docs/environment-caching.md',
+        'docs/troubleshooting.md',
+        'docs/history.md',
         )
 
 def unify(value):

@@ -1,5 +1,11 @@
 # rcc change log
 
+## v11.26.4 (date: 14.9.2022)
+
+- new `docs/troubleshooting.md` document added
+- new `docs/history.md` document added
+- updated `scripts/toc.py` with new documents and minor improvement
+
 ## v11.26.3 (date: 12.9.2022)
 
 - bugfix: moved "ht.lck" inside holotree location, and renamed it to be
