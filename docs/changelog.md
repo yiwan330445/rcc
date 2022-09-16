@@ -1,5 +1,11 @@
 # rcc change log
 
+## v11.26.5 (date: 16.9.2022)
+
+- added architecture/platform metric with same interval as timezone metrics
+- `docs/history.md` updated with v11 information so far
+- `docs/troubleshooting.md` updated with additional points
+
 ## v11.26.4 (date: 14.9.2022)
 
 - new `docs/troubleshooting.md` document added

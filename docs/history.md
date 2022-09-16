@@ -9,7 +9,41 @@ and they are not listed here.
 Version "eleven" is work in progress and has already 100+ commits, and at least
 following improvements:
 
-- Work In Progress ...
+- breaking change: old environment caching (base/live) was fully removed and
+  holotree is only solution available
+- breaking change: hashing algorithm changed, holotree uses siphash fron now on
+- environment section of commands were removed, replacements live in holotree
+  section
+- environment cleanup changed, since holotree is different from base/live envs
+- auto-scaling worker count is now based on number of CPUs minus one, but at
+  least two and maximum of 96
+- templates can now be automatically updated from Cloud and can also be
+  customized using settings.yaml autoupdates section
+- added option to do strict environment building, which turns pip warnings
+  into actual errors
+- added support for speed test, where current machine performance gets scored
+- hololib.zip files can now be imported into normal holotree library (allows
+  air gapped workflow)
+- added more commands around holotree implementation
+- added support for preRunScripts, which are executed in similar context that
+  actual robot will use, and there can be OS specific scripts only run on
+  that specific OS
+- added profile support with define, export, import, and switch functionality
+- certificate bundle, micromambarc, piprc, and settings can be part of profile
+- `settings.yaml` now has layers, so that partial settings are possible, and
+  undefined ones use internal default settings
+- `docs/` folder has generated "table of content"
+- introduced "shared holotree", where multiple users in same computer can
+  share resources needed by holotree spaces
+- in addition to normal tasks, now robot.yaml can also contain devTasks, which
+  can be activated with flag `--dev`
+- holotrees can also be imported directly from URLs
+- some experimental support for virtual environments (pyvenv.cfg and others)
+- moved from "go-bindata" to use new go buildin "embed" module
+- holotree now also fully support symbolic links inside created environments
+- improved cleanup in relation to new shared holotrees
+- individual catalog removal and cleanup is now possible
+- prebuild environments can now be forced using "no build" configurations
 
 ## Version 10.x: between Jun 15, 2021 and Sep 1, 2021
 

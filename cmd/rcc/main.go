@@ -16,6 +16,7 @@ import (
 
 const (
 	timezonekey = `rcc.cli.tz`
+	oskey       = `rcc.cli.os`
 	daily       = 60 * 60 * 24
 )
 
@@ -35,6 +36,7 @@ func TimezoneMetric() error {
 	cache.Stamps[timezonekey] = common.When + daily
 	zone := time.Now().Format("MST-0700")
 	cloud.BackgroundMetric(common.ControllerIdentity(), timezonekey, zone)
+	cloud.BackgroundMetric(common.ControllerIdentity(), oskey, common.Platform())
 	return cache.Save()
 }
 

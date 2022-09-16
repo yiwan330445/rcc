@@ -40,6 +40,10 @@
 - describe steps that are needed to be able to reproduce this issue
 - describe what have you already tried to resolve this issue
 - describe what has changed since this was not present and everything worked ok
+- you should share your `conda.yaml` used with robot or environment
+- you should share your `robot.yaml` that defines your robot
+- you should share your code, or minimal sample code, that can reproduce
+  problem you are having
 
 ## Known solutions
 
