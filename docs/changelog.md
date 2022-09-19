@@ -1,5 +1,13 @@
 # rcc change log
 
+## v11.26.6 (date: 19.9.2022)
+
+- try to upgraded cobra and viper dependencies, to get remove security warnings
+  given by AWS container scanner tooling
+- upgrade to use github.com/spf13/cobra v1.5.0
+- upgrade to use github.com/spf13/viper v1.13.0
+- upgrade to use gopkg.in/square/go-jose.v2 v2.6.0
+
 ## v11.26.5 (date: 16.9.2022)
 
 - added architecture/platform metric with same interval as timezone metrics
