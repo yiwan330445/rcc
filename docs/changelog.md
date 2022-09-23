@@ -1,5 +1,12 @@
 # rcc change log
 
+## v11.27.0 (date: 23.9.2022)
+
+- support for analyzing installation plans and their challenges and show it
+  online, or afterwards
+- analysis is visible in `rcc holotree plan` command and also in `pip`
+  phase in environment creation
+
 ## v11.26.6 (date: 19.9.2022)
 
 - try to upgraded cobra and viper dependencies, to get remove security warnings

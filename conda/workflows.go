@@ -51,8 +51,7 @@ func LiveCapture(liveFolder string, command ...string) (string, int, error) {
 	return task.CaptureOutput()
 }
 
-func LiveExecution(sink *os.File, liveFolder string, command ...string) (int, error) {
-	defer sink.Sync()
+func LiveExecution(sink io.Writer, liveFolder string, command ...string) (int, error) {
 	fmt.Fprintf(sink, "Command %q at %q:\n", command, liveFolder)
 	task, err := livePrepare(liveFolder, command...)
 	if err != nil {
@@ -121,18 +120,23 @@ func newLive(yaml, condaYaml, requirementsText, key string, force, freshInstall 
 func newLiveInternal(yaml, condaYaml, requirementsText, key string, force, freshInstall bool, postInstall []string) (bool, bool) {
 	targetFolder := common.StageFolder
 	planfile := fmt.Sprintf("%s.plan", targetFolder)
-	planWriter, err := os.OpenFile(planfile, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0o644)
+	planSink, err := os.OpenFile(planfile, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0o644)
 	if err != nil {
 		return false, false
 	}
 	defer func() {
-		planWriter.Close()
+		planSink.Close()
 		content, err := ioutil.ReadFile(planfile)
 		if err == nil {
 			common.Log("%s", string(content))
 		}
 		os.Remove(planfile)
 	}()
+
+	planalyzer := NewPlanAnalyzer(true)
+	defer planalyzer.Close()
+
+	planWriter := io.MultiWriter(planSink, planalyzer)
 	fmt.Fprintf(planWriter, "---  installation plan %q %s [force: %v, fresh: %v| rcc %s]  ---\n\n", key, time.Now().Format(time.RFC3339), force, freshInstall, common.Version)
 	stopwatch := common.Stopwatch("installation plan")
 	fmt.Fprintf(planWriter, "---  plan blueprint @%ss  ---\n\n", stopwatch)
@@ -178,6 +182,7 @@ func newLiveInternal(yaml, condaYaml, requirementsText, key string, force, fresh
 		pipCommand.ConditionalFlag(common.VerboseEnvironmentBuilding(), "--verbose")
 		common.Debug("===  pip install phase ===")
 		code, err = LiveExecution(planWriter, targetFolder, pipCommand.CLI()...)
+		planSink.Sync()
 		if err != nil || code != 0 {
 			cloud.BackgroundMetric(common.ControllerIdentity(), "rcc.env.fatal.pip", fmt.Sprintf("%d_%x", code, code))
 			common.Timeline("pip fail.")
@@ -200,6 +205,7 @@ func newLiveInternal(yaml, condaYaml, requirementsText, key string, force, fresh
 			}
 			common.Debug("Running post install script '%s' ...", script)
 			_, err = LiveExecution(planWriter, targetFolder, scriptCommand...)
+			planSink.Sync()
 			if err != nil {
 				common.Fatal("post-install", err)
 				common.Log("%sScript '%s' failure: %v%s", pretty.Red, script, err, pretty.Reset)
@@ -230,6 +236,7 @@ func newLiveInternal(yaml, condaYaml, requirementsText, key string, force, fresh
 		pipCommand.ConditionalFlag(common.VerboseEnvironmentBuilding(), "--verbose")
 		common.Debug("===  pip check phase ===")
 		code, err = LiveExecution(planWriter, targetFolder, pipCommand.CLI()...)
+		planSink.Sync()
 		if err != nil || code != 0 {
 			cloud.BackgroundMetric(common.ControllerIdentity(), "rcc.env.fatal.pipcheck", fmt.Sprintf("%d_%x", code, code))
 			common.Timeline("pip check fail.")
@@ -241,8 +248,8 @@ func newLiveInternal(yaml, condaYaml, requirementsText, key string, force, fresh
 		common.Progress(9, "Pip check skipped.")
 	}
 	fmt.Fprintf(planWriter, "\n---  installation plan complete @%ss  ---\n\n", stopwatch)
-	planWriter.Sync()
-	planWriter.Close()
+	planSink.Sync()
+	planSink.Close()
 	common.Progress(10, "Update installation plan.")
 	finalplan := filepath.Join(targetFolder, "rcc_plan.log")
 	os.Rename(planfile, finalplan)

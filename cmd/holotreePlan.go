@@ -1,10 +1,10 @@
 package cmd
 
 import (
-	"fmt"
-	"io/ioutil"
+	"io"
 	"os"
 
+	"github.com/robocorp/rcc/conda"
 	"github.com/robocorp/rcc/htfs"
 	"github.com/robocorp/rcc/pretty"
 
@@ -23,9 +23,13 @@ var holotreePlanCmd = &cobra.Command{
 			for _, label := range htfs.FindEnvironment(prefix) {
 				planfile, ok := htfs.InstallationPlan(label)
 				pretty.Guard(ok, 1, "Could not find plan for: %v", label)
-				content, err := ioutil.ReadFile(planfile)
+				source, err := os.Open(planfile)
 				pretty.Guard(err == nil, 2, "Could not read plan %q, reason: %v", planfile, err)
-				fmt.Fprintf(os.Stdout, string(content))
+				defer source.Close()
+				analyzer := conda.NewPlanAnalyzer(false)
+				defer analyzer.Close()
+				sink := io.MultiWriter(os.Stdout, analyzer)
+				io.Copy(sink, source)
 				found = true
 			}
 		}

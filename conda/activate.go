@@ -5,8 +5,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"html/template"
+	"io"
 	"io/ioutil"
-	"os"
 	"path/filepath"
 	"strings"
 
@@ -98,7 +98,7 @@ func diffStringMaps(before, after map[string]string) map[string]string {
 	return result
 }
 
-func Activate(sink *os.File, targetFolder string) error {
+func Activate(sink io.Writer, targetFolder string) error {
 	envCommand := []string{common.BinRcc(), "internal", "env", "--label", "before"}
 	out, _, err := LiveCapture(targetFolder, envCommand...)
 	if err != nil {
