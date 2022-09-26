@@ -112,7 +112,8 @@ func (it *PlanAnalyzer) Observe(event string) {
 func (it *PlanAnalyzer) Write(blob []byte) (int, error) {
 	old := len(it.Pending)
 	update := len(blob)
-	body := make([]byte, 0, old+update)
+	var total uint64 = uint64(old) + uint64(update)
+	body := make([]byte, 0, total)
 	if old > 0 {
 		body = append(body, it.Pending...)
 	}

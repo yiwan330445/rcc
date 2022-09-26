@@ -1,5 +1,9 @@
 # rcc change log
 
+## v11.27.1 (date: 26.9.2022)
+
+- fixing CodeQL security warning about allocation overflow
+
 ## v11.27.0 (date: 23.9.2022)
 
 - support for analyzing installation plans and their challenges and show it
