@@ -17,7 +17,18 @@ const (
 )
 
 var (
-	planPattern = regexp.MustCompile("^---  (.+?) plan @\\d+.\\d+s  ---$")
+	planPattern     = regexp.MustCompile("^---  (.+?) plan @\\d+.\\d+s  ---$")
+	pipNotePrefixes = [][2]string{
+		{"info:", "%s [plan analyzer]"},
+		{"warning:", "%s [plan analyzer]"},
+		{"error:", "%s [plan analyzer]"},
+		{"successfully uninstalled", "%s [plan analyzer: pip overrides conda]"},
+		{"building wheels", "%s [plan analyzer: missing pip wheel files]"},
+	}
+	pipNoteContains   = [][2]string{}
+	pipDetailContains = [][2]string{
+		{"which is incompatible", "%s [plan analyzer: pip vs. conda?]"},
+	}
 )
 
 type (
@@ -56,11 +67,18 @@ func NewPlanAnalyzer(realtime bool) *PlanAnalyzer {
 }
 
 func pipStrategy(ref *PlanAnalyzer, event string) {
-	low := strings.ToLower(event)
+	low := strings.TrimSpace(strings.ToLower(event))
 	note := ""
 	detail := ""
-	if strings.HasPrefix(low, "info:") || strings.HasPrefix(low, "error:") {
-		note = event
+	for _, marker := range pipNotePrefixes {
+		if strings.HasPrefix(low, marker[0]) {
+			note = fmt.Sprintf(marker[1], event)
+		}
+	}
+	for _, marker := range pipNoteContains {
+		if strings.Contains(low, marker[0]) {
+			note = fmt.Sprintf(marker[1], event)
+		}
 	}
 	if strings.Contains(low, "using cached") {
 		if strings.Contains(low, ".tar.gz") {
@@ -69,11 +87,16 @@ func pipStrategy(ref *PlanAnalyzer, event string) {
 			detail = event
 		}
 	}
+	for _, marker := range pipDetailContains {
+		if strings.Contains(low, marker[0]) {
+			detail = fmt.Sprintf(marker[1], event)
+		}
+	}
 	elapsed := time.Since(ref.Started).Round(1 * time.Second)
 	if len(note) > 0 {
 		ref.Notes = append(ref.Notes, note)
 		if ref.Realtime {
-			pretty.Warning("%s  @%s", note, elapsed)
+			pretty.Warning("%s  @%s", strings.TrimSpace(note), elapsed)
 		}
 		ref.Details = true
 		return
@@ -143,6 +166,6 @@ func (it *PlanAnalyzer) Close() {
 	}
 	pretty.Warning("Analyzing installation plan revealed following findings:")
 	for _, note := range it.Notes {
-		common.Log("  %s* %s%s%s", pretty.Cyan, pretty.Bold, note, pretty.Reset)
+		common.Log("  %s* %s%s%s", pretty.Cyan, pretty.Bold, strings.TrimSpace(note), pretty.Reset)
 	}
 }
