@@ -1,6 +1,10 @@
 package cmd
 
 import (
+	"encoding/json"
+	"fmt"
+	"os"
+
 	"github.com/robocorp/rcc/cloud"
 	"github.com/robocorp/rcc/common"
 	"github.com/robocorp/rcc/operations"
@@ -29,7 +33,13 @@ var newCloudCmd = &cobra.Command{
 		if err != nil {
 			pretty.Exit(3, "Error: %v", err)
 		}
-		common.Log("Created new robot named '%s' with identity %s.", reply["name"], reply["id"])
+		if jsonFlag {
+			result, err := json.MarshalIndent(reply, "", "  ")
+			pretty.Guard(err == nil, 1, "Json converion failed, reason: %v", err)
+			fmt.Fprintf(os.Stdout, "%s\n", result)
+		} else {
+			common.Log("Created new robot named '%s' with identity %s.", reply["name"], reply["id"])
+		}
 	},
 }
 
@@ -39,4 +49,5 @@ func init() {
 	newCloudCmd.MarkFlagRequired("robot")
 	newCloudCmd.Flags().StringVarP(&workspaceId, "workspace", "w", "", "Workspace id to use as creation target.")
 	newCloudCmd.MarkFlagRequired("workspace")
+	newCloudCmd.Flags().BoolVarP(&jsonFlag, "json", "j", false, "Output in JSON format")
 }

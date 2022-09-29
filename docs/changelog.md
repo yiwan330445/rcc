@@ -1,5 +1,11 @@
 # rcc change log
 
+## v11.27.3 (date: 29.9.2022)
+
+- fix: adding more "plan analyzer" identifiers to its output
+- fix: adding detection to "failed to build" messages
+- fix: added json output to new robot creation to cloud
+
 ## v11.27.2 (date: 27.9.2022)
 
 - improving plan analyzer with more rules to show messages

@@ -25,7 +25,9 @@ var (
 		{"successfully uninstalled", "%s [plan analyzer: pip overrides conda]"},
 		{"building wheels", "%s [plan analyzer: missing pip wheel files]"},
 	}
-	pipNoteContains   = [][2]string{}
+	pipNoteContains = [][2]string{
+		{"failed to build", "%s [plan analyzer: build failure]"},
+	}
 	pipDetailContains = [][2]string{
 		{"which is incompatible", "%s [plan analyzer: pip vs. conda?]"},
 	}
@@ -82,9 +84,9 @@ func pipStrategy(ref *PlanAnalyzer, event string) {
 	}
 	if strings.Contains(low, "using cached") {
 		if strings.Contains(low, ".tar.gz") {
-			detail = fmt.Sprintf("%s [missing wheel file?]", event)
+			detail = fmt.Sprintf("%s [plan analyzer: missing wheel file?]", event)
 		} else {
-			detail = event
+			detail = fmt.Sprintf("%s [plan analyzer]", event)
 		}
 	}
 	for _, marker := range pipDetailContains {

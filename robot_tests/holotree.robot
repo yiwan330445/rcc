@@ -37,7 +37,7 @@ Goal: See variables from specific environment without robot.yaml knowledge
   Wont Have   ROBOT_ARTIFACTS=
 
 Goal: See variables from specific environment with robot.yaml but without task
-  Step        build/rcc holotree variables --space jam --controller citests -r tmp/holotin/robot.yaml
+  Step        build/rcc holotree variables --space holotin --controller citests -r tmp/holotin/robot.yaml
   Must Have   ROBOCORP_HOME=
   Must Have   PYTHON_EXE=
   Must Have   CONDA_DEFAULT_ENV=rcc
