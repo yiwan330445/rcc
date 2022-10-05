@@ -1,5 +1,13 @@
 # rcc change log
 
+## v11.28.0 (date: 5.10.2022)
+
+- micromamba upgrade to v0.27.0
+- refactored version micromamba version numbering into one place
+- added used pip and micromamba versions in progress messages
+- BUGFIX: now explicitely using environment python to run pip commands
+  (using `python -m pip install ...` form instead old `pip install` form)
+
 ## v11.27.3 (date: 29.9.2022)
 
 - fix: adding more "plan analyzer" identifiers to its output

@@ -20,3 +20,10 @@ func TestCanParseMicromambaVersion(t *testing.T) {
 	must_be.Equal("0.19.0", second(conda.AsVersion("\n\n\tmicromamba: 0.19.0 \nlibmamba: 0.18.7\n\n\t")))
 	must_be.Equal("0.20", second(conda.AsVersion("microrumba: 0.20")))
 }
+
+func TestCanParsePipVersion(t *testing.T) {
+	must_be, _ := hamlet.Specifications(t)
+
+	must_be.Equal("20.3.4", second(conda.AsVersion("pip 20.3.4 from /outer/space/python/blah (python 3.9)")))
+	must_be.Equal("22.2.2", second(conda.AsVersion("pip 22.2.2 from /outer/space/python/blah (python 3.9)")))
+}

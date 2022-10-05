@@ -147,7 +147,7 @@ func newLiveInternal(yaml, condaYaml, requirementsText, key string, force, fresh
 	if force {
 		ttl = "0"
 	}
-	common.Progress(5, "Running micromamba phase.")
+	common.Progress(5, "Running micromamba phase. (micromamba v%s)", MicromambaVersion())
 	mambaCommand := common.NewCommander(BinMicromamba(), "create", "--always-copy", "--no-env", "--safety-checks", "enabled", "--extra-safety-checks", "--retry-clean-cache", "--strict-channel-priority", "--repodata-ttl", ttl, "-y", "-f", condaYaml, "-p", targetFolder)
 	mambaCommand.Option("--channel-alias", settings.Global.CondaURL())
 	mambaCommand.ConditionalFlag(common.VerboseEnvironmentBuilding(), "--verbose")
@@ -169,14 +169,24 @@ func newLiveInternal(yaml, condaYaml, requirementsText, key string, force, fresh
 		return false, true
 	}
 	fmt.Fprintf(planWriter, "\n---  pip plan @%ss  ---\n\n", stopwatch)
+	python, pyok := FindPython(targetFolder)
+	if !pyok {
+		fmt.Fprintf(planWriter, "Note: no python in target folder: %s\n", targetFolder)
+	}
 	pipUsed, pipCache, wheelCache := false, common.PipCache(), common.WheelCache()
 	size, ok := pathlib.Size(requirementsText)
 	if !ok || size == 0 {
 		common.Progress(6, "Skipping pip install phase -- no pip dependencies.")
 	} else {
-		common.Progress(6, "Running pip install phase.")
+		if !pyok {
+			cloud.BackgroundMetric(common.ControllerIdentity(), "rcc.env.fatal.pip", fmt.Sprintf("%d_%x", 9999, 9999))
+			common.Timeline("pip fail. no python found.")
+			common.Fatal("pip fail. no python found.", errors.New("No python found, but required!"))
+			return false, false
+		}
+		common.Progress(6, "Running pip install phase. (pip v%s)", PipVersion(python))
 		common.Debug("Updating new environment at %v with pip requirements from %v (size: %v)", targetFolder, requirementsText, size)
-		pipCommand := common.NewCommander("pip", "install", "--isolated", "--no-color", "--disable-pip-version-check", "--prefer-binary", "--cache-dir", pipCache, "--find-links", wheelCache, "--requirement", requirementsText)
+		pipCommand := common.NewCommander(python, "-m", "pip", "install", "--isolated", "--no-color", "--disable-pip-version-check", "--prefer-binary", "--cache-dir", pipCache, "--find-links", wheelCache, "--requirement", requirementsText)
 		pipCommand.Option("--index-url", settings.Global.PypiURL())
 		pipCommand.Option("--trusted-host", settings.Global.PypiTrustedHost())
 		pipCommand.ConditionalFlag(common.VerboseEnvironmentBuilding(), "--verbose")
@@ -232,7 +242,7 @@ func newLiveInternal(yaml, condaYaml, requirementsText, key string, force, fresh
 	fmt.Fprintf(planWriter, "\n---  pip check plan @%ss  ---\n\n", stopwatch)
 	if common.StrictFlag && pipUsed {
 		common.Progress(9, "Running pip check phase.")
-		pipCommand := common.NewCommander("pip", "check", "--no-color")
+		pipCommand := common.NewCommander(python, "-m", "pip", "check", "--no-color")
 		pipCommand.ConditionalFlag(common.VerboseEnvironmentBuilding(), "--verbose")
 		common.Debug("===  pip check phase ===")
 		code, err = LiveExecution(planWriter, targetFolder, pipCommand.CLI()...)

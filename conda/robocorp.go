@@ -17,6 +17,12 @@ import (
 	"github.com/robocorp/rcc/xviper"
 )
 
+const (
+	// for micromamba upgrade, change following constants to match
+	micromambaVersionLimit  = 27000
+	micromambaVersionNumber = "v0.27.0"
+)
+
 var (
 	ignoredPaths = []string{
 		"python",
@@ -27,8 +33,12 @@ var (
 		"virtualenv",
 	}
 	hashPattern    = regexp.MustCompile("^[0-9a-f]{16}(?:\\.meta)?$")
-	versionPattern = regexp.MustCompile("^[^0-9.]*([0-9.]+)\\s*$")
+	versionPattern = regexp.MustCompile("^[^0-9]*([0-9.]+).*$")
 )
+
+func micromambaLink(platform, filename string) string {
+	return fmt.Sprintf("micromamba/%s/%s/%s", micromambaVersionNumber, platform, filename)
+}
 
 func sorted(files []os.FileInfo) {
 	sort.SliceStable(files, func(left, right int) bool {
@@ -86,6 +96,15 @@ func FindPath(environment string) pathlib.PathParts {
 	target = target.Remove(ignoredPaths)
 	target = target.Prepend(CondaPaths(environment)...)
 	return target
+}
+
+func FindPython(location string) (string, bool) {
+	holotreePath := HolotreePath(location)
+	python, ok := holotreePath.Which("python3", FileExtensions)
+	if ok {
+		return python, ok
+	}
+	return holotreePath.Which("python", FileExtensions)
 }
 
 func CondaExecutionEnvironment(location string, inject []string, full bool) []string {
@@ -185,6 +204,16 @@ search:
 	return version, versionText
 }
 
+func PipVersion(python string) string {
+	environment := CondaExecutionEnvironment(".", nil, true)
+	versionText, _, err := shell.New(environment, ".", python, "-m", "pip", "--version").CaptureOutput()
+	if err != nil {
+		return err.Error()
+	}
+	_, versionText = AsVersion(versionText)
+	return versionText
+}
+
 func MicromambaVersion() string {
 	versionText, _, err := shell.New(CondaEnvironment(), ".", BinMicromamba(), "--repodata-ttl", "90000", "--version").CaptureOutput()
 	if err != nil {
@@ -199,7 +228,7 @@ func HasMicroMamba() bool {
 		return false
 	}
 	version, versionText := AsVersion(MicromambaVersion())
-	goodEnough := version >= 25001
+	goodEnough := version >= micromambaVersionLimit
 	common.Debug("%q version is %q -> %v (good enough: %v)", BinMicromamba(), versionText, version, goodEnough)
 	common.Timeline("µmamba version is %q (at %q).", versionText, BinMicromamba())
 	return goodEnough

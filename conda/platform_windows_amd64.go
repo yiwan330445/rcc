@@ -28,7 +28,7 @@ const (
 )
 
 func MicromambaLink() string {
-	return settings.Global.DownloadsLink("micromamba/v0.25.1/windows64/micromamba.exe")
+	return settings.Global.DownloadsLink(micromambaLink("windows64", "micromamba.exe"))
 }
 
 var (
