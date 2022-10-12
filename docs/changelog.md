@@ -1,5 +1,9 @@
 # rcc change log
 
+## v11.28.1 (date: 12.10.2022)
+
+- bugfix: direct initializing robot did not update templates
+
 ## v11.28.0 (date: 5.10.2022)
 
 - micromamba upgrade to v0.27.0

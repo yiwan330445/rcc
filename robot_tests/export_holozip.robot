@@ -4,6 +4,7 @@ Library  supporting.py
 Resource  resources.robot
 Suite Setup  Export setup
 Suite Teardown  Export teardown
+Default tags   WIP
 
 *** Keywords ***
 Export setup
@@ -26,6 +27,9 @@ Goal: Create extended robot into tmp/standalone folder using force.
   Use STDERR
   Must Have   OK.
 
+  ${output}=    Capture Flat Output    build/rcc ht hash --silent tmp/standalone/conda.yaml
+  Set Suite Variable  ${fingerprint}  ${output}
+
 Goal: Create environment for standalone robot
   Step        build/rcc ht vars -s author --controller citests -r tmp/standalone/robot.yaml
   Must Have   RCC_ENVIRONMENT_HASH=
@@ -41,18 +45,18 @@ Goal: Must have author space visible
   Must Have   4e67cd8_fcb4b859
   Must Have   rcc.citests
   Must Have   author
-  Must Have   1cdd0b852854fe5b
+  Must Have   ${fingerprint}
   Wont Have   guest
 
 Goal: Show exportable environment list
   Step        build/rcc ht export
   Use STDERR
   Must Have   Selectable catalogs
-  Must Have   - 1cdd0b852854fe5b
+  Must Have   - ${fingerprint}
   Must Have   OK.
 
 Goal: Export environment for standalone robot
-  Step        build/rcc ht export -z tmp/standalone/hololib.zip 1cdd0b852854fe5b
+  Step        build/rcc ht export -z tmp/standalone/hololib.zip ${fingerprint}
   Use STDERR
   Wont Have   Selectable catalogs
   Must Have   OK.
@@ -75,7 +79,7 @@ Goal: Can delete author space
   Wont Have   4e67cd8_fcb4b859
   Wont Have   rcc.citests
   Wont Have   author
-  Wont Have   1cdd0b852854fe5b
+  Wont Have   ${fingerprint}
   Wont Have   guest
 
 Goal: Can run as guest
@@ -92,6 +96,6 @@ Goal: Space created under author for guest
   Wont Have   4e67cd8_fcb4b859
   Wont Have   author
   Must Have   rcc.citests
-  Must Have   1cdd0b852854fe5b
+  Must Have   ${fingerprint}
   Must Have   4e67cd8_aacf1552
   Must Have   guest

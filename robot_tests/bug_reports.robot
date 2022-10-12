@@ -32,8 +32,6 @@ Bug in virtual holotree with gzipped files
   Must Have   Blueprint "8b2083d262262cbd" is available: true
 
 Github issue 32 about rcc task script command failing
-  [Tags]        WIP
-
   Step        build/rcc task script --controller citests --robot robot_tests/spellbug/robot.yaml -- pip list
   Use STDOUT
   Must Have   pyspellchecker

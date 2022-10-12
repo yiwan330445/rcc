@@ -124,6 +124,13 @@ func downloadTemplatesZip(meta *MetaTemplates) (err error) {
 	return nil
 }
 
+func ensureUpdatedTemplates() {
+	err := updateTemplates()
+	if err != nil {
+		pretty.Warning("Problem updating templates.zip, reason: %v", err)
+	}
+}
+
 func updateTemplates() (err error) {
 	defer fail.Around(&err)
 
@@ -172,10 +179,7 @@ func unpack(content []byte, directory string) error {
 }
 
 func ListTemplatesWithDescription(internal bool) StringPairList {
-	err := updateTemplates()
-	if err != nil {
-		pretty.Warning("Problem updating templates.zip, reason: %v", err)
-	}
+	ensureUpdatedTemplates()
 	result := make(StringPairList, 0, 10)
 	meta, err := activeTemplateInfo(internal)
 	if err != nil {
@@ -190,6 +194,7 @@ func ListTemplatesWithDescription(internal bool) StringPairList {
 }
 
 func ListTemplates(internal bool) []string {
+	ensureUpdatedTemplates()
 	pairs := ListTemplatesWithDescription(internal)
 	result := make([]string, 0, len(pairs))
 	for _, pair := range pairs {
@@ -221,6 +226,7 @@ func templateByName(name string, internal bool) ([]byte, error) {
 }
 
 func InitializeWorkarea(directory, name string, internal, force bool) error {
+	ensureUpdatedTemplates()
 	content, err := templateByName(name, internal)
 	if err != nil {
 		return err
