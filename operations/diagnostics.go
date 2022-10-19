@@ -119,6 +119,7 @@ func RunDiagnostics() *common.DiagnosticStatus {
 	if !common.OverrideSystemRequirements() {
 		result.Checks = append(result.Checks, longPathSupportCheck())
 	}
+	result.Checks = append(result.Checks, lockpidsCheck()...)
 	for _, host := range settings.Global.Hostnames() {
 		result.Checks = append(result.Checks, dnsLookupCheck(host))
 	}
@@ -154,6 +155,24 @@ func longPathSupportCheck() *common.DiagnosticCheck {
 		Message: "Does not support long path names!",
 		Link:    supportLongPathUrl,
 	}
+}
+
+func lockpidsCheck() []*common.DiagnosticCheck {
+	entries, err := os.ReadDir(common.HololibPids())
+	if err != nil {
+		return []*common.DiagnosticCheck{}
+	}
+	support := settings.Global.DocsLink("troubleshooting")
+	result := make([]*common.DiagnosticCheck, 0, len(entries))
+	for _, entry := range entries {
+		result = append(result, &common.DiagnosticCheck{
+			Type:    "OS",
+			Status:  statusWarning,
+			Message: fmt.Sprintf("Pending lock file info: %q", entry.Name()),
+			Link:    support,
+		})
+	}
+	return result
 }
 
 func anyPathCheck(key string) *common.DiagnosticCheck {

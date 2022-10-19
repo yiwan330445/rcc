@@ -1,5 +1,9 @@
 # rcc change log
 
+## v11.28.3 (date: 19.10.2022)
+
+- added configuration diagnostic reporting on locking pids information
+
 ## v11.28.2 (date: 19.10.2022)
 
 - made lock wait messages little more descriptive and added more of them
