@@ -1,7 +1,10 @@
 package pathlib
 
 import (
+	"fmt"
 	"os"
+	"os/user"
+	"path/filepath"
 	"time"
 
 	"github.com/robocorp/rcc/common"
@@ -13,6 +16,7 @@ type Releaser interface {
 
 type Locked struct {
 	*os.File
+	Marker string
 }
 
 type fake bool
@@ -36,7 +40,7 @@ func waitingLockNotification(message string, latch chan bool) {
 		case <-time.After(delay):
 			counter += 1
 			delay *= 3
-			common.Log("#%d: %s (lock wait)", counter, message)
+			common.Log("#%d: %s (rcc lock wait warning)", counter, message)
 			common.Timeline("waiting for lock")
 		}
 	}
@@ -48,4 +52,16 @@ func LockWaitMessage(message string) func() {
 	return func() {
 		latch <- true
 	}
+}
+
+func lockPidFilename(lockfile string) string {
+	now := time.Now().Format("20060102150405")
+	base := filepath.Base(lockfile)
+	username := "unspecified"
+	who, err := user.Current()
+	if err == nil {
+		username = who.Username
+	}
+	marker := fmt.Sprintf("%s.%s.%s.%s.%d.%s", now, username, common.ControllerType, common.HolotreeSpace, os.Getpid(), base)
+	return filepath.Join(common.HololibPids(), marker)
 }

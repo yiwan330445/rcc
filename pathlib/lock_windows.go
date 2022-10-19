@@ -67,13 +67,16 @@ func Locker(filename string, trycount int) (Releaser, error) {
 			return nil, err
 		}
 		if success {
-			return &Locked{file}, nil
+			marker := lockPidFilename(filename)
+			ForceTouchWhen(marker, time.Now())
+			return &Locked{file, marker}, nil
 		}
 		time.Sleep(40 * time.Millisecond)
 	}
 }
 
 func (it Locked) Release() error {
+	defer os.Remove(it.Marker)
 	success, err := trylock(unlockFile, it)
 	common.Trace("LOCKER: release %v success: %v with err: %v", it.Name(), success, err)
 	return err

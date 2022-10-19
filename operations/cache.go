@@ -64,7 +64,9 @@ func cacheLocation() string {
 
 func SummonCache() (*Cache, error) {
 	var result Cache
+	completed := pathlib.LockWaitMessage("Serialized cache access [cache lock]")
 	locker, err := pathlib.Locker(cacheLockFile(), 125)
+	completed()
 	if err != nil {
 		return nil, err
 	}
@@ -84,7 +86,9 @@ func SummonCache() (*Cache, error) {
 }
 
 func (it *Cache) Save() error {
+	completed := pathlib.LockWaitMessage("Serialized cache access [cache lock]")
 	locker, err := pathlib.Locker(cacheLockFile(), 125)
+	completed()
 	if err != nil {
 		return err
 	}

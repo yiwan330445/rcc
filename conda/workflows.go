@@ -332,9 +332,9 @@ func LegacyEnvironment(force bool, configurations ...string) error {
 	cloud.BackgroundMetric(common.ControllerIdentity(), "rcc.env.create.start", common.Version)
 
 	lockfile := common.RobocorpLock()
-	callback := pathlib.LockWaitMessage("Serialized environment creation")
+	completed := pathlib.LockWaitMessage("Serialized environment creation [robocorp lock]")
 	locker, err := pathlib.Locker(lockfile, 30000)
-	callback()
+	completed()
 	if err != nil {
 		common.Log("Could not get lock on live environment. Quitting!")
 		return err

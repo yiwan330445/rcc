@@ -35,6 +35,7 @@ func init() {
 	pathlib.MakeSharedDir(common.HololibCatalogLocation())
 	pathlib.MakeSharedDir(common.HololibLibraryLocation())
 	pathlib.MakeSharedDir(common.HololibUsageLocation())
+	pathlib.MakeSharedDir(common.HololibPids())
 }
 
 type Filetask func(string, *File) anywork.Work

@@ -1,5 +1,10 @@
 # rcc change log
 
+## v11.28.2 (date: 19.10.2022)
+
+- made lock wait messages little more descriptive and added more of them
+- added "pids" folder to keep track who is holding locks (just information)
+
 ## v11.28.1 (date: 12.10.2022)
 
 - bugfix: direct initializing robot did not update templates

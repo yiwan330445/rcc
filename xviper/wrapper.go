@@ -38,7 +38,9 @@ func (it *config) Save() {
 	if len(it.Filename) == 0 {
 		return
 	}
+	completed := pathlib.LockWaitMessage("Serialized config access [config lock]")
 	locker, err := pathlib.Locker(it.Lockfile, 125)
+	completed()
 	if err != nil {
 		common.Log("FATAL: could not lock %v, reason %v; ignored.", it.Lockfile, err)
 		return
@@ -57,7 +59,9 @@ func (it *config) Save() {
 }
 
 func (it *config) Reload() {
+	completed := pathlib.LockWaitMessage("Serialized config access [config lock]")
 	locker, err := pathlib.Locker(it.Lockfile, 125)
+	completed()
 	if err != nil {
 		common.Log("FATAL: could not lock %v, reason %v; ignored.", it.Lockfile, err)
 		return

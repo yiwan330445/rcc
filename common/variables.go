@@ -160,6 +160,10 @@ func HololibLocation() string {
 	return filepath.Join(RobocorpHome(), "hololib")
 }
 
+func HololibPids() string {
+	return filepath.Join(HololibLocation(), "pids")
+}
+
 func HololibCatalogLocation() string {
 	return filepath.Join(HololibLocation(), "catalog")
 }

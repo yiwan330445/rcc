@@ -6,6 +6,7 @@ package pathlib
 import (
 	"os"
 	"syscall"
+	"time"
 
 	"github.com/robocorp/rcc/common"
 )
@@ -34,10 +35,13 @@ func Locker(filename string, trycount int) (Releaser, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &Locked{file}, nil
+	marker := lockPidFilename(filename)
+	ForceTouchWhen(marker, time.Now())
+	return &Locked{file, marker}, nil
 }
 
 func (it Locked) Release() error {
+	defer os.Remove(it.Marker)
 	defer it.Close()
 	err := syscall.Flock(int(it.Fd()), int(syscall.LOCK_UN))
 	common.Trace("LOCKER: release %v with err: %v", it.Name(), err)
