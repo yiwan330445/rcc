@@ -18,6 +18,7 @@ var (
 	Red         string
 	Green       string
 	Yellow      string
+	Magenta     string
 	Cyan        string
 	Reset       string
 	Sparkles    string
@@ -45,6 +46,7 @@ func Setup() {
 		Black = csi("30m")
 		Red = csi("91m")
 		Green = csi("92m")
+		Magenta = csi("95m")
 		Cyan = csi("96m")
 		Yellow = csi("93m")
 		Reset = csi("0m")

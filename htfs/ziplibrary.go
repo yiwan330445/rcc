@@ -39,6 +39,10 @@ func ZipLibrary(zipfile string) (Library, error) {
 	}, nil
 }
 
+func (it *ziplibrary) ValidateBlueprint(blueprint []byte) error {
+	return nil
+}
+
 func (it *ziplibrary) HasBlueprint(blueprint []byte) bool {
 	key := BlueprintHash(blueprint)
 	_, ok := it.lookup[it.CatalogPath(key)]
@@ -72,6 +76,21 @@ func (it *ziplibrary) Open(digest string) (readable io.Reader, closer Closer, er
 
 func (it *ziplibrary) CatalogPath(key string) string {
 	return filepath.Join("catalog", CatalogName(key))
+}
+
+func (it *ziplibrary) TargetDir(blueprint, client, tag []byte) (path string, err error) {
+	defer fail.Around(&err)
+	key := BlueprintHash(blueprint)
+	name := ControllerSpaceName(client, tag)
+	fs, err := NewRoot(".")
+	fail.On(err != nil, "Failed to create root -> %v", err)
+	catalog := it.CatalogPath(key)
+	reader, closer, err := it.openFile(catalog)
+	fail.On(err != nil, "Failed to open catalog %q -> %v", catalog, err)
+	defer closer()
+	err = fs.ReadFrom(reader)
+	fail.On(err != nil, "Failed to read catalog %q -> %v", catalog, err)
+	return filepath.Join(fs.HolotreeBase(), name), nil
 }
 
 func (it *ziplibrary) Restore(blueprint, client, tag []byte) (result string, err error) {

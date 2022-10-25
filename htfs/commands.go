@@ -59,6 +59,11 @@ func NewEnvironment(condafile, holozip string, restore, force bool) (label strin
 		tree = Virtual()
 		common.Timeline("downgraded to virtual holotree library")
 	}
+	if common.UnmanagedSpace {
+		tree = Unmanaged(tree)
+	}
+	err = tree.ValidateBlueprint(holotreeBlueprint)
+	fail.On(err != nil, "%s", err)
 	scorecard = common.NewScorecard()
 	var library Library
 	if haszip {
@@ -156,6 +161,7 @@ func RemoveHolotreeSpace(label string) (err error) {
 			continue
 		}
 		TryRemove("metafile", metafile)
+		TryRemove("lockfile", directory+".lck")
 		err = TryRemoveAll("space", directory)
 		fail.On(err != nil, "Problem removing %q, reason: %s.", directory, err)
 	}

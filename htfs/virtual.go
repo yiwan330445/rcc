@@ -72,6 +72,11 @@ func (it *virtual) Record(blueprint []byte) (err error) {
 	return nil
 }
 
+func (it *virtual) TargetDir(blueprint, client, tag []byte) (string, error) {
+	name := ControllerSpaceName(client, tag)
+	return filepath.Join(common.HolotreeLocation(), name), nil
+}
+
 func (it *virtual) Restore(blueprint, client, tag []byte) (string, error) {
 	defer common.Stopwatch("Holotree restore took:").Debug()
 	key := BlueprintHash(blueprint)
@@ -135,6 +140,10 @@ func (it *virtual) ExactLocation(key string) string {
 
 func (it *virtual) Location(key string) string {
 	panic("Location is not supported on virtual holotree.")
+}
+
+func (it *virtual) ValidateBlueprint(blueprint []byte) error {
+	return nil
 }
 
 func (it *virtual) HasBlueprint(blueprint []byte) bool {

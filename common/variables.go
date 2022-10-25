@@ -28,6 +28,7 @@ var (
 	NoCache            bool
 	NoOutputCapture    bool
 	Liveonly           bool
+	UnmanagedSpace     bool
 	StageFolder        string
 	ControllerType     string
 	HolotreeSpace      string
@@ -271,6 +272,9 @@ func ensureDirectory(name string) {
 }
 
 func UserHomeIdentity() string {
+	if UnmanagedSpace {
+		return "UNMNGED"
+	}
 	location, err := os.UserHomeDir()
 	if err != nil {
 		return "badcafe"

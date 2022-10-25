@@ -1,5 +1,12 @@
 # rcc change log
 
+## v11.29.0 (date: 25.10.2022) WIP
+
+- started adding support for unmanaged holotree spaces, to enable IT managed
+  holotree spaces (rcc will create them once, but integrity check are not
+  done when unmanaged spaces are used)
+- bugfix: removing also .lck files when removing space
+
 ## v11.28.3 (date: 19.10.2022)
 
 - added configuration diagnostic reporting on locking pids information

@@ -47,8 +47,10 @@ func (it *stats) Dirty(dirty bool) {
 type Closer func() error
 
 type Library interface {
+	ValidateBlueprint([]byte) error
 	HasBlueprint([]byte) bool
 	Open(string) (io.Reader, Closer, error)
+	TargetDir([]byte, []byte, []byte) (string, error)
 	Restore([]byte, []byte, []byte) (string, error)
 }
 
@@ -216,6 +218,10 @@ func (it *hololib) CatalogPath(key string) string {
 	return filepath.Join(common.HololibCatalogLocation(), CatalogName(key))
 }
 
+func (it *hololib) ValidateBlueprint(blueprint []byte) error {
+	return nil
+}
+
 func (it *hololib) HasBlueprint(blueprint []byte) bool {
 	key := BlueprintHash(blueprint)
 	found, ok := it.queryCache[key]
@@ -299,6 +305,18 @@ func touchUsedHash(hash string) {
 	filename := fmt.Sprintf("%s.%s", hash, common.UserHomeIdentity())
 	fullpath := filepath.Join(common.HololibUsageLocation(), filename)
 	pathlib.ForceTouchWhen(fullpath, common.ProgressMark)
+}
+
+func (it *hololib) TargetDir(blueprint, client, tag []byte) (result string, err error) {
+	defer fail.Around(&err)
+	key := BlueprintHash(blueprint)
+	catalog := it.CatalogPath(key)
+	fs, err := NewRoot(it.Stage())
+	fail.On(err != nil, "Failed to create stage -> %v", err)
+	err = fs.LoadFrom(catalog)
+	fail.On(err != nil, "Failed to load catalog %s -> %v", catalog, err)
+	name := ControllerSpaceName(client, tag)
+	return filepath.Join(fs.HolotreeBase(), name), nil
 }
 
 func (it *hololib) Restore(blueprint, client, tag []byte) (result string, err error) {
