@@ -50,10 +50,12 @@ func (it *unmanaged) resolve(blueprint []byte) error {
 	if it.resolved {
 		return nil
 	}
+	defer common.Log("%sThis is unmanaged holotree space, checking suitability for blueprint: %v%s", pretty.Magenta, BlueprintHash(blueprint), pretty.Reset)
 	controller := []byte(common.ControllerIdentity())
 	space := []byte(common.HolotreeSpace)
 	path, err := it.TargetDir(blueprint, controller, space)
 	if err != nil {
+		common.Debug("Unmanaged target directory error: %v (path: %q)", err, path)
 		return nil
 	}
 	if !pathlib.Exists(path) {
@@ -69,7 +71,9 @@ func (it *unmanaged) resolve(blueprint []byte) error {
 	expected := BlueprintHash(blueprint)
 	actual := BlueprintHash(identity)
 	if actual != expected {
-		return fmt.Errorf("Unmanaged fingerprint %q does not match requested one %q! Quitting!", actual, expected)
+		it.protected = true
+		it.resolved = true
+		return fmt.Errorf("Existing unmanaged space fingerprint %q does not match requested one %q! Quitting!", actual, expected)
 	}
 	it.path = path
 	it.protected = true
@@ -102,7 +106,6 @@ func (it *unmanaged) TargetDir(blueprint, client, tag []byte) (string, error) {
 }
 
 func (it *unmanaged) Restore(blueprint, client, tag []byte) (string, error) {
-	defer common.Log("%sThis is unmanaged holotree space for blueprint: %v%s", pretty.Magenta, BlueprintHash(blueprint), pretty.Reset)
 	it.resolve(blueprint)
 	if !it.protected {
 		return it.delegate.Restore(blueprint, client, tag)

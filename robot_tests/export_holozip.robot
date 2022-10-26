@@ -4,7 +4,6 @@ Library  supporting.py
 Resource  resources.robot
 Suite Setup  Export setup
 Suite Teardown  Export teardown
-Default tags   WIP
 
 *** Keywords ***
 Export setup

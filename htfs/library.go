@@ -307,15 +307,17 @@ func touchUsedHash(hash string) {
 	pathlib.ForceTouchWhen(fullpath, common.ProgressMark)
 }
 
-func (it *hololib) TargetDir(blueprint, client, tag []byte) (result string, err error) {
+func (it *hololib) TargetDir(blueprint, controller, space []byte) (result string, err error) {
 	defer fail.Around(&err)
 	key := BlueprintHash(blueprint)
 	catalog := it.CatalogPath(key)
 	fs, err := NewRoot(it.Stage())
 	fail.On(err != nil, "Failed to create stage -> %v", err)
+	name := ControllerSpaceName(controller, space)
 	err = fs.LoadFrom(catalog)
-	fail.On(err != nil, "Failed to load catalog %s -> %v", catalog, err)
-	name := ControllerSpaceName(client, tag)
+	if err != nil {
+		return filepath.Join(common.HolotreeLocation(), name), nil
+	}
 	return filepath.Join(fs.HolotreeBase(), name), nil
 }
 
