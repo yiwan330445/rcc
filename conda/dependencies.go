@@ -39,6 +39,21 @@ func (it dependencies) sorted() dependencies {
 	return it
 }
 
+func (it dependencies) WarnVulnerability(url, severity, name string, versions ...string) {
+	found, ok := it.Lookup(name, false)
+	if !ok {
+		found, ok = it.Lookup(name, true)
+	}
+	if !ok {
+		return
+	}
+	for _, version := range versions {
+		if found.Version == version {
+			pretty.Highlight("Dependency with %s severity vulnerability detected: %s %s. For more information see %s", severity, name, found.Version, url)
+		}
+	}
+}
+
 func (it dependencies) Lookup(name string, pypi bool) (*dependency, bool) {
 	for _, entry := range it {
 		if pypi && entry.Origin != "pypi" {

@@ -29,10 +29,19 @@ func NewEnvironment(condafile, holozip string, restore, force bool) (label strin
 		common.Debug("New zipped environment from %q!", holozip)
 	}
 
+	path := ""
 	defer func() {
 		common.Progress(13, "Fresh holotree done [with %d workers].", anywork.Scale())
 		if haszip {
 			pretty.Note("There is hololib.zip present at: %q", holozip)
+		}
+		if len(path) > 0 {
+			dependencies := conda.LoadWantedDependencies(conda.GoldenMasterFilename(path))
+			dependencies.WarnVulnerability(
+				"https://robocorp.com/docs/faq/openssl-cve-2022-11-01",
+				"HIGH",
+				"openssl",
+				"3.0.0", "3.0.1", "3.0.2", "3.0.3", "3.0.4", "3.0.5", "3.0.6")
 		}
 	}()
 	if common.SharedHolotree {
@@ -77,7 +86,6 @@ func NewEnvironment(condafile, holozip string, restore, force bool) (label strin
 		library = tree
 	}
 
-	path := ""
 	if restore {
 		common.Progress(12, "Restore space from library [with %d workers].", anywork.Scale())
 		path, err = library.Restore(holotreeBlueprint, []byte(common.ControllerIdentity()), []byte(common.HolotreeSpace))

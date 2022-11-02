@@ -1,5 +1,9 @@
 # rcc change log
 
+## v11.30.0 (date: 2.11.2022)
+
+- added warning when vulnerable openssl is installed in environment
+
 ## v11.29.1 (date: 26.10.2022) UNSTABLE
 
 - robot tests for unmanaged holotree spaces (revealed bugs)
