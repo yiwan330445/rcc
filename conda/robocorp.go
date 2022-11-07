@@ -19,8 +19,8 @@ import (
 
 const (
 	// for micromamba upgrade, change following constants to match
-	micromambaVersionLimit  = 27000
-	micromambaVersionNumber = "v0.27.0"
+	micromambaVersionLimit  = 1000000
+	micromambaVersionNumber = "v1.0.0"
 )
 
 var (

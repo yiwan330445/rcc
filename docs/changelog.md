@@ -1,5 +1,9 @@
 # rcc change log
 
+## v11.31.0 (date: 7.11.2022)
+
+- micromamba upgrade to v1.0.0
+
 ## v11.30.1 (date: 7.11.2022)
 
 - bugfix: added more checks around shared holotree enabling and using
