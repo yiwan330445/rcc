@@ -23,7 +23,7 @@ func Locker(filename string, trycount int) (Releaser, error) {
 	if err != nil {
 		return nil, err
 	}
-	file, err := os.OpenFile(filename, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0o600)
+	file, err := os.OpenFile(filename, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0o666)
 	if err != nil {
 		return nil, err
 	}
@@ -36,6 +36,10 @@ func Locker(filename string, trycount int) (Releaser, error) {
 		return nil, err
 	}
 	marker := lockPidFilename(filename)
+	_, err = file.Write([]byte(marker))
+	if err != nil {
+		return nil, err
+	}
 	ForceTouchWhen(marker, time.Now())
 	return &Locked{file, marker}, nil
 }

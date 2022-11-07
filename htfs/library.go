@@ -321,6 +321,11 @@ func (it *hololib) TargetDir(blueprint, controller, space []byte) (result string
 	return filepath.Join(fs.HolotreeBase(), name), nil
 }
 
+func UserHolotreeLockfile() string {
+	name := ControllerSpaceName([]byte(common.ControllerIdentity()), []byte(common.HolotreeSpace))
+	return filepath.Join(common.HolotreeLocation(), fmt.Sprintf("%s.lck", name))
+}
+
 func (it *hololib) Restore(blueprint, client, tag []byte) (result string, err error) {
 	defer fail.Around(&err)
 	defer common.Stopwatch("Holotree restore took:").Debug()

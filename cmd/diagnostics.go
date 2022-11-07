@@ -32,6 +32,8 @@ var diagnosticsCmd = &cobra.Command{
 
 func init() {
 	configureCmd.AddCommand(diagnosticsCmd)
+	rootCmd.AddCommand(diagnosticsCmd)
+
 	diagnosticsCmd.Flags().BoolVarP(&jsonFlag, "json", "j", false, "Output in JSON format")
 	diagnosticsCmd.Flags().StringVarP(&fileOption, "file", "f", "", "Save output into a file.")
 	diagnosticsCmd.Flags().StringVarP(&robotOption, "robot", "r", "", "Full path to 'robot.yaml' configuration file. [optional]")

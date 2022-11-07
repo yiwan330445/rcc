@@ -1,5 +1,11 @@
 # rcc change log
 
+## v11.30.1 (date: 7.11.2022)
+
+- bugfix: added more checks around shared holotree enabling and using
+- bugfix: make all lockfiles readable and writable by all
+- added "diagnostics" command to toplevel commands
+
 ## v11.30.0 (date: 2.11.2022)
 
 - added warning when vulnerable openssl is installed in environment

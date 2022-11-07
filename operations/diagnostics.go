@@ -17,6 +17,7 @@ import (
 	"github.com/robocorp/rcc/cloud"
 	"github.com/robocorp/rcc/common"
 	"github.com/robocorp/rcc/conda"
+	"github.com/robocorp/rcc/htfs"
 	"github.com/robocorp/rcc/pathlib"
 	"github.com/robocorp/rcc/pretty"
 	"github.com/robocorp/rcc/robot"
@@ -99,6 +100,10 @@ func RunDiagnostics() *common.DiagnosticStatus {
 	result.Details["when"] = time.Now().Format(time.RFC3339 + " (MST)")
 	result.Details["no-build"] = fmt.Sprintf("%v", settings.Global.NoBuild())
 
+	for name, filename := range lockfiles() {
+		result.Details[name] = filename
+	}
+
 	who, err := user.Current()
 	if err == nil {
 		result.Details["uid:gid"] = fmt.Sprintf("%s:%s", who.Uid, who.Gid)
@@ -120,12 +125,23 @@ func RunDiagnostics() *common.DiagnosticStatus {
 		result.Checks = append(result.Checks, longPathSupportCheck())
 	}
 	result.Checks = append(result.Checks, lockpidsCheck()...)
+	result.Checks = append(result.Checks, lockfilesCheck()...)
 	for _, host := range settings.Global.Hostnames() {
 		result.Checks = append(result.Checks, dnsLookupCheck(host))
 	}
 	result.Checks = append(result.Checks, canaryDownloadCheck())
 	result.Checks = append(result.Checks, pypiHeadCheck())
 	result.Checks = append(result.Checks, condaHeadCheck())
+	return result
+}
+
+func lockfiles() map[string]string {
+	result := make(map[string]string)
+	result["lock-config"] = xviper.Lockfile()
+	result["lock-cache"] = cacheLockFile()
+	result["lock-holotree"] = common.HolotreeLock()
+	result["lock-robocorp"] = common.RobocorpLock()
+	result["lock-userlock"] = htfs.UserHolotreeLockfile()
 	return result
 }
 
@@ -155,6 +171,35 @@ func longPathSupportCheck() *common.DiagnosticCheck {
 		Message: "Does not support long path names!",
 		Link:    supportLongPathUrl,
 	}
+}
+
+func lockfilesCheck() []*common.DiagnosticCheck {
+	content := []byte(fmt.Sprintf("lock check %s @%d", common.Version, common.When))
+	files := lockfiles()
+	result := make([]*common.DiagnosticCheck, 0, len(files))
+	support := settings.Global.DocsLink("troubleshooting")
+	failed := false
+	for identity, filename := range files {
+		err := os.WriteFile(filename, content, 0o666)
+		if err != nil {
+			result = append(result, &common.DiagnosticCheck{
+				Type:    "OS",
+				Status:  statusFail,
+				Message: fmt.Sprintf("Lock file %q write failed, reason: %v", identity, err),
+				Link:    support,
+			})
+			failed = true
+		}
+	}
+	if !failed {
+		result = append(result, &common.DiagnosticCheck{
+			Type:    "OS",
+			Status:  statusOk,
+			Message: fmt.Sprintf("%d lockfiles all seem to work correctly (for this user).", len(files)),
+			Link:    support,
+		})
+	}
+	return result
 }
 
 func lockpidsCheck() []*common.DiagnosticCheck {

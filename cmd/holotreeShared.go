@@ -30,7 +30,7 @@ var holotreeSharedCommand = &cobra.Command{
 			return
 		}
 		if os.Geteuid() > 0 {
-			pretty.Warning("Running this command might need sudo/root access rights. Still, trying ...")
+			pretty.Warning("Running this command might need sudo/root/elevated access rights. Still, trying ...")
 		}
 		osSpecificHolotreeSharing(enableShared)
 		pretty.Ok()

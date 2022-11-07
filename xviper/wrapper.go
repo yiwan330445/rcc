@@ -132,6 +132,14 @@ func Set(key string, value interface{}) {
 	<-flow
 }
 
+func Lockfile() string {
+	flow := make(chan string)
+	pipeline <- func(core *config) {
+		flow <- core.Lockfile
+	}
+	return <-flow
+}
+
 func ConfigFileUsed() string {
 	flow := make(chan string)
 	pipeline <- func(core *config) {
