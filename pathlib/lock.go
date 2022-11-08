@@ -5,9 +5,15 @@ import (
 	"os"
 	"os/user"
 	"path/filepath"
+	"regexp"
+	"strings"
 	"time"
 
 	"github.com/robocorp/rcc/common"
+)
+
+var (
+	slashPattern = regexp.MustCompile("[/\\\\]+")
 )
 
 type Releaser interface {
@@ -54,13 +60,18 @@ func LockWaitMessage(message string) func() {
 	}
 }
 
+func unslash(text string) string {
+	parts := slashPattern.Split(text, -1)
+	return strings.Join(parts, "_")
+}
+
 func lockPidFilename(lockfile string) string {
 	now := time.Now().Format("20060102150405")
 	base := filepath.Base(lockfile)
 	username := "unspecified"
 	who, err := user.Current()
 	if err == nil {
-		username = who.Username
+		username = unslash(who.Username)
 	}
 	marker := fmt.Sprintf("%s_%s_%s_%s_%d_%s", now, username, common.ControllerType, common.HolotreeSpace, os.Getpid(), base)
 	return filepath.Join(common.HololibPids(), marker)

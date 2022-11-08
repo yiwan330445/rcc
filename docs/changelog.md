@@ -1,5 +1,9 @@
 # rcc change log
 
+## v11.31.2 (date: 8.11.2022)
+
+- bugfix: removing path separators from user name on lock pid files
+
 ## v11.31.1 (date: 8.11.2022)
 
 - bugfix: changed lock pid filename not to contain extra dots
