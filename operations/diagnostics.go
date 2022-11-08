@@ -203,17 +203,31 @@ func lockfilesCheck() []*common.DiagnosticCheck {
 }
 
 func lockpidsCheck() []*common.DiagnosticCheck {
+	support := settings.Global.DocsLink("troubleshooting")
+	result := []*common.DiagnosticCheck{}
 	entries, err := os.ReadDir(common.HololibPids())
 	if err != nil {
-		return []*common.DiagnosticCheck{}
+		result = append(result, &common.DiagnosticCheck{
+			Type:    "OS",
+			Status:  statusWarning,
+			Message: fmt.Sprintf("Problem with pids directory: %q, reason: %v", common.HololibPids(), err),
+			Link:    support,
+		})
+		return result
 	}
-	support := settings.Global.DocsLink("troubleshooting")
-	result := make([]*common.DiagnosticCheck, 0, len(entries))
 	for _, entry := range entries {
 		result = append(result, &common.DiagnosticCheck{
 			Type:    "OS",
 			Status:  statusWarning,
 			Message: fmt.Sprintf("Pending lock file info: %q", entry.Name()),
+			Link:    support,
+		})
+	}
+	if len(result) == 0 {
+		result = append(result, &common.DiagnosticCheck{
+			Type:    "OS",
+			Status:  statusOk,
+			Message: "No pending lock files detected.",
 			Link:    support,
 		})
 	}

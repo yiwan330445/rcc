@@ -1,5 +1,11 @@
 # rcc change log
 
+## v11.31.1 (date: 8.11.2022)
+
+- bugfix: changed lock pid filename not to contain extra dots
+- added more info on pending lock files diagnostics check
+- more debug information on Windows locking behaviour
+
 ## v11.31.0 (date: 7.11.2022)
 
 - micromamba upgrade to v1.0.0

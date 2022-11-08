@@ -62,6 +62,6 @@ func lockPidFilename(lockfile string) string {
 	if err == nil {
 		username = who.Username
 	}
-	marker := fmt.Sprintf("%s.%s.%s.%s.%d.%s", now, username, common.ControllerType, common.HolotreeSpace, os.Getpid(), base)
+	marker := fmt.Sprintf("%s_%s_%s_%s_%d_%s", now, username, common.ControllerType, common.HolotreeSpace, os.Getpid(), base)
 	return filepath.Join(common.HololibPids(), marker)
 }

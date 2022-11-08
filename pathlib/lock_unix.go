@@ -40,12 +40,14 @@ func Locker(filename string, trycount int) (Releaser, error) {
 	if err != nil {
 		return nil, err
 	}
+	common.Debug("LOCKER: make marker %v", marker)
 	ForceTouchWhen(marker, time.Now())
 	return &Locked{file, marker}, nil
 }
 
 func (it Locked) Release() error {
 	defer os.Remove(it.Marker)
+	defer common.Debug("LOCKER: remove marker %v", it.Marker)
 	defer it.Close()
 	err := syscall.Flock(int(it.Fd()), int(syscall.LOCK_UN))
 	common.Trace("LOCKER: release %v with err: %v", it.Name(), err)
