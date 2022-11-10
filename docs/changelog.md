@@ -1,5 +1,12 @@
 # rcc change log
 
+## v11.32.0 (date: 10.11.2022) UNSTABLE
+
+- feature: local recording of holotree environment build statistics events
+- moved journals to `ROBOCORP_HOME/journals` directory (and build stats will
+  be part of those journals)
+- added pre run scripts to timeline
+
 ## v11.31.2 (date: 8.11.2022)
 
 - bugfix: removing path separators from user name on lock pid files

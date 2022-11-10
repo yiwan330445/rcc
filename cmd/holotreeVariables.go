@@ -9,6 +9,7 @@ import (
 	"github.com/robocorp/rcc/common"
 	"github.com/robocorp/rcc/conda"
 	"github.com/robocorp/rcc/htfs"
+	"github.com/robocorp/rcc/journal"
 	"github.com/robocorp/rcc/operations"
 	"github.com/robocorp/rcc/pretty"
 	"github.com/robocorp/rcc/robot"
@@ -125,6 +126,7 @@ var holotreeVariablesCmd = &cobra.Command{
 	Short:   "Do holotree operations.",
 	Long:    "Do holotree operations.",
 	Run: func(cmd *cobra.Command, args []string) {
+		defer journal.BuildEventStats("variables")
 		if common.DebugFlag {
 			defer common.Stopwatch("Holotree variables command lasted").Report()
 		}

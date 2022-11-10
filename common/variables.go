@@ -43,7 +43,7 @@ var (
 
 func init() {
 	Clock = &stopwatch{"Clock", time.Now()}
-	When = Clock.started.Unix()
+	When = Clock.When()
 	ProgressMark = time.Now()
 
 	randomIdentifier = fmt.Sprintf("%016x", rand.Uint64()^uint64(os.Getpid()))
@@ -55,6 +55,7 @@ func init() {
 
 	SharedHolotree = isFile(HoloInitUserFile())
 
+	ensureDirectory(JournalLocation())
 	ensureDirectory(TemplateLocation())
 	ensureDirectory(BinLocation())
 	ensureDirectory(PipCache())
@@ -94,8 +95,16 @@ func BinRcc() string {
 	return self
 }
 
-func EventJournal() string {
+func OldEventJournal() string {
 	return filepath.Join(RobocorpHome(), "event.log")
+}
+
+func EventJournal() string {
+	return filepath.Join(JournalLocation(), "event.log")
+}
+
+func JournalLocation() string {
+	return filepath.Join(RobocorpHome(), "journals")
 }
 
 func TemplateLocation() string {

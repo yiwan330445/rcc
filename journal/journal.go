@@ -40,18 +40,18 @@ func Post(event, detail, commentForm string, fields ...interface{}) (err error) 
 	}
 	blob, err := json.Marshal(message)
 	fail.On(err != nil, "Could not serialize event: %v -> %v", event, err)
-	return appendJournal(blob)
+	return appendJournal(common.EventJournal(), blob)
 }
 
-func appendJournal(blob []byte) (err error) {
+func appendJournal(journalname string, blob []byte) (err error) {
 	defer fail.Around(&err)
-	handle, err := os.OpenFile(common.EventJournal(), os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0o640)
-	fail.On(err != nil, "Failed to open event journal %v -> %v", common.EventJournal(), err)
+	handle, err := os.OpenFile(journalname, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0o640)
+	fail.On(err != nil, "Failed to open event journal %v -> %v", journalname, err)
 	defer handle.Close()
 	_, err = handle.Write(blob)
-	fail.On(err != nil, "Failed to write event journal %v -> %v", common.EventJournal(), err)
+	fail.On(err != nil, "Failed to write event journal %v -> %v", journalname, err)
 	_, err = handle.Write([]byte{'\n'})
-	fail.On(err != nil, "Failed to write event journal %v -> %v", common.EventJournal(), err)
+	fail.On(err != nil, "Failed to write event journal %v -> %v", journalname, err)
 	return handle.Sync()
 }
 

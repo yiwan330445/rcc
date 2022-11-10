@@ -139,6 +139,7 @@ func (it *ziplibrary) Restore(blueprint, client, tag []byte) (result string, err
 	common.TimelineEnd()
 	defer common.Timeline("- dirty %d/%d", score.dirty, score.total)
 	common.Debug("Holotree dirty workload: %d/%d\n", score.dirty, score.total)
+	journal.CurrentBuildEvent().Dirty(score.Dirtyness())
 	fs.Controller = string(client)
 	fs.Space = string(tag)
 	err = fs.SaveAs(metafile)

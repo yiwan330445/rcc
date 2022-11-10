@@ -91,12 +91,16 @@ func spotlessCleanup(dryrun bool) error {
 	}
 	if dryrun {
 		common.Log("- %v", BinMicromamba())
+		common.Log("- %v", common.OldEventJournal())
 		common.Log("- %v", common.RobotCache())
 		common.Log("- %v", common.HololibLocation())
+		common.Log("- %v", common.JournalLocation())
 		return nil
 	}
 	safeRemove("executable", BinMicromamba())
 	safeRemove("cache", common.RobotCache())
+	safeRemove("old", common.OldEventJournal())
+	safeRemove("journals", common.JournalLocation())
 	return safeRemove("cache", common.HololibLocation())
 }
 

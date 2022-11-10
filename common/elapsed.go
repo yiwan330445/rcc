@@ -12,6 +12,10 @@ type stopwatch struct {
 
 type Duration time.Duration
 
+func (it Duration) Seconds() float64 {
+	return float64(it.Truncate(time.Millisecond)) / float64(time.Second)
+}
+
 func (it Duration) Truncate(granularity time.Duration) Duration {
 	return Duration(time.Duration(it).Truncate(granularity))
 }
@@ -30,6 +34,14 @@ func Stopwatch(form string, details ...interface{}) *stopwatch {
 		message: message,
 		started: time.Now(),
 	}
+}
+
+func (it *stopwatch) When() int64 {
+	return it.started.Unix()
+}
+
+func (it *stopwatch) Time() time.Time {
+	return it.started
 }
 
 func (it *stopwatch) String() string {

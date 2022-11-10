@@ -13,6 +13,7 @@ import (
 
 	"github.com/robocorp/rcc/cloud"
 	"github.com/robocorp/rcc/common"
+	"github.com/robocorp/rcc/journal"
 	"github.com/robocorp/rcc/pathlib"
 	"github.com/robocorp/rcc/pretty"
 	"github.com/robocorp/rcc/settings"
@@ -103,6 +104,7 @@ func newLive(yaml, condaYaml, requirementsText, key string, force, freshInstall 
 	common.Timeline("first try.")
 	success, fatal := newLiveInternal(yaml, condaYaml, requirementsText, key, force, freshInstall, postInstall)
 	if !success && !force && !fatal {
+		journal.CurrentBuildEvent().Rebuild()
 		cloud.BackgroundMetric(common.ControllerIdentity(), "rcc.env.creation.retry", common.Version)
 		common.Debug("===  second try phase ===")
 		common.Timeline("second try.")
@@ -114,6 +116,7 @@ func newLive(yaml, condaYaml, requirementsText, key string, force, freshInstall 
 		}
 		success, _ = newLiveInternal(yaml, condaYaml, requirementsText, key, true, freshInstall, postInstall)
 	}
+	journal.CurrentBuildEvent().Successful()
 	return success, nil
 }
 
@@ -164,6 +167,7 @@ func newLiveInternal(yaml, condaYaml, requirementsText, key string, force, fresh
 		common.Fatal(fmt.Sprintf("Micromamba [%d/%x]", code, code), err)
 		return false, false
 	}
+	journal.CurrentBuildEvent().MicromambaComplete()
 	common.Timeline("micromamba done.")
 	if observer.HasFailures(targetFolder) {
 		return false, true
@@ -199,6 +203,7 @@ func newLiveInternal(yaml, condaYaml, requirementsText, key string, force, fresh
 			common.Fatal(fmt.Sprintf("Pip [%d/%x]", code, code), err)
 			return false, false
 		}
+		journal.CurrentBuildEvent().PipComplete()
 		common.Timeline("pip done.")
 		pipUsed = true
 	}
@@ -222,6 +227,7 @@ func newLiveInternal(yaml, condaYaml, requirementsText, key string, force, fresh
 				return false, false
 			}
 		}
+		journal.CurrentBuildEvent().PostInstallComplete()
 	} else {
 		common.Progress(7, "Post install scripts phase skipped -- no scripts.")
 	}

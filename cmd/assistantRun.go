@@ -9,6 +9,7 @@ import (
 	"github.com/robocorp/rcc/cloud"
 	"github.com/robocorp/rcc/common"
 	"github.com/robocorp/rcc/conda"
+	"github.com/robocorp/rcc/journal"
 	"github.com/robocorp/rcc/operations"
 	"github.com/robocorp/rcc/pathlib"
 	"github.com/robocorp/rcc/pretty"
@@ -25,6 +26,7 @@ var assistantRunCmd = &cobra.Command{
 	Long:    "Robot Assistant run.",
 	Run: func(cmd *cobra.Command, args []string) {
 		defer conda.RemoveCurrentTemp()
+		defer journal.BuildEventStats("assistant")
 		var status, reason string
 		status, reason = "ERROR", "UNKNOWN"
 		elapser := common.Stopwatch("Robot Assistant startup lasted")

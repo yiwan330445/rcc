@@ -10,6 +10,7 @@ import (
 	"github.com/robocorp/rcc/common"
 	"github.com/robocorp/rcc/conda"
 	"github.com/robocorp/rcc/fail"
+	"github.com/robocorp/rcc/journal"
 	"github.com/robocorp/rcc/pathlib"
 	"github.com/robocorp/rcc/pretty"
 	"github.com/robocorp/rcc/robot"
@@ -19,6 +20,8 @@ import (
 
 func NewEnvironment(condafile, holozip string, restore, force bool) (label string, scorecard common.Scorecard, err error) {
 	defer fail.Around(&err)
+
+	journal.CurrentBuildEvent().StartNow(force)
 
 	if settings.Global.NoBuild() {
 		pretty.Note("'no-build' setting is active. Only cached, prebuild, or imported environments are allowed!")
@@ -60,6 +63,7 @@ func NewEnvironment(condafile, holozip string, restore, force bool) (label strin
 	fail.On(err != nil, "%s", err)
 	common.EnvironmentHash = BlueprintHash(holotreeBlueprint)
 	common.Progress(2, "Holotree blueprint is %q [%s].", common.EnvironmentHash, common.Platform())
+	journal.CurrentBuildEvent().Blueprint(common.EnvironmentHash)
 
 	tree, err := New()
 	fail.On(err != nil, "%s", err)
@@ -90,6 +94,7 @@ func NewEnvironment(condafile, holozip string, restore, force bool) (label strin
 		common.Progress(12, "Restore space from library [with %d workers].", anywork.Scale())
 		path, err = library.Restore(holotreeBlueprint, []byte(common.ControllerIdentity()), []byte(common.HolotreeSpace))
 		fail.On(err != nil, "Failed to restore blueprint %q, reason: %v", string(holotreeBlueprint), err)
+		journal.CurrentBuildEvent().RestoreComplete()
 	} else {
 		common.Progress(12, "Restoring space skipped.")
 	}
@@ -123,6 +128,7 @@ func RecordEnvironment(tree MutableLibrary, blueprint []byte, force bool, scorec
 		fail.On(settings.Global.NoBuild(), "Building new holotree environment is blocked by settings, and could not be found from hololib cache!")
 		err = CleanupHolotreeStage(tree)
 		fail.On(err != nil, "Failed to clean stage, reason %v.", err)
+		journal.CurrentBuildEvent().PrepareComplete()
 
 		err = os.MkdirAll(tree.Stage(), 0o755)
 		fail.On(err != nil, "Failed to create stage, reason %v.", err)
@@ -139,6 +145,7 @@ func RecordEnvironment(tree MutableLibrary, blueprint []byte, force bool, scorec
 		common.Progress(11, "Record holotree stage to hololib [with %d workers].", anywork.Scale())
 		err = tree.Record(blueprint)
 		fail.On(err != nil, "Failed to record blueprint %q, reason: %w", string(blueprint), err)
+		journal.CurrentBuildEvent().RecordComplete()
 	}
 
 	return nil

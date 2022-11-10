@@ -9,6 +9,7 @@ import (
 	"github.com/robocorp/rcc/common"
 	"github.com/robocorp/rcc/conda"
 	"github.com/robocorp/rcc/htfs"
+	"github.com/robocorp/rcc/journal"
 	"github.com/robocorp/rcc/pathlib"
 	"github.com/robocorp/rcc/pretty"
 	"github.com/robocorp/rcc/robot"
@@ -252,6 +253,7 @@ func ExecuteTask(flags *RunFlags, template []string, config robot.Robot, todo ro
 
 	preRunScripts := config.PreRunScripts()
 	if !common.DeveloperFlag && preRunScripts != nil && len(preRunScripts) > 0 {
+		common.Timeline("pre run scripts started")
 		common.Debug("===  pre run script phase ===")
 		for _, script := range preRunScripts {
 			if !robot.PlatformAcceptableFile(runtime.GOARCH, runtime.GOOS, script) {
@@ -268,14 +270,18 @@ func ExecuteTask(flags *RunFlags, template []string, config robot.Robot, todo ro
 				pretty.Exit(12, "%sScript '%s' failure: %v%s", pretty.Red, script, err, pretty.Reset)
 			}
 		}
+		journal.CurrentBuildEvent().PreRunComplete()
+		common.Timeline("pre run scripts completed")
 	}
 
 	common.Debug("about to run command - %v", task)
+	journal.CurrentBuildEvent().RobotStarts()
 	if common.NoOutputCapture {
 		_, err = shell.New(environment, directory, task...).Execute(interactive)
 	} else {
 		_, err = shell.New(environment, directory, task...).Tee(outputDir, interactive)
 	}
+	journal.CurrentBuildEvent().RobotEnds()
 	after := make(map[string]string)
 	afterHash, afterErr := conda.DigestFor(label, after)
 	conda.DiagnoseDirty(label, label, beforeHash, afterHash, beforeErr, afterErr, before, after, true)

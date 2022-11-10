@@ -8,6 +8,7 @@ import (
 	"github.com/robocorp/rcc/cloud"
 	"github.com/robocorp/rcc/common"
 	"github.com/robocorp/rcc/htfs"
+	"github.com/robocorp/rcc/journal"
 	"github.com/robocorp/rcc/operations"
 	"github.com/robocorp/rcc/pathlib"
 	"github.com/robocorp/rcc/pretty"
@@ -21,6 +22,7 @@ var prepareCloudCmd = &cobra.Command{
 	Short: "Prepare cloud robot for fast startup time in local computer.",
 	Long:  "Prepare cloud robot for fast startup time in local computer.",
 	Run: func(cmd *cobra.Command, args []string) {
+		defer journal.BuildEventStats("prepare")
 		if common.DebugFlag {
 			defer common.Stopwatch("Cloud prepare lasted").Report()
 		}

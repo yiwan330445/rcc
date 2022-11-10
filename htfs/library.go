@@ -34,6 +34,11 @@ type stats struct {
 	dirty uint64
 }
 
+func (it *stats) Dirtyness() float64 {
+	dirtyness := (1000 * it.dirty) / it.total
+	return float64(dirtyness) / 10.0
+}
+
 func (it *stats) Dirty(dirty bool) {
 	it.Lock()
 	defer it.Unlock()
@@ -378,6 +383,7 @@ func (it *hololib) Restore(blueprint, client, tag []byte) (result string, err er
 	common.TimelineEnd()
 	defer common.Timeline("- dirty %d/%d", score.dirty, score.total)
 	common.Debug("Holotree dirty workload: %d/%d\n", score.dirty, score.total)
+	journal.CurrentBuildEvent().Dirty(score.Dirtyness())
 	fs.Controller = string(client)
 	fs.Space = string(tag)
 	err = fs.SaveAs(metafile)
