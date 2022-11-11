@@ -1,5 +1,9 @@
 # rcc change log
 
+## v11.32.1 (date: 11.11.2022) UNSTABLE
+
+- feature: command to show local holotree environment build statistics
+
 ## v11.32.0 (date: 10.11.2022) UNSTABLE
 
 - feature: local recording of holotree environment build statistics events
