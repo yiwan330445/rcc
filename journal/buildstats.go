@@ -8,10 +8,13 @@ import (
 	"os"
 	"path/filepath"
 	"sort"
+	"strings"
 	"text/tabwriter"
+	"time"
 
 	"github.com/robocorp/rcc/common"
 	"github.com/robocorp/rcc/fail"
+	"github.com/robocorp/rcc/pathlib"
 	"github.com/robocorp/rcc/pretty"
 )
 
@@ -97,14 +100,41 @@ func prerun(the BuildEvent) float64 {
 	return the.PreRunDone
 }
 
-func ShowStatistics() {
-	stats, err := Stats()
+func anyOf(flags ...bool) bool {
+	for _, flag := range flags {
+		if flag {
+			return true
+		}
+	}
+	return false
+}
+
+func ShowStatistics(weeks uint, assistants, robots, prepares, variables bool) {
+	stats, err := Stats(weeks)
+	selected := []string{"all"}
 	if err != nil {
 		pretty.Warning("Loading statistics failed, reason: %v", err)
 		return
 	}
+	if anyOf(assistants, robots, prepares, variables) {
+		selectors := make(map[string]bool)
+		selectors["assistant"] = assistants
+		selectors["robot"] = robots
+		selectors["prepare"] = prepares
+		selectors["variables"] = variables
+		stats = stats.filter(func(the BuildEvent) bool {
+			return selectors[the.What]
+		})
+		selected = []string{}
+		for key, value := range selectors {
+			if value {
+				selected = append(selected, key)
+			}
+		}
+		sort.Strings(selected)
+	}
 	tabbed := tabwriter.NewWriter(os.Stderr, 2, 4, 2, ' ', tabwriter.AlignRight)
-	tabbed.Write(sprint("Selected statistics:\t%d samples\t\n", len(stats)))
+	tabbed.Write(sprint("Selected (%s) statistics: %d samples [%d full weeks]\t\n", strings.Join(selected, ", "), len(stats), weeks))
 	tabbed.Write([]byte("\n"))
 	tabbed.Write([]byte("Name \tAverage\t10%\tMedian\t90%\tMAX\t\n"))
 	stats.Statsline(tabbed, "Dirty", asPercent, func(the BuildEvent) float64 {
@@ -184,10 +214,26 @@ func CurrentBuildEvent() *BuildEvent {
 	return buildevent
 }
 
-func CurrentEventFilename() string {
-	year, week := common.Clock.Time().ISOWeek()
+func BuildEventFilenameFor(stamp time.Time) string {
+	year, week := stamp.ISOWeek()
 	filename := fmt.Sprintf("stats_%s_%04d_%02d.log", common.UserHomeIdentity(), year, week)
 	return filepath.Join(common.JournalLocation(), filename)
+}
+
+func CurrentEventFilename() string {
+	return BuildEventFilenameFor(common.Clock.Time())
+}
+
+func BuildEventFilenamesFor(weekcount int) []string {
+	weekstep := -7 * 24 * time.Hour
+	timestamp := common.Clock.Time()
+	result := make([]string, 0, weekcount+1)
+	for weekcount >= 0 {
+		result = append(result, BuildEventFilenameFor(timestamp))
+		timestamp = timestamp.Add(weekstep)
+		weekcount--
+	}
+	return result
 }
 
 func BuildEventStats(label string) {
@@ -357,26 +403,32 @@ func (it Numbers) Statsline() (average, low, median, high, worst float64) {
 	return sum / float64(total), it.safe(percentile), it.safe(half), it.safe(right), it.safe(last)
 }
 
-func Stats() (result BuildEvents, err error) {
+func Stats(weeks uint) (result BuildEvents, err error) {
 	defer fail.Around(&err)
-	journalname := CurrentEventFilename()
-	handle, err := os.Open(journalname)
-	fail.On(err != nil, "Failed to open event journal %v -> %v", journalname, err)
-	defer handle.Close()
-	source := bufio.NewReader(handle)
-	fail.On(err != nil, "Failed to read %s.", journalname)
 	result = make(BuildEvents, 0, 100)
-	for {
-		line, err := source.ReadBytes('\n')
-		if err == io.EOF {
-			return result, nil
-		}
-		fail.On(err != nil, "Failed to read %s.", journalname)
-		event := BuildEvent{}
-		err = json.Unmarshal(line, &event)
-		if err != nil {
+	for _, journalname := range BuildEventFilenamesFor(int(weeks)) {
+		if !pathlib.IsFile(journalname) {
 			continue
 		}
-		result = append(result, event)
+		handle, err := os.Open(journalname)
+		fail.On(err != nil, "Failed to open event journal %v -> %v", journalname, err)
+		defer handle.Close()
+		source := bufio.NewReader(handle)
+		fail.On(err != nil, "Failed to read %s.", journalname)
+	innerloop:
+		for {
+			line, err := source.ReadBytes('\n')
+			if err == io.EOF {
+				break innerloop
+			}
+			fail.On(err != nil, "Failed to read %s.", journalname)
+			event := BuildEvent{}
+			err = json.Unmarshal(line, &event)
+			if err != nil {
+				continue innerloop
+			}
+			result = append(result, event)
+		}
 	}
+	return result, nil
 }

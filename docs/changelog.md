@@ -1,5 +1,11 @@
 # rcc change log
 
+## v11.32.2 (date: 11.11.2022)
+
+- added week limitation option for holotree statistics command
+- added filter flags for assistants, robots, prepares, and variables for
+  holotree statistics command
+
 ## v11.32.1 (date: 11.11.2022) UNSTABLE
 
 - feature: command to show local holotree environment build statistics
