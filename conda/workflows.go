@@ -116,7 +116,9 @@ func newLive(yaml, condaYaml, requirementsText, key string, force, freshInstall 
 		}
 		success, _ = newLiveInternal(yaml, condaYaml, requirementsText, key, true, freshInstall, postInstall)
 	}
-	journal.CurrentBuildEvent().Successful()
+	if success {
+		journal.CurrentBuildEvent().Successful()
+	}
 	return success, nil
 }
 

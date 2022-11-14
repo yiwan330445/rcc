@@ -18,6 +18,7 @@ import (
 	"github.com/robocorp/rcc/common"
 	"github.com/robocorp/rcc/conda"
 	"github.com/robocorp/rcc/htfs"
+	"github.com/robocorp/rcc/journal"
 	"github.com/robocorp/rcc/pathlib"
 	"github.com/robocorp/rcc/pretty"
 	"github.com/robocorp/rcc/robot"
@@ -419,6 +420,13 @@ func humaneDiagnostics(sink io.Writer, details *common.DiagnosticStatus) {
 	fmt.Fprintln(sink, "Checks:")
 	for _, check := range details.Checks {
 		fmt.Fprintf(sink, " - %-8s %-8s %s\n", check.Type, check.Status, check.Message)
+	}
+	count, body := journal.MakeStatistics(12, false, false, false, false)
+	if count > 4 {
+		fmt.Fprintln(sink, "")
+		fmt.Fprintln(sink, "Statistics:")
+		fmt.Fprintln(sink, "")
+		fmt.Fprintln(sink, string(body))
 	}
 }
 

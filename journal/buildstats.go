@@ -2,6 +2,7 @@ package journal
 
 import (
 	"bufio"
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -19,13 +20,15 @@ import (
 )
 
 type (
-	acceptor func(BuildEvent) bool
-	picker   func(BuildEvent) float64
+	acceptor func(*BuildEvent) bool
+	picker   func(*BuildEvent) float64
+	flagger  func(*BuildEvent) bool
 	prettify func(float64) string
 
 	Numbers     []float64
-	BuildEvents []BuildEvent
+	BuildEvents []*BuildEvent
 	BuildEvent  struct {
+		Version       string `json:"version"`
 		When          int64  `json:"when"`
 		What          string `json:"what"`
 		Force         bool   `json:"force"`
@@ -52,6 +55,13 @@ type (
 	}
 )
 
+const (
+	assistantKey = "assistant"
+	prepareKey   = "prepare"
+	robotKey     = "robot"
+	variableKey  = "variables"
+)
+
 var (
 	buildevent *BuildEvent
 )
@@ -68,36 +78,68 @@ func asSecond(value float64) string {
 	return fmt.Sprintf("%7.3fs", value)
 }
 
-func started(the BuildEvent) float64 {
+func asCount(value int) string {
+	return fmt.Sprintf("%d", value)
+}
+
+func forced(the *BuildEvent) bool {
+	return the.Force
+}
+
+func retried(the *BuildEvent) bool {
+	return the.Retry
+}
+
+func failed(the *BuildEvent) bool {
+	return the.Build && !the.Success
+}
+
+func build(the *BuildEvent) bool {
+	return the.Build
+}
+
+func started(the *BuildEvent) float64 {
 	return the.Started
 }
 
-func prepared(the BuildEvent) float64 {
+func prepared(the *BuildEvent) float64 {
 	return the.Prepared
 }
 
-func micromamba(the BuildEvent) float64 {
+func micromamba(the *BuildEvent) float64 {
 	return the.MicromambaDone
 }
 
-func pip(the BuildEvent) float64 {
+func pip(the *BuildEvent) float64 {
 	return the.PipDone
 }
 
-func postinstall(the BuildEvent) float64 {
+func postinstall(the *BuildEvent) float64 {
 	return the.PostInstallDone
 }
 
-func record(the BuildEvent) float64 {
+func record(the *BuildEvent) float64 {
 	return the.RecordDone
 }
 
-func restore(the BuildEvent) float64 {
+func restore(the *BuildEvent) float64 {
 	return the.RestoreDone
 }
 
-func prerun(the BuildEvent) float64 {
+func prerun(the *BuildEvent) float64 {
 	return the.PreRunDone
+}
+
+func robotstarts(the *BuildEvent) float64 {
+	return the.RobotStart
+}
+
+func robotends(the *BuildEvent) float64 {
+	return the.RobotEnd
+}
+
+func finished(the *BuildEvent) float64 {
+	return the.Finished
 }
 
 func anyOf(flags ...bool) bool {
@@ -110,19 +152,26 @@ func anyOf(flags ...bool) bool {
 }
 
 func ShowStatistics(weeks uint, assistants, robots, prepares, variables bool) {
+	_, body := MakeStatistics(weeks, assistants, robots, prepares, variables)
+	os.Stderr.Write(body)
+	os.Stderr.Sync()
+}
+
+func MakeStatistics(weeks uint, assistants, robots, prepares, variables bool) (int, []byte) {
+	sink := bytes.NewBuffer(nil)
 	stats, err := Stats(weeks)
 	selected := []string{"all"}
 	if err != nil {
 		pretty.Warning("Loading statistics failed, reason: %v", err)
-		return
+		return 0, sink.Bytes()
 	}
 	if anyOf(assistants, robots, prepares, variables) {
 		selectors := make(map[string]bool)
-		selectors["assistant"] = assistants
-		selectors["robot"] = robots
-		selectors["prepare"] = prepares
-		selectors["variables"] = variables
-		stats = stats.filter(func(the BuildEvent) bool {
+		selectors[assistantKey] = assistants
+		selectors[robotKey] = robots
+		selectors[prepareKey] = prepares
+		selectors[variableKey] = variables
+		stats = stats.filter(func(the *BuildEvent) bool {
 			return selectors[the.What]
 		})
 		selected = []string{}
@@ -133,81 +182,185 @@ func ShowStatistics(weeks uint, assistants, robots, prepares, variables bool) {
 		}
 		sort.Strings(selected)
 	}
-	tabbed := tabwriter.NewWriter(os.Stderr, 2, 4, 2, ' ', tabwriter.AlignRight)
+	tabbed := tabwriter.NewWriter(sink, 2, 4, 2, ' ', tabwriter.AlignRight)
 	tabbed.Write(sprint("Selected (%s) statistics: %d samples [%d full weeks]\t\n", strings.Join(selected, ", "), len(stats), weeks))
 	tabbed.Write([]byte("\n"))
 	tabbed.Write([]byte("Name \tAverage\t10%\tMedian\t90%\tMAX\t\n"))
-	stats.Statsline(tabbed, "Dirty", asPercent, func(the BuildEvent) float64 {
+	stats.Statsline(tabbed, "Dirty", asPercent, func(the *BuildEvent) float64 {
 		return the.Dirtyness
 	})
 	tabbed.Write([]byte("\n"))
 	tabbed.Write([]byte("Name                  \tAverage\t10%\tMedian\t90%\tMAX\t\n"))
-	stats.Statsline(tabbed, "Lead time             ", asSecond, func(the BuildEvent) float64 {
+	stats.Statsline(tabbed, "Lead time             ", asSecond, func(the *BuildEvent) float64 {
 		return the.Started
 	})
-	stats.Statsline(tabbed, "Setup time            ", asSecond, func(the BuildEvent) float64 {
+	stats.Statsline(tabbed, "Setup time            ", asSecond, func(the *BuildEvent) float64 {
 		if the.RobotStart > 0 {
 			return the.RobotStart - the.Started
 		}
 		return the.Finished - the.Started
 	})
-	stats.Statsline(tabbed, "Holospace restore time", asSecond, func(the BuildEvent) float64 {
+	stats.Statsline(tabbed, "Holospace restore time", asSecond, func(the *BuildEvent) float64 {
 		if the.RestoreDone > 0 {
 			return the.RestoreDone - the.Started
 		}
 		return the.Finished - the.Started
 	})
-	stats.Statsline(tabbed, "Pre-run               ", asSecond, func(the BuildEvent) float64 {
+	stats.Statsline(tabbed, "Pre-run               ", asSecond, func(the *BuildEvent) float64 {
 		if the.PreRunDone > 0 {
 			return the.PreRunDone - the.RestoreDone
 		}
 		return 0
 	})
-	stats.Statsline(tabbed, "Robot startup delay   ", asSecond, func(the BuildEvent) float64 {
+	stats.Statsline(tabbed, "Robot startup delay   ", asSecond, func(the *BuildEvent) float64 {
 		return the.RobotStart
 	})
-	stats.Statsline(tabbed, "Robot execution time  ", asSecond, func(the BuildEvent) float64 {
+	stats.Statsline(tabbed, "Robot execution time  ", asSecond, func(the *BuildEvent) float64 {
 		return the.RobotEnd - the.RobotStart
 	})
-	stats.Statsline(tabbed, "Total execution time  ", asSecond, func(the BuildEvent) float64 {
+	stats.Statsline(tabbed, "Total execution time  ", asSecond, func(the *BuildEvent) float64 {
 		return the.Finished
 	})
-	onlyBuilds := stats.filter(func(the BuildEvent) bool {
+	onlyBuilds := stats.filter(func(the *BuildEvent) bool {
 		return the.Build
 	})
 	tabbed.Write([]byte("\n\n"))
-	percentage := 100.0 * float64(len(onlyBuilds)) / float64(len(stats))
+	statCount := len(stats)
+	percentage := 100.0 * float64(len(onlyBuilds)) / float64(statCount)
 	tabbed.Write(sprint("%d\tsamples with environment builds\t(%3.1f%% from selected)\t\n", len(onlyBuilds), percentage))
 	tabbed.Write([]byte("\n"))
 	tabbed.Write([]byte("Name                  \tAverage\t10%\tMedian\t90%\tMAX\t\n"))
-	onlyBuilds.Statsline(tabbed, "Phase: prepare        ", asSecond, func(the BuildEvent) float64 {
-		return the.Prepared - the.Started
+	onlyBuilds.Statsline(tabbed, "Phase: prepare        ", asSecond, func(the *BuildEvent) float64 {
+		if the.Prepared > 0 {
+			return the.Prepared - the.Started
+		}
+		return 0.0
 	})
-	onlyBuilds.Statsline(tabbed, "Phase: micromamba     ", asSecond, func(the BuildEvent) float64 {
-		return the.MicromambaDone - the.Prepared
+	onlyBuilds.Statsline(tabbed, "Phase: micromamba     ", asSecond, func(the *BuildEvent) float64 {
+		if the.MicromambaDone > 0 {
+			return the.MicromambaDone - the.Prepared
+		}
+		return 0.0
 	})
-	onlyBuilds.Statsline(tabbed, "Phase: pip            ", asSecond, func(the BuildEvent) float64 {
+	onlyBuilds.Statsline(tabbed, "Phase: pip            ", asSecond, func(the *BuildEvent) float64 {
 		if the.PipDone > 0 {
 			return the.PipDone - the.MicromambaDone
 		}
 		return 0.0
 	})
-	onlyBuilds.Statsline(tabbed, "Phase: post install   ", asSecond, func(the BuildEvent) float64 {
+	onlyBuilds.Statsline(tabbed, "Phase: post install   ", asSecond, func(the *BuildEvent) float64 {
 		if the.PostInstallDone > 0 {
 			return the.PostInstallDone - the.first(pip, micromamba)
 		}
 		return 0.0
 	})
-	onlyBuilds.Statsline(tabbed, "Phase: record         ", asSecond, func(the BuildEvent) float64 {
-		return the.RecordDone - the.first(postinstall, pip, micromamba)
+	onlyBuilds.Statsline(tabbed, "Phase: record         ", asSecond, func(the *BuildEvent) float64 {
+		if the.RecordDone > 0 {
+			return the.RecordDone - the.first(postinstall, pip, micromamba)
+		}
+		return 0.0
 	})
-	onlyBuilds.Statsline(tabbed, "To hololib            ", asSecond, func(the BuildEvent) float64 {
+	onlyBuilds.Statsline(tabbed, "To hololib            ", asSecond, func(the *BuildEvent) float64 {
 		if the.RecordDone > 0 {
 			return the.RecordDone - the.Started
 		}
 		return 0.0
 	})
+
+	assistantStats := selectStats(stats, assistantKey)
+	prepareStats := selectStats(stats, prepareKey)
+	robotStats := selectStats(stats, robotKey)
+	variableStats := selectStats(stats, variableKey)
+
+	tabbed.Write([]byte("\n\n"))
+	tabbed.Write([]byte("Cumulative    \tAssistants\tPrepares\tRobots\tVariables\tTotal\t\n"))
+	tabbed.Write(tabs("Run counts    ", theSize(assistantStats), theSize(prepareStats), theSize(robotStats), theSize(variableStats), theSize(stats)))
+	tabbed.Write(tabs("Build counts  ",
+		theCounts(assistantStats, build),
+		theCounts(prepareStats, build),
+		theCounts(robotStats, build),
+		theCounts(variableStats, build),
+		theCounts(stats, build)))
+	tabbed.Write(tabs("Forced builds ",
+		theCounts(assistantStats, forced),
+		theCounts(prepareStats, forced),
+		theCounts(robotStats, forced),
+		theCounts(variableStats, forced),
+		theCounts(stats, forced)))
+	tabbed.Write(tabs("Retried builds",
+		theCounts(assistantStats, retried),
+		theCounts(prepareStats, retried),
+		theCounts(robotStats, retried),
+		theCounts(variableStats, retried),
+		theCounts(stats, retried)))
+	tabbed.Write(tabs("Failed builds ",
+		theCounts(assistantStats, failed),
+		theCounts(prepareStats, failed),
+		theCounts(robotStats, failed),
+		theCounts(variableStats, failed),
+		theCounts(stats, failed)))
+	tabbed.Write(tabs("Setup times   ",
+		theTimes(assistantStats, priority(robotstarts, finished), priority(started)),
+		theTimes(prepareStats, priority(robotstarts, finished), priority(started)),
+		theTimes(robotStats, priority(robotstarts, finished), priority(started)),
+		theTimes(variableStats, priority(robotstarts, finished), priority(started)),
+		theTimes(stats, priority(robotstarts, finished), priority(started))))
+	tabbed.Write(tabs("Run times     ",
+		theTimes(assistantStats, priority(robotends), priority(robotstarts)),
+		theTimes(prepareStats, priority(robotends), priority(robotstarts)),
+		theTimes(robotStats, priority(robotends), priority(robotstarts)),
+		theTimes(variableStats, priority(robotends), priority(robotstarts)),
+		theTimes(stats, priority(robotends), priority(robotstarts))))
+	tabbed.Write(tabs("Total times   ",
+		theTimes(assistantStats, priority(finished), priority(started)),
+		theTimes(prepareStats, priority(finished), priority(started)),
+		theTimes(robotStats, priority(finished), priority(started)),
+		theTimes(variableStats, priority(finished), priority(started)),
+		theTimes(stats, priority(finished), priority(started))))
 	tabbed.Flush()
+	return statCount, sink.Bytes()
+}
+
+func theCounts(source BuildEvents, check flagger) string {
+	total := 0
+	for _, event := range source {
+		if check(event) {
+			total++
+		}
+	}
+	return asCount(total)
+}
+
+func priority(pickers ...picker) []picker {
+	return pickers
+}
+
+func theTimes(source BuildEvents, till []picker, from []picker) string {
+	total := 0.0
+	for _, event := range source {
+		done := event.first(till...)
+		if done > 0.0 {
+			area := done - event.first(from...)
+			total += area
+		}
+	}
+	return asSecond(total)
+}
+
+func theSize(source BuildEvents) string {
+	return fmt.Sprintf("%d", len(source))
+}
+
+func selectStats(source BuildEvents, key string) BuildEvents {
+	result := source.filter(func(the *BuildEvent) bool {
+		return the.What == key
+	})
+	return result
+}
+
+func tabs(columns ...any) []byte {
+	form := strings.Repeat("%s\t", len(columns)) + "\n"
+	return []byte(fmt.Sprintf(form, columns...))
 }
 
 func CurrentBuildEvent() *BuildEvent {
@@ -253,7 +406,8 @@ func serialize(event *BuildEvent) (err error) {
 
 func NewBuildEvent() *BuildEvent {
 	return &BuildEvent{
-		When: common.Clock.When(),
+		When:    common.Clock.When(),
+		Version: common.Version,
 	}
 }
 
@@ -334,7 +488,7 @@ func (it *BuildEvent) RobotEnds() {
 	buildevent.RobotEnd = it.stowatch()
 }
 
-func (it BuildEvent) first(tools ...picker) float64 {
+func (it *BuildEvent) first(tools ...picker) float64 {
 	for _, tool := range tools {
 		value := tool(it)
 		if value > 0 {
@@ -422,8 +576,8 @@ func Stats(weeks uint) (result BuildEvents, err error) {
 				break innerloop
 			}
 			fail.On(err != nil, "Failed to read %s.", journalname)
-			event := BuildEvent{}
-			err = json.Unmarshal(line, &event)
+			event := &BuildEvent{}
+			err = json.Unmarshal(line, event)
 			if err != nil {
 				continue innerloop
 			}

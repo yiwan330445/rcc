@@ -1,5 +1,13 @@
 # rcc change log
 
+## v11.32.3 (date: 14.11.2022)
+
+- holotree statistics are now part of human readable diagnostics when there
+  is 5 or more entries in statistics (but not available in JSON output)
+- added cumulative statistics section into output
+- bugfix: calculation mistakes in case of missing steps
+- bugfix: detecting successful build
+
 ## v11.32.2 (date: 11.11.2022)
 
 - added week limitation option for holotree statistics command
