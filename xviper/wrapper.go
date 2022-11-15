@@ -180,14 +180,6 @@ func GetInt64(key string) int64 {
 	return <-flow
 }
 
-func GetInt(key string) int {
-	flow := make(chan int)
-	pipeline <- func(core *config) {
-		flow <- core.Summon().GetInt(key)
-	}
-	return <-flow
-}
-
 func GetString(key string) string {
 	flow := make(chan string)
 	pipeline <- func(core *config) {

@@ -1,5 +1,9 @@
 # rcc change log
 
+## v11.32.5 (date: 15.11.2022)
+
+- cleanup: removing dead code that was not used anymore
+
 ## v11.32.4 (date: 15.11.2022)
 
 - cleanup: removing old run minutes and stat lines (holotree stats cover those)

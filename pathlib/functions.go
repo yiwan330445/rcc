@@ -170,10 +170,6 @@ func EnsureDirectory(directory string) (string, error) {
 	return doEnsureDirectory(directory, 0o750)
 }
 
-func EnsureParentDirectory(resource string) (string, error) {
-	return EnsureDirectory(filepath.Dir(resource))
-}
-
 func RemoveEmptyDirectores(starting string) (err error) {
 	defer fail.Around(&err)
 
