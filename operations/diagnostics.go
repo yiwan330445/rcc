@@ -205,11 +205,17 @@ func lockpidsCheck() []*common.DiagnosticCheck {
 		})
 		return result
 	}
+	deadline := time.Now().Add(-12 * time.Hour)
 	for _, entry := range entries {
+		level, qualifier := statusWarning, "Pending"
+		info, err := entry.Info()
+		if err == nil && info.ModTime().Before(deadline) {
+			level, qualifier = statusOk, "Stale(?)"
+		}
 		result = append(result, &common.DiagnosticCheck{
 			Type:    "OS",
-			Status:  statusWarning,
-			Message: fmt.Sprintf("Pending lock file info: %q", entry.Name()),
+			Status:  level,
+			Message: fmt.Sprintf("%s lock file info: %q", qualifier, entry.Name()),
 			Link:    support,
 		})
 	}

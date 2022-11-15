@@ -1,5 +1,11 @@
 # rcc change log
 
+## v11.32.6 (date: 15.11.2022)
+
+- bugfix: from now on, lock pid files will only give diagnostic "warning" when
+  they are less than 12 hours old, after that they will be labeled as "stale"
+  and will still be visible in diagnostics, but on "ok" level
+
 ## v11.32.5 (date: 15.11.2022)
 
 - cleanup: removing dead code that was not used anymore
