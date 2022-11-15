@@ -1,5 +1,9 @@
 # rcc change log
 
+## v11.32.4 (date: 15.11.2022)
+
+- cleanup: removing old run minutes and stat lines (holotree stats cover those)
+
 ## v11.32.3 (date: 14.11.2022)
 
 - holotree statistics are now part of human readable diagnostics when there

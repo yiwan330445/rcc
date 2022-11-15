@@ -6,7 +6,6 @@ import (
 	"github.com/robocorp/rcc/conda"
 	"github.com/robocorp/rcc/journal"
 	"github.com/robocorp/rcc/operations"
-	"github.com/robocorp/rcc/xviper"
 
 	"github.com/spf13/cobra"
 )
@@ -29,7 +28,6 @@ in your own machine.`,
 		if common.DebugFlag {
 			defer common.Stopwatch("Task run lasted").Report()
 		}
-		defer xviper.RunMinutes().Done()
 		simple, config, todo, label := operations.LoadTaskWithEnvironment(robotFile, runTask, forceFlag)
 		cloud.BackgroundMetric(common.ControllerIdentity(), "rcc.cli.run", common.Version)
 		commandline := todo.Commandline()

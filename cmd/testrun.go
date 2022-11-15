@@ -13,7 +13,6 @@ import (
 	"github.com/robocorp/rcc/pathlib"
 	"github.com/robocorp/rcc/pretty"
 	"github.com/robocorp/rcc/robot"
-	"github.com/robocorp/rcc/xviper"
 
 	"github.com/spf13/cobra"
 )
@@ -28,7 +27,6 @@ var testrunCmd = &cobra.Command{
 		if common.DebugFlag {
 			defer common.Stopwatch("Task testrun lasted").Report()
 		}
-		defer xviper.RunMinutes().Done()
 		now := time.Now()
 		zipfile := filepath.Join(os.TempDir(), fmt.Sprintf("testrun%x.zip", common.When))
 		defer os.Remove(zipfile)

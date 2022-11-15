@@ -14,7 +14,6 @@ import (
 	"github.com/robocorp/rcc/pathlib"
 	"github.com/robocorp/rcc/pretty"
 	"github.com/robocorp/rcc/robot"
-	"github.com/robocorp/rcc/xviper"
 
 	"github.com/spf13/cobra"
 )
@@ -33,7 +32,6 @@ var assistantRunCmd = &cobra.Command{
 		if common.DebugFlag {
 			defer common.Stopwatch("Robot Assistant run lasted").Report()
 		}
-		defer xviper.RunMinutes().Done()
 		account := operations.AccountByName(AccountName())
 		if account == nil {
 			pretty.Exit(1, "Could not find account by name: %q", AccountName())

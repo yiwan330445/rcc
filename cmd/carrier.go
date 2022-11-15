@@ -12,7 +12,6 @@ import (
 	"github.com/robocorp/rcc/pathlib"
 	"github.com/robocorp/rcc/pretty"
 	"github.com/robocorp/rcc/robot"
-	"github.com/robocorp/rcc/xviper"
 
 	"github.com/spf13/cobra"
 )
@@ -42,7 +41,6 @@ func runCarrier() error {
 	if common.DebugFlag {
 		defer common.Stopwatch("Task testrun lasted").Report()
 	}
-	defer xviper.RunMinutes().Done()
 	now := time.Now()
 	testrunDir := filepath.Join(".", now.Format("2006-01-02_15_04_05"))
 	err = os.MkdirAll(testrunDir, 0o755)

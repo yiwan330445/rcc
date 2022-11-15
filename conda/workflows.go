@@ -18,7 +18,6 @@ import (
 	"github.com/robocorp/rcc/pretty"
 	"github.com/robocorp/rcc/settings"
 	"github.com/robocorp/rcc/shell"
-	"github.com/robocorp/rcc/xviper"
 )
 
 const (
@@ -349,26 +348,13 @@ func LegacyEnvironment(force bool, configurations ...string) error {
 	}
 	defer locker.Release()
 
-	requests := xviper.GetInt("stats.env.request") + 1
-	misses := xviper.GetInt("stats.env.miss")
-	failures := xviper.GetInt("stats.env.failures")
-	merges := xviper.GetInt("stats.env.merges")
 	freshInstall := true
-
-	xviper.Set("stats.env.request", requests)
-
-	if len(configurations) > 1 {
-		merges += 1
-		xviper.Set("stats.env.merges", merges)
-	}
 
 	condaYaml := filepath.Join(os.TempDir(), fmt.Sprintf("conda_%x.yaml", common.When))
 	requirementsText := filepath.Join(os.TempDir(), fmt.Sprintf("require_%x.txt", common.When))
 	common.Debug("Using temporary conda.yaml file: %v and requirement.txt file: %v", condaYaml, requirementsText)
 	key, yaml, finalEnv, err := temporaryConfig(condaYaml, requirementsText, true, configurations...)
 	if err != nil {
-		failures += 1
-		xviper.Set("stats.env.failures", failures)
 		return err
 	}
 	defer os.Remove(condaYaml)
@@ -379,13 +365,9 @@ func LegacyEnvironment(force bool, configurations ...string) error {
 		return err
 	}
 	if success {
-		misses += 1
-		xviper.Set("stats.env.miss", misses)
 		return nil
 	}
 
-	failures += 1
-	xviper.Set("stats.env.failures", failures)
 	return errors.New("Could not create environment.")
 }
 

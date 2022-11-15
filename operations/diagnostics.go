@@ -66,7 +66,6 @@ func RunDiagnostics() *common.DiagnosticStatus {
 	result.Details["executable"] = common.BinRcc()
 	result.Details["rcc"] = common.Version
 	result.Details["rcc.bin"] = common.BinRcc()
-	result.Details["stats"] = rccStatusLine()
 	result.Details["micromamba"] = conda.MicromambaVersion()
 	result.Details["micromamba.bin"] = conda.BinMicromamba()
 	result.Details["ROBOCORP_HOME"] = common.RobocorpHome()
@@ -144,16 +143,6 @@ func lockfiles() map[string]string {
 	result["lock-robocorp"] = common.RobocorpLock()
 	result["lock-userlock"] = htfs.UserHolotreeLockfile()
 	return result
-}
-
-func rccStatusLine() string {
-	requests := xviper.GetInt("stats.env.request")
-	hits := xviper.GetInt("stats.env.hit")
-	dirty := xviper.GetInt("stats.env.dirty")
-	misses := xviper.GetInt("stats.env.miss")
-	failures := xviper.GetInt("stats.env.failures")
-	merges := xviper.GetInt("stats.env.merges")
-	return fmt.Sprintf("%d requests, %d merges, %d hits, %d dirty, %d misses, %d failures | %s", requests, merges, hits, dirty, misses, failures, xviper.TrackingIdentity())
 }
 
 func longPathSupportCheck() *common.DiagnosticCheck {
