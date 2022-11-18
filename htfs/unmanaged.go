@@ -42,7 +42,7 @@ func (it *unmanaged) Remove([]string) error {
 	return fmt.Errorf("Not supported yet on unmanaged holotree.")
 }
 
-func (it *unmanaged) Export([]string, string) error {
+func (it *unmanaged) Export([]string, []string, string) error {
 	return fmt.Errorf("Not supported yet on unmanaged holotree.")
 }
 

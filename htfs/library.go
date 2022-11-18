@@ -64,7 +64,7 @@ type MutableLibrary interface {
 
 	Identity() string
 	ExactLocation(string) string
-	Export([]string, string) error
+	Export([]string, []string, string) error
 	Remove([]string) error
 	Location(string) string
 	Record([]byte) error
@@ -109,6 +109,10 @@ type zipseen struct {
 	seen map[string]bool
 }
 
+func (it zipseen) Ignore(relativepath string) {
+	it.seen[relativepath] = true
+}
+
 func (it zipseen) Add(fullpath, relativepath string) (err error) {
 	defer fail.Around(&err)
 
@@ -145,7 +149,7 @@ func (it *hololib) Remove(catalogs []string) (err error) {
 	return nil
 }
 
-func (it *hololib) Export(catalogs []string, archive string) (err error) {
+func (it *hololib) Export(catalogs, known []string, archive string) (err error) {
 	defer fail.Around(&err)
 
 	common.TimelineBegin("holotree export start")
@@ -162,6 +166,18 @@ func (it *hololib) Export(catalogs []string, archive string) (err error) {
 	}
 
 	exported := false
+
+	for _, name := range known {
+		catalog := filepath.Join(common.HololibCatalogLocation(), name)
+		fs, err := NewRoot(".")
+		fail.On(err != nil, "Could not create root location -> %v.", err)
+		err = fs.LoadFrom(catalog)
+		if err != nil {
+			continue
+		}
+		err = fs.Treetop(ZipIgnore(it, fs, zipper))
+		fail.On(err != nil, "Could not ignore catalog %s -> %v.", catalog, err)
+	}
 
 	for _, name := range catalogs {
 		catalog := filepath.Join(common.HololibCatalogLocation(), name)

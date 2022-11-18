@@ -463,7 +463,30 @@ func RestoreDirectory(library Library, fs *Root, current map[string]string, stat
 }
 
 type Zipper interface {
+	Ignore(relativepath string)
 	Add(fullpath, relativepath string) error
+}
+
+func ZipIgnore(library MutableLibrary, fs *Root, sink Zipper) Treetop {
+	var tool Treetop
+	baseline := common.HololibLocation()
+	tool = func(path string, it *Dir) (err error) {
+		defer fail.Around(&err)
+
+		for _, file := range it.Files {
+			location := library.ExactLocation(file.Digest)
+			relative, err := filepath.Rel(baseline, location)
+			if err == nil {
+				sink.Ignore(relative)
+			}
+		}
+		for name, subdir := range it.Dirs {
+			err := tool(filepath.Join(path, name), subdir)
+			fail.On(err != nil, "%v", err)
+		}
+		return nil
+	}
+	return tool
 }
 
 func ZipRoot(library MutableLibrary, fs *Root, sink Zipper) Treetop {

@@ -1,5 +1,10 @@
 # rcc change log
 
+## v11.33.0 (date: 18.11.2022) UNSTABLE
+
+- feature: holotree delta export (for missing things only)
+- changes normal holotree export command to support ".hld" files
+
 ## v11.32.6 (date: 15.11.2022)
 
 - bugfix: from now on, lock pid files will only give diagnostic "warning" when
