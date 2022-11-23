@@ -310,6 +310,7 @@ func StartAssistantRun(client cloud.Client, account *account, workspaceId, assis
 	if err != nil {
 		return nil, err
 	}
+	common.Timeline("start assistant run CR network request")
 	request := client.NewRequest(fmt.Sprintf(startAssistantApi, workspaceId, assistantId))
 	request.Headers[authorization] = WorkspaceToken(credentials)
 	request.Headers[contentType] = applicationJson

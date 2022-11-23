@@ -1,5 +1,9 @@
 # rcc change log
 
+## v11.33.1 (date: 23.11.2022) UNSTABLE
+
+- some additional timeline markers on assistant runs
+
 ## v11.33.0 (date: 18.11.2022) UNSTABLE
 
 - feature: holotree delta export (for missing things only)

@@ -161,6 +161,7 @@ func DownloadCommand(client cloud.Client, account *account, workspaceId, robotId
 }
 
 func SummonRobotZipfile(client cloud.Client, account *account, workspaceId, robotId, digest string) (string, error) {
+	common.Timeline("summon networked/cached robot.zip")
 	found, ok := LookupRobot(digest)
 	if ok {
 		return found, nil

@@ -24,6 +24,7 @@ var assistantRunCmd = &cobra.Command{
 	Short:   "Robot Assistant run",
 	Long:    "Robot Assistant run.",
 	Run: func(cmd *cobra.Command, args []string) {
+		common.Timeline("cmd/assistant run entered")
 		defer conda.RemoveCurrentTemp()
 		defer journal.BuildEventStats("assistant")
 		var status, reason string
@@ -36,10 +37,12 @@ var assistantRunCmd = &cobra.Command{
 		if account == nil {
 			pretty.Exit(1, "Could not find account by name: %q", AccountName())
 		}
+		common.Timeline("new cloud client to %q", account.Endpoint)
 		client, err := cloud.NewClient(account.Endpoint)
 		if err != nil {
 			pretty.Exit(2, "Could not create client for endpoint: %v, reason: %v", account.Endpoint, err)
 		}
+		common.Timeline("new cloud client created")
 		reason = "START_FAILURE"
 		cloud.BackgroundMetric(common.ControllerIdentity(), "rcc.assistant.run.start", elapser.Elapsed().String())
 		defer func() {
