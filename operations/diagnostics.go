@@ -126,9 +126,12 @@ func RunDiagnostics() *common.DiagnosticStatus {
 	}
 	result.Checks = append(result.Checks, lockpidsCheck()...)
 	result.Checks = append(result.Checks, lockfilesCheck()...)
-	for _, host := range settings.Global.Hostnames() {
+	hostnames := settings.Global.Hostnames()
+	dnsStopwatch := common.Stopwatch("DNS lookup time for %d hostnames was about", len(hostnames))
+	for _, host := range hostnames {
 		result.Checks = append(result.Checks, dnsLookupCheck(host))
 	}
+	result.Details["dns-lookup-time"] = dnsStopwatch.Text()
 	result.Checks = append(result.Checks, canaryDownloadCheck())
 	result.Checks = append(result.Checks, pypiHeadCheck())
 	result.Checks = append(result.Checks, condaHeadCheck())

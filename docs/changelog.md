@@ -1,5 +1,10 @@
 # rcc change log
 
+## v11.33.2 (date: 24.11.2022)
+
+- configuration diagnostics now measure and report time it takes to resolve
+  set of hostnames found from settings files
+
 ## v11.33.1 (date: 23.11.2022) UNSTABLE
 
 - some additional timeline markers on assistant runs

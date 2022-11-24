@@ -54,19 +54,27 @@ func (it *stopwatch) Elapsed() Duration {
 }
 
 func (it *stopwatch) Debug() Duration {
-	elapsed := it.Elapsed()
-	Debug("%v %v", it.message, elapsed)
+	humane, elapsed := it.explained()
+	Debug(humane)
 	return elapsed
 }
 
 func (it *stopwatch) Log() Duration {
-	elapsed := it.Elapsed()
-	Log("%v %v", it.message, elapsed)
+	humane, elapsed := it.explained()
+	Log(humane)
 	return elapsed
 }
 
 func (it *stopwatch) Report() Duration {
+	return it.Log()
+}
+
+func (it *stopwatch) Text() string {
+	humane, _ := it.explained()
+	return humane
+}
+
+func (it *stopwatch) explained() (string, Duration) {
 	elapsed := it.Elapsed()
-	Log("%v %v", it.message, elapsed)
-	return elapsed
+	return fmt.Sprintf("%s %ss", it.message, elapsed), elapsed
 }
