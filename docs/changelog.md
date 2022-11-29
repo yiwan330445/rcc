@@ -1,5 +1,9 @@
 # rcc change log
 
+## v11.34.0 (date: 29.11.2022)
+
+- compiling rcc for arm64 architectures (linux, mac, windows)
+
 ## v11.33.2 (date: 24.11.2022)
 
 - configuration diagnostics now measure and report time it takes to resolve
