@@ -1,5 +1,13 @@
 # rcc change log
 
+## v11.35.0 (date: 7.12.2022) UNSTABLE
+
+- starting new PoC on topic of "peer rcc"
+- export specification simplification: now supports exactly one "wants" value
+  and it is not list anymore, but just plain and simple string
+- added new "set" operations to support PoC functionality (generics)
+- one part of PoC failed, but code is still there
+
 ## v11.34.0 (date: 29.11.2022)
 
 - compiling rcc for arm64 architectures (linux, mac, windows)

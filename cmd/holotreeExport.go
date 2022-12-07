@@ -11,7 +11,6 @@ import (
 	"github.com/robocorp/rcc/htfs"
 	"github.com/robocorp/rcc/pretty"
 	"github.com/spf13/cobra"
-	"gopkg.in/yaml.v2"
 )
 
 var (
@@ -20,29 +19,12 @@ var (
 	specFile    string
 )
 
-type (
-	ExportSpec struct {
-		Workspace string   `yaml:"workspace"`
-		Known     []string `yaml:"knows"`
-		Needs     []string `yaml:"wants"`
-	}
-)
-
-func specFrom(content []byte) (*ExportSpec, error) {
-	result := &ExportSpec{}
-	err := yaml.Unmarshal(content, result)
-	if err != nil {
-		return nil, err
-	}
-	return result, nil
-}
-
-func loadExportSpec(filename string) (*ExportSpec, error) {
+func loadExportSpec(filename string) (*htfs.ExportSpec, error) {
 	raw, err := os.ReadFile(filename)
 	if err != nil {
 		return nil, err
 	}
-	spec, err := specFrom(raw)
+	spec, err := htfs.ParseExportSpec(raw)
 	if err != nil {
 		return nil, err
 	}
@@ -52,20 +34,15 @@ func loadExportSpec(filename string) (*ExportSpec, error) {
 func exportBySpecification(filename string) {
 	spec, err := loadExportSpec(filename)
 	pretty.Guard(err == nil, 4, "Loading specification %q failed, reason: %v", filename, err)
-	known := selectExactCatalogs(spec.Known)
-	needs := selectExactCatalogs(spec.Needs)
-	pretty.Guard(len(spec.Needs) == len(needs), 5, "Only %d out of %d needed catalogs available. Quitting!", len(needs), len(spec.Needs))
-	unifiedSpec := &ExportSpec{
-		Workspace: spec.Workspace,
-		Known:     known,
-		Needs:     needs,
-	}
-	content, err := yaml.Marshal(unifiedSpec)
-	pretty.Guard(err == nil, 6, "Marshaling unified specification failed, reason: %v", err)
-	fingerprint := common.Siphash(9007199254740993, 2147483647, content)
-	common.Debug("Final delta specification %0x16x is:\n%s", fingerprint, string(content))
+	known := selectExactCatalogs(spec.Knows)
+	wants := selectExactCatalogs([]string{spec.Wants})
+	pretty.Guard(len(wants) == 1, 5, "Only %d out of 1 needed catalogs available. Quitting!", len(wants))
+	unifiedSpec := htfs.NewExportSpec(spec.Domain, spec.Wants, known)
+	textual, fingerprint, err := unifiedSpec.Fingerprint()
+	pretty.Guard(err == nil, 6, "Fingerprinting unified specification failed, reason: %v", err)
+	common.Debug("Final delta specification %0x16x is:\n%s", fingerprint, textual)
 	deltafile := fmt.Sprintf("%016x.hld", fingerprint)
-	holotreeExport(needs, known, deltafile)
+	holotreeExport(wants, unifiedSpec.Knows, deltafile)
 	common.Stdout("%s\n", deltafile)
 }
 
