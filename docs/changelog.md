@@ -1,5 +1,9 @@
 # rcc change log
 
+## v11.35.1 (date: 7.12.2022) UNSTABLE
+
+- github actions updated to use ruby 2.7 (github stopped supporting used 2.5)
+
 ## v11.35.0 (date: 7.12.2022) UNSTABLE
 
 - starting new PoC on topic of "peer rcc"
