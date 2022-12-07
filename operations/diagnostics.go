@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net"
 	"os"
 	"os/user"
@@ -99,6 +98,9 @@ func RunDiagnostics() *common.DiagnosticStatus {
 	result.Details["cpus"] = fmt.Sprintf("%d", runtime.NumCPU())
 	result.Details["when"] = time.Now().Format(time.RFC3339 + " (MST)")
 	result.Details["no-build"] = fmt.Sprintf("%v", settings.Global.NoBuild())
+	result.Details["ENV:ComSpec"] = os.Getenv("ComSpec")
+	result.Details["ENV:SHELL"] = os.Getenv("SHELL")
+	result.Details["ENV:LANG"] = os.Getenv("LANG")
 
 	for name, filename := range lockfiles() {
 		result.Details[name] = filename
@@ -473,7 +475,7 @@ func diagnoseFilesUnmarshal(tool Unmarshaler, label, rootdir string, paths []str
 		if shouldIgnorePath(fullpath) {
 			continue
 		}
-		content, err := ioutil.ReadFile(fullpath)
+		content, err := os.ReadFile(fullpath)
 		if err != nil {
 			diagnose.Fail(supportGeneralUrl, "Problem reading %s file %q: %v", label, tail, err)
 			success = false

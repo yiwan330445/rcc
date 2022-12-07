@@ -1,5 +1,11 @@
 # rcc change log
 
+## v11.35.3 (date: 7.12.2022) UNSTABLE
+
+- replaced deprecated "ioutil" with suitable functions elsewhere, thank you
+  for Juneezee (Eng Zer Jun) for pointing these out in PR#40
+- added ComSpec, LANG and SHELL from environment into diagnostics output
+
 ## v11.35.2 (date: 7.12.2022) UNSTABLE
 
 - next try to fix ruby support in GHA

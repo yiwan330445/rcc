@@ -32,24 +32,14 @@ func Serve(address string, port int, domain, storage string) error {
 	}
 	defer cleanupHoldStorage(holding)
 
-	holds := make(Holdfiles)
-	specs := make(Specs, 30)
-	queries := make(Queries)
-	catalogs := make(Catalogs)
 	partqueries := make(Partqueries)
 	signals := make(chan os.Signal, 1)
 
 	signal.Notify(signals, syscall.SIGINT, syscall.SIGHUP, syscall.SIGTERM)
 
-	defer close(holds)
-	defer close(specs)
-	defer close(queries)
-	defer close(catalogs)
+	defer close(partqueries)
 
 	go listProvider(partqueries)
-	//go feedInitialSpecs(domain, specs)
-	//go frontdesk(catalogs, holds, queries, specs)
-	//go builder(holding, specs, catalogs, holds)
 
 	listen := fmt.Sprintf("%s:%d", address, port)
 	mux := http.NewServeMux()
