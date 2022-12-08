@@ -1,5 +1,11 @@
 # rcc change log
 
+## v11.35.4 (date: 8.12.2022) UNSTABLE
+
+- removing failed parts of PoC
+- added handler for streaming of requested catalog and missing parts
+- made robot tests to automatically disconnect from shared holotree
+
 ## v11.35.3 (date: 7.12.2022) UNSTABLE
 
 - replaced deprecated "ioutil" with suitable functions elsewhere, thank you

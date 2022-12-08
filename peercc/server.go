@@ -11,20 +11,11 @@ import (
 	"time"
 )
 
-func stopper(server *http.Server) error {
-	signals := make(chan os.Signal, 1)
-	signal.Notify(signals, syscall.SIGINT, syscall.SIGHUP, syscall.SIGTERM)
-	<-signals
-	return server.Shutdown(context.TODO())
-}
-
 func Serve(address string, port int, domain, storage string) error {
 	// we need
-	// - builder
-	// - holder
+	// - query handler (for just catalog hashes)
+	// - partial content sender (for sending delta catalog)
 	// - webserver
-	// - download handler (for optimists)
-	// - specification handler (for pessimists)
 	holding := filepath.Join(storage, "hold")
 	err := cleanupHoldStorage(holding)
 	if err != nil {
@@ -33,9 +24,6 @@ func Serve(address string, port int, domain, storage string) error {
 	defer cleanupHoldStorage(holding)
 
 	partqueries := make(Partqueries)
-	signals := make(chan os.Signal, 1)
-
-	signal.Notify(signals, syscall.SIGINT, syscall.SIGHUP, syscall.SIGTERM)
 
 	defer close(partqueries)
 
@@ -46,16 +34,22 @@ func Serve(address string, port int, domain, storage string) error {
 	server := &http.Server{
 		Addr:           listen,
 		Handler:        mux,
-		ReadTimeout:    10 * time.Second,
-		WriteTimeout:   10 * time.Second,
+		ReadTimeout:    20 * time.Second,
+		WriteTimeout:   40 * time.Second,
 		MaxHeaderBytes: 1 << 14,
 	}
 
 	mux.HandleFunc("/parts/", makeQueryHandler(partqueries))
+	mux.HandleFunc("/delta/", makeDeltaHandler(partqueries))
 
 	go server.ListenAndServe()
 
-	<-signals
+	return runTillSignal(server)
+}
 
+func runTillSignal(server *http.Server) error {
+	signals := make(chan os.Signal, 1)
+	signal.Notify(signals, syscall.SIGINT, syscall.SIGHUP, syscall.SIGTERM)
+	<-signals
 	return server.Shutdown(context.TODO())
 }

@@ -86,8 +86,18 @@ func (it *hololib) Location(digest string) string {
 	return filepath.Join(common.HololibLibraryLocation(), digest[:2], digest[2:4], digest[4:6])
 }
 
-func (it *hololib) ExactLocation(digest string) string {
+func ExactDefaultLocation(digest string) string {
 	return filepath.Join(common.HololibLibraryLocation(), digest[:2], digest[2:4], digest[4:6], digest)
+}
+
+func RelativeDefaultLocation(digest string) string {
+	location := ExactDefaultLocation(digest)
+	relative, _ := filepath.Rel(common.HololibLocation(), location)
+	return relative
+}
+
+func (it *hololib) ExactLocation(digest string) string {
+	return ExactDefaultLocation(digest)
 }
 
 func (it *hololib) Identity() string {

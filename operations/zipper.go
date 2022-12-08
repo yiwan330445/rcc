@@ -204,24 +204,27 @@ func (it *zipper) Note(err error) {
 	common.Debug("Warning! %v", err)
 }
 
+func ZipAppend(writer *zip.Writer, fullpath, relativepath string) error {
+	source, err := os.Open(fullpath)
+	if err != nil {
+		return err
+	}
+	defer source.Close()
+	target, err := writer.Create(slashed(relativepath))
+	if err != nil {
+		return err
+	}
+	_, err = io.Copy(target, source)
+	return err
+}
+
 func (it *zipper) Add(fullpath, relativepath string, details os.FileInfo) {
 	if details != nil {
 		common.Debug("- %v size %v", relativepath, details.Size())
 	} else {
 		common.Debug("- %v", relativepath)
 	}
-	source, err := os.Open(fullpath)
-	if err != nil {
-		it.Note(err)
-		return
-	}
-	defer source.Close()
-	target, err := it.writer.Create(slashed(relativepath))
-	if err != nil {
-		it.Note(err)
-		return
-	}
-	_, err = io.Copy(target, source)
+	err := ZipAppend(it.writer, fullpath, relativepath)
 	if err != nil {
 		it.Note(err)
 	}

@@ -20,6 +20,11 @@ func makeQueryHandler(queries Partqueries) http.HandlerFunc {
 	return func(response http.ResponseWriter, request *http.Request) {
 		catalog := filepath.Base(request.URL.Path)
 		defer common.Stopwatch("Query of catalog %q took", catalog).Debug()
+		if request.Method != http.MethodGet {
+			response.WriteHeader(http.StatusMethodNotAllowed)
+			common.Trace("Query: rejecting request %q for catalog %q.", request.Method, catalog)
+			return
+		}
 		reply := make(chan string)
 		queries <- &Partquery{
 			Catalog: catalog,

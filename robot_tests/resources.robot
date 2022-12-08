@@ -15,6 +15,9 @@ Prepare Local
   Create Directory  tmp/robocorp
   Set Environment Variable  ROBOCORP_HOME  tmp/robocorp
 
+  Comment           Make sure that tests do not use shared holotree
+  Fire And Forget   build/rcc ht init --revoke
+
   Fire And Forget   build/rcc ht delete 4e67cd8
 
   Comment     Verify micromamba is installed or download and install it.
