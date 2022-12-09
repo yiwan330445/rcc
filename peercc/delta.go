@@ -28,7 +28,7 @@ func makeDeltaHandler(queries Partqueries) http.HandlerFunc {
 			Catalog: catalog,
 			Reply:   reply,
 		}
-		content, ok := <-reply
+		known, ok := <-reply
 		common.Debug("query handler: %q -> %v", catalog, ok)
 		if !ok {
 			response.WriteHeader(http.StatusNotFound)
@@ -36,27 +36,32 @@ func makeDeltaHandler(queries Partqueries) http.HandlerFunc {
 			return
 		}
 
-		members := strings.Split(content, "\n")
+		members := strings.Split(known, "\n")
 
-		requested := make([]string, 0, 1000)
+		approved := make([]string, 0, 1000)
 		todo := bufio.NewReader(request.Body)
 	todoloop:
 		for {
 			line, err := todo.ReadString('\n')
-			if err == io.EOF {
+			stopping := err == io.EOF
+			candidate := filepath.Base(strings.TrimSpace(line))
+			if len(candidate) > 0 {
+				if set.Member(members, candidate) {
+					approved = append(approved, candidate)
+				} else {
+					common.Trace("DELTA: ignoring extra %q entry, not part of set!", candidate)
+					if !stopping {
+						continue todoloop
+					}
+				}
+			}
+			if stopping {
 				break todoloop
 			}
 			if err != nil {
-				common.Debug("DELTA: %v with %q", err, line)
+				common.Trace("DELTA: error %v with line %q", err, line)
 				break todoloop
 			}
-			flat := strings.TrimSpace(line)
-			member := set.Member(members, flat)
-			if !member {
-				common.Trace("DELTA: ignoring extra %q entry, not part of set!", flat)
-				continue todoloop
-			}
-			requested = append(requested, flat)
 		}
 
 		headers := response.Header()
@@ -77,9 +82,9 @@ func makeDeltaHandler(queries Partqueries) http.HandlerFunc {
 			return
 		}
 
-		for _, flat := range requested {
-			relative := htfs.RelativeDefaultLocation(flat)
-			fullpath := htfs.ExactDefaultLocation(flat)
+		for _, member := range approved {
+			relative := htfs.RelativeDefaultLocation(member)
+			fullpath := htfs.ExactDefaultLocation(member)
 			err = operations.ZipAppend(sink, fullpath, relative)
 			if err != nil {
 				common.Debug("DELTA: error %v with %v -> %v", err, fullpath, relative)

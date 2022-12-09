@@ -1,5 +1,11 @@
 # rcc change log
 
+## v11.35.5 (date: 8.12.2022) UNSTABLE
+
+- fixed bug where last line of request was missing
+- trying to fix CodeQL security warning (user input was already filtered based
+  on known set of values, but analyzer did not understand that)
+
 ## v11.35.4 (date: 8.12.2022) UNSTABLE
 
 - removing failed parts of PoC
