@@ -2,8 +2,6 @@ package cmd
 
 import (
 	"encoding/json"
-	"fmt"
-	"os"
 	"sort"
 	"strings"
 
@@ -16,35 +14,7 @@ import (
 var (
 	holozip     string
 	exportRobot string
-	specFile    string
 )
-
-func loadExportSpec(filename string) (*htfs.ExportSpec, error) {
-	raw, err := os.ReadFile(filename)
-	if err != nil {
-		return nil, err
-	}
-	spec, err := htfs.ParseExportSpec(raw)
-	if err != nil {
-		return nil, err
-	}
-	return spec, nil
-}
-
-func exportBySpecification(filename string) {
-	spec, err := loadExportSpec(filename)
-	pretty.Guard(err == nil, 4, "Loading specification %q failed, reason: %v", filename, err)
-	known := selectExactCatalogs(spec.Knows)
-	wants := selectExactCatalogs([]string{spec.Wants})
-	pretty.Guard(len(wants) == 1, 5, "Only %d out of 1 needed catalogs available. Quitting!", len(wants))
-	unifiedSpec := htfs.NewExportSpec(spec.Domain, spec.Wants, known)
-	textual, fingerprint, err := unifiedSpec.Fingerprint()
-	pretty.Guard(err == nil, 6, "Fingerprinting unified specification failed, reason: %v", err)
-	common.Debug("Final delta specification %0x16x is:\n%s", fingerprint, textual)
-	deltafile := fmt.Sprintf("%016x.hld", fingerprint)
-	holotreeExport(wants, unifiedSpec.Knows, deltafile)
-	common.Stdout("%s\n", deltafile)
-}
 
 func holotreeExport(catalogs, known []string, archive string) {
 	common.Debug("Ignoring content from catalogs:")
@@ -77,20 +47,6 @@ func listCatalogs(jsonForm bool) {
 	}
 }
 
-func selectExactCatalogs(filters []string) []string {
-	result := make([]string, 0, len(filters))
-	for _, catalog := range htfs.Catalogs() {
-		for _, filter := range filters {
-			if catalog == filter {
-				result = append(result, catalog)
-				break
-			}
-		}
-	}
-	sort.Strings(result)
-	return result
-}
-
 func selectCatalogs(filters []string) []string {
 	result := make([]string, 0, len(filters))
 	for _, catalog := range htfs.Catalogs() {
@@ -113,10 +69,6 @@ var holotreeExportCmd = &cobra.Command{
 		if common.DebugFlag {
 			defer common.Stopwatch("Holotree export command lasted").Report()
 		}
-		if len(specFile) > 0 {
-			exportBySpecification(specFile)
-			return
-		}
 		if len(exportRobot) > 0 {
 			_, holotreeBlueprint, err := htfs.ComposeFinalBlueprint(nil, exportRobot)
 			pretty.Guard(err == nil, 1, "Blueprint calculation failed: %v", err)
@@ -134,7 +86,6 @@ var holotreeExportCmd = &cobra.Command{
 
 func init() {
 	holotreeCmd.AddCommand(holotreeExportCmd)
-	holotreeExportCmd.Flags().StringVarP(&specFile, "specification", "s", "", "Filename to use as export speficifaction in YAML format.")
 	holotreeExportCmd.Flags().StringVarP(&holozip, "zipfile", "z", "hololib.zip", "Name of zipfile to export.")
 	holotreeExportCmd.Flags().BoolVarP(&jsonFlag, "json", "j", false, "Output in JSON format")
 	holotreeExportCmd.Flags().StringVarP(&exportRobot, "robot", "r", "", "Full path to 'robot.yaml' configuration file to export as catalog. <optional>")

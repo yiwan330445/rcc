@@ -36,7 +36,7 @@ func makeDeltaHandler(queries Partqueries) http.HandlerFunc {
 			return
 		}
 
-		members := strings.Split(known, "\n")
+		membership := set.Membership(strings.Split(known, "\n"))
 
 		approved := make([]string, 0, 1000)
 		todo := bufio.NewReader(request.Body)
@@ -45,8 +45,8 @@ func makeDeltaHandler(queries Partqueries) http.HandlerFunc {
 			line, err := todo.ReadString('\n')
 			stopping := err == io.EOF
 			candidate := filepath.Base(strings.TrimSpace(line))
-			if len(candidate) > 0 {
-				if set.Member(members, candidate) {
+			if len(candidate) > 10 {
+				if membership[candidate] {
 					approved = append(approved, candidate)
 				} else {
 					common.Trace("DELTA: ignoring extra %q entry, not part of set!", candidate)
@@ -70,6 +70,17 @@ func makeDeltaHandler(queries Partqueries) http.HandlerFunc {
 
 		sink := zip.NewWriter(response)
 		defer sink.Close()
+
+		for _, member := range approved {
+			relative := htfs.RelativeDefaultLocation(member)
+			fullpath := htfs.ExactDefaultLocation(member)
+			err := operations.ZipAppend(sink, fullpath, relative)
+			if err != nil {
+				common.Debug("DELTA: error %v with %v -> %v", err, fullpath, relative)
+				return
+			}
+		}
+
 		fullpath := filepath.Join(common.HololibCatalogLocation(), catalog)
 		relative, err := filepath.Rel(common.HololibLocation(), fullpath)
 		if err != nil {
@@ -80,16 +91,6 @@ func makeDeltaHandler(queries Partqueries) http.HandlerFunc {
 		if err != nil {
 			common.Debug("DELTA: error %v", err)
 			return
-		}
-
-		for _, member := range approved {
-			relative := htfs.RelativeDefaultLocation(member)
-			fullpath := htfs.ExactDefaultLocation(member)
-			err = operations.ZipAppend(sink, fullpath, relative)
-			if err != nil {
-				common.Debug("DELTA: error %v with %v -> %v", err, fullpath, relative)
-				return
-			}
 		}
 	}
 }

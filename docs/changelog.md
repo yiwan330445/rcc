@@ -1,6 +1,16 @@
 # rcc change log
 
-## v11.35.5 (date: 8.12.2022) UNSTABLE
+## v11.35.6 (date: 14.12.2022) UNSTABLE
+
+- bug fix: ignoring dotfiles and directories in "pids" directory
+- added new `rcc holotree pull` command to do delta environment update request
+  to peercc (still incomplete, does not do automatic import of content)
+- on delta export zip, catalog will now come as last part of that zip from wire
+- added set membership map functionality (to make faster membership checks on
+  bigger member sets)
+- more failed parts of PoC removed (export specification and support functions)
+
+## v11.35.5 (date: 9.12.2022) UNSTABLE
 
 - fixed bug where last line of request was missing
 - trying to fix CodeQL security warning (user input was already filtered based

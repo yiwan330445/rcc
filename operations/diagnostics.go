@@ -212,8 +212,14 @@ func lockpidsCheck() []*common.DiagnosticCheck {
 	}
 	deadline := time.Now().Add(-12 * time.Hour)
 	for _, entry := range entries {
+		if strings.HasPrefix(entry.Name(), ".") {
+			continue
+		}
 		level, qualifier := statusWarning, "Pending"
 		info, err := entry.Info()
+		if info.IsDir() {
+			continue
+		}
 		if err == nil && info.ModTime().Before(deadline) {
 			level, qualifier = statusOk, "Stale(?)"
 		}

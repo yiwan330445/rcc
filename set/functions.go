@@ -48,6 +48,14 @@ func Member[T comparable](set []T, candidate T) bool {
 	return false
 }
 
+func Membership[T comparable](set []T) map[T]bool {
+	result := make(map[T]bool)
+	for _, item := range set {
+		result[item] = true
+	}
+	return result
+}
+
 func Update[T comparable](set []T, candidate T) ([]T, bool) {
 	if Member(set, candidate) {
 		return set, false
