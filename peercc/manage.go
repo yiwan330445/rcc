@@ -4,7 +4,6 @@ import (
 	"path/filepath"
 
 	"github.com/robocorp/rcc/common"
-	"github.com/robocorp/rcc/htfs"
 	"github.com/robocorp/rcc/pathlib"
 )
 
@@ -17,7 +16,7 @@ func cleanupHoldStorage(storage string) error {
 		return err
 	}
 	for _, filename := range filenames {
-		err = htfs.TryRemove("hold", filename)
+		err = pathlib.TryRemove("hold", filename)
 		if err != nil {
 			return err
 		}

@@ -50,10 +50,10 @@ func (it *WriteTarget) Execute() bool {
 		return false
 	}
 	defer target.Close()
-	common.Debug("- %v", it.Target)
+	common.Trace("- %v", it.Target)
 	_, err = io.Copy(target, source)
 	if err != nil {
-		common.Debug("  - failure: %v", err)
+		common.Debug("  - failure with %q, reason: %v", it.Target, err)
 	}
 	os.Chtimes(it.Target, it.Source.Modified, it.Source.Modified)
 	return err == nil
@@ -160,7 +160,7 @@ func (it *unzipper) Asset(name string) ([]byte, error) {
 }
 
 func (it *unzipper) Extract(directory string) error {
-	common.Debug("Extracting:")
+	common.Trace("Extracting:")
 	success := true
 	for _, entry := range it.reader.File {
 		if entry.FileInfo().IsDir() {
@@ -173,7 +173,7 @@ func (it *unzipper) Extract(directory string) error {
 		}
 		success = todo.Execute() && success
 	}
-	common.Debug("Done.")
+	common.Trace("Done.")
 	if !success {
 		return fmt.Errorf("Problems while unwrapping robot. Use --debug to see details.")
 	}

@@ -1,5 +1,14 @@
 # rcc change log
 
+## v11.35.7 (date: 15.12.2022)
+
+- this v11.35.x series adds new "peercc" executable and new holotree pull
+  subcommand to rcc; these are work in progress, and not ready for production
+  work yet; do not use, unless you know what you are doing
+- added automatic import of delta environment update data
+- tech: moved TryRemove, TryRemoveAll, and TryRename to pathlib
+- tech: some zipper log verbosity was moved from Debug to Trace level
+
 ## v11.35.6 (date: 14.12.2022) UNSTABLE
 
 - bug fix: ignoring dotfiles and directories in "pids" directory

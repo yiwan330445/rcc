@@ -3,6 +3,7 @@ package cmd
 import (
 	"github.com/robocorp/rcc/common"
 	"github.com/robocorp/rcc/htfs"
+	"github.com/robocorp/rcc/operations"
 	"github.com/robocorp/rcc/pretty"
 	"github.com/spf13/cobra"
 )
@@ -30,7 +31,7 @@ var holotreePullCmd = &cobra.Command{
 		present := tree.HasBlueprint(holotreeBlueprint)
 		if !present || forcePull {
 			catalog := htfs.CatalogName(hash)
-			err = htfs.Pull(remoteOrigin, catalog)
+			err = operations.PullCatalog(remoteOrigin, catalog)
 			pretty.Guard(err == nil, 3, "%s", err)
 		}
 		pretty.Ok()

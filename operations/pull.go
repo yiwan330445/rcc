@@ -1,4 +1,4 @@
-package htfs
+package operations
 
 import (
 	"bufio"
@@ -14,6 +14,7 @@ import (
 	"github.com/robocorp/rcc/cloud"
 	"github.com/robocorp/rcc/common"
 	"github.com/robocorp/rcc/fail"
+	"github.com/robocorp/rcc/htfs"
 	"github.com/robocorp/rcc/pathlib"
 	"github.com/robocorp/rcc/pretty"
 	"github.com/robocorp/rcc/settings"
@@ -36,7 +37,7 @@ func pullOriginFingerprints(origin, catalogName string) (fingerprints string, co
 		line, err := stream.ReadString('\n')
 		flat := strings.TrimSpace(line)
 		if len(flat) > 0 {
-			fullpath := ExactDefaultLocation(flat)
+			fullpath := htfs.ExactDefaultLocation(flat)
 			if !pathlib.IsFile(fullpath) {
 				collection = append(collection, flat)
 			}
@@ -74,6 +75,7 @@ func downloadMissingEnvironmentParts(origin, catalogName, selection string) (fil
 	out, err := os.Create(filename)
 	fail.On(err != nil, "Creating temporary file %q failed, reason: %v", filename, err)
 	defer out.Close()
+	defer pathlib.TryRemove("temporary", filename)
 
 	digest := sha256.New()
 	many := io.MultiWriter(out, digest)
@@ -85,23 +87,29 @@ func downloadMissingEnvironmentParts(origin, catalogName, selection string) (fil
 
 	sum := fmt.Sprintf("%02x", digest.Sum(nil))
 	finalname := filepath.Join(os.TempDir(), fmt.Sprintf("peercc_%s.zip", sum))
-	err = TryRename("delta", filename, finalname)
+	err = pathlib.TryRename("delta", filename, finalname)
 	fail.On(err != nil, "Rename %q -> %q failed, reason: %v", filename, finalname, err)
 
 	return finalname, nil
 }
 
-func Pull(origin, catalogName string) (err error) {
+func PullCatalog(origin, catalogName string) (err error) {
 	defer fail.Around(&err)
 
-	unknownSelected, _, err := pullOriginFingerprints(origin, catalogName)
+	common.Timeline("pull %q parts from %q", catalogName, origin)
+	unknownSelected, count, err := pullOriginFingerprints(origin, catalogName)
 	fail.On(err != nil, "%v", err)
 
+	common.Timeline("download %d parts + catalog from %q", count, origin)
 	filename, err := downloadMissingEnvironmentParts(origin, catalogName, unknownSelected)
 	fail.On(err != nil, "%v", err)
 
 	common.Debug("Temporary content based filename is: %q", filename)
-	common.Debug("FIXME: still missing automatic importing into hololib!")
+	defer pathlib.TryRemove("temporary", filename)
+
+	err = Unzip(common.HololibLocation(), filename, true, false)
+	fail.On(err != nil, "Failed to unzip %v to hololib, reason: %v", filename, err)
+	common.Timeline("environment pull completed")
 
 	return nil
 }

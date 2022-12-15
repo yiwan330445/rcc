@@ -3,6 +3,7 @@ package pathlib
 import (
 	"fmt"
 	"io/fs"
+	"math/rand"
 	"os"
 	"path/filepath"
 	"time"
@@ -83,6 +84,54 @@ func Modtime(pathname string) (time.Time, error) {
 		return time.Now(), err
 	}
 	return stat.ModTime(), nil
+}
+
+func TryRemove(context, target string) (err error) {
+	for delay := 0; delay < 5; delay += 1 {
+		time.Sleep(time.Duration(delay*100) * time.Millisecond)
+		err = os.Remove(target)
+		if err == nil {
+			return nil
+		}
+	}
+	return fmt.Errorf("Remove failure [%s, %s, %s], reason: %s", context, common.ControllerIdentity(), common.HolotreeSpace, err)
+}
+
+func TryRemoveAll(context, target string) (err error) {
+	for delay := 0; delay < 5; delay += 1 {
+		time.Sleep(time.Duration(delay*100) * time.Millisecond)
+		err = os.RemoveAll(target)
+		if err == nil {
+			return nil
+		}
+	}
+	return fmt.Errorf("RemoveAll failure [%s, %s, %s], reason: %s", context, common.ControllerIdentity(), common.HolotreeSpace, err)
+}
+
+func TryRename(context, source, target string) (err error) {
+	for delay := 0; delay < 5; delay += 1 {
+		time.Sleep(time.Duration(delay*100) * time.Millisecond)
+		err = os.Rename(source, target)
+		if err == nil {
+			return nil
+		}
+	}
+	common.Debug("Heads up: rename about to fail [%q -> %q], reason: %s", source, target, err)
+	origin := "source"
+	intermediate := fmt.Sprintf("%s.%d_%x", source, os.Getpid(), rand.Intn(4096))
+	err = os.Rename(source, intermediate)
+	if err == nil {
+		source = intermediate
+		origin = "target"
+	}
+	for delay := 0; delay < 5; delay += 1 {
+		time.Sleep(time.Duration(delay*100) * time.Millisecond)
+		err = os.Rename(source, target)
+		if err == nil {
+			return nil
+		}
+	}
+	return fmt.Errorf("Rename failure [%s, %s, %s, %s], reason: %s", context, common.ControllerIdentity(), common.HolotreeSpace, origin, err)
 }
 
 func hasCorrectMode(stat fs.FileInfo, expected fs.FileMode) bool {
