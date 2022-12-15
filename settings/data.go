@@ -160,16 +160,16 @@ func (it *Settings) AsJson() ([]byte, error) {
 
 func diagnoseUrl(link, label string, diagnose common.Diagnoser, correct bool) bool {
 	if len(link) == 0 {
-		diagnose.Fatal("", "required %q URL is missing.", label)
+		diagnose.Fatal(0, "", "required %q URL is missing.", label)
 		return false
 	}
 	if !strings.HasPrefix(link, httpsPrefix) {
-		diagnose.Fatal("", "%q URL %q is does not start with %q prefix.", label, link, httpsPrefix)
+		diagnose.Fatal(0, "", "%q URL %q is does not start with %q prefix.", label, link, httpsPrefix)
 		return false
 	}
 	_, err := url.Parse(link)
 	if err != nil {
-		diagnose.Fatal("", "%q URL %q cannot be parsed, reason %v.", label, link, err)
+		diagnose.Fatal(0, "", "%q URL %q cannot be parsed, reason %v.", label, link, err)
 		return false
 	}
 	return correct
@@ -187,14 +187,14 @@ func (it *Settings) CriticalEnvironmentDiagnostics(target *common.DiagnosticStat
 	diagnose := target.Diagnose("settings.yaml")
 	correct := true
 	if it.Endpoints == nil {
-		diagnose.Fatal("", "endpoints section is totally missing")
+		diagnose.Fatal(0, "", "endpoints section is totally missing")
 		correct = false
 	} else {
 		correct = diagnoseUrl(it.Endpoints["cloud-api"], "endpoints/cloud-api", diagnose, correct)
 		correct = diagnoseUrl(it.Endpoints["downloads"], "endpoints/downloads", diagnose, correct)
 	}
 	if correct {
-		diagnose.Ok("Toplevel settings are ok.")
+		diagnose.Ok(0, "Toplevel settings are ok.")
 	}
 }
 
@@ -202,11 +202,11 @@ func (it *Settings) Diagnostics(target *common.DiagnosticStatus) {
 	diagnose := target.Diagnose("Settings")
 	correct := true
 	if it.Certificates == nil {
-		diagnose.Warning("", "settings.yaml: certificates section is totally missing")
+		diagnose.Warning(0, "", "settings.yaml: certificates section is totally missing")
 		correct = false
 	}
 	if it.Endpoints == nil {
-		diagnose.Warning("", "settings.yaml: endpoints section is totally missing")
+		diagnose.Warning(0, "", "settings.yaml: endpoints section is totally missing")
 		correct = false
 	} else {
 		correct = diagnoseUrl(it.Endpoints["cloud-api"], "endpoints/cloud-api", diagnose, correct)
@@ -222,11 +222,11 @@ func (it *Settings) Diagnostics(target *common.DiagnosticStatus) {
 		correct = diagnoseOptionalUrl(it.Endpoints["pypi-trusted"], "endpoints/pypi-trusted", diagnose, correct)
 	}
 	if it.Meta == nil {
-		diagnose.Warning("", "settings.yaml: meta section is totally missing")
+		diagnose.Warning(0, "", "settings.yaml: meta section is totally missing")
 		correct = false
 	}
 	if correct {
-		diagnose.Ok("Toplevel settings are ok.")
+		diagnose.Ok(0, "Toplevel settings are ok.")
 	}
 }
 

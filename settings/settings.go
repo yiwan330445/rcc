@@ -105,9 +105,9 @@ func CriticalEnvironmentSettingsCheck() {
 	config.CriticalEnvironmentDiagnostics(result)
 	diagnose := result.Diagnose("Settings")
 	if HasCustomSettings() {
-		diagnose.Ok("Uses custom settings at %q.", common.SettingsFile())
+		diagnose.Ok(0, "Uses custom settings at %q.", common.SettingsFile())
 	} else {
-		diagnose.Ok("Uses builtin settings.")
+		diagnose.Ok(0, "Uses builtin settings.")
 	}
 	fatal, fail, _, _ := result.Counts()
 	if (fatal + fail) > 0 {

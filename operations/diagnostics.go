@@ -154,17 +154,19 @@ func longPathSupportCheck() *common.DiagnosticCheck {
 	supportLongPathUrl := settings.Global.DocsLink("troubleshooting/windows-long-path")
 	if conda.HasLongPathSupport() {
 		return &common.DiagnosticCheck{
-			Type:    "OS",
-			Status:  statusOk,
-			Message: "Supports long enough paths.",
-			Link:    supportLongPathUrl,
+			Type:     "OS",
+			Category: common.CategoryLongPath,
+			Status:   statusOk,
+			Message:  "Supports long enough paths.",
+			Link:     supportLongPathUrl,
 		}
 	}
 	return &common.DiagnosticCheck{
-		Type:    "OS",
-		Status:  statusFail,
-		Message: "Does not support long path names!",
-		Link:    supportLongPathUrl,
+		Type:     "OS",
+		Category: common.CategoryLongPath,
+		Status:   statusFail,
+		Message:  "Does not support long path names!",
+		Link:     supportLongPathUrl,
 	}
 }
 
@@ -178,20 +180,22 @@ func lockfilesCheck() []*common.DiagnosticCheck {
 		err := os.WriteFile(filename, content, 0o666)
 		if err != nil {
 			result = append(result, &common.DiagnosticCheck{
-				Type:    "OS",
-				Status:  statusFail,
-				Message: fmt.Sprintf("Lock file %q write failed, reason: %v", identity, err),
-				Link:    support,
+				Type:     "OS",
+				Category: common.CategoryLockFile,
+				Status:   statusFail,
+				Message:  fmt.Sprintf("Lock file %q write failed, reason: %v", identity, err),
+				Link:     support,
 			})
 			failed = true
 		}
 	}
 	if !failed {
 		result = append(result, &common.DiagnosticCheck{
-			Type:    "OS",
-			Status:  statusOk,
-			Message: fmt.Sprintf("%d lockfiles all seem to work correctly (for this user).", len(files)),
-			Link:    support,
+			Type:     "OS",
+			Category: common.CategoryLockFile,
+			Status:   statusOk,
+			Message:  fmt.Sprintf("%d lockfiles all seem to work correctly (for this user).", len(files)),
+			Link:     support,
 		})
 	}
 	return result
@@ -203,10 +207,11 @@ func lockpidsCheck() []*common.DiagnosticCheck {
 	entries, err := os.ReadDir(common.HololibPids())
 	if err != nil {
 		result = append(result, &common.DiagnosticCheck{
-			Type:    "OS",
-			Status:  statusWarning,
-			Message: fmt.Sprintf("Problem with pids directory: %q, reason: %v", common.HololibPids(), err),
-			Link:    support,
+			Type:     "OS",
+			Category: common.CategoryLockPid,
+			Status:   statusWarning,
+			Message:  fmt.Sprintf("Problem with pids directory: %q, reason: %v", common.HololibPids(), err),
+			Link:     support,
 		})
 		return result
 	}
@@ -224,18 +229,20 @@ func lockpidsCheck() []*common.DiagnosticCheck {
 			level, qualifier = statusOk, "Stale(?)"
 		}
 		result = append(result, &common.DiagnosticCheck{
-			Type:    "OS",
-			Status:  level,
-			Message: fmt.Sprintf("%s lock file info: %q", qualifier, entry.Name()),
-			Link:    support,
+			Type:     "OS",
+			Category: common.CategoryLockPid,
+			Status:   level,
+			Message:  fmt.Sprintf("%s lock file info: %q", qualifier, entry.Name()),
+			Link:     support,
 		})
 	}
 	if len(result) == 0 {
 		result = append(result, &common.DiagnosticCheck{
-			Type:    "OS",
-			Status:  statusOk,
-			Message: "No pending lock files detected.",
-			Link:    support,
+			Type:     "OS",
+			Category: common.CategoryLockPid,
+			Status:   statusOk,
+			Message:  "No pending lock files detected.",
+			Link:     support,
 		})
 	}
 	return result
@@ -246,17 +253,19 @@ func anyPathCheck(key string) *common.DiagnosticCheck {
 	anyPath := os.Getenv(key)
 	if len(anyPath) > 0 {
 		return &common.DiagnosticCheck{
-			Type:    "OS",
-			Status:  statusWarning,
-			Message: fmt.Sprintf("%s is set to %q. This may cause problems.", key, anyPath),
-			Link:    supportGeneralUrl,
+			Type:     "OS",
+			Category: common.CategoryPathCheck,
+			Status:   statusWarning,
+			Message:  fmt.Sprintf("%s is set to %q. This may cause problems.", key, anyPath),
+			Link:     supportGeneralUrl,
 		}
 	}
 	return &common.DiagnosticCheck{
-		Type:    "OS",
-		Status:  statusOk,
-		Message: fmt.Sprintf("%s is not set, which is good.", key),
-		Link:    supportGeneralUrl,
+		Type:     "OS",
+		Category: common.CategoryPathCheck,
+		Status:   statusOk,
+		Message:  fmt.Sprintf("%s is not set, which is good.", key),
+		Link:     supportGeneralUrl,
 	}
 }
 
@@ -265,17 +274,19 @@ func verifySharedDirectory(fullpath string) *common.DiagnosticCheck {
 	supportGeneralUrl := settings.Global.DocsLink("troubleshooting")
 	if !shared {
 		return &common.DiagnosticCheck{
-			Type:    "OS",
-			Status:  statusWarning,
-			Message: fmt.Sprintf("%q is not shared. This may cause problems.", fullpath),
-			Link:    supportGeneralUrl,
+			Type:     "OS",
+			Category: common.CategoryHolotreeShared,
+			Status:   statusWarning,
+			Message:  fmt.Sprintf("%q is not shared. This may cause problems.", fullpath),
+			Link:     supportGeneralUrl,
 		}
 	}
 	return &common.DiagnosticCheck{
-		Type:    "OS",
-		Status:  statusOk,
-		Message: fmt.Sprintf("%q is shared, which is ok.", fullpath),
-		Link:    supportGeneralUrl,
+		Type:     "OS",
+		Category: common.CategoryHolotreeShared,
+		Status:   statusOk,
+		Message:  fmt.Sprintf("%q is shared, which is ok.", fullpath),
+		Link:     supportGeneralUrl,
 	}
 }
 
@@ -283,17 +294,19 @@ func robocorpHomeCheck() *common.DiagnosticCheck {
 	supportGeneralUrl := settings.Global.DocsLink("troubleshooting")
 	if !conda.ValidLocation(common.RobocorpHome()) {
 		return &common.DiagnosticCheck{
-			Type:    "RPA",
-			Status:  statusFatal,
-			Message: fmt.Sprintf("ROBOCORP_HOME (%s) contains characters that makes RPA fail.", common.RobocorpHome()),
-			Link:    supportGeneralUrl,
+			Type:     "RPA",
+			Category: common.CategoryRobocorpHome,
+			Status:   statusFatal,
+			Message:  fmt.Sprintf("ROBOCORP_HOME (%s) contains characters that makes RPA fail.", common.RobocorpHome()),
+			Link:     supportGeneralUrl,
 		}
 	}
 	return &common.DiagnosticCheck{
-		Type:    "RPA",
-		Status:  statusOk,
-		Message: fmt.Sprintf("ROBOCORP_HOME (%s) is good enough.", common.RobocorpHome()),
-		Link:    supportGeneralUrl,
+		Type:     "RPA",
+		Category: common.CategoryRobocorpHome,
+		Status:   statusOk,
+		Message:  fmt.Sprintf("ROBOCORP_HOME (%s) is good enough.", common.RobocorpHome()),
+		Link:     supportGeneralUrl,
 	}
 }
 
@@ -302,17 +315,19 @@ func dnsLookupCheck(site string) *common.DiagnosticCheck {
 	found, err := net.LookupHost(site)
 	if err != nil {
 		return &common.DiagnosticCheck{
-			Type:    "network",
-			Status:  statusFail,
-			Message: fmt.Sprintf("DNS lookup %q failed: %v", site, err),
-			Link:    supportNetworkUrl,
+			Type:     "network",
+			Category: common.CategoryNetworkDNS,
+			Status:   statusFail,
+			Message:  fmt.Sprintf("DNS lookup %q failed: %v", site, err),
+			Link:     supportNetworkUrl,
 		}
 	}
 	return &common.DiagnosticCheck{
-		Type:    "network",
-		Status:  statusOk,
-		Message: fmt.Sprintf("%s found: %v", site, found),
-		Link:    supportNetworkUrl,
+		Type:     "network",
+		Category: common.CategoryNetworkDNS,
+		Status:   statusOk,
+		Message:  fmt.Sprintf("%s found: %v", site, found),
+		Link:     supportNetworkUrl,
 	}
 }
 
@@ -321,27 +336,30 @@ func condaHeadCheck() *common.DiagnosticCheck {
 	client, err := cloud.NewClient(settings.Global.CondaLink(""))
 	if err != nil {
 		return &common.DiagnosticCheck{
-			Type:    "network",
-			Status:  statusWarning,
-			Message: fmt.Sprintf("%v: %v", settings.Global.CondaLink(""), err),
-			Link:    supportNetworkUrl,
+			Type:     "network",
+			Category: common.CategoryNetworkLink,
+			Status:   statusWarning,
+			Message:  fmt.Sprintf("%v: %v", settings.Global.CondaLink(""), err),
+			Link:     supportNetworkUrl,
 		}
 	}
 	request := client.NewRequest(condaCanaryUrl)
 	response := client.Head(request)
 	if response.Status >= 400 {
 		return &common.DiagnosticCheck{
-			Type:    "network",
-			Status:  statusWarning,
-			Message: fmt.Sprintf("Conda canary download failed: %d", response.Status),
-			Link:    supportNetworkUrl,
+			Type:     "network",
+			Category: common.CategoryNetworkHEAD,
+			Status:   statusWarning,
+			Message:  fmt.Sprintf("Conda canary download failed: %d", response.Status),
+			Link:     supportNetworkUrl,
 		}
 	}
 	return &common.DiagnosticCheck{
-		Type:    "network",
-		Status:  statusOk,
-		Message: fmt.Sprintf("Conda canary download successful: %s", settings.Global.CondaLink(condaCanaryUrl)),
-		Link:    supportNetworkUrl,
+		Type:     "network",
+		Category: common.CategoryNetworkHEAD,
+		Status:   statusOk,
+		Message:  fmt.Sprintf("Conda canary download successful: %s", settings.Global.CondaLink(condaCanaryUrl)),
+		Link:     supportNetworkUrl,
 	}
 }
 
@@ -350,27 +368,30 @@ func pypiHeadCheck() *common.DiagnosticCheck {
 	client, err := cloud.NewClient(settings.Global.PypiLink(""))
 	if err != nil {
 		return &common.DiagnosticCheck{
-			Type:    "network",
-			Status:  statusWarning,
-			Message: fmt.Sprintf("%v: %v", settings.Global.PypiLink(""), err),
-			Link:    supportNetworkUrl,
+			Type:     "network",
+			Category: common.CategoryNetworkLink,
+			Status:   statusWarning,
+			Message:  fmt.Sprintf("%v: %v", settings.Global.PypiLink(""), err),
+			Link:     supportNetworkUrl,
 		}
 	}
 	request := client.NewRequest(pypiCanaryUrl)
 	response := client.Head(request)
 	if response.Status >= 400 {
 		return &common.DiagnosticCheck{
-			Type:    "network",
-			Status:  statusWarning,
-			Message: fmt.Sprintf("PyPI canary download failed: %d", response.Status),
-			Link:    supportNetworkUrl,
+			Type:     "network",
+			Category: common.CategoryNetworkHEAD,
+			Status:   statusWarning,
+			Message:  fmt.Sprintf("PyPI canary download failed: %d", response.Status),
+			Link:     supportNetworkUrl,
 		}
 	}
 	return &common.DiagnosticCheck{
-		Type:    "network",
-		Status:  statusOk,
-		Message: fmt.Sprintf("PyPI canary download successful: %s", settings.Global.PypiLink(pypiCanaryUrl)),
-		Link:    supportNetworkUrl,
+		Type:     "network",
+		Category: common.CategoryNetworkHEAD,
+		Status:   statusOk,
+		Message:  fmt.Sprintf("PyPI canary download successful: %s", settings.Global.PypiLink(pypiCanaryUrl)),
+		Link:     supportNetworkUrl,
 	}
 }
 
@@ -379,27 +400,30 @@ func canaryDownloadCheck() *common.DiagnosticCheck {
 	client, err := cloud.NewClient(settings.Global.DownloadsLink(""))
 	if err != nil {
 		return &common.DiagnosticCheck{
-			Type:    "network",
-			Status:  statusFail,
-			Message: fmt.Sprintf("%v: %v", settings.Global.DownloadsLink(""), err),
-			Link:    supportNetworkUrl,
+			Type:     "network",
+			Category: common.CategoryNetworkLink,
+			Status:   statusFail,
+			Message:  fmt.Sprintf("%v: %v", settings.Global.DownloadsLink(""), err),
+			Link:     supportNetworkUrl,
 		}
 	}
 	request := client.NewRequest(canaryUrl)
 	response := client.Get(request)
 	if response.Status != 200 || string(response.Body) != "Used to testing connections" {
 		return &common.DiagnosticCheck{
-			Type:    "network",
-			Status:  statusFail,
-			Message: fmt.Sprintf("Canary download failed: %d: %s", response.Status, response.Body),
-			Link:    supportNetworkUrl,
+			Type:     "network",
+			Category: common.CategoryNetworkCanary,
+			Status:   statusFail,
+			Message:  fmt.Sprintf("Canary download failed: %d: %s", response.Status, response.Body),
+			Link:     supportNetworkUrl,
 		}
 	}
 	return &common.DiagnosticCheck{
-		Type:    "network",
-		Status:  statusOk,
-		Message: fmt.Sprintf("Canary download successful: %s", settings.Global.DownloadsLink(canaryUrl)),
-		Link:    supportNetworkUrl,
+		Type:     "network",
+		Category: common.CategoryNetworkCanary,
+		Status:   statusOk,
+		Message:  fmt.Sprintf("Canary download successful: %s", settings.Global.DownloadsLink(canaryUrl)),
+		Link:     supportNetworkUrl,
 	}
 }
 
@@ -483,18 +507,18 @@ func diagnoseFilesUnmarshal(tool Unmarshaler, label, rootdir string, paths []str
 		}
 		content, err := os.ReadFile(fullpath)
 		if err != nil {
-			diagnose.Fail(supportGeneralUrl, "Problem reading %s file %q: %v", label, tail, err)
+			diagnose.Fail(0, supportGeneralUrl, "Problem reading %s file %q: %v", label, tail, err)
 			success = false
 			continue
 		}
 		err = tool(content, &canary)
 		if err != nil {
-			diagnose.Fail(supportGeneralUrl, "Problem parsing %s file %q: %v", label, tail, err)
+			diagnose.Fail(0, supportGeneralUrl, "Problem parsing %s file %q: %v", label, tail, err)
 			success = false
 		}
 	}
 	if investigated && success {
-		diagnose.Ok("%s files are readable and can be parsed.", label)
+		diagnose.Ok(0, "%s files are readable and can be parsed.", label)
 	}
 }
 
@@ -511,7 +535,7 @@ func addRobotDiagnostics(robotfile string, target *common.DiagnosticStatus, prod
 	config, err := robot.LoadRobotYaml(robotfile, false)
 	diagnose := target.Diagnose("Robot")
 	if err != nil {
-		diagnose.Fail(supportGeneralUrl, "About robot.yaml: %v", err)
+		diagnose.Fail(0, supportGeneralUrl, "About robot.yaml: %v", err)
 	} else {
 		config.Diagnostics(target, production)
 	}

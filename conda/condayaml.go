@@ -478,65 +478,65 @@ func (it *Environment) Diagnostics(target *common.DiagnosticStatus, production b
 	for index, channel := range it.Channels {
 		if channel == "defaults" {
 			defaultsPostion = index
-			diagnose.Warning("", "Try to avoid defaults channel, and prefer using conda-forge instead.")
+			diagnose.Warning(0, "", "Try to avoid defaults channel, and prefer using conda-forge instead.")
 			ok = false
 		}
 	}
 	if defaultsPostion == 0 && countChannels > 1 {
-		diagnose.Warning("", "Try to avoid putting defaults channel as first channel.")
+		diagnose.Warning(0, "", "Try to avoid putting defaults channel as first channel.")
 		ok = false
 	}
 	if countChannels > 1 {
-		diagnose.Warning("", "Try to avoid multiple channel. They may cause problems with code compatibility.")
+		diagnose.Warning(0, "", "Try to avoid multiple channel. They may cause problems with code compatibility.")
 		ok = false
 	}
 	if ok {
-		diagnose.Ok("Channels in conda.yaml are ok.")
+		diagnose.Ok(0, "Channels in conda.yaml are ok.")
 	}
 	ok = true
 	for _, dependency := range it.Conda {
 		presentation := dependency.Representation()
 		if packages[presentation] {
-			notice("", "Dependency %q seems to be duplicate of previous dependency.", dependency.Original)
+			notice(0, "", "Dependency %q seems to be duplicate of previous dependency.", dependency.Original)
 		}
 		packages[presentation] = true
 		if strings.Contains(dependency.Versions, "*") || len(dependency.Qualifier) == 0 || len(dependency.Versions) == 0 {
-			notice("", "Floating conda dependency %q should be bound to exact version before taking robot into production.", dependency.Original)
+			notice(0, "", "Floating conda dependency %q should be bound to exact version before taking robot into production.", dependency.Original)
 			ok = false
 			floating = true
 		}
 		if len(dependency.Qualifier) > 0 && !(dependency.Qualifier == "==" || dependency.Qualifier == "=") {
-			diagnose.Fail("", "Conda dependency %q must use '==' or '=' for version declaration.", dependency.Original)
+			diagnose.Fail(0, "", "Conda dependency %q must use '==' or '=' for version declaration.", dependency.Original)
 			ok = false
 			floating = true
 		}
 	}
 	if ok {
-		diagnose.Ok("Conda dependencies in conda.yaml are ok.")
+		diagnose.Ok(0, "Conda dependencies in conda.yaml are ok.")
 	}
 	ok = true
 	for _, dependency := range it.Pip {
 		presentation := dependency.Representation()
 		if packages[presentation] {
-			notice("", "Dependency %q seems to be duplicate of previous dependency.", dependency.Original)
+			notice(0, "", "Dependency %q seems to be duplicate of previous dependency.", dependency.Original)
 		}
 		packages[presentation] = true
 		if strings.Contains(dependency.Versions, "*") || len(dependency.Qualifier) == 0 || len(dependency.Versions) == 0 {
-			notice("", "Floating pip dependency %q should be bound to exact version before taking robot into production.", dependency.Original)
+			notice(0, "", "Floating pip dependency %q should be bound to exact version before taking robot into production.", dependency.Original)
 			ok = false
 			floating = true
 		}
 		if len(dependency.Qualifier) > 0 && dependency.Qualifier != "==" {
-			diagnose.Fail("", "Pip dependency %q must use '==' for version declaration.", dependency.Original)
+			diagnose.Fail(0, "", "Pip dependency %q must use '==' for version declaration.", dependency.Original)
 			ok = false
 			floating = true
 		}
 	}
 	if ok {
-		diagnose.Ok("Pip dependencies in conda.yaml are ok.")
+		diagnose.Ok(0, "Pip dependencies in conda.yaml are ok.")
 	}
 	if floating {
-		diagnose.Warning("", "Floating dependencies in Robocorp Cloud containers will be slow, because floating environments cannot be cached.")
+		diagnose.Warning(0, "", "Floating dependencies in Robocorp Cloud containers will be slow, because floating environments cannot be cached.")
 	}
 }
 

@@ -98,15 +98,15 @@ func (it *robot) relink() {
 
 func (it *robot) diagnoseTasks(diagnose common.Diagnoser) {
 	if it.Tasks == nil {
-		diagnose.Fail("", "Missing 'tasks:' from robot.yaml.")
+		diagnose.Fail(0, "", "Missing 'tasks:' from robot.yaml.")
 		return
 	}
 	ok := true
 	if len(it.Tasks) == 0 {
-		diagnose.Fail("", "There must be at least one task defined in 'tasks:' section in robot.yaml.")
+		diagnose.Fail(0, "", "There must be at least one task defined in 'tasks:' section in robot.yaml.")
 		ok = false
 	} else {
-		diagnose.Ok("Tasks are defined in robot.yaml")
+		diagnose.Ok(0, "Tasks are defined in robot.yaml")
 	}
 	for name, task := range it.Tasks {
 		count := 0
@@ -120,12 +120,12 @@ func (it *robot) diagnoseTasks(diagnose common.Diagnoser) {
 			count += 1
 		}
 		if count != 1 {
-			diagnose.Fail("", "In robot.yaml, task '%s' needs exactly one of robotTaskName/shell/command definition!", name)
+			diagnose.Fail(0, "", "In robot.yaml, task '%s' needs exactly one of robotTaskName/shell/command definition!", name)
 			ok = false
 		}
 	}
 	if ok {
-		diagnose.Ok("Each task has exactly one definition.")
+		diagnose.Ok(0, "Each task has exactly one definition.")
 	}
 }
 
@@ -133,48 +133,48 @@ func (it *robot) diagnoseVariousPaths(diagnose common.Diagnoser) {
 	ok := true
 	for _, path := range it.Path {
 		if filepath.IsAbs(path) {
-			diagnose.Fail("", "PATH entry %q seems to be absolute, which makes robot machine dependent.", path)
+			diagnose.Fail(0, "", "PATH entry %q seems to be absolute, which makes robot machine dependent.", path)
 			ok = false
 		}
 	}
 	if ok {
-		diagnose.Ok("PATH settings in robot.yaml are ok.")
+		diagnose.Ok(0, "PATH settings in robot.yaml are ok.")
 	}
 	ok = true
 	for _, path := range it.Pythonpath {
 		if filepath.IsAbs(path) {
-			diagnose.Fail("", "PYTHONPATH entry %q seems to be absolute, which makes robot machine dependent.", path)
+			diagnose.Fail(0, "", "PYTHONPATH entry %q seems to be absolute, which makes robot machine dependent.", path)
 			ok = false
 		}
 	}
 	if ok {
-		diagnose.Ok("PYTHONPATH settings in robot.yaml are ok.")
+		diagnose.Ok(0, "PYTHONPATH settings in robot.yaml are ok.")
 	}
 	ok = true
 	if it.Ignored == nil || len(it.Ignored) == 0 {
-		diagnose.Warning("", "No ignoreFiles defined, so everything ends up inside robot.zip file.")
+		diagnose.Warning(0, "", "No ignoreFiles defined, so everything ends up inside robot.zip file.")
 		ok = false
 	} else {
 		for at, path := range it.Ignored {
 			if len(strings.TrimSpace(path)) == 0 {
-				diagnose.Fail("", "there is empty entry in ignoreFiles at position %d", at+1)
+				diagnose.Fail(0, "", "there is empty entry in ignoreFiles at position %d", at+1)
 				ok = false
 				continue
 			}
 			if filepath.IsAbs(path) {
-				diagnose.Fail("", "ignoreFiles entry %q seems to be absolute, which makes robot machine dependent.", path)
+				diagnose.Fail(0, "", "ignoreFiles entry %q seems to be absolute, which makes robot machine dependent.", path)
 				ok = false
 			}
 		}
 		for _, path := range it.IgnoreFiles() {
 			if !pathlib.IsFile(path) {
-				diagnose.Fail("", "ignoreFiles entry %q is not a file.", path)
+				diagnose.Fail(0, "", "ignoreFiles entry %q is not a file.", path)
 				ok = false
 			}
 		}
 	}
 	if ok {
-		diagnose.Ok("ignoreFiles settings in robot.yaml are ok.")
+		diagnose.Ok(0, "ignoreFiles settings in robot.yaml are ok.")
 	}
 }
 
@@ -183,24 +183,24 @@ func (it *robot) Diagnostics(target *common.DiagnosticStatus, production bool) {
 	it.diagnoseTasks(diagnose)
 	it.diagnoseVariousPaths(diagnose)
 	if it.Artifacts == "" {
-		diagnose.Fail("", "In robot.yaml, 'artifactsDir:' is required!")
+		diagnose.Fail(0, "", "In robot.yaml, 'artifactsDir:' is required!")
 	} else {
 		if filepath.IsAbs(it.Artifacts) {
-			diagnose.Fail("", "artifactDir %q seems to be absolute, which makes robot machine dependent.", it.Artifacts)
+			diagnose.Fail(0, "", "artifactDir %q seems to be absolute, which makes robot machine dependent.", it.Artifacts)
 		} else {
-			diagnose.Ok("Artifacts directory defined in robot.yaml")
+			diagnose.Ok(0, "Artifacts directory defined in robot.yaml")
 		}
 	}
 	if it.Conda == "" {
-		diagnose.Ok("In robot.yaml, 'condaConfigFile:' is missing. So this is shell robot.")
+		diagnose.Ok(0, "In robot.yaml, 'condaConfigFile:' is missing. So this is shell robot.")
 	} else {
 		if filepath.IsAbs(it.Conda) {
-			diagnose.Fail("", "condaConfigFile %q seems to be absolute, which makes robot machine dependent.", it.Artifacts)
+			diagnose.Fail(0, "", "condaConfigFile %q seems to be absolute, which makes robot machine dependent.", it.Artifacts)
 		} else {
-			diagnose.Ok("In robot.yaml, 'condaConfigFile:' is present. So this is python robot.")
+			diagnose.Ok(0, "In robot.yaml, 'condaConfigFile:' is present. So this is python robot.")
 			condaEnv, err := conda.ReadCondaYaml(it.CondaConfigFile())
 			if err != nil {
-				diagnose.Fail("", "From robot.yaml, loading conda.yaml failed with: %v", err)
+				diagnose.Fail(0, "", "From robot.yaml, loading conda.yaml failed with: %v", err)
 			} else {
 				condaEnv.Diagnostics(target, production)
 			}
@@ -219,7 +219,7 @@ func (it *robot) Diagnostics(target *common.DiagnosticStatus, production bool) {
 		dependencies = "missing"
 	} else {
 		if it.VerifyCondaDependencies() {
-			diagnose.Ok("Dependencies in conda.yaml and dependencies.yaml match.")
+			diagnose.Ok(0, "Dependencies in conda.yaml and dependencies.yaml match.")
 		}
 	}
 	target.Details["robot-dependencies-yaml"] = dependencies

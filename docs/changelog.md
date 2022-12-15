@@ -1,5 +1,10 @@
 # rcc change log
 
+## v11.36.0 (date: 15.12.2022)
+
+- added category field into diagnostics JSON output, to support applications
+  to report better diagnostics messages
+
 ## v11.35.7 (date: 15.12.2022)
 
 - this v11.35.x series adds new "peercc" executable and new holotree pull
