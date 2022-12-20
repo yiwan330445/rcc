@@ -3,6 +3,7 @@ package common
 import (
 	"fmt"
 	"os"
+	"runtime"
 	"sync"
 	"time"
 )
@@ -94,6 +95,7 @@ func Stdout(format string, details ...interface{}) {
 func WaitLogs() {
 	defer Timeline("wait logs done")
 
+	runtime.Gosched()
 	logbarrier.Wait()
 }
 

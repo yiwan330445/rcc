@@ -173,10 +173,15 @@ func longPathSupportCheck() *common.DiagnosticCheck {
 func lockfilesCheck() []*common.DiagnosticCheck {
 	content := []byte(fmt.Sprintf("lock check %s @%d", common.Version, common.When))
 	files := lockfiles()
-	result := make([]*common.DiagnosticCheck, 0, len(files))
+	count := len(files)
+	result := make([]*common.DiagnosticCheck, 0, count)
 	support := settings.Global.DocsLink("troubleshooting")
 	failed := false
 	for identity, filename := range files {
+		if !pathlib.Exists(filepath.Dir(filename)) {
+			common.Trace("Wont check lock writing on %q (%s), since directory does not exist.", filename, identity)
+			continue
+		}
 		err := os.WriteFile(filename, content, 0o666)
 		if err != nil {
 			result = append(result, &common.DiagnosticCheck{
@@ -194,7 +199,7 @@ func lockfilesCheck() []*common.DiagnosticCheck {
 			Type:     "OS",
 			Category: common.CategoryLockFile,
 			Status:   statusOk,
-			Message:  fmt.Sprintf("%d lockfiles all seem to work correctly (for this user).", len(files)),
+			Message:  fmt.Sprintf("%d lockfiles all seem to work correctly (for this user).", count),
 			Link:     support,
 		})
 	}
@@ -204,35 +209,28 @@ func lockfilesCheck() []*common.DiagnosticCheck {
 func lockpidsCheck() []*common.DiagnosticCheck {
 	support := settings.Global.DocsLink("troubleshooting")
 	result := []*common.DiagnosticCheck{}
-	entries, err := os.ReadDir(common.HololibPids())
+	entries, err := pathlib.LoadLockpids()
 	if err != nil {
 		result = append(result, &common.DiagnosticCheck{
 			Type:     "OS",
 			Category: common.CategoryLockPid,
 			Status:   statusWarning,
-			Message:  fmt.Sprintf("Problem with pids directory: %q, reason: %v", common.HololibPids(), err),
+			Message:  fmt.Sprintf("Problem loading lock pids, reason: %v", err),
 			Link:     support,
 		})
 		return result
 	}
-	deadline := time.Now().Add(-12 * time.Hour)
+	pid := os.Getpid()
 	for _, entry := range entries {
-		if strings.HasPrefix(entry.Name(), ".") {
-			continue
-		}
-		level, qualifier := statusWarning, "Pending"
-		info, err := entry.Info()
-		if info.IsDir() {
-			continue
-		}
-		if err == nil && info.ModTime().Before(deadline) {
-			level, qualifier = statusOk, "Stale(?)"
+		level := statusWarning
+		if entry.ProcessID == pid {
+			level = statusOk
 		}
 		result = append(result, &common.DiagnosticCheck{
 			Type:     "OS",
 			Category: common.CategoryLockPid,
 			Status:   level,
-			Message:  fmt.Sprintf("%s lock file info: %q", qualifier, entry.Name()),
+			Message:  entry.Message(),
 			Link:     support,
 		})
 	}

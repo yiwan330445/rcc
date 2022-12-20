@@ -1,5 +1,15 @@
 # rcc change log
 
+## v11.36.1 (date: 20.12.2022)
+
+- bugfix: diagnostics fail on new machine to touch lock files when directory
+  does not exist, this closes #43
+- bugfix: stale lock pid files are shown too often, this closes #42
+- diagnostics will now show hopefully more human friendly message when active
+  locks are detected
+- added more runtime.Gosched calls to enable background go routines to have
+  chance to finish before application closes
+
 ## v11.36.0 (date: 15.12.2022)
 
 - added category field into diagnostics JSON output, to support applications

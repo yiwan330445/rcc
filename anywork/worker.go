@@ -98,6 +98,9 @@ func Backlog(todo Work) {
 }
 
 func Sync() error {
+	for retries := 0; retries < 10; retries++ {
+		runtime.Gosched()
+	}
 	group.Wait()
 	count := <-errcount
 	if count > 0 {
@@ -115,9 +118,4 @@ func OnErrPanicCloseAll(err error, closers ...io.Closer) {
 		}
 		panic(err)
 	}
-}
-
-func Done() error {
-	close(pipeline)
-	return Sync()
 }

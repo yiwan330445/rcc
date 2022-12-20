@@ -6,7 +6,6 @@ package pathlib
 import (
 	"os"
 	"syscall"
-	"time"
 
 	"github.com/robocorp/rcc/common"
 )
@@ -35,21 +34,16 @@ func Locker(filename string, trycount int) (Releaser, error) {
 	if err != nil {
 		return nil, err
 	}
-	marker := lockPidFilename(filename)
-	_, err = file.Write([]byte(marker))
-	if err != nil {
-		return nil, err
-	}
-	common.Debug("LOCKER: make marker %v", marker)
-	ForceTouchWhen(marker, time.Now())
-	return &Locked{file, marker}, nil
+	lockpid := LockpidFor(filename)
+	latch := lockpid.Keepalive()
+	common.Debug("LOCKER: make marker %v", lockpid.Location())
+	return &Locked{file, latch}, nil
 }
 
 func (it Locked) Release() error {
-	defer os.Remove(it.Marker)
-	defer common.Debug("LOCKER: remove marker %v", it.Marker)
 	defer it.Close()
 	err := syscall.Flock(int(it.Fd()), int(syscall.LOCK_UN))
 	common.Trace("LOCKER: release %v with err: %v", it.Name(), err)
+	close(it.Latch)
 	return err
 }

@@ -58,6 +58,7 @@ func WaitTelemetry() {
 	defer common.Timeline("wait telemetry done")
 
 	common.Debug("wait telemetry to complete")
+	runtime.Gosched()
 	telemetryBarrier.Wait()
 	common.Debug("telemetry sending completed")
 }

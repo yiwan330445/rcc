@@ -6,6 +6,7 @@ import (
 	"runtime"
 	"time"
 
+	"github.com/robocorp/rcc/anywork"
 	"github.com/robocorp/rcc/cloud"
 	"github.com/robocorp/rcc/cmd"
 	"github.com/robocorp/rcc/common"
@@ -40,6 +41,7 @@ func TimezoneMetric() error {
 }
 
 func ExitProtection() {
+	runtime.Gosched()
 	status := recover()
 	if status != nil {
 		markTempForRecycling()
@@ -106,4 +108,6 @@ func main() {
 	cmd.Execute()
 	common.Timeline("Command execution done.")
 	TimezoneMetric()
+
+	anywork.Sync()
 }

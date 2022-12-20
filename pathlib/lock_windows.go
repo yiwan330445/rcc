@@ -67,24 +67,19 @@ func Locker(filename string, trycount int) (Releaser, error) {
 			return nil, err
 		}
 		if success {
-			marker := lockPidFilename(filename)
-			_, err = file.Write([]byte(marker))
-			if err != nil {
-				return nil, err
-			}
-			common.Debug("LOCKER: make marker %v", marker)
-			ForceTouchWhen(marker, time.Now())
-			return &Locked{file, marker}, nil
+			lockpid := LockpidFor(filename)
+			latch := lockpid.Keepalive()
+			common.Debug("LOCKER: make marker %v", lockpid.Location())
+			return &Locked{file, latch}, nil
 		}
 		time.Sleep(40 * time.Millisecond)
 	}
 }
 
 func (it Locked) Release() error {
-	defer os.Remove(it.Marker)
-	defer common.Debug("LOCKER: remove marker %v", it.Marker)
 	success, err := trylock(unlockFile, it)
 	common.Trace("LOCKER: release %v success: %v with err: %v", it.Name(), success, err)
+	close(it.Latch)
 	return err
 }
 
