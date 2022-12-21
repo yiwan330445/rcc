@@ -1,5 +1,9 @@
 # rcc change log
 
+## v11.36.3 (date: 21.12.2022)
+
+- improvement: added more color and changed wording on lock wait messages
+
 ## v11.36.2 (date: 21.12.2022)
 
 - improvement: when there is longer lock wait, possible lock holders are listed

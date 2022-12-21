@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/robocorp/rcc/common"
+	"github.com/robocorp/rcc/pretty"
 )
 
 type Releaser interface {
@@ -38,7 +39,7 @@ waiting:
 		case <-time.After(delay):
 			counter += 1
 			delay *= 3
-			common.Log("#%d: %s (rcc lock wait warning)", counter, message)
+			pretty.Warning("#%d: %s (rcc lock wait)", counter, message)
 			common.Timeline("waiting for lock")
 			candidates, err := LockHoldersBy(lockfile)
 			if err != nil {
@@ -46,7 +47,7 @@ waiting:
 			}
 			for _, candidate := range candidates {
 				message := candidate.Message()
-				common.Log("  - %s", message)
+				pretty.Note("     : %s", message)
 				common.Timeline("+ %s", message)
 			}
 		}
