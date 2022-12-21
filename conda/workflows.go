@@ -338,7 +338,7 @@ func LegacyEnvironment(force bool, configurations ...string) error {
 	cloud.BackgroundMetric(common.ControllerIdentity(), "rcc.env.create.start", common.Version)
 
 	lockfile := common.RobocorpLock()
-	completed := pathlib.LockWaitMessage("Serialized environment creation [robocorp lock]")
+	completed := pathlib.LockWaitMessage(lockfile, "Serialized environment creation [robocorp lock]")
 	locker, err := pathlib.Locker(lockfile, 30000)
 	completed()
 	if err != nil {

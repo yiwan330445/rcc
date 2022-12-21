@@ -27,9 +27,10 @@ func Fake() Releaser {
 	return fake(true)
 }
 
-func waitingLockNotification(message string, latch chan bool) {
+func waitingLockNotification(lockfile, message string, latch chan bool) {
 	delay := 5 * time.Second
 	counter := 0
+waiting:
 	for {
 		select {
 		case <-latch:
@@ -39,13 +40,22 @@ func waitingLockNotification(message string, latch chan bool) {
 			delay *= 3
 			common.Log("#%d: %s (rcc lock wait warning)", counter, message)
 			common.Timeline("waiting for lock")
+			candidates, err := LockHoldersBy(lockfile)
+			if err != nil {
+				continue waiting
+			}
+			for _, candidate := range candidates {
+				message := candidate.Message()
+				common.Log("  - %s", message)
+				common.Timeline("+ %s", message)
+			}
 		}
 	}
 }
 
-func LockWaitMessage(message string) func() {
+func LockWaitMessage(lockfile, message string) func() {
 	latch := make(chan bool)
-	go waitingLockNotification(message, latch)
+	go waitingLockNotification(lockfile, message, latch)
 	return func() {
 		latch <- true
 	}

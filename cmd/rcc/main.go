@@ -96,9 +96,9 @@ func main() {
 	defer ExitProtection()
 
 	if common.SharedHolotree {
-		common.TimelineBegin("Start [shared mode].")
+		common.TimelineBegin("Start [shared mode]. (parent/pid: %d/%d)", os.Getppid(), os.Getpid())
 	} else {
-		common.TimelineBegin("Start [private mode].")
+		common.TimelineBegin("Start [private mode]. (parent/pid: %d/%d)", os.Getppid(), os.Getpid())
 	}
 	defer common.EndOfTimeline()
 	go startTempRecycling()

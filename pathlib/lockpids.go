@@ -40,6 +40,27 @@ type (
 	Lockpids []*Lockpid
 )
 
+func LockHoldersBy(filename string) (result Lockpids, err error) {
+	defer fail.Around(&err)
+
+	holders, err := LoadLockpids()
+	fail.On(err != nil, "%v", err)
+	total := len(holders)
+	if total == 0 {
+		return holders, nil
+	}
+
+	selector := unify(filepath.Base(filename))
+	result = Lockpids{}
+	for _, candidate := range holders {
+		if candidate.Basename == selector {
+			result = append(result, candidate)
+		}
+	}
+
+	return result, nil
+}
+
 func LoadLockpids() (result Lockpids, err error) {
 	defer fail.Around(&err)
 
@@ -121,7 +142,7 @@ func LockpidFor(filename string) *Lockpid {
 }
 
 func (it *Lockpid) Message() string {
-	return fmt.Sprintf("Possibly pending lock  %q, user: %q, space: %q, and controller: %q (parent/pid: %d/%d). May cause environment wait/build delay.", it.Basename, it.Username, it.Space, it.Controller, it.ParentID, it.ProcessID)
+	return fmt.Sprintf("Possibly pending lock %q, user: %q, space: %q, and controller: %q (parent/pid: %d/%d). May cause environment wait/build delay.", it.Basename, it.Username, it.Space, it.Controller, it.ParentID, it.ProcessID)
 }
 
 func (it *Lockpid) Keepalive() chan bool {

@@ -110,7 +110,7 @@ func (it *ziplibrary) Restore(blueprint, client, tag []byte) (result string, err
 	metafile := filepath.Join(fs.HolotreeBase(), fmt.Sprintf("%s.meta", name))
 	targetdir := filepath.Join(fs.HolotreeBase(), name)
 	lockfile := filepath.Join(fs.HolotreeBase(), fmt.Sprintf("%s.lck", name))
-	completed := pathlib.LockWaitMessage("Serialized holotree restore [holotree base lock]")
+	completed := pathlib.LockWaitMessage(lockfile, "Serialized holotree restore [holotree base lock]")
 	locker, err := pathlib.Locker(lockfile, 30000)
 	completed()
 	fail.On(err != nil, "Could not get lock for %s. Quiting.", targetdir)

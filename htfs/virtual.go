@@ -85,7 +85,7 @@ func (it *virtual) Restore(blueprint, client, tag []byte) (string, error) {
 	metafile := filepath.Join(common.HolotreeLocation(), fmt.Sprintf("%s.meta", name))
 	targetdir := filepath.Join(common.HolotreeLocation(), name)
 	lockfile := filepath.Join(common.HolotreeLocation(), fmt.Sprintf("%s.lck", name))
-	completed := pathlib.LockWaitMessage("Serialized holotree restore [holotree virtual lock]")
+	completed := pathlib.LockWaitMessage(lockfile, "Serialized holotree restore [holotree virtual lock]")
 	locker, err := pathlib.Locker(lockfile, 30000)
 	completed()
 	fail.On(err != nil, "Could not get lock for %s. Quiting.", targetdir)

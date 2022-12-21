@@ -47,13 +47,14 @@ func NewEnvironment(condafile, holozip string, restore, force bool) (label strin
 		}
 	}()
 	if common.SharedHolotree {
-		common.Progress(1, "Fresh [shared mode] holotree environment %v.", xviper.TrackingIdentity())
+		common.Progress(1, "Fresh [shared mode] holotree environment %v. (parent/pid: %d/%d)", xviper.TrackingIdentity(), os.Getppid(), os.Getpid())
 	} else {
-		common.Progress(1, "Fresh [private mode] holotree environment %v.", xviper.TrackingIdentity())
+		common.Progress(1, "Fresh [private mode] holotree environment %v. (parent/pid: %d/%d)", xviper.TrackingIdentity(), os.Getppid(), os.Getpid())
 	}
 
-	completed := pathlib.LockWaitMessage("Serialized environment creation [holotree lock]")
-	locker, err := pathlib.Locker(common.HolotreeLock(), 30000)
+	lockfile := common.HolotreeLock()
+	completed := pathlib.LockWaitMessage(lockfile, "Serialized environment creation [holotree lock]")
+	locker, err := pathlib.Locker(lockfile, 30000)
 	completed()
 	fail.On(err != nil, "Could not get lock for holotree. Quiting.")
 	defer locker.Release()

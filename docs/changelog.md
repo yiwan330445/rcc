@@ -1,5 +1,10 @@
 # rcc change log
 
+## v11.36.2 (date: 21.12.2022)
+
+- improvement: when there is longer lock wait, possible lock holders are listed
+  on console output and in timeline
+
 ## v11.36.1 (date: 20.12.2022)
 
 - bugfix: diagnostics fail on new machine to touch lock files when directory
