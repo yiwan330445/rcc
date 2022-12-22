@@ -69,7 +69,7 @@ func Locker(filename string, trycount int) (Releaser, error) {
 		if success {
 			lockpid := LockpidFor(filename)
 			latch := lockpid.Keepalive()
-			common.Debug("LOCKER: make marker %v", lockpid.Location())
+			common.Trace("LOCKER: make marker %v", lockpid.Location())
 			return &Locked{file, latch}, nil
 		}
 		time.Sleep(40 * time.Millisecond)

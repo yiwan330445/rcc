@@ -48,8 +48,7 @@ var holotreeImportCmd = &cobra.Command{
 				pretty.Guard(err == nil, 2, "Could not download %q, reason: %v", filename, err)
 				defer os.Remove(filename)
 			}
-			common.Timeline("Import %v", filename)
-			err = operations.Unzip(common.HololibLocation(), filename, true, false)
+			err = operations.ProtectedImport(filename)
 			pretty.Guard(err == nil, 1, "Could not import %q, reason: %v", filename, err)
 		}
 		pretty.Ok()

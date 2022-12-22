@@ -1,5 +1,9 @@
 # rcc change log
 
+## v11.36.4 (date: 22.12.2022)
+
+- bugfix: added missing lock protections around importing and pulling holotrees
+
 ## v11.36.3 (date: 21.12.2022)
 
 - improvement: added more color and changed wording on lock wait messages

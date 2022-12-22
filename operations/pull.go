@@ -93,6 +93,20 @@ func downloadMissingEnvironmentParts(origin, catalogName, selection string) (fil
 	return finalname, nil
 }
 
+func ProtectedImport(filename string) (err error) {
+	defer fail.Around(&err)
+
+	lockfile := common.HolotreeLock()
+	completed := pathlib.LockWaitMessage(lockfile, "Serialized environment import [holotree lock]")
+	locker, err := pathlib.Locker(lockfile, 30000)
+	completed()
+	fail.On(err != nil, "Could not get lock for holotree. Quiting.")
+	defer locker.Release()
+
+	common.Timeline("Import %v", filename)
+	return Unzip(common.HololibLocation(), filename, true, false)
+}
+
 func PullCatalog(origin, catalogName string) (err error) {
 	defer fail.Around(&err)
 
@@ -107,7 +121,7 @@ func PullCatalog(origin, catalogName string) (err error) {
 	common.Debug("Temporary content based filename is: %q", filename)
 	defer pathlib.TryRemove("temporary", filename)
 
-	err = Unzip(common.HololibLocation(), filename, true, false)
+	err = ProtectedImport(filename)
 	fail.On(err != nil, "Failed to unzip %v to hololib, reason: %v", filename, err)
 	common.Timeline("environment pull completed")
 
