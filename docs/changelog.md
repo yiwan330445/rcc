@@ -1,5 +1,10 @@
 # rcc change log
 
+## v11.36.5 (date: 28.12.2022)
+
+- fix: added more explanation to network diagnostics reporting, explaining
+  what actual successful check option did
+
 ## v11.36.4 (date: 22.12.2022)
 
 - bugfix: added missing lock protections around importing and pulling holotrees

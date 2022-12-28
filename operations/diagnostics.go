@@ -324,7 +324,7 @@ func dnsLookupCheck(site string) *common.DiagnosticCheck {
 		Type:     "network",
 		Category: common.CategoryNetworkDNS,
 		Status:   statusOk,
-		Message:  fmt.Sprintf("%s found: %v", site, found),
+		Message:  fmt.Sprintf("%s found [DNS query]: %v", site, found),
 		Link:     supportNetworkUrl,
 	}
 }
@@ -356,7 +356,7 @@ func condaHeadCheck() *common.DiagnosticCheck {
 		Type:     "network",
 		Category: common.CategoryNetworkHEAD,
 		Status:   statusOk,
-		Message:  fmt.Sprintf("Conda canary download successful: %s", settings.Global.CondaLink(condaCanaryUrl)),
+		Message:  fmt.Sprintf("Conda canary download successful [HEAD request]: %s", settings.Global.CondaLink(condaCanaryUrl)),
 		Link:     supportNetworkUrl,
 	}
 }
@@ -388,7 +388,7 @@ func pypiHeadCheck() *common.DiagnosticCheck {
 		Type:     "network",
 		Category: common.CategoryNetworkHEAD,
 		Status:   statusOk,
-		Message:  fmt.Sprintf("PyPI canary download successful: %s", settings.Global.PypiLink(pypiCanaryUrl)),
+		Message:  fmt.Sprintf("PyPI canary download successful [HEAD request]: %s", settings.Global.PypiLink(pypiCanaryUrl)),
 		Link:     supportNetworkUrl,
 	}
 }
@@ -420,7 +420,7 @@ func canaryDownloadCheck() *common.DiagnosticCheck {
 		Type:     "network",
 		Category: common.CategoryNetworkCanary,
 		Status:   statusOk,
-		Message:  fmt.Sprintf("Canary download successful: %s", settings.Global.DownloadsLink(canaryUrl)),
+		Message:  fmt.Sprintf("Canary download successful [GET request]: %s", settings.Global.DownloadsLink(canaryUrl)),
 		Link:     supportNetworkUrl,
 	}
 }
