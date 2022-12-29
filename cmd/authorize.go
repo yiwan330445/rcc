@@ -18,13 +18,18 @@ var authorizeCmd = &cobra.Command{
 		if common.DebugFlag {
 			defer common.Stopwatch("Authorize query lasted").Report()
 		}
+		period := &operations.TokenPeriod{
+			ValidityTime: validityTime,
+			GracePeriod:  gracePeriod,
+		}
+		period.EnforceGracePeriod()
 		var claims *operations.Claims
 		if granularity == "user" {
-			claims = operations.ViewWorkspacesClaims(validityTime * 60)
+			claims = operations.ViewWorkspacesClaims(period.RequestSeconds())
 		} else {
-			claims = operations.RunRobotClaims(validityTime*60, workspaceId)
+			claims = operations.RunRobotClaims(period.RequestSeconds(), workspaceId)
 		}
-		data, err := operations.AuthorizeClaims(AccountName(), claims)
+		data, err := operations.AuthorizeClaims(AccountName(), claims, period)
 		if err != nil {
 			pretty.Exit(3, "Error: %v", err)
 		}
@@ -38,7 +43,8 @@ var authorizeCmd = &cobra.Command{
 
 func init() {
 	cloudCmd.AddCommand(authorizeCmd)
-	authorizeCmd.Flags().IntVarP(&validityTime, "minutes", "m", 0, "How many minutes the authorization should be valid for.")
+	authorizeCmd.Flags().IntVarP(&validityTime, "minutes", "m", 15, "How many minutes the authorization should be valid for (minimum 15 minutes).")
+	authorizeCmd.Flags().IntVarP(&gracePeriod, "graceperiod", "", 5, "What is grace period buffer in minutes on top of validity minutes (minimum 5 minutes).")
 	authorizeCmd.Flags().StringVarP(&granularity, "granularity", "g", "", "Authorization granularity (user/workspace) used in.")
 	authorizeCmd.Flags().StringVarP(&workspaceId, "workspace", "w", "", "Workspace id to use with this command.")
 }

@@ -38,9 +38,12 @@ in your own machine.`,
 
 func captureRunFlags(assistant bool) *operations.RunFlags {
 	return &operations.RunFlags{
+		TokenPeriod: &operations.TokenPeriod{
+			ValidityTime: validityTime,
+			GracePeriod:  gracePeriod,
+		},
 		AccountName:     AccountName(),
 		WorkspaceId:     workspaceId,
-		ValidityTime:    validityTime,
 		EnvironmentFile: environmentFile,
 		RobotYaml:       robotFile,
 		Assistant:       assistant,
@@ -55,7 +58,8 @@ func init() {
 	runCmd.Flags().StringVarP(&robotFile, "robot", "r", "robot.yaml", "Full path to the 'robot.yaml' configuration file.")
 	runCmd.Flags().StringVarP(&runTask, "task", "t", "", "Task to run from the configuration file.")
 	runCmd.Flags().StringVarP(&workspaceId, "workspace", "w", "", "Optional workspace id to get authorization tokens for. OPTIONAL")
-	runCmd.Flags().IntVarP(&validityTime, "minutes", "m", 0, "How many minutes the authorization should be valid for. OPTIONAL")
+	runCmd.Flags().IntVarP(&validityTime, "minutes", "m", 15, "How many minutes the authorization should be valid for (minimum 15 minutes).")
+	runCmd.Flags().IntVarP(&gracePeriod, "graceperiod", "", 5, "What is grace period buffer in minutes on top of validity minutes (minimum 5 minutes).")
 	runCmd.Flags().StringVarP(&accountName, "account", "", "", "Account used for workspace. OPTIONAL")
 	runCmd.Flags().BoolVarP(&forceFlag, "force", "f", false, "Force conda cache update (only for new environments).")
 	runCmd.Flags().BoolVarP(&interactiveFlag, "interactive", "", false, "Allow robot to be interactive in terminal/command prompt. For development only, not for production!")

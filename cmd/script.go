@@ -27,9 +27,12 @@ var scriptCmd = &cobra.Command{
 
 func noRunFlags() *operations.RunFlags {
 	return &operations.RunFlags{
+		TokenPeriod: &operations.TokenPeriod{
+			ValidityTime: 0,
+			GracePeriod:  0,
+		},
 		AccountName:     "",
 		WorkspaceId:     "",
-		ValidityTime:    0,
 		EnvironmentFile: environmentFile,
 		RobotYaml:       robotFile,
 		Assistant:       false,

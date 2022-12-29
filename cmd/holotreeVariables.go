@@ -100,8 +100,13 @@ func holotreeExpandEnvironment(userFiles []string, packfile, environment, worksp
 
 	if Has(workspace) {
 		common.Timeline("get run robot claims")
-		claims := operations.RunRobotClaims(validity*60, workspace)
-		data, err = operations.AuthorizeClaims(AccountName(), claims)
+		period := &operations.TokenPeriod{
+			ValidityTime: validityTime,
+			GracePeriod:  gracePeriod,
+		}
+		period.EnforceGracePeriod()
+		claims := operations.RunRobotClaims(period.RequestSeconds(), workspace)
+		data, err = operations.AuthorizeClaims(AccountName(), claims, period)
 		pretty.Guard(err == nil, 9, "Failed to get cloud data, reason: %v", err)
 	}
 
@@ -145,7 +150,8 @@ func init() {
 	holotreeVariablesCmd.Flags().StringVarP(&environmentFile, "environment", "e", "", "Full path to 'env.json' development environment data file. <optional>")
 	holotreeVariablesCmd.Flags().StringVarP(&robotFile, "robot", "r", "robot.yaml", "Full path to 'robot.yaml' configuration file. <optional>")
 	holotreeVariablesCmd.Flags().StringVarP(&workspaceId, "workspace", "w", "", "Optional workspace id to get authorization tokens for. <optional>")
-	holotreeVariablesCmd.Flags().IntVarP(&validityTime, "minutes", "m", 0, "How many minutes the authorization should be valid for. <optional>")
+	holotreeVariablesCmd.Flags().IntVarP(&validityTime, "minutes", "m", 15, "How many minutes the authorization should be valid for (minimum 15 minutes).")
+	holotreeVariablesCmd.Flags().IntVarP(&gracePeriod, "graceperiod", "", 5, "What is grace period buffer in minutes on top of validity minutes (minimum 5 minutes).")
 	holotreeVariablesCmd.Flags().StringVarP(&accountName, "account", "a", "", "Account used for workspace. <optional>")
 
 	holotreeVariablesCmd.Flags().StringVarP(&common.HolotreeSpace, "space", "s", "user", "Client specific name to identify this environment.")

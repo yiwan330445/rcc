@@ -20,8 +20,8 @@ func linkFor(direction, workspaceId, robotId string) string {
 	return fmt.Sprintf(loadLink, workspaceId, robotId, direction)
 }
 
-func fetchRobotToken(client cloud.Client, account *account, claims *Claims) (string, error) {
-	data, err := AuthorizeCommand(client, account, claims)
+func fetchRobotToken(client cloud.Client, account *account, claims *Claims, period *TokenPeriod) (string, error) {
+	data, err := AuthorizeCommand(client, account, claims, period)
 	if err != nil {
 		return "", err
 	}
@@ -33,21 +33,23 @@ func fetchRobotToken(client cloud.Client, account *account, claims *Claims) (str
 }
 
 func summonAssistantToken(client cloud.Client, account *account, workspaceId string) (string, error) {
-	claims := RunAssistantClaims(30*60, workspaceId)
-	token, ok := account.Cached(claims.Name, claims.Url)
+	period := DefaultTokenPeriod()
+	claims := RunAssistantClaims(period.RequestSeconds(), workspaceId)
+	token, ok := account.Cached(period, claims.Name, claims.Url)
 	if ok {
 		return token, nil
 	}
-	return fetchRobotToken(client, account, claims)
+	return fetchRobotToken(client, account, claims, period)
 }
 
 func summonGetRobotToken(client cloud.Client, account *account, workspaceId string) (string, error) {
-	claims := GetRobotClaims(30*60, workspaceId)
-	token, ok := account.Cached(claims.Name, claims.Url)
+	period := DefaultTokenPeriod()
+	claims := GetRobotClaims(period.RequestSeconds(), workspaceId)
+	token, ok := account.Cached(period, claims.Name, claims.Url)
 	if ok {
 		return token, nil
 	}
-	return fetchRobotToken(client, account, claims)
+	return fetchRobotToken(client, account, claims, period)
 }
 
 func getAnyloadLink(client cloud.Client, cloudUrl, credentials string) (string, error) {

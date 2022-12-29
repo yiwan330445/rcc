@@ -26,8 +26,8 @@ type RobotData struct {
 	Package map[string]interface{} `json:"package,omitempty"`
 }
 
-func fetchAnyToken(client cloud.Client, account *account, claims *Claims) (string, error) {
-	data, err := AuthorizeCommand(client, account, claims)
+func fetchAnyToken(client cloud.Client, account *account, claims *Claims, period *TokenPeriod) (string, error) {
+	data, err := AuthorizeCommand(client, account, claims, period)
 	if err != nil {
 		return "", err
 	}
@@ -39,21 +39,23 @@ func fetchAnyToken(client cloud.Client, account *account, claims *Claims) (strin
 }
 
 func summonEditRobotToken(client cloud.Client, account *account, workspace string) (string, error) {
-	claims := EditRobotClaims(15*60, workspace)
-	token, ok := account.Cached(claims.Name, claims.Url)
+	period := DefaultTokenPeriod()
+	claims := EditRobotClaims(period.RequestSeconds(), workspace)
+	token, ok := account.Cached(period, claims.Name, claims.Url)
 	if ok {
 		return token, nil
 	}
-	return fetchAnyToken(client, account, claims)
+	return fetchAnyToken(client, account, claims, period)
 }
 
 func summonWorkspaceToken(client cloud.Client, account *account) (string, error) {
-	claims := ViewWorkspacesClaims(15 * 60)
-	token, ok := account.Cached(claims.Name, claims.Url)
+	period := DefaultTokenPeriod()
+	claims := ViewWorkspacesClaims(period.RequestSeconds())
+	token, ok := account.Cached(period, claims.Name, claims.Url)
 	if ok {
 		return token, nil
 	}
-	return fetchAnyToken(client, account, claims)
+	return fetchAnyToken(client, account, claims, period)
 }
 
 func WorkspacesCommand(client cloud.Client, account *account) (interface{}, error) {

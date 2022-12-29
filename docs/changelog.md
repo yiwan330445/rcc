@@ -1,5 +1,13 @@
 # rcc change log
 
+## v12.0.0 (date: 29.12.2022) UNSTABLE
+
+- adding "grace period" in "token time" calculations, and this is breaking
+  change, because token time calculation changes, and management of grace
+  period is user/app responsibility (but there is default value) and tokens
+  also will now have minimum period
+- bugfix: when broken catalog was loaded, catalog listing failed
+
 ## v11.36.5 (date: 28.12.2022)
 
 - fix: added more explanation to network diagnostics reporting, explaining

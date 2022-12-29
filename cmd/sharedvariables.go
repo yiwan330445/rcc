@@ -31,6 +31,7 @@ var (
 	runTask         string
 	shellDirectory  string
 	templateName    string
+	gracePeriod     int
 	validityTime    int
 	workspaceId     string
 	wskey           string

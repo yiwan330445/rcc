@@ -111,7 +111,7 @@ func (it *account) CacheToken(name, url, token string, deadline int64) {
 	cache.Credentials[fullkey] = &credential
 }
 
-func (it *account) Cached(name, url string) (string, bool) {
+func (it *account) Cached(period *TokenPeriod, name, url string) (string, bool) {
 	if common.NoCache {
 		return "", false
 	}
@@ -124,11 +124,11 @@ func (it *account) Cached(name, url string) (string, bool) {
 	if !ok {
 		return "", false
 	}
-	when := time.Now().Unix()
-	if found.Deadline < when {
+	liveline := period.Liveline()
+	if found.Deadline < liveline {
 		return "", false
 	}
-	common.Timeline("cached token: %s", name)
+	common.Timeline("using cached token: %s (%d < %d)", name, liveline, found.Deadline)
 	return found.Token, true
 }
 

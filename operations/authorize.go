@@ -157,7 +157,7 @@ func HmacSignature(claims *Claims, secret, nonce, bodyHash string) string {
 	return base64.StdEncoding.EncodeToString(hasher.Sum(nil))
 }
 
-func AuthorizeClaims(accountName string, claims *Claims) (Token, error) {
+func AuthorizeClaims(accountName string, claims *Claims, period *TokenPeriod) (Token, error) {
 	account := AccountByName(accountName)
 	if account == nil {
 		return nil, fmt.Errorf("Could not find account by name: %q", accountName)
@@ -166,16 +166,16 @@ func AuthorizeClaims(accountName string, claims *Claims) (Token, error) {
 	if err != nil {
 		return nil, fmt.Errorf("Could not create client for endpoint: %s reason: %w", account.Endpoint, err)
 	}
-	data, err := AuthorizeCommand(client, account, claims)
+	data, err := AuthorizeCommand(client, account, claims, period)
 	if err != nil {
 		return nil, fmt.Errorf("Could not authorize: %w", err)
 	}
 	return data, nil
 }
 
-func AuthorizeCommand(client cloud.Client, account *account, claims *Claims) (Token, error) {
+func AuthorizeCommand(client cloud.Client, account *account, claims *Claims, period *TokenPeriod) (Token, error) {
 	when := time.Now().Unix()
-	found, ok := account.Cached(claims.Name, claims.Url)
+	found, ok := account.Cached(period, claims.Name, claims.Url)
 	if ok {
 		cached := make(Token)
 		cached["endpoint"] = client.Endpoint()
@@ -216,8 +216,8 @@ func AuthorizeCommand(client cloud.Client, account *account, claims *Claims) (To
 	account.WasVerified(when)
 	trueToken, ok := token["token"].(string)
 	if ok {
-		deadline := when + int64(3*(claims.ExpiresIn/4))
-		account.CacheToken(claims.Name, claims.Url, trueToken, deadline)
+		account.CacheToken(claims.Name, claims.Url, trueToken, period.Deadline())
+		common.Timeline("cached authorize claim: %s (new deadline: %d)", claims.Name, period.Deadline())
 	}
 	return token, nil
 }

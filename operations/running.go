@@ -5,6 +5,7 @@ import (
 	"path/filepath"
 	"runtime"
 	"strings"
+	"time"
 
 	"github.com/robocorp/rcc/common"
 	"github.com/robocorp/rcc/conda"
@@ -21,14 +22,69 @@ var (
 	rcTokens = []string{"RC_API_SECRET_TOKEN", "RC_API_WORKITEM_TOKEN"}
 )
 
+type TokenPeriod struct {
+	ValidityTime int // minutes
+	GracePeriod  int // minutes
+}
+
 type RunFlags struct {
+	*TokenPeriod
 	AccountName     string
 	WorkspaceId     string
-	ValidityTime    int
 	EnvironmentFile string
 	RobotYaml       string
 	Assistant       bool
 	NoPipFreeze     bool
+}
+
+func (it *TokenPeriod) EnforceGracePeriod() *TokenPeriod {
+	if it == nil {
+		return it
+	}
+	if it.GracePeriod < 5 {
+		it.GracePeriod = 5
+	}
+	if it.GracePeriod > 120 {
+		it.GracePeriod = 120
+	}
+	if it.ValidityTime < 15 {
+		it.ValidityTime = 15
+	}
+	return it
+}
+
+func asSeconds(minutes int) int {
+	return 60 * minutes
+}
+
+func DefaultTokenPeriod() *TokenPeriod {
+	result := &TokenPeriod{}
+	return result.EnforceGracePeriod()
+}
+
+func (it *TokenPeriod) AsSeconds() (int, int, bool) {
+	if it == nil {
+		return asSeconds(15), asSeconds(5), false
+	}
+	it.EnforceGracePeriod()
+	return asSeconds(it.ValidityTime), asSeconds(it.GracePeriod), true
+}
+
+func (it *TokenPeriod) Liveline() int64 {
+	valid, _, _ := it.AsSeconds()
+	when := time.Now().Unix()
+	return when + int64(valid)
+}
+
+func (it *TokenPeriod) Deadline() int64 {
+	valid, grace, _ := it.AsSeconds()
+	when := time.Now().Unix()
+	return when + int64(valid+grace)
+}
+
+func (it *TokenPeriod) RequestSeconds() int {
+	valid, grace, _ := it.AsSeconds()
+	return int(valid + grace)
 }
 
 func FreezeEnvironmentListing(label string, config robot.Robot) {
@@ -150,8 +206,8 @@ func ExecuteSimpleTask(flags *RunFlags, template []string, config robot.Robot, t
 	}
 	var data Token
 	if len(flags.WorkspaceId) > 0 {
-		claims := RunRobotClaims(flags.ValidityTime*60, flags.WorkspaceId)
-		data, err = AuthorizeClaims(flags.AccountName, claims)
+		claims := RunRobotClaims(flags.TokenPeriod.RequestSeconds(), flags.WorkspaceId)
+		data, err = AuthorizeClaims(flags.AccountName, claims, flags.TokenPeriod.EnforceGracePeriod())
 	}
 	if err != nil {
 		pretty.Exit(8, "Error: %v", err)
@@ -215,8 +271,8 @@ func ExecuteTask(flags *RunFlags, template []string, config robot.Robot, todo ro
 	task[0] = findExecutableOrDie(searchPath, task[0])
 	var data Token
 	if !flags.Assistant && len(flags.WorkspaceId) > 0 {
-		claims := RunRobotClaims(flags.ValidityTime*60, flags.WorkspaceId)
-		data, err = AuthorizeClaims(flags.AccountName, claims)
+		claims := RunRobotClaims(flags.TokenPeriod.RequestSeconds(), flags.WorkspaceId)
+		data, err = AuthorizeClaims(flags.AccountName, claims, nil)
 	}
 	if err != nil {
 		pretty.Exit(8, "Error: %v", err)

@@ -504,6 +504,16 @@ func DigestLoader(root *Root, at int, slots []map[string]string) anywork.Work {
 	}
 }
 
+func ignoreFailedCatalogs(suspects []*Root) []*Root {
+	roots := make([]*Root, 0, len(suspects))
+	for _, root := range suspects {
+		if root != nil {
+			roots = append(roots, root)
+		}
+	}
+	return roots
+}
+
 func LoadCatalogs() ([]string, []*Root) {
 	common.TimelineBegin("catalog load start")
 	defer common.TimelineEnd()
@@ -516,7 +526,7 @@ func LoadCatalogs() ([]string, []*Root) {
 	}
 	runtime.Gosched()
 	anywork.Sync()
-	return catalogs, roots
+	return catalogs, ignoreFailedCatalogs(roots)
 }
 
 func BaseFolders() []string {
