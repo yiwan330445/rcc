@@ -1,5 +1,12 @@
 # rcc change log
 
+## v12.0.1 (date: 3.1.2023)
+
+- added diagnostics on loading ignoreFiles entry, which does not contain
+  any patterns in it
+- updated documentation about `ignoreFiles:` in recipes, with hopefully
+  better explanation of how it should be used
+
 ## v12.0.0 (date: 29.12.2022) UNSTABLE
 
 - adding "grace period" in "token time" calculations, and this is breaking

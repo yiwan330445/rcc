@@ -83,7 +83,7 @@ func TestUseCompositeIgnorePattern(t *testing.T) {
 func TestCanLoadIgnoreFile(t *testing.T) {
 	must_be, wont_be := hamlet.Specifications(t)
 
-	sut, err := pathlib.LoadIgnoreFile("testdata/missing")
+	sut, err := pathlib.LoadIgnoreFile("testdata/missing", true)
 	must_be.Nil(sut)
 	wont_be.Nil(err)
 }
@@ -91,7 +91,23 @@ func TestCanLoadIgnoreFile(t *testing.T) {
 func TestCanLoadEmptyIgnoreFile(t *testing.T) {
 	must_be, wont_be := hamlet.Specifications(t)
 
-	sut, err := pathlib.LoadIgnoreFile("testdata/empty")
+	sut, err := pathlib.LoadIgnoreFile("testdata/empty", true)
+	must_be.Nil(sut)
+	wont_be.Nil(err)
+}
+
+func TestCanLoadCommentOnlyIgnoreFile(t *testing.T) {
+	must_be, wont_be := hamlet.Specifications(t)
+
+	sut, err := pathlib.LoadIgnoreFile("testdata/commented_ignores", true)
+	must_be.Nil(sut)
+	wont_be.Nil(err)
+}
+
+func TestCanLoadValidIgnoreFile(t *testing.T) {
+	must_be, wont_be := hamlet.Specifications(t)
+
+	sut, err := pathlib.LoadIgnoreFile("testdata/valid_ignores", true)
 	wont_be.Nil(sut)
 	must_be.Nil(err)
 }

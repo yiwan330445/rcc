@@ -1,11 +1,14 @@
 package pathlib
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 	"sort"
 	"strings"
 	"time"
+
+	"github.com/robocorp/rcc/pretty"
 )
 
 type Forced func(os.FileInfo) bool
@@ -91,7 +94,7 @@ func IgnorePattern(text string) Ignore {
 	return CompositeIgnore(exactIgnore(text).Ignore, globIgnore(text).Ignore)
 }
 
-func LoadIgnoreFile(filename string) (Ignore, error) {
+func LoadIgnoreFile(filename string, strict bool) (Ignore, error) {
 	content, err := os.ReadFile(filename)
 	if err != nil {
 		return nil, err
@@ -104,13 +107,20 @@ func LoadIgnoreFile(filename string) (Ignore, error) {
 		}
 		result = append(result, IgnorePattern(line))
 	}
+	if strict && len(result) == 0 {
+		return nil, fmt.Errorf("Ignore file %q has no valid patterns in it!", filename)
+	}
+	if len(result) == 0 {
+		pretty.Warning("Ignore file %q has no valid patterns in it!", filename)
+		return IgnoreNothing, nil
+	}
 	return CompositeIgnore(result...), nil
 }
 
 func LoadIgnoreFiles(filenames []string) (Ignore, error) {
 	result := make([]Ignore, 0, len(filenames))
 	for _, filename := range filenames {
-		ignore, err := LoadIgnoreFile(filename)
+		ignore, err := LoadIgnoreFile(filename, false)
 		if err != nil {
 			return nil, err
 		}

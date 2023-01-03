@@ -618,9 +618,24 @@ environment variable, if you want to store some additional artifacts there.
 
 ### What are `ignoreFiles:`?
 
-These files are patterns of file and directory names that should not be
-stored insided wrapped robots (robot.zip files). Patterns are like git
-ignore patterns but less powerful.
+This is a list of configuration files that rcc uses as locations for ignore
+patterns used while wrapping robot into a robot.zip file. But note, that once
+filename is on this list, it must also be present on directory structure, this
+is part of a contract.
+
+Content of those files should be similar to what is used normally as version
+control systems as ignore files (like .gitignore file in git context).
+Here rcc implements only subset of functionality, and allows just mostly
+globbing patterns or exact names of files and directories.
+
+Note: do not put file or directory names that you want to be ignored directly
+in this list. They all should reside in one of those configurations listed in
+this configuration list.
+
+Tip: using `.gitignore` as one of those `ignoreFiles:` entries helps you to
+remove duplication of maintenance pressures. But if you want ignore different
+things in git and in robot.zip, or if there are conflicts between those,
+feel free use different filenames as you see fit.
 
 ### What are `PATH:`?
 
