@@ -93,6 +93,11 @@ var assistantRunCmd = &cobra.Command{
 			cloud.BackgroundMetric(common.ControllerIdentity(), "rcc.assistant.run.timeline.uploaded", elapser.Elapsed().String())
 		}()
 		defer func() {
+			if len(assistant.ArtifactURL) == 0 {
+				pretty.Note("Pushing artifacts to Cloud skipped (disabled, no artifact URL given).")
+				common.Timeline("skipping publishing artifacts (disabled, no artifact URL given)")
+				return
+			}
 			common.Timeline("publish artifacts")
 			publisher := operations.ArtifactPublisher{
 				Client:          client,

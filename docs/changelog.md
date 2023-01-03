@@ -1,5 +1,11 @@
 # rcc change log
 
+## v12.1.0 (date: 3.1.2023)
+
+- feature: on assistant runs, if CR does not give artifact URL for uploading
+  artifacts, then it is now considered as disabled functionality (not error)
+  and no artifacts are pushed into cloud
+
 ## v12.0.1 (date: 3.1.2023)
 
 - added diagnostics on loading ignoreFiles entry, which does not contain
