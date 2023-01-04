@@ -36,27 +36,36 @@ type CommandChannel chan Command
 type CompletedChannel chan bool
 
 func (it *WriteTarget) Execute() bool {
+	err := it.execute()
+	if err != nil {
+		common.Error("zip extract", err)
+		common.Debug("  - failure with %q, reason: %v", it.Target, err)
+	}
+	return err == nil
+}
+
+func (it *WriteTarget) execute() error {
 	source, err := it.Source.Open()
 	if err != nil {
-		return false
+		return err
 	}
 	defer source.Close()
 	err = os.MkdirAll(filepath.Dir(it.Target), 0o750)
 	if err != nil {
-		return false
+		return err
 	}
 	target, err := os.Create(it.Target)
 	if err != nil {
-		return false
+		return err
 	}
 	defer target.Close()
 	common.Trace("- %v", it.Target)
 	_, err = io.Copy(target, source)
 	if err != nil {
-		common.Debug("  - failure with %q, reason: %v", it.Target, err)
+		return err
 	}
 	os.Chtimes(it.Target, it.Source.Modified, it.Source.Modified)
-	return err == nil
+	return nil
 }
 
 type unzipper struct {
@@ -161,7 +170,6 @@ func (it *unzipper) Asset(name string) ([]byte, error) {
 
 func (it *unzipper) Extract(directory string) error {
 	common.Trace("Extracting:")
-	success := true
 	for _, entry := range it.reader.File {
 		if entry.FileInfo().IsDir() {
 			continue
@@ -171,12 +179,12 @@ func (it *unzipper) Extract(directory string) error {
 			Source: entry,
 			Target: target,
 		}
-		success = todo.Execute() && success
+		err := todo.execute()
+		if err != nil {
+			return fmt.Errorf("Problem while extracting zip, reason: %v", err)
+		}
 	}
 	common.Trace("Done.")
-	if !success {
-		return fmt.Errorf("Problems while unwrapping robot. Use --debug to see details.")
-	}
 	return nil
 }
 

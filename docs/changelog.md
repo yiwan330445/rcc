@@ -1,5 +1,9 @@
 # rcc change log
 
+## v12.1.1 (date: 4.1.2023)
+
+- bugfix: adding more info when zip extraction fails
+
 ## v12.1.0 (date: 3.1.2023)
 
 - feature: on assistant runs, if CR does not give artifact URL for uploading
