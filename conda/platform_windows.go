@@ -65,7 +65,7 @@ func IsWindows() bool {
 }
 
 func HasLongPathSupport() bool {
-	baseline := []string{common.RobocorpHome(), "stump"}
+	baseline := []string{common.RobocorpHome(), fmt.Sprintf("stump%x", os.Getpid())}
 	stumpath := filepath.Join(baseline...)
 	defer os.RemoveAll(stumpath)
 

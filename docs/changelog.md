@@ -1,5 +1,10 @@
 # rcc change log
 
+## v12.1.2 (date: 11.1.2023)
+
+- bugfix: parallel long path checks failed because not unique path was used,
+  added pid as part of that long path (just Windows), this closes #45
+
 ## v12.1.1 (date: 4.1.2023)
 
 - bugfix: adding more info when zip extraction fails
