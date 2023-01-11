@@ -19,8 +19,8 @@ import (
 
 const (
 	// for micromamba upgrade, change following constants to match
-	micromambaVersionLimit  = 1000000
-	micromambaVersionNumber = "v1.0.0"
+	MicromambaVersionLimit  = 1_001_000
+	MicromambaVersionNumber = "v1.1.0"
 )
 
 var (
@@ -37,7 +37,7 @@ var (
 )
 
 func micromambaLink(platform, filename string) string {
-	return fmt.Sprintf("micromamba/%s/%s/%s", micromambaVersionNumber, platform, filename)
+	return fmt.Sprintf("micromamba/%s/%s/%s", MicromambaVersionNumber, platform, filename)
 }
 
 func sorted(files []os.FileInfo) {
@@ -228,7 +228,7 @@ func HasMicroMamba() bool {
 		return false
 	}
 	version, versionText := AsVersion(MicromambaVersion())
-	goodEnough := version >= micromambaVersionLimit
+	goodEnough := version >= MicromambaVersionLimit
 	common.Debug("%q version is %q -> %v (good enough: %v)", BinMicromamba(), versionText, version, goodEnough)
 	common.Timeline("µmamba version is %q (at %q).", versionText, BinMicromamba())
 	return goodEnough

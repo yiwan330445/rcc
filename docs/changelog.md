@@ -1,5 +1,9 @@
 # rcc change log
 
+## v12.2.0 (date: 11.1.2023)
+
+- micromamba upgrade to v1.1.0
+
 ## v12.1.2 (date: 11.1.2023)
 
 - bugfix: parallel long path checks failed because not unique path was used,
