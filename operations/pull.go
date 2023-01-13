@@ -104,7 +104,7 @@ func ProtectedImport(filename string) (err error) {
 	defer locker.Release()
 
 	common.Timeline("Import %v", filename)
-	return Unzip(common.HololibLocation(), filename, true, false)
+	return Unzip(common.HololibLocation(), filename, true, false, false)
 }
 
 func PullCatalog(origin, catalogName string) (err error) {

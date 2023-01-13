@@ -43,7 +43,7 @@ var prepareCloudCmd = &cobra.Command{
 		pretty.Guard(err == nil, 4, "Error: %v", err)
 
 		common.Debug("Using temporary workarea: %v", workarea)
-		err = operations.Unzip(workarea, zipfile, false, true)
+		err = operations.Unzip(workarea, zipfile, false, true, true)
 		pretty.Guard(err == nil, 5, "Error: %v", err)
 
 		robotfile, err := pathlib.FindNamedPath(workarea, "robot.yaml")

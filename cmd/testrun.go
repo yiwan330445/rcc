@@ -45,7 +45,7 @@ var testrunCmd = &cobra.Command{
 		workarea := filepath.Join(os.TempDir(), fmt.Sprintf("workarea%x", common.When))
 		defer os.RemoveAll(workarea)
 		common.Debug("Using temporary workarea: %v", workarea)
-		err = operations.Unzip(workarea, zipfile, false, true)
+		err = operations.Unzip(workarea, zipfile, false, true, true)
 		if err != nil {
 			pretty.Exit(3, "Error: %v", err)
 		}

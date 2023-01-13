@@ -45,7 +45,7 @@ var communityPullCmd = &cobra.Command{
 			pretty.Exit(1, "Download failed: %v!", err)
 		}
 
-		err = operations.Unzip(directory, zipfile, true, false)
+		err = operations.Unzip(directory, zipfile, true, false, true)
 		if err != nil {
 			pretty.Exit(1, "Error: %v", err)
 		}

@@ -209,7 +209,7 @@ func templateByName(name string, internal bool) ([]byte, error) {
 	if internal || !pathlib.IsFile(zipfile) {
 		return blobs.Asset(blobname)
 	}
-	unzipper, err := newUnzipper(zipfile)
+	unzipper, err := newUnzipper(zipfile, false)
 	if err != nil {
 		return nil, err
 	}

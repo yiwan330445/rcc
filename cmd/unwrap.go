@@ -18,7 +18,7 @@ be overwritten.`,
 		if common.DebugFlag {
 			defer common.Stopwatch("Unwrap lasted").Report()
 		}
-		err := operations.Unzip(directory, zipfile, forceFlag, false)
+		err := operations.Unzip(directory, zipfile, forceFlag, false, true)
 		if err != nil {
 			pretty.Exit(1, "Error: %v", err)
 		}

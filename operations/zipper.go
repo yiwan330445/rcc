@@ -12,6 +12,7 @@ import (
 	"github.com/robocorp/rcc/pathlib"
 	"github.com/robocorp/rcc/pretty"
 	"github.com/robocorp/rcc/robot"
+	"github.com/robocorp/rcc/set"
 )
 
 const (
@@ -69,8 +70,9 @@ func (it *WriteTarget) execute() error {
 }
 
 type unzipper struct {
-	reader *zip.Reader
-	closer io.Closer
+	reader  *zip.Reader
+	closer  io.Closer
+	flatten bool
 }
 
 func (it *unzipper) Close() {
@@ -87,19 +89,21 @@ func newPayloadUnzipper(filename string) (*unzipper, error) {
 		return nil, err
 	}
 	return &unzipper{
-		reader: reader,
-		closer: payloader,
+		reader:  reader,
+		closer:  payloader,
+		flatten: false,
 	}, nil
 }
 
-func newUnzipper(filename string) (*unzipper, error) {
+func newUnzipper(filename string, flatten bool) (*unzipper, error) {
 	reader, err := zip.OpenReader(filename)
 	if err != nil {
 		return nil, err
 	}
 	return &unzipper{
-		reader: &reader.Reader,
-		closer: reader,
+		reader:  &reader.Reader,
+		closer:  reader,
+		flatten: flatten,
 	}, nil
 }
 
@@ -168,13 +172,55 @@ func (it *unzipper) Asset(name string) ([]byte, error) {
 	return payload, nil
 }
 
-func (it *unzipper) Extract(directory string) error {
-	common.Trace("Extracting:")
+func (it *unzipper) ExtraDirectoryPrefixLength() (int, string) {
+	prefixes := make([]string, 0, 1)
 	for _, entry := range it.reader.File {
 		if entry.FileInfo().IsDir() {
 			continue
 		}
-		target := filepath.Join(directory, slashed(entry.Name))
+		basename := filepath.Base(entry.Name)
+		if strings.ToLower(basename) != "robot.yaml" {
+			continue
+		}
+		dirname := filepath.Dir(entry.Name)
+		if len(dirname) > 0 {
+			prefixes = append(prefixes, dirname)
+		}
+	}
+	prefixes = set.Set(prefixes)
+	if len(prefixes) != 1 {
+		return 0, ""
+	}
+	prefix := prefixes[0]
+	if len(prefix) == 0 {
+		return 0, ""
+	}
+	for _, entry := range it.reader.File {
+		if entry.FileInfo().IsDir() {
+			continue
+		}
+		dirname := filepath.Dir(entry.Name)
+		if !strings.HasPrefix(dirname, prefix) {
+			return 0, ""
+		}
+	}
+	return len(prefix), prefix
+}
+
+func (it *unzipper) Extract(directory string) error {
+	common.Trace("Extracting:")
+	limit, prefix := 0, ""
+	if it.flatten {
+		limit, prefix = it.ExtraDirectoryPrefixLength()
+	}
+	if limit > 0 {
+		pretty.Note("Flattening path %q out from extracted files.", prefix)
+	}
+	for _, entry := range it.reader.File {
+		if entry.FileInfo().IsDir() {
+			continue
+		}
+		target := filepath.Join(directory, slashed(entry.Name)[limit:])
 		todo := WriteTarget{
 			Source: entry,
 			Target: target,
@@ -307,7 +353,7 @@ func CarrierUnzip(directory, carrier string, force, temporary bool) error {
 	return FixDirectory(fullpath)
 }
 
-func Unzip(directory, zipfile string, force, temporary bool) error {
+func Unzip(directory, zipfile string, force, temporary, flatten bool) error {
 	common.Timeline("unzip %q to %q", zipfile, directory)
 	defer common.Timeline("unzip done")
 	fullpath, err := filepath.Abs(directory)
@@ -322,7 +368,7 @@ func Unzip(directory, zipfile string, force, temporary bool) error {
 	if err != nil {
 		return err
 	}
-	unzip, err := newUnzipper(zipfile)
+	unzip, err := newUnzipper(zipfile, flatten)
 	if err != nil {
 		return err
 	}

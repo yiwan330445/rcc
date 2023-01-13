@@ -1,5 +1,10 @@
 # rcc change log
 
+## v12.3.0 (date: 13.1.2023)
+
+- feature: unwrap command now removes extra middle parts of file paths when
+  unzipping robot.zip files
+
 ## v12.2.0 (date: 11.1.2023)
 
 - micromamba upgrade to v1.1.0

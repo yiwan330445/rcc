@@ -71,7 +71,7 @@ var assistantRunCmd = &cobra.Command{
 		defer os.RemoveAll(workarea)
 		common.Debug("Using temporary workarea: %v", workarea)
 		reason = "UNZIP_FAILURE"
-		err = operations.Unzip(workarea, assistant.Zipfile, false, true)
+		err = operations.Unzip(workarea, assistant.Zipfile, false, true, true)
 		if err != nil {
 			pretty.Exit(4, "Error: %v", err)
 		}

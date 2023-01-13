@@ -41,7 +41,7 @@ var pullCmd = &cobra.Command{
 			pretty.Exit(3, "Error: %v", err)
 		}
 
-		err = operations.Unzip(directory, zipfile, forceFlag, false)
+		err = operations.Unzip(directory, zipfile, forceFlag, false, true)
 		if err != nil {
 			pretty.Exit(4, "Error: %v", err)
 		}
