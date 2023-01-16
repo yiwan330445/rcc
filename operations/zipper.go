@@ -183,7 +183,7 @@ func (it *unzipper) ExtraDirectoryPrefixLength() (int, string) {
 			continue
 		}
 		dirname := filepath.Dir(entry.Name)
-		if len(dirname) > 0 {
+		if len(dirname) > 0 && dirname != "." {
 			prefixes = append(prefixes, dirname)
 		}
 	}
@@ -199,8 +199,7 @@ func (it *unzipper) ExtraDirectoryPrefixLength() (int, string) {
 		if entry.FileInfo().IsDir() {
 			continue
 		}
-		dirname := filepath.Dir(entry.Name)
-		if !strings.HasPrefix(dirname, prefix) {
+		if !strings.HasPrefix(entry.Name, prefix) {
 			return 0, ""
 		}
 	}

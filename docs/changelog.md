@@ -1,6 +1,10 @@
 # rcc change log
 
-## v12.3.0 (date: 13.1.2023)
+## v12.3.1 (date: 16.1.2023)
+
+- bugfix: unwrap worked wrongly in case of "." dir prefix
+
+## v12.3.0 (date: 13.1.2023) BUGGY
 
 - feature: unwrap command now removes extra middle parts of file paths when
   unzipping robot.zip files
