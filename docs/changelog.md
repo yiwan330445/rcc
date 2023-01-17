@@ -1,5 +1,9 @@
 # rcc change log
 
+## v13.0.1 (date: 17.1.2023)
+
+- bugfix: diagnostics of ignoreFiles was not using paths correctly
+
 ## v13.0.0 (date: 17.1.2023)
 
 - major breaking change: various robot unzipping method now flatten directory

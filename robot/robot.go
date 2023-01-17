@@ -165,9 +165,11 @@ func (it *robot) diagnoseVariousPaths(diagnose common.Diagnoser) {
 				diagnose.Fail(0, "", "ignoreFiles entry %q seems to be absolute, which makes robot machine dependent.", path)
 				ok = false
 			}
+		}
+		for _, path := range it.IgnoreFiles() {
 			_, err := pathlib.LoadIgnoreFile(path, true)
 			if err != nil {
-				diagnose.Warning(0, "", "Could not load ignoreFiles entry %q, reason: %v", path, err)
+				diagnose.Warning(0, "", "Could not load ignoreFiles entry %q, reason: %v", filepath.Base(path), err)
 				ok = false
 				continue
 			}
