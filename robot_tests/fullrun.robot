@@ -12,7 +12,7 @@ Fullrun setup
 
 Goal: Show rcc version information.
   Step        build/rcc version --controller citests
-  Must Have   v12.
+  Must Have   v13.
 
 Goal: Show rcc license information.
   Step        build/rcc man license --controller citests
