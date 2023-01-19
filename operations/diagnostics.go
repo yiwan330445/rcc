@@ -433,7 +433,7 @@ func jsonDiagnostics(sink io.Writer, details *common.DiagnosticStatus) {
 	fmt.Fprintln(sink, form)
 }
 
-func humaneDiagnostics(sink io.Writer, details *common.DiagnosticStatus) {
+func humaneDiagnostics(sink io.Writer, details *common.DiagnosticStatus, showStatistics bool) {
 	fmt.Fprintln(sink, "Diagnostics:")
 	keys := make([]string, 0, len(details.Details))
 	for key, _ := range details.Details {
@@ -448,6 +448,9 @@ func humaneDiagnostics(sink io.Writer, details *common.DiagnosticStatus) {
 	fmt.Fprintln(sink, "Checks:")
 	for _, check := range details.Checks {
 		fmt.Fprintf(sink, " - %-8s %-8s %s\n", check.Type, check.Status, check.Message)
+	}
+	if !showStatistics {
+		return
 	}
 	count, body := journal.MakeStatistics(12, false, false, false, false)
 	if count > 4 {
@@ -469,6 +472,24 @@ func fileIt(filename string) (io.WriteCloser, error) {
 	return file, nil
 }
 
+func ProduceNetDiagnostics(body []byte, json bool) (*common.DiagnosticStatus, error) {
+	config, err := parseNetworkDiagnosticConfig(body)
+	if err != nil {
+		return nil, err
+	}
+	result := &common.DiagnosticStatus{
+		Details: make(map[string]string),
+		Checks:  []*common.DiagnosticCheck{},
+	}
+	networkDiagnostics(config, result)
+	if json {
+		jsonDiagnostics(os.Stdout, result)
+	} else {
+		humaneDiagnostics(os.Stdout, result, false)
+	}
+	return nil, nil
+}
+
 func ProduceDiagnostics(filename, robotfile string, json, production bool) (*common.DiagnosticStatus, error) {
 	file, err := fileIt(filename)
 	if err != nil {
@@ -483,7 +504,7 @@ func ProduceDiagnostics(filename, robotfile string, json, production bool) (*com
 	if json {
 		jsonDiagnostics(file, result)
 	} else {
-		humaneDiagnostics(file, result)
+		humaneDiagnostics(file, result, true)
 	}
 	return result, nil
 }
@@ -554,7 +575,7 @@ func PrintRobotDiagnostics(robotfile string, json, production bool) error {
 	if json {
 		jsonDiagnostics(os.Stdout, result)
 	} else {
-		humaneDiagnostics(os.Stderr, result)
+		humaneDiagnostics(os.Stderr, result, true)
 	}
 	return nil
 }

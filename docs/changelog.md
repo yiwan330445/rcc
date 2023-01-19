@@ -1,5 +1,9 @@
 # rcc change log
 
+## v13.1.0 (date: 19.1.2023) UNSTABLE
+
+- feature: more network related configurable diagnostics
+
 ## v13.0.1 (date: 17.1.2023)
 
 - bugfix: diagnostics of ignoreFiles was not using paths correctly
