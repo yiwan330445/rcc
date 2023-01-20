@@ -54,5 +54,5 @@ func init() {
 
 	netDiagnosticsCmd.Flags().BoolVarP(&jsonFlag, "json", "j", false, "Output in JSON format")
 	netDiagnosticsCmd.Flags().BoolVarP(&netConfigShow, "show", "s", false, "Show configuration instead of running diagnostics.")
-	netDiagnosticsCmd.Flags().StringVarP(&netConfigFilename, "config", "c", "", "Network configuration file. [optional]")
+	netDiagnosticsCmd.Flags().StringVarP(&netConfigFilename, "checks", "c", "", "Network checks configuration file. [optional]")
 }

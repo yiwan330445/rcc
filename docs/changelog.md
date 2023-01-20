@@ -1,5 +1,9 @@
 # rcc change log
 
+## v13.1.1 (date: 20.1.2023) UNSTABLE
+
+- fix: netdiagnostics configuration flag change (now it is `--checks filename`)
+
 ## v13.1.0 (date: 19.1.2023) UNSTABLE
 
 - feature: more network related configurable diagnostics
