@@ -33,6 +33,10 @@ func (it *MockClient) WithTimeout(time.Duration) cloud.Client {
 	return it
 }
 
+func (it *MockClient) WithTracing() cloud.Client {
+	return it
+}
+
 func (it *MockClient) NewRequest(url string) *cloud.Request {
 	return &cloud.Request{
 		Url:     url,

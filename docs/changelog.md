@@ -1,5 +1,10 @@
 # rcc change log
 
+## v13.1.2 (date: 23.1.2023)
+
+- improvement: netdiagnostics with `--trace` flag will now list response
+  header information
+
 ## v13.1.1 (date: 20.1.2023) UNSTABLE
 
 - fix: netdiagnostics configuration flag change (now it is `--checks filename`)

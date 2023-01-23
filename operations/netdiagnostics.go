@@ -141,6 +141,9 @@ func headRequest(link string) (code int, fingerprint string, err error) {
 
 	client, err := cloud.NewClient(link)
 	fail.On(err != nil, "Client for %q failed, reason: %v", link, err)
+	if common.TraceFlag {
+		client = client.WithTracing()
+	}
 	request := client.NewRequest("")
 	response := client.Head(request)
 	fail.On(response.Err != nil, "HEAD request to %q failed, reason: %v", link, response.Err)
@@ -153,6 +156,9 @@ func getRequest(link string) (code int, fingerprint string, err error) {
 
 	client, err := cloud.NewClient(link)
 	fail.On(err != nil, "Client for %q failed, reason: %v", link, err)
+	if common.TraceFlag {
+		client = client.WithTracing()
+	}
 	request := client.NewRequest("")
 	response := client.Get(request)
 	fail.On(response.Err != nil, "HEAD request to %q failed, reason: %v", link, response.Err)

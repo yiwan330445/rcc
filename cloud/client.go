@@ -13,6 +13,7 @@ import (
 
 	"github.com/robocorp/rcc/common"
 	"github.com/robocorp/rcc/pathlib"
+	"github.com/robocorp/rcc/set"
 	"github.com/robocorp/rcc/settings"
 	"github.com/robocorp/rcc/xviper"
 )
@@ -20,6 +21,7 @@ import (
 type internalClient struct {
 	endpoint string
 	client   *http.Client
+	tracing  bool
 }
 
 type Request struct {
@@ -48,6 +50,7 @@ type Client interface {
 	Delete(request *Request) *Response
 	NewClient(endpoint string) (Client, error)
 	WithTimeout(time.Duration) Client
+	WithTracing() Client
 }
 
 func EnsureHttps(endpoint string) (string, error) {
@@ -73,6 +76,7 @@ func NewClient(endpoint string) (Client, error) {
 	return &internalClient{
 		endpoint: https,
 		client:   &http.Client{Transport: settings.Global.ConfiguredHttpTransport()},
+		tracing:  false,
 	}, nil
 }
 
@@ -83,6 +87,15 @@ func (it *internalClient) WithTimeout(timeout time.Duration) Client {
 			Transport: settings.Global.ConfiguredHttpTransport(),
 			Timeout:   timeout,
 		},
+		tracing: it.tracing,
+	}
+}
+
+func (it *internalClient) WithTracing() Client {
+	return &internalClient{
+		endpoint: it.endpoint,
+		client:   it.client,
+		tracing:  true,
 	}
 }
 
@@ -128,6 +141,13 @@ func (it *internalClient) does(method string, request *Request) *Response {
 		return response
 	}
 	defer httpResponse.Body.Close()
+	if it.tracing {
+		common.Trace("Response %d headers:", httpResponse.StatusCode)
+		keys := set.Keys(httpResponse.Header)
+		for _, key := range keys {
+			common.Trace("> %s: %q", key, httpResponse.Header[key])
+		}
+	}
 	response.Status = httpResponse.StatusCode
 	if request.Stream != nil {
 		io.Copy(request.Stream, httpResponse.Body)
