@@ -14,6 +14,11 @@ import (
 	"github.com/robocorp/rcc/set"
 )
 
+func isSelfRequest(request *http.Request) bool {
+	identity, ok := request.Header[operations.X_RCC_RANDOM_IDENTITY]
+	return ok && len(identity) > 0 && identity[0] == common.RandomIdentifier()
+}
+
 func makeDeltaHandler(queries Partqueries) http.HandlerFunc {
 	return func(response http.ResponseWriter, request *http.Request) {
 		catalog := filepath.Base(request.URL.Path)
@@ -21,6 +26,11 @@ func makeDeltaHandler(queries Partqueries) http.HandlerFunc {
 		if request.Method != http.MethodPost {
 			response.WriteHeader(http.StatusMethodNotAllowed)
 			common.Trace("Delta: rejecting request %q for catalog %q.", request.Method, catalog)
+			return
+		}
+		if isSelfRequest(request) {
+			response.WriteHeader(http.StatusConflict)
+			common.Trace("Delta: rejecting /SELF/ request for catalog %q.", catalog)
 			return
 		}
 		reply := make(chan string)

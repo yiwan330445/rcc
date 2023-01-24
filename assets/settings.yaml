@@ -20,7 +20,7 @@ autoupdates:
   assistant: https://downloads.robocorp.com/assistant/releases/
   automation-studio: https://downloads.robocorp.com/automation-studio/releases/
   workforce-agent: https://downloads.robocorp.com/workforce-agent/releases/
-  lab: https://downloads.robocorp.com/lab/releases/
+  setup-utility: https://downloads.robocorp.com/setup-utility/releases/
   templates: https://downloads.robocorp.com/templates/templates.yaml
 
 certificates:
@@ -42,4 +42,4 @@ meta:
   name: default
   description: default settings.yaml internal to rcc
   source: builtin
-  version: 2022.09
+  version: 2023.01

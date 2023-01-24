@@ -23,11 +23,14 @@ func Serve(address string, port int, domain, storage string) error {
 	}
 	defer cleanupHoldStorage(holding)
 
-	partqueries := make(Partqueries)
+	triggers := make(chan string, 20)
+	defer close(triggers)
 
+	partqueries := make(Partqueries)
 	defer close(partqueries)
 
 	go listProvider(partqueries)
+	go pullProcess(triggers)
 
 	listen := fmt.Sprintf("%s:%d", address, port)
 	mux := http.NewServeMux()
@@ -39,8 +42,9 @@ func Serve(address string, port int, domain, storage string) error {
 		MaxHeaderBytes: 1 << 14,
 	}
 
-	mux.HandleFunc("/parts/", makeQueryHandler(partqueries))
+	mux.HandleFunc("/parts/", makeQueryHandler(partqueries, triggers))
 	mux.HandleFunc("/delta/", makeDeltaHandler(partqueries))
+	mux.HandleFunc("/force/", makeTriggerHandler(triggers))
 
 	go server.ListenAndServe()
 

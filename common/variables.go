@@ -12,6 +12,7 @@ import (
 
 const (
 	ROBOCORP_HOME_VARIABLE                = `ROBOCORP_HOME`
+	RCC_REMOTE_ORIGIN                     = `RCC_REMOTE_ORIGIN`
 	VERBOSE_ENVIRONMENT_BUILDING          = `RCC_VERBOSE_ENVIRONMENT_BUILDING`
 	ROBOCORP_OVERRIDE_SYSTEM_REQUIREMENTS = `ROBOCORP_OVERRIDE_SYSTEM_REQUIREMENTS`
 )
@@ -64,6 +65,10 @@ func init() {
 	ensureDirectory(MambaPackages())
 }
 
+func RandomIdentifier() string {
+	return randomIdentifier
+}
+
 func RobocorpHome() string {
 	if len(ForcedRobocorpHome) > 0 {
 		return ExpandPath(ForcedRobocorpHome)
@@ -73,6 +78,10 @@ func RobocorpHome() string {
 		return ExpandPath(home)
 	}
 	return ExpandPath(defaultRobocorpLocation)
+}
+
+func RccRemoteOrigin() string {
+	return os.Getenv(RCC_REMOTE_ORIGIN)
 }
 
 func RobocorpLock() string {
@@ -116,7 +125,7 @@ func RobocorpTempRoot() string {
 }
 
 func RobocorpTempName() string {
-	return filepath.Join(RobocorpTempRoot(), randomIdentifier)
+	return filepath.Join(RobocorpTempRoot(), RandomIdentifier())
 }
 
 func RobocorpTemp() string {

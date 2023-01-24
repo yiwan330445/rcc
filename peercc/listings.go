@@ -16,13 +16,18 @@ const (
 	partCacheSize = 20
 )
 
-func makeQueryHandler(queries Partqueries) http.HandlerFunc {
+func makeQueryHandler(queries Partqueries, triggers chan string) http.HandlerFunc {
 	return func(response http.ResponseWriter, request *http.Request) {
 		catalog := filepath.Base(request.URL.Path)
 		defer common.Stopwatch("Query of catalog %q took", catalog).Debug()
 		if request.Method != http.MethodGet {
 			response.WriteHeader(http.StatusMethodNotAllowed)
 			common.Trace("Query: rejecting request %q for catalog %q.", request.Method, catalog)
+			return
+		}
+		if isSelfRequest(request) {
+			response.WriteHeader(http.StatusConflict)
+			common.Trace("Query: rejecting /SELF/ request for catalog %q.", catalog)
 			return
 		}
 		reply := make(chan string)
@@ -33,6 +38,7 @@ func makeQueryHandler(queries Partqueries) http.HandlerFunc {
 		content, ok := <-reply
 		common.Debug("query handler: %q -> %v", catalog, ok)
 		if !ok {
+			triggers <- catalog
 			response.WriteHeader(http.StatusNotFound)
 			response.Write([]byte("404 not found, sorry"))
 			return

@@ -16,9 +16,12 @@ import (
 	"github.com/robocorp/rcc/fail"
 	"github.com/robocorp/rcc/htfs"
 	"github.com/robocorp/rcc/pathlib"
-	"github.com/robocorp/rcc/pretty"
 	"github.com/robocorp/rcc/settings"
 	"github.com/robocorp/rcc/xviper"
+)
+
+const (
+	X_RCC_RANDOM_IDENTITY = `X-Rcc-Random-Identity`
 )
 
 func pullOriginFingerprints(origin, catalogName string) (fingerprints string, count int, err error) {
@@ -28,8 +31,9 @@ func pullOriginFingerprints(origin, catalogName string) (fingerprints string, co
 	fail.On(err != nil, "Could not create web client for %q, reason: %v", origin, err)
 
 	request := client.NewRequest(fmt.Sprintf("/parts/%s", catalogName))
+	request.Headers[X_RCC_RANDOM_IDENTITY] = common.RandomIdentifier()
 	response := client.Get(request)
-	pretty.Guard(response.Status == 200, 5, "Problem with parts request, status=%d, body=%s", response.Status, response.Body)
+	fail.On(response.Status != 200, "Problem with parts request, status=%d, body=%s", response.Status, response.Body)
 
 	stream := bufio.NewReader(bytes.NewReader(response.Body))
 	collection := make([]string, 0, 2048)
@@ -65,6 +69,7 @@ func downloadMissingEnvironmentParts(origin, catalogName, selection string) (fil
 
 	request.Header.Add("robocorp-installation-id", xviper.TrackingIdentity())
 	request.Header.Add("User-Agent", common.UserAgent())
+	request.Header.Add(X_RCC_RANDOM_IDENTITY, common.RandomIdentifier())
 
 	response, err := client.Do(request)
 	fail.On(err != nil, "Web request to %q failed, reason: %v", url, err)

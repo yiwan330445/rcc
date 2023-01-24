@@ -39,9 +39,12 @@ var holotreePullCmd = &cobra.Command{
 }
 
 func init() {
+	remoteOrigin := common.RccRemoteOrigin()
 	holotreeCmd.AddCommand(holotreePullCmd)
 	holotreePullCmd.Flags().BoolVarP(&forcePull, "force", "", false, "Force pull check, even when blueprint is already present.")
-	holotreePullCmd.Flags().StringVarP(&remoteOrigin, "origin", "o", "", "URL of remote origin to pull environment from.")
+	holotreePullCmd.Flags().StringVarP(&remoteOrigin, "origin", "o", remoteOrigin, "URL of remote origin to pull environment from.")
 	holotreePullCmd.Flags().StringVarP(&pullRobot, "robot", "r", "robot.yaml", "Full path to 'robot.yaml' configuration file to export as catalog. <optional>")
-	holotreePullCmd.MarkFlagRequired("origin")
+	if len(remoteOrigin) == 0 {
+		holotreePullCmd.MarkFlagRequired("origin")
+	}
 }

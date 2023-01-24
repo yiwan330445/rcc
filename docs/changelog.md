@@ -1,5 +1,12 @@
 # rcc change log
 
+## v13.2.0 (date: 24.1.2023)
+
+- feature: peercc force pulling holotree catalog from other remote peercc
+- self pulling should be prevented and so protect self loops
+- new settings version, 2023.01 with autoupdates for lab removed and
+  setup-utility added
+
 ## v13.1.2 (date: 23.1.2023)
 
 - improvement: netdiagnostics with `--trace` flag will now list response
