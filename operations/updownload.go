@@ -10,6 +10,7 @@ import (
 
 	"github.com/robocorp/rcc/cloud"
 	"github.com/robocorp/rcc/common"
+	"github.com/robocorp/rcc/pathlib"
 )
 
 const (
@@ -168,7 +169,7 @@ func SummonRobotZipfile(client cloud.Client, account *account, workspaceId, robo
 	if ok {
 		return found, nil
 	}
-	zipfile := filepath.Join(os.TempDir(), fmt.Sprintf("summon%x.zip", common.When))
+	zipfile := filepath.Join(pathlib.TempDir(), fmt.Sprintf("summon%x.zip", common.When))
 	err := DownloadCommand(client, account, workspaceId, robotId, zipfile, common.DebugFlag)
 	if err != nil {
 		return "", err

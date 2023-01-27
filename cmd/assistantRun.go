@@ -67,7 +67,7 @@ var assistantRunCmd = &cobra.Command{
 		common.Debug("Robot Assistant run-id is %v.", assistant.RunId)
 		common.Debug("With task '%v' from zip %v.", assistant.TaskName, assistant.Zipfile)
 		sentinelTime := time.Now()
-		workarea := filepath.Join(os.TempDir(), fmt.Sprintf("workarea%x", common.When))
+		workarea := filepath.Join(pathlib.TempDir(), fmt.Sprintf("workarea%x", common.When))
 		defer os.RemoveAll(workarea)
 		common.Debug("Using temporary workarea: %v", workarea)
 		reason = "UNZIP_FAILURE"

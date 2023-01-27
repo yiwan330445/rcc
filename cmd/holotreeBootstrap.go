@@ -8,6 +8,7 @@ import (
 	"github.com/robocorp/rcc/common"
 	"github.com/robocorp/rcc/htfs"
 	"github.com/robocorp/rcc/operations"
+	"github.com/robocorp/rcc/pathlib"
 	"github.com/robocorp/rcc/pretty"
 	"github.com/robocorp/rcc/robot"
 	"github.com/spf13/cobra"
@@ -21,7 +22,7 @@ func updateEnvironments(robots []string) {
 	tree, err := htfs.New()
 	pretty.Guard(err == nil, 2, "Holotree creation error: %v", err)
 	for at, template := range robots {
-		workarea := filepath.Join(os.TempDir(), fmt.Sprintf("workarea%x%x", common.When, at))
+		workarea := filepath.Join(pathlib.TempDir(), fmt.Sprintf("workarea%x%x", common.When, at))
 		defer os.RemoveAll(workarea)
 		common.Debug("Using temporary workarea: %v", workarea)
 		err = operations.InitializeWorkarea(workarea, template, false, forceFlag)

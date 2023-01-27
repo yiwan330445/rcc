@@ -349,8 +349,8 @@ func LegacyEnvironment(force bool, configurations ...string) error {
 
 	freshInstall := true
 
-	condaYaml := filepath.Join(os.TempDir(), fmt.Sprintf("conda_%x.yaml", common.When))
-	requirementsText := filepath.Join(os.TempDir(), fmt.Sprintf("require_%x.txt", common.When))
+	condaYaml := filepath.Join(pathlib.TempDir(), fmt.Sprintf("conda_%x.yaml", common.When))
+	requirementsText := filepath.Join(pathlib.TempDir(), fmt.Sprintf("require_%x.txt", common.When))
 	common.Debug("Using temporary conda.yaml file: %v and requirement.txt file: %v", condaYaml, requirementsText)
 	key, yaml, finalEnv, err := temporaryConfig(condaYaml, requirementsText, true, configurations...)
 	if err != nil {

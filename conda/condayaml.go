@@ -6,6 +6,7 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/robocorp/rcc/cloud"
 	"github.com/robocorp/rcc/common"
 	"github.com/robocorp/rcc/pathlib"
 
@@ -550,7 +551,7 @@ func CondaYamlFrom(content []byte) (*Environment, error) {
 }
 
 func ReadCondaYaml(filename string) (*Environment, error) {
-	content, err := os.ReadFile(filename)
+	content, err := cloud.ReadFile(filename)
 	if err != nil {
 		return nil, fmt.Errorf("%q: %w", filename, err)
 	}

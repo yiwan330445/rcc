@@ -7,6 +7,7 @@ import (
 
 	"github.com/robocorp/rcc/common"
 	"github.com/robocorp/rcc/operations"
+	"github.com/robocorp/rcc/pathlib"
 	"github.com/robocorp/rcc/pretty"
 
 	"github.com/spf13/cobra"
@@ -26,7 +27,7 @@ var communityPullCmd = &cobra.Command{
 			defer common.Stopwatch("Pull lasted").Report()
 		}
 
-		zipfile := filepath.Join(os.TempDir(), fmt.Sprintf("pull%x.zip", common.When))
+		zipfile := filepath.Join(pathlib.TempDir(), fmt.Sprintf("pull%x.zip", common.When))
 		defer os.Remove(zipfile)
 		common.Debug("Using temporary zipfile at %v", zipfile)
 

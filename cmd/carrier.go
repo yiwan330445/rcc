@@ -48,7 +48,7 @@ func runCarrier() error {
 		return err
 	}
 	sentinelTime := time.Now()
-	workarea := filepath.Join(os.TempDir(), fmt.Sprintf("workarea%x", common.When))
+	workarea := filepath.Join(pathlib.TempDir(), fmt.Sprintf("workarea%x", common.When))
 	defer os.RemoveAll(workarea)
 	common.Debug("Using temporary workarea: %v", workarea)
 	carrier, err := operations.FindExecutable()

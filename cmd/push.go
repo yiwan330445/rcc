@@ -8,6 +8,7 @@ import (
 	"github.com/robocorp/rcc/cloud"
 	"github.com/robocorp/rcc/common"
 	"github.com/robocorp/rcc/operations"
+	"github.com/robocorp/rcc/pathlib"
 	"github.com/robocorp/rcc/pretty"
 
 	"github.com/spf13/cobra"
@@ -30,7 +31,7 @@ var pushCmd = &cobra.Command{
 			pretty.Exit(2, "Could not create client for endpoint: %v reason: %v", account.Endpoint, err)
 		}
 
-		zipfile := filepath.Join(os.TempDir(), fmt.Sprintf("push%x.zip", common.When))
+		zipfile := filepath.Join(pathlib.TempDir(), fmt.Sprintf("push%x.zip", common.When))
 		defer os.Remove(zipfile)
 		common.Debug("Using temporary zipfile at %v", zipfile)
 

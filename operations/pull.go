@@ -61,7 +61,7 @@ func downloadMissingEnvironmentParts(origin, catalogName, selection string) (fil
 	url := fmt.Sprintf("%s/delta/%s", origin, catalogName)
 
 	body := strings.NewReader(selection)
-	filename = filepath.Join(os.TempDir(), fmt.Sprintf("peercc_%x.zip", os.Getpid()))
+	filename = filepath.Join(pathlib.TempDir(), fmt.Sprintf("peercc_%x.zip", os.Getpid()))
 
 	client := &http.Client{Transport: settings.Global.ConfiguredHttpTransport()}
 	request, err := http.NewRequest("POST", url, body)
@@ -91,7 +91,7 @@ func downloadMissingEnvironmentParts(origin, catalogName, selection string) (fil
 	fail.On(err != nil, "Download failed, reason: %v", err)
 
 	sum := fmt.Sprintf("%02x", digest.Sum(nil))
-	finalname := filepath.Join(os.TempDir(), fmt.Sprintf("peercc_%s.zip", sum))
+	finalname := filepath.Join(pathlib.TempDir(), fmt.Sprintf("peercc_%s.zip", sum))
 	err = pathlib.TryRename("delta", filename, finalname)
 	fail.On(err != nil, "Rename %q -> %q failed, reason: %v", filename, finalname, err)
 

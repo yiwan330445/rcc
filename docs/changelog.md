@@ -1,5 +1,12 @@
 # rcc change log
 
+## v13.3.0 (date: 27.1.2023)
+
+- feature: command for prebuilding environments (from files or from URLs)
+- improvement: rcc version visible in "Toplevel" command list
+- added support for "cloud.ReadFile" functionality
+- bugfix: wrapped os.TempDir functionality to ensure directory exists
+
 ## v13.2.0 (date: 24.1.2023)
 
 - feature: peercc force pulling holotree catalog from other remote peercc

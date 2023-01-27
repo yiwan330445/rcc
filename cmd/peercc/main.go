@@ -20,7 +20,7 @@ var (
 )
 
 func defaultHoldLocation() string {
-	where, err := pathlib.Abs(filepath.Join(os.TempDir(), "peercchold"))
+	where, err := pathlib.Abs(filepath.Join(pathlib.TempDir(), "peercchold"))
 	if err != nil {
 		return "temphold"
 	}

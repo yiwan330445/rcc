@@ -9,6 +9,7 @@ import (
 	"github.com/robocorp/rcc/cloud"
 	"github.com/robocorp/rcc/common"
 	"github.com/robocorp/rcc/operations"
+	"github.com/robocorp/rcc/pathlib"
 	"github.com/robocorp/rcc/pretty"
 	"github.com/spf13/cobra"
 )
@@ -23,7 +24,7 @@ func isUrl(name string) bool {
 
 func temporaryDownload(at int, link string) (string, error) {
 	common.Timeline("Download %v", link)
-	zipfile := filepath.Join(os.TempDir(), fmt.Sprintf("hololib%x%x.zip", common.When, at))
+	zipfile := filepath.Join(pathlib.TempDir(), fmt.Sprintf("hololib%x%x.zip", common.When, at))
 	err := cloud.Download(link, zipfile)
 	if err != nil {
 		return "", err

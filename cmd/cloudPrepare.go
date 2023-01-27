@@ -27,10 +27,10 @@ var prepareCloudCmd = &cobra.Command{
 			defer common.Stopwatch("Cloud prepare lasted").Report()
 		}
 
-		zipfile := filepath.Join(os.TempDir(), fmt.Sprintf("summon%x.zip", common.When))
+		zipfile := filepath.Join(pathlib.TempDir(), fmt.Sprintf("summon%x.zip", common.When))
 		defer os.Remove(zipfile)
 
-		workarea := filepath.Join(os.TempDir(), fmt.Sprintf("workarea%x", common.When))
+		workarea := filepath.Join(pathlib.TempDir(), fmt.Sprintf("workarea%x", common.When))
 		defer os.RemoveAll(workarea)
 
 		account := operations.AccountByName(AccountName())

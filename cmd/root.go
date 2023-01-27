@@ -24,7 +24,7 @@ var (
 )
 
 func toplevelCommands(parent *cobra.Command) {
-	common.Log("\nToplevel commands")
+	common.Log("\nToplevel commands (%v)", common.Version)
 	for _, child := range parent.Commands() {
 		if child.Hidden || len(child.Commands()) > 0 {
 			continue

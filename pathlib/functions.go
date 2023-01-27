@@ -10,7 +10,17 @@ import (
 
 	"github.com/robocorp/rcc/common"
 	"github.com/robocorp/rcc/fail"
+	"github.com/robocorp/rcc/pretty"
 )
+
+func TempDir() string {
+	base := os.TempDir()
+	_, err := EnsureDirectory(base)
+	if err != nil {
+		pretty.Warning("TempDir %q challenge, reason: %v", base, err)
+	}
+	return base
+}
 
 func Exists(pathname string) bool {
 	_, err := os.Stat(pathname)
