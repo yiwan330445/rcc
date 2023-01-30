@@ -1,5 +1,10 @@
 # rcc change log
 
+## v13.4.1 (date: 30.1.2023)
+
+- prebuild now needs shared holotree to be enabled before building
+- prebuilds can now be forced for full rebuilds
+
 ## v13.4.0 (date: 30.1.2023)
 
 - peercc is renamed to rccremote, and peercc package renamed to remotree

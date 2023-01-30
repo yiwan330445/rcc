@@ -15,6 +15,7 @@ import (
 
 var (
 	metafileFlag bool
+	forceBuild   bool
 )
 
 func conditionalExpand(filename string) string {
@@ -71,25 +72,26 @@ func metafileExpansion(links []string, expand bool) []string {
 var holotreePrebuildCmd = &cobra.Command{
 	Use:   "prebuild",
 	Short: "Prebuild hololib from given set of environment descriptors.",
-	Long:  "Prebuild hololib from given set of environment descriptors.",
+	Long:  "Prebuild hololib from given set of environment descriptors. Requires shared holotree to be enabled and active.",
 	Args:  cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		if common.DebugFlag {
 			defer common.Stopwatch("Holotree prebuild lasted").Report()
 		}
 
-		total, failed := 0, 0
+		pretty.Guard(common.SharedHolotree, 1, "Shared holotree must be enabled and in use for prebuild environments to work correctly.")
 
-		for _, configfile := range metafileExpansion(args, metafileFlag) {
-			total += 1
-			pretty.Note("Now building config %q", configfile)
-			_, _, err := htfs.NewEnvironment(configfile, "", false, false)
+		configurations := metafileExpansion(args, metafileFlag)
+		total, failed := len(configurations), 0
+		for at, configfile := range configurations {
+			pretty.Note("%d/%d: Now building config %q", at+1, total, configfile)
+			_, _, err := htfs.NewEnvironment(configfile, "", false, forceBuild)
 			if err != nil {
 				failed += 1
-				pretty.Warning("Holotree recording error: %v", err)
+				pretty.Warning("%d/%d: Holotree recording error: %v", at+1, total, err)
 			}
 		}
-		pretty.Guard(failed == 0, 1, "%d out of %d environment builds failed! See output above for details.", failed, total)
+		pretty.Guard(failed == 0, 2, "%d out of %d environment builds failed! See output above for details.", failed, total)
 		pretty.Ok()
 	},
 }
@@ -97,4 +99,5 @@ var holotreePrebuildCmd = &cobra.Command{
 func init() {
 	holotreeCmd.AddCommand(holotreePrebuildCmd)
 	holotreePrebuildCmd.Flags().BoolVarP(&metafileFlag, "metafile", "m", false, "Input arguments are actually files containing links/filenames of environment descriptors.")
+	holotreePrebuildCmd.Flags().BoolVarP(&forceBuild, "force", "f", false, "Force environment builds, even when blueprint is already present.")
 }
