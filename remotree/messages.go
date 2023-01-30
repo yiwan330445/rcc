@@ -1,4 +1,4 @@
-package peercc
+package remotree
 
 type (
 	Partquery struct {

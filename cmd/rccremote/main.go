@@ -7,8 +7,8 @@ import (
 
 	"github.com/robocorp/rcc/common"
 	"github.com/robocorp/rcc/pathlib"
-	"github.com/robocorp/rcc/peercc"
 	"github.com/robocorp/rcc/pretty"
+	"github.com/robocorp/rcc/remotree"
 )
 
 var (
@@ -20,7 +20,7 @@ var (
 )
 
 func defaultHoldLocation() string {
-	where, err := pathlib.Abs(filepath.Join(pathlib.TempDir(), "peercchold"))
+	where, err := pathlib.Abs(filepath.Join(pathlib.TempDir(), "rccremotehold"))
 	if err != nil {
 		return "temphold"
 	}
@@ -31,7 +31,7 @@ func init() {
 	flag.BoolVar(&common.DebugFlag, "debug", false, "Turn on debugging output.")
 	flag.BoolVar(&common.TraceFlag, "trace", false, "Turn on tracing output.")
 
-	flag.BoolVar(&versionFlag, "version", false, "Just show peercc version and exit.")
+	flag.BoolVar(&versionFlag, "version", false, "Just show rccremote version and exit.")
 	flag.StringVar(&serverName, "hostname", "localhost", "Hostname/address to bind server to.")
 	flag.IntVar(&serverPort, "port", 4653, "Port to bind server in given hostname.")
 	flag.StringVar(&holdingArea, "hold", defaultHoldLocation(), "Directory where to put HOLD files once known.")
@@ -62,9 +62,9 @@ func process() {
 	if versionFlag {
 		showVersion()
 	}
-	pretty.Guard(common.SharedHolotree, 1, "Shared holotree must be enabled and in use for peercc to work.")
-	common.Log("Peer for rcc starting (%s) ...", common.Version)
-	peercc.Serve(serverName, serverPort, domainId, holdingArea)
+	pretty.Guard(common.SharedHolotree, 1, "Shared holotree must be enabled and in use for rccremote to work.")
+	common.Log("Remote for rcc starting (%s) ...", common.Version)
+	remotree.Serve(serverName, serverPort, domainId, holdingArea)
 }
 
 func main() {

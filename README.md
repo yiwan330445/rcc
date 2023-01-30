@@ -83,7 +83,7 @@ Changelog can be seen [here.](/docs/changelog.md) It is also visible inside rcc 
 
 Some tips, tricks, and recipes can be found [here.](/docs/recipes.md) They are also visible inside rcc using command `rcc docs recipes`.
 
-## Community
+## Community and Support
 
 The Robocorp community can be found on [Developer Slack](https://robocorp-developers.slack.com), where you can ask questions, voice ideas, and share your projects.
 

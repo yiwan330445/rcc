@@ -1,5 +1,9 @@
 # rcc change log
 
+## v13.4.0 (date: 30.1.2023)
+
+- peercc is renamed to rccremote, and peercc package renamed to remotree
+
 ## v13.3.0 (date: 27.1.2023)
 
 - feature: command for prebuilding environments (from files or from URLs)
