@@ -68,6 +68,14 @@ func EnsureHttps(endpoint string) (string, error) {
 	return nice, nil
 }
 
+func NewUnsafeClient(endpoint string) (Client, error) {
+	return &internalClient{
+		endpoint: endpoint,
+		client:   &http.Client{Transport: settings.Global.ConfiguredHttpTransport()},
+		tracing:  false,
+	}, nil
+}
+
 func NewClient(endpoint string) (Client, error) {
 	https, err := EnsureHttps(endpoint)
 	if err != nil {

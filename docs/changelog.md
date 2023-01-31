@@ -1,5 +1,10 @@
 # rcc change log
 
+## v13.4.2 (date: 31.1.2023)
+
+- fixed broken holotree pull command, and made it allow pulling from plain
+  http sources
+
 ## v13.4.1 (date: 30.1.2023)
 
 - prebuild now needs shared holotree to be enabled before building

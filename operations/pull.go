@@ -27,7 +27,7 @@ const (
 func pullOriginFingerprints(origin, catalogName string) (fingerprints string, count int, err error) {
 	defer fail.Around(&err)
 
-	client, err := cloud.NewClient(origin)
+	client, err := cloud.NewUnsafeClient(origin)
 	fail.On(err != nil, "Could not create web client for %q, reason: %v", origin, err)
 
 	request := client.NewRequest(fmt.Sprintf("/parts/%s", catalogName))
