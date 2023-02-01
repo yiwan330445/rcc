@@ -1,20 +1,25 @@
 # rcc change log
 
-## v13.4.2 (date: 31.1.2023)
+## v13.4.3 (date: 1.2.2023)
+
+- bugfix: shortcutting to file resource on cloud.ReadFile if actual exiting
+  file is given as resource link.
+
+## v13.4.2 (date: 31.1.2023) UNSTABLE
 
 - fixed broken holotree pull command, and made it allow pulling from plain
   http sources
 
-## v13.4.1 (date: 30.1.2023)
+## v13.4.1 (date: 30.1.2023) UNSTABLE
 
 - prebuild now needs shared holotree to be enabled before building
 - prebuilds can now be forced for full rebuilds
 
-## v13.4.0 (date: 30.1.2023)
+## v13.4.0 (date: 30.1.2023) UNSTABLE
 
 - peercc is renamed to rccremote, and peercc package renamed to remotree
 
-## v13.3.0 (date: 27.1.2023)
+## v13.3.0 (date: 27.1.2023) UNSTABLE
 
 - feature: command for prebuilding environments (from files or from URLs)
 - improvement: rcc version visible in "Toplevel" command list

@@ -551,7 +551,14 @@ func CondaYamlFrom(content []byte) (*Environment, error) {
 }
 
 func ReadCondaYaml(filename string) (*Environment, error) {
-	content, err := cloud.ReadFile(filename)
+	var content []byte
+	var err error
+
+	if pathlib.IsFile(filename) {
+		content, err = os.ReadFile(filename)
+	} else {
+		content, err = cloud.ReadFile(filename)
+	}
 	if err != nil {
 		return nil, fmt.Errorf("%q: %w", filename, err)
 	}

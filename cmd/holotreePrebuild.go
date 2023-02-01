@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"net/url"
+	"os"
 	"path/filepath"
 	"strings"
 
@@ -29,7 +30,7 @@ func conditionalExpand(filename string) string {
 	return fullpath
 }
 
-func resolveMetafile(link string) ([]string, error) {
+func resolveMetafileURL(link string) ([]string, error) {
 	origin, err := url.Parse(link)
 	refok := err == nil
 	raw, err := cloud.ReadFile(link)
@@ -49,6 +50,30 @@ func resolveMetafile(link string) ([]string, error) {
 		} else {
 			result = append(result, flat)
 		}
+	}
+	return result, nil
+}
+
+func resolveMetafile(link string) ([]string, error) {
+	if !pathlib.IsFile(link) {
+		return resolveMetafileURL(link)
+	}
+	fullpath, err := filepath.Abs(link)
+	if err != nil {
+		return nil, err
+	}
+	basedir := filepath.Dir(fullpath)
+	raw, err := os.ReadFile(fullpath)
+	if err != nil {
+		return nil, err
+	}
+	result := []string{}
+	for _, line := range strings.SplitAfter(string(raw), "\n") {
+		flat := strings.TrimSpace(line)
+		if strings.HasPrefix(flat, "#") || len(flat) == 0 {
+			continue
+		}
+		result = append(result, filepath.Join(basedir, flat))
 	}
 	return result, nil
 }
