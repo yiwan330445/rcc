@@ -105,5 +105,5 @@ func Progress(step int, form string, details ...interface{}) {
 	delta := ProgressMark.Sub(previous).Round(1 * time.Millisecond).Seconds()
 	message := fmt.Sprintf(form, details...)
 	Log("####  Progress: %02d/14  %s  %8.3fs  %s", step, Version, delta, message)
-	Timeline("%d/13 %s", step, message)
+	Timeline("%d/14 %s", step, message)
 }

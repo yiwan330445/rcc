@@ -115,7 +115,11 @@ func ProtectedImport(filename string) (err error) {
 func PullCatalog(origin, catalogName string, useLock bool) (err error) {
 	defer fail.Around(&err)
 
-	common.Timeline("pull %q parts from %q", catalogName, origin)
+	common.TimelineBegin("hololib+catalog pull start")
+	defer common.TimelineEnd()
+
+	common.Timeline("pulling %q parts from %q", catalogName, origin)
+
 	unknownSelected, count, err := pullOriginFingerprints(origin, catalogName)
 	fail.On(err != nil, "%v", err)
 
@@ -132,7 +136,6 @@ func PullCatalog(origin, catalogName string, useLock bool) (err error) {
 		err = Unzip(common.HololibLocation(), filename, true, false, false)
 	}
 	fail.On(err != nil, "Failed to unzip %v to hololib, reason: %v", filename, err)
-	common.Timeline("environment pull completed")
 
 	return nil
 }

@@ -1,5 +1,10 @@
 # rcc change log
 
+## v13.5.1 (date: 2.2.2023)
+
+- fixing progress counter on timeline output
+- timeline output clarifications on hololib pull step
+
 ## v13.5.0 (date: 2.2.2023)
 
 - support for pulling hololib catalogs as part of normal holotree environment
