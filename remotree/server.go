@@ -37,8 +37,8 @@ func Serve(address string, port int, domain, storage string) error {
 	server := &http.Server{
 		Addr:           listen,
 		Handler:        mux,
-		ReadTimeout:    20 * time.Second,
-		WriteTimeout:   40 * time.Second,
+		ReadTimeout:    2 * time.Minute,
+		WriteTimeout:   30 * time.Minute,
 		MaxHeaderBytes: 1 << 14,
 	}
 
