@@ -11,6 +11,7 @@ import (
 	"github.com/robocorp/rcc/blobs"
 	"github.com/robocorp/rcc/common"
 	"github.com/robocorp/rcc/htfs"
+	"github.com/robocorp/rcc/operations"
 	"github.com/robocorp/rcc/pretty"
 
 	"github.com/spf13/cobra"
@@ -72,7 +73,7 @@ var speedtestCmd = &cobra.Command{
 			pretty.Exit(2, "Error: %v", err)
 		}
 		common.ForcedRobocorpHome = folder
-		_, score, err := htfs.NewEnvironment(condafile, "", true, true)
+		_, score, err := htfs.NewEnvironment(condafile, "", true, true, operations.PullCatalog)
 		common.Silent, common.TraceFlag, common.DebugFlag = silent, trace, debug
 		common.UnifyVerbosityFlags()
 		if err != nil {

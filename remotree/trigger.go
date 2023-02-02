@@ -20,7 +20,7 @@ func makeTriggerHandler(requests chan string) http.HandlerFunc {
 func pullOperation(counter int, catalog, remoteOrigin string) {
 	defer common.Stopwatch("#%d: pull opearation lasted", counter).Report()
 	common.Log("#%d: Trying to pull %q from %q ...", counter, catalog, remoteOrigin)
-	err := operations.PullCatalog(remoteOrigin, catalog)
+	err := operations.PullCatalog(remoteOrigin, catalog, true)
 	if err != nil {
 		pretty.Warning("#%d: Failed to pull %q from %q, reason: %v", counter, catalog, remoteOrigin, err)
 	} else {

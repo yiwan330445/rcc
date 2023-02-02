@@ -37,7 +37,7 @@ func updateEnvironments(robots []string) {
 		if !config.UsesConda() {
 			continue
 		}
-		_, _, err = htfs.NewEnvironment(config.CondaConfigFile(), "", false, false)
+		_, _, err = htfs.NewEnvironment(config.CondaConfigFile(), "", false, false, operations.PullCatalog)
 		pretty.Guard(err == nil, 2, "Holotree recording error: %v", err)
 	}
 }

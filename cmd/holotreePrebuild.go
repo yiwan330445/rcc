@@ -9,6 +9,7 @@ import (
 	"github.com/robocorp/rcc/cloud"
 	"github.com/robocorp/rcc/common"
 	"github.com/robocorp/rcc/htfs"
+	"github.com/robocorp/rcc/operations"
 	"github.com/robocorp/rcc/pathlib"
 	"github.com/robocorp/rcc/pretty"
 	"github.com/spf13/cobra"
@@ -110,7 +111,7 @@ var holotreePrebuildCmd = &cobra.Command{
 		total, failed := len(configurations), 0
 		for at, configfile := range configurations {
 			pretty.Note("%d/%d: Now building config %q", at+1, total, configfile)
-			_, _, err := htfs.NewEnvironment(configfile, "", false, forceBuild)
+			_, _, err := htfs.NewEnvironment(configfile, "", false, forceBuild, operations.PullCatalog)
 			if err != nil {
 				failed += 1
 				pretty.Warning("%d/%d: Holotree recording error: %v", at+1, total, err)

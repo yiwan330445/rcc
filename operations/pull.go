@@ -112,7 +112,7 @@ func ProtectedImport(filename string) (err error) {
 	return Unzip(common.HololibLocation(), filename, true, false, false)
 }
 
-func PullCatalog(origin, catalogName string) (err error) {
+func PullCatalog(origin, catalogName string, useLock bool) (err error) {
 	defer fail.Around(&err)
 
 	common.Timeline("pull %q parts from %q", catalogName, origin)
@@ -126,7 +126,11 @@ func PullCatalog(origin, catalogName string) (err error) {
 	common.Debug("Temporary content based filename is: %q", filename)
 	defer pathlib.TryRemove("temporary", filename)
 
-	err = ProtectedImport(filename)
+	if useLock {
+		err = ProtectedImport(filename)
+	} else {
+		err = Unzip(common.HololibLocation(), filename, true, false, false)
+	}
 	fail.On(err != nil, "Failed to unzip %v to hololib, reason: %v", filename, err)
 	common.Timeline("environment pull completed")
 

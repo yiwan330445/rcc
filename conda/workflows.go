@@ -150,7 +150,7 @@ func newLiveInternal(yaml, condaYaml, requirementsText, key string, force, fresh
 	if force {
 		ttl = "0"
 	}
-	common.Progress(5, "Running micromamba phase. (micromamba v%s)", MicromambaVersion())
+	common.Progress(6, "Running micromamba phase. (micromamba v%s)", MicromambaVersion())
 	mambaCommand := common.NewCommander(BinMicromamba(), "create", "--always-copy", "--no-env", "--safety-checks", "enabled", "--extra-safety-checks", "--retry-clean-cache", "--strict-channel-priority", "--repodata-ttl", ttl, "-y", "-f", condaYaml, "-p", targetFolder)
 	mambaCommand.Option("--channel-alias", settings.Global.CondaURL())
 	mambaCommand.ConditionalFlag(common.VerboseEnvironmentBuilding(), "--verbose")
@@ -180,7 +180,7 @@ func newLiveInternal(yaml, condaYaml, requirementsText, key string, force, fresh
 	pipUsed, pipCache, wheelCache := false, common.PipCache(), common.WheelCache()
 	size, ok := pathlib.Size(requirementsText)
 	if !ok || size == 0 {
-		common.Progress(6, "Skipping pip install phase -- no pip dependencies.")
+		common.Progress(7, "Skipping pip install phase -- no pip dependencies.")
 	} else {
 		if !pyok {
 			cloud.BackgroundMetric(common.ControllerIdentity(), "rcc.env.fatal.pip", fmt.Sprintf("%d_%x", 9999, 9999))
@@ -188,7 +188,7 @@ func newLiveInternal(yaml, condaYaml, requirementsText, key string, force, fresh
 			common.Fatal("pip fail. no python found.", errors.New("No python found, but required!"))
 			return false, false
 		}
-		common.Progress(6, "Running pip install phase. (pip v%s)", PipVersion(python))
+		common.Progress(7, "Running pip install phase. (pip v%s)", PipVersion(python))
 		common.Debug("Updating new environment at %v with pip requirements from %v (size: %v)", targetFolder, requirementsText, size)
 		pipCommand := common.NewCommander(python, "-m", "pip", "install", "--isolated", "--no-color", "--disable-pip-version-check", "--prefer-binary", "--cache-dir", pipCache, "--find-links", wheelCache, "--requirement", requirementsText)
 		pipCommand.Option("--index-url", settings.Global.PypiURL())
@@ -209,7 +209,7 @@ func newLiveInternal(yaml, condaYaml, requirementsText, key string, force, fresh
 	}
 	fmt.Fprintf(planWriter, "\n---  post install plan @%ss  ---\n\n", stopwatch)
 	if postInstall != nil && len(postInstall) > 0 {
-		common.Progress(7, "Post install scripts phase started.")
+		common.Progress(8, "Post install scripts phase started.")
 		common.Debug("===  post install phase ===")
 		for _, script := range postInstall {
 			scriptCommand, err := shell.Split(script)
@@ -229,9 +229,9 @@ func newLiveInternal(yaml, condaYaml, requirementsText, key string, force, fresh
 		}
 		journal.CurrentBuildEvent().PostInstallComplete()
 	} else {
-		common.Progress(7, "Post install scripts phase skipped -- no scripts.")
+		common.Progress(8, "Post install scripts phase skipped -- no scripts.")
 	}
-	common.Progress(8, "Activate environment started phase.")
+	common.Progress(9, "Activate environment started phase.")
 	common.Debug("===  activate phase ===")
 	fmt.Fprintf(planWriter, "\n---  activation plan @%ss  ---\n\n", stopwatch)
 	err = Activate(planWriter, targetFolder)
@@ -247,7 +247,7 @@ func newLiveInternal(yaml, condaYaml, requirementsText, key string, force, fresh
 	}
 	fmt.Fprintf(planWriter, "\n---  pip check plan @%ss  ---\n\n", stopwatch)
 	if common.StrictFlag && pipUsed {
-		common.Progress(9, "Running pip check phase.")
+		common.Progress(10, "Running pip check phase.")
 		pipCommand := common.NewCommander(python, "-m", "pip", "check", "--no-color")
 		pipCommand.ConditionalFlag(common.VerboseEnvironmentBuilding(), "--verbose")
 		common.Debug("===  pip check phase ===")
@@ -261,12 +261,12 @@ func newLiveInternal(yaml, condaYaml, requirementsText, key string, force, fresh
 		}
 		common.Timeline("pip check done.")
 	} else {
-		common.Progress(9, "Pip check skipped.")
+		common.Progress(10, "Pip check skipped.")
 	}
 	fmt.Fprintf(planWriter, "\n---  installation plan complete @%ss  ---\n\n", stopwatch)
 	planSink.Sync()
 	planSink.Close()
-	common.Progress(10, "Update installation plan.")
+	common.Progress(11, "Update installation plan.")
 	finalplan := filepath.Join(targetFolder, "rcc_plan.log")
 	os.Rename(planfile, finalplan)
 	common.Debug("===  finalize phase ===")

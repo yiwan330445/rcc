@@ -31,7 +31,7 @@ var holotreePullCmd = &cobra.Command{
 		present := tree.HasBlueprint(holotreeBlueprint)
 		if !present || forcePull {
 			catalog := htfs.CatalogName(hash)
-			err = operations.PullCatalog(remoteOriginOption, catalog)
+			err = operations.PullCatalog(remoteOriginOption, catalog, true)
 			pretty.Guard(err == nil, 3, "%s", err)
 		}
 		pretty.Ok()

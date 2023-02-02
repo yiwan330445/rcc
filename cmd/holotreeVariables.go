@@ -79,7 +79,7 @@ func holotreeExpandEnvironment(userFiles []string, packfile, environment, worksp
 	if config != nil {
 		holozip = config.Holozip()
 	}
-	path, _, err := htfs.NewEnvironment(condafile, holozip, true, force)
+	path, _, err := htfs.NewEnvironment(condafile, holozip, true, force, operations.PullCatalog)
 	pretty.Guard(err == nil, 6, "%s", err)
 
 	if Has(environment) {

@@ -1,5 +1,10 @@
 # rcc change log
 
+## v13.5.0 (date: 2.2.2023)
+
+- support for pulling hololib catalogs as part of normal holotree environment
+  creation process (new Progress step).
+
 ## v13.4.3 (date: 1.2.2023)
 
 - bugfix: shortcutting to file resource on cloud.ReadFile if actual exiting
