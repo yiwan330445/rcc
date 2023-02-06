@@ -1,5 +1,9 @@
 # rcc change log
 
+## v13.5.4 (date: 6.2.2023) UNSTABLE
+
+- bugfix: file syncing on pull commands
+
 ## v13.5.3 (date: 6.2.2023) UNSTABLE
 
 - rccremote server zip file managementent improvements

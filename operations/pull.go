@@ -79,7 +79,6 @@ func downloadMissingEnvironmentParts(origin, catalogName, selection string) (fil
 
 	out, err := os.Create(filename)
 	fail.On(err != nil, "Creating temporary file %q failed, reason: %v", filename, err)
-	defer out.Close()
 	defer pathlib.TryRemove("temporary", filename)
 
 	digest := sha256.New()
@@ -89,6 +88,12 @@ func downloadMissingEnvironmentParts(origin, catalogName, selection string) (fil
 
 	_, err = io.Copy(many, response.Body)
 	fail.On(err != nil, "Download failed, reason: %v", err)
+
+	err = out.Sync()
+	fail.On(err != nil, "Sync of %q failed, reason: %v", filename, err)
+
+	err = out.Close()
+	fail.On(err != nil, "Closing %q failed, reason: %v", filename, err)
 
 	sum := fmt.Sprintf("%02x", digest.Sum(nil))
 	finalname := filepath.Join(pathlib.TempDir(), fmt.Sprintf("rccremote_%s.zip", sum))
