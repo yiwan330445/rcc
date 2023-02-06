@@ -41,6 +41,12 @@ func ShortDigest(content string) string {
 	return result[:16]
 }
 
+func Digest(content string) string {
+	digester := sha256.New()
+	digester.Write([]byte(content))
+	return Hexdigest(digester.Sum(nil))
+}
+
 func Siphash(left, right uint64, body []byte) uint64 {
 	return siphash.Hash(left, right, body)
 }

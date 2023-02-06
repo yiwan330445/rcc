@@ -9,6 +9,8 @@ import (
 	"path/filepath"
 	"syscall"
 	"time"
+
+	"github.com/robocorp/rcc/pathlib"
 )
 
 func Serve(address string, port int, domain, storage string) error {
@@ -22,6 +24,12 @@ func Serve(address string, port int, domain, storage string) error {
 		return err
 	}
 	defer cleanupHoldStorage(holding)
+
+	tempdir, ok := tempDir()
+	if ok {
+		pathlib.TryRemoveAll("remotree.Serve[start]", tempdir)
+		defer pathlib.TryRemoveAll("remotree.Serve[defer]", tempdir)
+	}
 
 	triggers := make(chan string, 20)
 	defer close(triggers)

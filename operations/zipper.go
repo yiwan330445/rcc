@@ -353,7 +353,7 @@ func CarrierUnzip(directory, carrier string, force, temporary bool) error {
 }
 
 func Unzip(directory, zipfile string, force, temporary, flatten bool) error {
-	common.Timeline("unzip %q to %q", zipfile, directory)
+	common.Timeline("unzip %q [size: %s] to %q", zipfile, pathlib.HumaneSize(zipfile), directory)
 	defer common.Timeline("unzip done")
 	fullpath, err := filepath.Abs(directory)
 	if err != nil {

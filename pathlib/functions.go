@@ -88,6 +88,30 @@ func Size(pathname string) (int64, bool) {
 	return stat.Size(), true
 }
 
+func kiloShift(size float64) float64 {
+	return size / 1024.0
+}
+
+func HumaneSize(pathname string) string {
+	rawsize, ok := Size(pathname)
+	if !ok {
+		return "N/A"
+	}
+	kilos := kiloShift(float64(rawsize))
+	if kilos < 1.0 {
+		return fmt.Sprintf("%db", rawsize)
+	}
+	megas := kiloShift(kilos)
+	if megas < 1.0 {
+		return fmt.Sprintf("%3.1fK", kilos)
+	}
+	gigas := kiloShift(megas)
+	if gigas < 1.0 {
+		return fmt.Sprintf("%3.1fM", megas)
+	}
+	return fmt.Sprintf("%3.1fG", gigas)
+}
+
 func Modtime(pathname string) (time.Time, error) {
 	stat, err := os.Stat(pathname)
 	if err != nil {
