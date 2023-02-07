@@ -1,5 +1,10 @@
 # rcc change log
 
+## v13.5.5 (date: 7.2.2023)
+
+- bugfix: contain output of checking long path support on Windows
+- improvement: adding more structure to holotree pull timeline
+
 ## v13.5.4 (date: 6.2.2023) UNSTABLE
 
 - bugfix: file syncing on pull commands

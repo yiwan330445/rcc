@@ -82,7 +82,7 @@ func TimelineBegin(form string, details ...interface{}) {
 
 func TimelineEnd() {
 	indent <- false
-	Timeline("`")
+	Timeline("`--")
 }
 
 func EndOfTimeline() {

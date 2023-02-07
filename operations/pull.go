@@ -27,12 +27,18 @@ const (
 func pullOriginFingerprints(origin, catalogName string) (fingerprints string, count int, err error) {
 	defer fail.Around(&err)
 
+	common.TimelineBegin("pull rccremote origin fingerprints")
+	defer common.TimelineEnd()
+
 	client, err := cloud.NewUnsafeClient(origin)
 	fail.On(err != nil, "Could not create web client for %q, reason: %v", origin, err)
 
+	url := fmt.Sprintf("%s/parts/%s", origin, catalogName)
 	request := client.NewRequest(fmt.Sprintf("/parts/%s", catalogName))
 	request.Headers[X_RCC_RANDOM_IDENTITY] = common.RandomIdentifier()
 	response := client.Get(request)
+	common.Timeline("status %d from GET %q", response.Status, url)
+
 	fail.On(response.Status != 200, "Problem with parts request, status=%d, body=%s", response.Status, response.Body)
 
 	stream := bufio.NewReader(bytes.NewReader(response.Body))
@@ -47,6 +53,7 @@ func pullOriginFingerprints(origin, catalogName string) (fingerprints string, co
 			}
 		}
 		if err == io.EOF {
+			common.Timeline("total of %d parts in catalog %q", len(collection), catalogName)
 			return strings.Join(collection, "\n"), len(collection), nil
 		}
 		fail.On(err != nil, "STREAM error: %v", err)
@@ -55,8 +62,11 @@ func pullOriginFingerprints(origin, catalogName string) (fingerprints string, co
 	return "", 0, fmt.Errorf("Unexpected reach of code that should never happen.")
 }
 
-func downloadMissingEnvironmentParts(origin, catalogName, selection string) (filename string, err error) {
+func downloadMissingEnvironmentParts(count int, origin, catalogName, selection string) (filename string, err error) {
 	defer fail.Around(&err)
+
+	common.TimelineBegin("download %d parts + catalog from %q", count, origin)
+	defer common.TimelineEnd()
 
 	url := fmt.Sprintf("%s/delta/%s", origin, catalogName)
 
@@ -74,6 +84,8 @@ func downloadMissingEnvironmentParts(origin, catalogName, selection string) (fil
 	response, err := client.Do(request)
 	fail.On(err != nil, "Web request to %q failed, reason: %v", url, err)
 	defer response.Body.Close()
+
+	common.Timeline("status %d from POST %q", response.StatusCode, url)
 
 	fail.On(response.StatusCode < 200 || 299 < response.StatusCode, "%s (%s)", response.Status, url)
 
@@ -128,8 +140,7 @@ func PullCatalog(origin, catalogName string, useLock bool) (err error) {
 	unknownSelected, count, err := pullOriginFingerprints(origin, catalogName)
 	fail.On(err != nil, "%v", err)
 
-	common.Timeline("download %d parts + catalog from %q", count, origin)
-	filename, err := downloadMissingEnvironmentParts(origin, catalogName, unknownSelected)
+	filename, err := downloadMissingEnvironmentParts(count, origin, catalogName, unknownSelected)
 	fail.On(err != nil, "%v", err)
 
 	common.Debug("Temporary content based filename is: %q", filename)
