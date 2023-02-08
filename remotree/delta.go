@@ -124,7 +124,7 @@ func exportMissing(catalog string, missing []string) (result string, err error) 
 func exportMissingToFile(catalog string, missing []string, filename string) (err error) {
 	defer fail.Around(&err)
 
-	handle, err := os.Create(filename)
+	handle, err := pathlib.Create(filename)
 	fail.On(err != nil, "Could not create export file %q, reason: %v", filename, err)
 	defer handle.Close()
 

@@ -22,6 +22,22 @@ func TempDir() string {
 	return base
 }
 
+func Create(filename string) (*os.File, error) {
+	_, err := EnsureParentDirectory(filename)
+	if err != nil {
+		return nil, fmt.Errorf("Failed to ensure that parent directories for %q exist, reason: %v", filename, err)
+	}
+	return os.Create(filename)
+}
+
+func WriteFile(filename string, data []byte, mode os.FileMode) error {
+	_, err := EnsureParentDirectory(filename)
+	if err != nil {
+		return fmt.Errorf("Failed to ensure that parent directories for %q exist, reason: %v", filename, err)
+	}
+	return os.WriteFile(filename, data, mode)
+}
+
 func Exists(pathname string) bool {
 	_, err := os.Stat(pathname)
 	return !os.IsNotExist(err)
@@ -92,24 +108,29 @@ func kiloShift(size float64) float64 {
 	return size / 1024.0
 }
 
+func HumaneSizer(rawsize int64) (float64, string) {
+	kilos := kiloShift(float64(rawsize))
+	if kilos < 1.0 {
+		return float64(rawsize), "b"
+	}
+	megas := kiloShift(kilos)
+	if megas < 1.0 {
+		return kilos, "K"
+	}
+	gigas := kiloShift(megas)
+	if gigas < 1.0 {
+		return megas, "M"
+	}
+	return gigas, "G"
+}
+
 func HumaneSize(pathname string) string {
 	rawsize, ok := Size(pathname)
 	if !ok {
 		return "N/A"
 	}
-	kilos := kiloShift(float64(rawsize))
-	if kilos < 1.0 {
-		return fmt.Sprintf("%db", rawsize)
-	}
-	megas := kiloShift(kilos)
-	if megas < 1.0 {
-		return fmt.Sprintf("%3.1fK", kilos)
-	}
-	gigas := kiloShift(megas)
-	if gigas < 1.0 {
-		return fmt.Sprintf("%3.1fM", megas)
-	}
-	return fmt.Sprintf("%3.1fG", gigas)
+	value, suffix := HumaneSizer(rawsize)
+	return fmt.Sprintf("%3.1f%s", value, suffix)
 }
 
 func Modtime(pathname string) (time.Time, error) {
@@ -251,6 +272,10 @@ func EnsureSharedParentDirectory(resource string) (string, error) {
 
 func EnsureDirectory(directory string) (string, error) {
 	return doEnsureDirectory(directory, 0o750)
+}
+
+func EnsureParentDirectory(resource string) (string, error) {
+	return doEnsureDirectory(filepath.Dir(resource), 0o750)
 }
 
 func RemoveEmptyDirectores(starting string) (err error) {

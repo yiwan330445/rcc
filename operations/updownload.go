@@ -98,7 +98,7 @@ func putContent(client cloud.Client, awsUrl, zipfile string) error {
 }
 
 func getContent(client cloud.Client, awsUrl, zipfile string) error {
-	handle, err := os.Create(zipfile)
+	handle, err := pathlib.Create(zipfile)
 	if err != nil {
 		return err
 	}

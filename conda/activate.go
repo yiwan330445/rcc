@@ -11,6 +11,7 @@ import (
 	"strings"
 
 	"github.com/robocorp/rcc/common"
+	"github.com/robocorp/rcc/pathlib"
 )
 
 const (
@@ -62,7 +63,7 @@ func createScript(targetFolder string) (string, error) {
 	script.Execute(buffer, details)
 
 	scriptfile := filepath.Join(targetFolder, fmt.Sprintf("rcc_activate%s", commandSuffix))
-	err = os.WriteFile(scriptfile, buffer.Bytes(), 0o755)
+	err = pathlib.WriteFile(scriptfile, buffer.Bytes(), 0o755)
 	if err != nil {
 		return "", err
 	}
@@ -138,7 +139,7 @@ func Activate(sink io.Writer, targetFolder string) error {
 		return err
 	}
 	targetJson := filepath.Join(targetFolder, activateFile)
-	err = os.WriteFile(targetJson, body, 0o644)
+	err = pathlib.WriteFile(targetJson, body, 0o644)
 	if err != nil {
 		return err
 	}

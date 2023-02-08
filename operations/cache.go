@@ -96,7 +96,7 @@ func (it *Cache) Save() error {
 	}
 	defer locker.Release()
 
-	sink, err := os.Create(cacheLocation())
+	sink, err := pathlib.Create(cacheLocation())
 	if err != nil {
 		return err
 	}

@@ -272,7 +272,7 @@ func newLiveInternal(yaml, condaYaml, requirementsText, key string, force, fresh
 	common.Debug("===  finalize phase ===")
 
 	markerFile := filepath.Join(targetFolder, "identity.yaml")
-	err = os.WriteFile(markerFile, []byte(yaml), 0o644)
+	err = pathlib.WriteFile(markerFile, []byte(yaml), 0o644)
 	if err != nil {
 		return false, false
 	}
@@ -281,7 +281,7 @@ func newLiveInternal(yaml, condaYaml, requirementsText, key string, force, fresh
 	if ok {
 		venvContent := fmt.Sprintf(venvTemplate, targetFolder, pythonVersionAt(targetFolder))
 		venvFile := filepath.Join(targetFolder, "pyvenv.cfg")
-		err = os.WriteFile(venvFile, []byte(venvContent), 0o644)
+		err = pathlib.WriteFile(venvFile, []byte(venvContent), 0o644)
 		if err != nil {
 			return false, false
 		}

@@ -89,7 +89,7 @@ func downloadMissingEnvironmentParts(count int, origin, catalogName, selection s
 
 	fail.On(response.StatusCode < 200 || 299 < response.StatusCode, "%s (%s)", response.Status, url)
 
-	out, err := os.Create(filename)
+	out, err := pathlib.Create(filename)
 	fail.On(err != nil, "Creating temporary file %q failed, reason: %v", filename, err)
 	defer pathlib.TryRemove("temporary", filename)
 

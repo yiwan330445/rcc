@@ -15,6 +15,7 @@ import (
 	"github.com/robocorp/rcc/common"
 	"github.com/robocorp/rcc/fail"
 	"github.com/robocorp/rcc/pathlib"
+	"github.com/robocorp/rcc/set"
 )
 
 var (
@@ -70,6 +71,24 @@ func NewRoot(path string) (*Root, error) {
 		RccVersion: common.Version,
 		source:     fullpath,
 	}, nil
+}
+
+func (it *Root) Top(count int) map[string]int64 {
+	target := make(map[string]int64)
+	it.Tree.fillSizes("", target)
+	sizes := set.Values(target)
+	total := len(sizes)
+	if total > count {
+		sizes = sizes[total-count:]
+	}
+	members := set.Membership(sizes)
+	result := make(map[string]int64)
+	for filename, size := range target {
+		if members[size] {
+			result[filename] = size
+		}
+	}
+	return result
 }
 
 func (it *Root) Show(filename string) ([]byte, error) {
@@ -163,7 +182,7 @@ func (it *Root) SaveAs(filename string) error {
 	if err != nil {
 		return err
 	}
-	sink, err := os.Create(filename)
+	sink, err := pathlib.Create(filename)
 	if err != nil {
 		return err
 	}
@@ -223,6 +242,15 @@ func showFile(filename string) (content []byte, err error) {
 	_, err = io.Copy(sink, reader)
 	fail.On(err != nil, "Failed to read %q, reason: %v", filename, err)
 	return sink.Bytes(), nil
+}
+
+func (it *Dir) fillSizes(prefix string, target map[string]int64) {
+	for filename, file := range it.Files {
+		target[filepath.Join(prefix, filename)] = file.Size
+	}
+	for dirname, dir := range it.Dirs {
+		dir.fillSizes(filepath.Join(prefix, dirname), target)
+	}
 }
 
 func (it *Dir) Show(path []string, fullpath string) ([]byte, error) {

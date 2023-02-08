@@ -1,5 +1,10 @@
 # rcc change log
 
+## v13.5.6 (date: 8.2.2023)
+
+- bugfix: create missing folders while creating and writing some files
+- improvement: added optional top N biggest files sizes on catalog listing
+
 ## v13.5.5 (date: 7.2.2023)
 
 - bugfix: contain output of checking long path support on Windows

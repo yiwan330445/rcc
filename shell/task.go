@@ -9,6 +9,7 @@ import (
 
 	"github.com/google/shlex"
 	"github.com/robocorp/rcc/common"
+	"github.com/robocorp/rcc/pathlib"
 )
 
 type Common interface {
@@ -97,12 +98,12 @@ func (it *Task) Tee(folder string, interactive bool) (int, error) {
 	if err != nil {
 		return -600, err
 	}
-	outfile, err := os.Create(filepath.Join(folder, "stdout.log"))
+	outfile, err := pathlib.Create(filepath.Join(folder, "stdout.log"))
 	if err != nil {
 		return -601, err
 	}
 	defer outfile.Close()
-	errfile, err := os.Create(filepath.Join(folder, "stderr.log"))
+	errfile, err := pathlib.Create(filepath.Join(folder, "stderr.log"))
 	if err != nil {
 		return -602, err
 	}

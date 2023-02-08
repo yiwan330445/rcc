@@ -44,7 +44,7 @@ func fixShellFile(fullpath string) {
 		return
 	}
 	common.Debug("Fixing newlines in file: %v", fullpath)
-	err = os.WriteFile(fullpath, ToUnix(content), 0o755)
+	err = pathlib.WriteFile(fullpath, ToUnix(content), 0o755)
 	if err != nil {
 		common.Log("Failure %v while fixing newlines in %v!", err, fullpath)
 	}

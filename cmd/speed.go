@@ -12,6 +12,7 @@ import (
 	"github.com/robocorp/rcc/common"
 	"github.com/robocorp/rcc/htfs"
 	"github.com/robocorp/rcc/operations"
+	"github.com/robocorp/rcc/pathlib"
 	"github.com/robocorp/rcc/pretty"
 
 	"github.com/spf13/cobra"
@@ -68,7 +69,7 @@ var speedtestCmd = &cobra.Command{
 			pretty.Exit(1, "Error: %v", err)
 		}
 		condafile := filepath.Join(folder, "speedtest.yaml")
-		err = os.WriteFile(condafile, content, 0o666)
+		err = pathlib.WriteFile(condafile, content, 0o666)
 		if err != nil {
 			pretty.Exit(2, "Error: %v", err)
 		}

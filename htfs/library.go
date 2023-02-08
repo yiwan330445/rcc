@@ -165,7 +165,7 @@ func (it *hololib) Export(catalogs, known []string, archive string) (err error) 
 	common.TimelineBegin("holotree export start")
 	defer common.TimelineEnd()
 
-	handle, err := os.Create(archive)
+	handle, err := pathlib.Create(archive)
 	fail.On(err != nil, "Could not create archive %q.", archive)
 	writer := zip.NewWriter(handle)
 	defer writer.Close()

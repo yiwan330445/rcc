@@ -5,11 +5,11 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"os"
 	"regexp"
 	"strings"
 
 	"github.com/robocorp/rcc/common"
+	"github.com/robocorp/rcc/pathlib"
 	"github.com/robocorp/rcc/settings"
 )
 
@@ -58,7 +58,7 @@ func DownloadCommunityRobot(url, filename string) error {
 		return fmt.Errorf("%s (%s)", response.Status, url)
 	}
 
-	out, err := os.Create(filename)
+	out, err := pathlib.Create(filename)
 	if err != nil {
 		return err
 	}

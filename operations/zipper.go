@@ -51,11 +51,7 @@ func (it *WriteTarget) execute() error {
 		return err
 	}
 	defer source.Close()
-	err = os.MkdirAll(filepath.Dir(it.Target), 0o750)
-	if err != nil {
-		return err
-	}
-	target, err := os.Create(it.Target)
+	target, err := pathlib.Create(it.Target)
 	if err != nil {
 		return err
 	}
@@ -240,7 +236,7 @@ type zipper struct {
 }
 
 func newZipper(filename string) (*zipper, error) {
-	handle, err := os.Create(filename)
+	handle, err := pathlib.Create(filename)
 	if err != nil {
 		return nil, err
 	}

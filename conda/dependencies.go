@@ -11,6 +11,7 @@ import (
 
 	"github.com/robocorp/rcc/common"
 	"github.com/robocorp/rcc/fail"
+	"github.com/robocorp/rcc/pathlib"
 	"github.com/robocorp/rcc/pretty"
 	"gopkg.in/yaml.v2"
 )
@@ -125,7 +126,7 @@ func goldenMaster(targetFolder string, pipUsed bool) (err error) {
 	fail.On(err != nil, "Failed to make yaml, reason: %v", err)
 	goldenfile := GoldenMasterFilename(targetFolder)
 	common.Debug("%sGolden EE file at: %v%s", pretty.Yellow, goldenfile, pretty.Reset)
-	return os.WriteFile(goldenfile, body, 0644)
+	return pathlib.WriteFile(goldenfile, body, 0644)
 }
 
 func LoadWantedDependencies(filename string) dependencies {

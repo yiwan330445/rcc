@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"sort"
 	"strings"
 	"text/tabwriter"
 
@@ -12,11 +13,13 @@ import (
 	"github.com/robocorp/rcc/htfs"
 	"github.com/robocorp/rcc/pathlib"
 	"github.com/robocorp/rcc/pretty"
+	"github.com/robocorp/rcc/set"
 	"github.com/spf13/cobra"
 )
 
 var (
 	showIdentityYaml bool
+	topSizes         int
 )
 
 const mega = 1024 * 1024
@@ -67,7 +70,7 @@ func identityContentLines(catalog *htfs.Root) []string {
 	return result
 }
 
-func jsonCatalogDetails(roots []*htfs.Root) {
+func jsonCatalogDetails(roots []*htfs.Root, topN int) {
 	used := catalogUsedStats()
 	holder := make(map[string]map[string]interface{})
 	for _, catalog := range roots {
@@ -86,6 +89,9 @@ func jsonCatalogDetails(roots []*htfs.Root) {
 		if showIdentityYaml {
 			data["identity-content"] = identityContent(catalog)
 		}
+		if topN > 0 {
+			data[fmt.Sprintf("top%d", topN)] = catalog.Top(topN)
+		}
 		data["platform"] = catalog.Platform
 		data["directories"] = stats.Directories
 		data["files"] = stats.Files
@@ -100,7 +106,30 @@ func jsonCatalogDetails(roots []*htfs.Root) {
 	common.Stdout("%s\n", nice)
 }
 
-func listCatalogDetails(roots []*htfs.Root) {
+func percent(value, base float64) float64 {
+	if base == 0.0 {
+		return 0.0
+	}
+	return 100.0 * value / base
+}
+
+func dumpTopN(stats map[string]int64, total float64, tabbed *tabwriter.Writer) {
+	sizes := set.Values(stats)
+	sort.Slice(sizes, func(left, right int) bool {
+		return sizes[left] > sizes[right]
+	})
+	for _, focus := range sizes {
+		share := percent(float64(focus), total)
+		value, suffix := pathlib.HumaneSizer(focus)
+		for filename, size := range stats {
+			if focus == size {
+				tabbed.Write([]byte(fmt.Sprintf("\t\t\t%5.1f%%\t%6.1f%s\t%s\n", share, value, suffix, filename)))
+			}
+		}
+	}
+}
+
+func listCatalogDetails(roots []*htfs.Root, topN int) {
 	used := catalogUsedStats()
 	tabbed := tabwriter.NewWriter(os.Stderr, 2, 4, 2, ' ', 0)
 	tabbed.Write([]byte("Blueprint\tPlatform\tDirs  \tFiles  \tSize   \tidentity.yaml (gzipped blob inside hololib)\tHolotree path\tAge (days)\tIdle (days)\n"))
@@ -121,6 +150,9 @@ func listCatalogDetails(roots []*htfs.Root) {
 				tabbed.Write([]byte(fmt.Sprintf("\t\t\t\t\t%s\n", line)))
 			}
 		}
+		if topN > 0 {
+			dumpTopN(catalog.Top(topN), float64(stats.Bytes), tabbed)
+		}
 	}
 	tabbed.Flush()
 }
@@ -135,9 +167,9 @@ var holotreeCatalogsCmd = &cobra.Command{
 		}
 		_, roots := htfs.LoadCatalogs()
 		if jsonFlag {
-			jsonCatalogDetails(roots)
+			jsonCatalogDetails(roots, topSizes)
 		} else {
-			listCatalogDetails(roots)
+			listCatalogDetails(roots, topSizes)
 		}
 		pretty.Ok()
 	},
@@ -147,4 +179,5 @@ func init() {
 	holotreeCmd.AddCommand(holotreeCatalogsCmd)
 	holotreeCatalogsCmd.Flags().BoolVarP(&jsonFlag, "json", "j", false, "Output in JSON format")
 	holotreeCatalogsCmd.Flags().BoolVarP(&showIdentityYaml, "identity", "i", false, "Show identity.yaml in catalog context.")
+	holotreeCatalogsCmd.Flags().IntVarP(&topSizes, "top", "t", 0, "Show top N sized files from catalog")
 }

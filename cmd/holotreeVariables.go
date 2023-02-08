@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"fmt"
-	"os"
 	"path/filepath"
 	"strings"
 
@@ -11,6 +10,7 @@ import (
 	"github.com/robocorp/rcc/htfs"
 	"github.com/robocorp/rcc/journal"
 	"github.com/robocorp/rcc/operations"
+	"github.com/robocorp/rcc/pathlib"
 	"github.com/robocorp/rcc/pretty"
 	"github.com/robocorp/rcc/robot"
 	"github.com/spf13/cobra"
@@ -72,7 +72,7 @@ func holotreeExpandEnvironment(userFiles []string, packfile, environment, worksp
 	pretty.Guard(err == nil, 5, "%s", err)
 
 	condafile := filepath.Join(common.RobocorpTemp(), htfs.BlueprintHash(holotreeBlueprint))
-	err = os.WriteFile(condafile, holotreeBlueprint, 0o644)
+	err = pathlib.WriteFile(condafile, holotreeBlueprint, 0o644)
 	pretty.Guard(err == nil, 6, "%s", err)
 
 	holozip := ""

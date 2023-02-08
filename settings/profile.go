@@ -34,7 +34,7 @@ func (it *Profile) SaveAs(filename string) error {
 	if err != nil {
 		return err
 	}
-	return os.WriteFile(filename, body, 0o666)
+	return pathlib.WriteFile(filename, body, 0o666)
 }
 
 func (it *Profile) LoadFrom(filename string) error {
@@ -94,7 +94,7 @@ func removeIfExists(filename string) error {
 
 func saveIfBody(filename string, body []byte) error {
 	if body != nil && len(body) > 0 {
-		return os.WriteFile(filename, body, 0o666)
+		return pathlib.WriteFile(filename, body, 0o666)
 	}
 	return nil
 }

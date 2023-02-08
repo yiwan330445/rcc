@@ -16,7 +16,7 @@ func TouchWhen(location string, when time.Time) {
 
 func ForceTouchWhen(location string, when time.Time) {
 	if !Exists(location) {
-		err := os.WriteFile(location, []byte{}, 0o644)
+		err := WriteFile(location, []byte{}, 0o644)
 		if err != nil {
 			common.Debug("Touch/creating file %q failed, reason: %v ... ignored!", location, err)
 		}

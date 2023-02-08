@@ -430,13 +430,13 @@ func (it *Environment) SaveAs(filename string) error {
 		return err
 	}
 	common.Trace("FINAL conda environment file as %v:\n---\n%v---", filename, content)
-	return os.WriteFile(filename, []byte(content), 0o640)
+	return pathlib.WriteFile(filename, []byte(content), 0o640)
 }
 
 func (it *Environment) SaveAsRequirements(filename string) error {
 	content := it.AsRequirementsText()
 	common.Trace("FINAL pip requirements as %v:\n---\n%v\n---", filename, content)
-	return os.WriteFile(filename, []byte(content), 0o640)
+	return pathlib.WriteFile(filename, []byte(content), 0o640)
 }
 
 func (it *Environment) AsYaml() (string, error) {

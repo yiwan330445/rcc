@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"net/url"
 	"os"
-	"path/filepath"
 	"strings"
 	"time"
 
@@ -226,8 +225,7 @@ func Download(url, filename string) error {
 		return fmt.Errorf("Downloading %q failed, reason: %q!", url, response.Status)
 	}
 
-	pathlib.EnsureDirectory(filepath.Dir(filename))
-	out, err := os.Create(filename)
+	out, err := pathlib.Create(filename)
 	if err != nil {
 		return err
 	}

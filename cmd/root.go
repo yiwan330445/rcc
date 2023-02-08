@@ -124,7 +124,7 @@ func init() {
 func initConfig() {
 	if profilefile != "" {
 		common.TimelineBegin("profiling run started")
-		sink, err := os.Create(profilefile)
+		sink, err := pathlib.Create(profilefile)
 		pretty.Guard(err == nil, 5, "Failed to create profile file %q, reason %v.", profilefile, err)
 		err = pprof.StartCPUProfile(sink)
 		pretty.Guard(err == nil, 6, "Failed to start CPU profile, reason %v.", err)
