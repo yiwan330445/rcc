@@ -29,7 +29,6 @@ when used in code.
 
 I like my specifications short and declarative, not longwindy and procedural
 code form. One line, one expectation!
-
 */
 package hamlet
 

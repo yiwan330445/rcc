@@ -1,5 +1,9 @@
 # rcc change log
 
+## v13.6.0 (date: 10.2.2023)
+
+- upgrade: upgrading github actions and also using newer golang and python there
+
 ## v13.5.8 (date: 10.2.2023)
 
 - bugfix: holotree delete --space option was always set
