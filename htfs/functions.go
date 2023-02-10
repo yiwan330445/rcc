@@ -8,7 +8,6 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
-	"sort"
 	"sync"
 
 	"github.com/robocorp/rcc/anywork"
@@ -504,8 +503,8 @@ func DigestLoader(root *Root, at int, slots []map[string]string) anywork.Work {
 	}
 }
 
-func ignoreFailedCatalogs(suspects []*Root) []*Root {
-	roots := make([]*Root, 0, len(suspects))
+func ignoreFailedCatalogs(suspects Roots) Roots {
+	roots := make(Roots, 0, len(suspects))
 	for _, root := range suspects {
 		if root != nil {
 			roots = append(roots, root)
@@ -514,11 +513,11 @@ func ignoreFailedCatalogs(suspects []*Root) []*Root {
 	return roots
 }
 
-func LoadCatalogs() ([]string, []*Root) {
+func LoadCatalogs() ([]string, Roots) {
 	common.TimelineBegin("catalog load start")
 	defer common.TimelineEnd()
-	catalogs := Catalogs()
-	roots := make([]*Root, len(catalogs))
+	catalogs := CatalogNames()
+	roots := make(Roots, len(catalogs))
 	for at, catalog := range catalogs {
 		fullpath := filepath.Join(common.HololibCatalogLocation(), catalog)
 		anywork.Backlog(CatalogLoader(fullpath, at, roots))
@@ -529,21 +528,7 @@ func LoadCatalogs() ([]string, []*Root) {
 	return catalogs, ignoreFailedCatalogs(roots)
 }
 
-func BaseFolders() []string {
-	_, roots := LoadCatalogs()
-	folders := make(map[string]bool)
-	result := []string{}
-	for _, root := range roots {
-		folders[filepath.Dir(root.Path)] = true
-	}
-	for folder, _ := range folders {
-		result = append(result, folder)
-	}
-	sort.Strings(result)
-	return result
-}
-
-func CatalogLoader(catalog string, at int, roots []*Root) anywork.Work {
+func CatalogLoader(catalog string, at int, roots Roots) anywork.Work {
 	return func() {
 		tempdir := filepath.Join(common.RobocorpTemp(), "shadow")
 		shadow, err := NewRoot(tempdir)

@@ -38,6 +38,12 @@ func WriteFile(filename string, data []byte, mode os.FileMode) error {
 	return os.WriteFile(filename, data, mode)
 }
 
+func Glob(directory string, pattern string) []string {
+	fullpath := filepath.Join(directory, pattern)
+	result, _ := filepath.Glob(fullpath)
+	return result
+}
+
 func Exists(pathname string) bool {
 	_, err := os.Stat(pathname)
 	return !os.IsNotExist(err)

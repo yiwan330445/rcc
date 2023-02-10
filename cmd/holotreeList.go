@@ -17,7 +17,8 @@ func humaneHolotreeSpaceListing() {
 	tabbed := tabwriter.NewWriter(os.Stderr, 2, 4, 2, ' ', 0)
 	tabbed.Write([]byte("Identity\tController\tSpace\tBlueprint\tFull path\n"))
 	tabbed.Write([]byte("--------\t----------\t-----\t--------\t---------\n"))
-	for _, space := range htfs.Spaces() {
+	_, roots := htfs.LoadCatalogs()
+	for _, space := range roots.Spaces() {
 		data := fmt.Sprintf("%s\t%s\t%s\t%s\t%s\n", space.Identity, space.Controller, space.Space, space.Blueprint, space.Path)
 		tabbed.Write([]byte(data))
 	}
@@ -26,7 +27,8 @@ func humaneHolotreeSpaceListing() {
 
 func jsonicHolotreeSpaceListing() {
 	details := make(map[string]map[string]string)
-	for _, space := range htfs.Spaces() {
+	_, roots := htfs.LoadCatalogs()
+	for _, space := range roots.Spaces() {
 		hold, ok := details[space.Identity]
 		if !ok {
 			hold = make(map[string]string)

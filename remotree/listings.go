@@ -65,7 +65,7 @@ func loadSingleCatalog(catalog string) (root *htfs.Root, err error) {
 }
 
 func loadCatalogParts(catalog string) (string, bool) {
-	catalogs := htfs.Catalogs()
+	catalogs := htfs.CatalogNames()
 	if !set.Member(catalogs, catalog) {
 		return "", false
 	}

@@ -542,10 +542,10 @@ func diagnoseFilesUnmarshal(tool Unmarshaler, label, rootdir string, paths []str
 }
 
 func addFileDiagnostics(rootdir string, target *common.DiagnosticStatus) {
-	jsons := pathlib.Glob(rootdir, "*.json")
+	jsons := pathlib.RecursiveGlob(rootdir, "*.json")
 	diagnoseFilesUnmarshal(json.Unmarshal, "JSON", rootdir, jsons, target)
-	yamls := pathlib.Glob(rootdir, "*.yaml")
-	yamls = append(yamls, pathlib.Glob(rootdir, "*.yml")...)
+	yamls := pathlib.RecursiveGlob(rootdir, "*.yaml")
+	yamls = append(yamls, pathlib.RecursiveGlob(rootdir, "*.yml")...)
 	diagnoseFilesUnmarshal(yaml.Unmarshal, "YAML", rootdir, yamls, target)
 }
 

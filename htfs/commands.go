@@ -168,38 +168,6 @@ func RecordEnvironment(tree MutableLibrary, blueprint []byte, force bool, scorec
 	return nil
 }
 
-func FindEnvironment(fragment string) []string {
-	result := make([]string, 0, 10)
-	for directory, _ := range Spacemap() {
-		name := filepath.Base(directory)
-		if strings.Contains(name, fragment) {
-			result = append(result, name)
-		}
-	}
-	return result
-}
-
-func InstallationPlan(hash string) (string, bool) {
-	finalplan := filepath.Join(common.HolotreeLocation(), hash, "rcc_plan.log")
-	return finalplan, pathlib.IsFile(finalplan)
-}
-
-func RemoveHolotreeSpace(label string) (err error) {
-	defer fail.Around(&err)
-
-	for directory, metafile := range Spacemap() {
-		name := filepath.Base(directory)
-		if name != label {
-			continue
-		}
-		pathlib.TryRemove("metafile", metafile)
-		pathlib.TryRemove("lockfile", directory+".lck")
-		err = pathlib.TryRemoveAll("space", directory)
-		fail.On(err != nil, "Problem removing %q, reason: %s.", directory, err)
-	}
-	return nil
-}
-
 func RobotBlueprints(userBlueprints []string, packfile string) (robot.Robot, []string) {
 	var err error
 	var config robot.Robot

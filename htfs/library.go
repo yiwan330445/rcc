@@ -7,7 +7,6 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
-	"sort"
 	"strings"
 	"sync"
 	"time"
@@ -18,6 +17,7 @@ import (
 	"github.com/robocorp/rcc/journal"
 	"github.com/robocorp/rcc/pathlib"
 	"github.com/robocorp/rcc/pretty"
+	"github.com/robocorp/rcc/set"
 )
 
 const (
@@ -290,40 +290,12 @@ func (it *hololib) queryBlueprint(key string) bool {
 	return pathlib.IsFile(catalog)
 }
 
-func Catalogs() []string {
+func CatalogNames() []string {
 	result := make([]string, 0, 10)
 	for _, catalog := range pathlib.Glob(common.HololibCatalogLocation(), "[0-9a-f]*v12.*") {
-		result = append(result, catalog)
+		result = append(result, filepath.Base(catalog))
 	}
-	sort.Strings(result)
-	return result
-}
-
-func Spacemap() map[string]string {
-	result := make(map[string]string)
-	for _, basedir := range BaseFolders() {
-		for _, metafile := range pathlib.Glob(basedir, "*.meta") {
-			fullpath := filepath.Join(basedir, metafile)
-			result[fullpath[:len(fullpath)-5]] = fullpath
-		}
-	}
-	return result
-}
-
-func Spaces() []*Root {
-	roots := make([]*Root, 0, 20)
-	for directory, metafile := range Spacemap() {
-		root, err := NewRoot(directory)
-		if err != nil {
-			continue
-		}
-		err = root.LoadFrom(metafile)
-		if err != nil {
-			continue
-		}
-		roots = append(roots, root)
-	}
-	return roots
+	return set.Set(result)
 }
 
 func ControllerSpaceName(client, tag []byte) string {

@@ -9,15 +9,14 @@ import (
 )
 
 func deleteByPartialIdentity(partials []string) {
-	for _, prefix := range partials {
-		for _, label := range htfs.FindEnvironment(prefix) {
-			common.Log("Removing %v", label)
-			if dryFlag {
-				continue
-			}
-			err := htfs.RemoveHolotreeSpace(label)
-			pretty.Guard(err == nil, 1, "Error: %v", err)
+	_, roots := htfs.LoadCatalogs()
+	for _, label := range roots.FindEnvironments(partials) {
+		common.Log("Removing %v", label)
+		if dryFlag {
+			continue
 		}
+		err := roots.RemoveHolotreeSpace(label)
+		pretty.Guard(err == nil, 1, "Error: %v", err)
 	}
 }
 

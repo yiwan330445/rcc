@@ -56,6 +56,81 @@ type Root struct {
 	source     string
 }
 
+type Roots []*Root
+
+func (it Roots) BaseFolders() []string {
+	result := []string{}
+	for _, root := range it {
+		result = append(result, filepath.Dir(root.Path))
+	}
+	return set.Set(result)
+}
+
+func (it Roots) Spaces() Roots {
+	roots := make(Roots, 0, 20)
+	for directory, metafile := range it.Spacemap() {
+		root, err := NewRoot(directory)
+		if err != nil {
+			continue
+		}
+		err = root.LoadFrom(metafile)
+		if err != nil {
+			continue
+		}
+		roots = append(roots, root)
+	}
+	return roots
+}
+
+func (it Roots) Spacemap() map[string]string {
+	result := make(map[string]string)
+	for _, basedir := range it.BaseFolders() {
+		for _, metafile := range pathlib.Glob(basedir, "*.meta") {
+			result[metafile[:len(metafile)-5]] = metafile
+		}
+	}
+	return result
+}
+
+func (it Roots) FindEnvironments(fragments []string) []string {
+	result := make([]string, 0, 10)
+	for directory, _ := range it.Spacemap() {
+		name := filepath.Base(directory)
+		for _, fragment := range fragments {
+			if strings.Contains(name, fragment) {
+				result = append(result, name)
+			}
+		}
+	}
+	return set.Set(result)
+}
+
+func (it Roots) InstallationPlan(hash string) (string, bool) {
+	for _, directory := range it.BaseFolders() {
+		finalplan := filepath.Join(directory, hash, "rcc_plan.log")
+		if pathlib.IsFile(finalplan) {
+			return finalplan, true
+		}
+	}
+	return "", false
+}
+
+func (it Roots) RemoveHolotreeSpace(label string) (err error) {
+	defer fail.Around(&err)
+
+	for directory, metafile := range it.Spacemap() {
+		name := filepath.Base(directory)
+		if name != label {
+			continue
+		}
+		pathlib.TryRemove("metafile", metafile)
+		pathlib.TryRemove("lockfile", directory+".lck")
+		err = pathlib.TryRemoveAll("space", directory)
+		fail.On(err != nil, "Problem removing %q, reason: %s.", directory, err)
+	}
+	return nil
+}
+
 func NewRoot(path string) (*Root, error) {
 	fullpath, err := pathlib.Abs(path)
 	if err != nil {
@@ -206,8 +281,6 @@ func (it *Root) ReadFrom(source io.Reader) error {
 }
 
 func (it *Root) LoadFrom(filename string) error {
-	common.TimelineBegin("holotree load %q", filename)
-	defer common.TimelineEnd()
 	source, err := os.Open(filename)
 	if err != nil {
 		return err
@@ -218,6 +291,7 @@ func (it *Root) LoadFrom(filename string) error {
 		return err
 	}
 	it.source = filename
+	defer common.Timeline("holotree catalog %q loaded", filename)
 	defer reader.Close()
 	return it.ReadFrom(reader)
 }

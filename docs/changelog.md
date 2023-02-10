@@ -1,5 +1,11 @@
 # rcc change log
 
+## v13.5.7 (date: 10.2.2023)
+
+- bugfix: holotree delete and plan were doing too many calls to find same
+  environments (which mean they were really slow)
+- some name refactorings to clarify intent of functions
+
 ## v13.5.6 (date: 8.2.2023)
 
 - bugfix: create missing folders while creating and writing some files

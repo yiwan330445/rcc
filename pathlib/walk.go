@@ -205,7 +205,7 @@ func Walk(directory string, ignore Ignore, report Report) error {
 	return ForceWalk(directory, ForceNothing, ignore, report)
 }
 
-func Glob(directory string, pattern string) []string {
+func RecursiveGlob(directory string, pattern string) []string {
 	result := []string{}
 	ignore := func(entry os.FileInfo) bool {
 		match, err := filepath.Match(pattern, entry.Name())

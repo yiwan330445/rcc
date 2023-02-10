@@ -36,12 +36,12 @@ func holotreeExport(catalogs, known []string, archive string) {
 
 func listCatalogs(jsonForm bool) {
 	if jsonForm {
-		nice, err := json.MarshalIndent(htfs.Catalogs(), "", "  ")
+		nice, err := json.MarshalIndent(htfs.CatalogNames(), "", "  ")
 		pretty.Guard(err == nil, 2, "%s", err)
 		common.Stdout("%s\n", nice)
 	} else {
 		common.Log("Selectable catalogs (you can use substrings):")
-		for _, catalog := range htfs.Catalogs() {
+		for _, catalog := range htfs.CatalogNames() {
 			common.Log("- %s", catalog)
 		}
 	}
@@ -49,7 +49,7 @@ func listCatalogs(jsonForm bool) {
 
 func selectCatalogs(filters []string) []string {
 	result := make([]string, 0, len(filters))
-	for _, catalog := range htfs.Catalogs() {
+	for _, catalog := range htfs.CatalogNames() {
 		for _, filter := range filters {
 			if strings.Contains(catalog, filter) {
 				result = append(result, catalog)
