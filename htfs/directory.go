@@ -126,7 +126,8 @@ func (it Roots) RemoveHolotreeSpace(label string) (err error) {
 		pathlib.TryRemove("metafile", metafile)
 		pathlib.TryRemove("lockfile", directory+".lck")
 		err = pathlib.TryRemoveAll("space", directory)
-		fail.On(err != nil, "Problem removing %q, reason: %s.", directory, err)
+		fail.On(err != nil, "Problem removing %q, reason: %v.", directory, err)
+		common.Timeline("removed holotree space %q", directory)
 	}
 	return nil
 }

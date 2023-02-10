@@ -1,5 +1,9 @@
 # rcc change log
 
+## v13.5.8 (date: 10.2.2023)
+
+- bugfix: holotree delete --space option was always set
+
 ## v13.5.7 (date: 10.2.2023)
 
 - bugfix: holotree delete and plan were doing too many calls to find same
