@@ -58,7 +58,7 @@ func (it *config) Save() {
 	}
 }
 
-func (it *config) Reload() {
+func (it *config) reload() {
 	completed := pathlib.LockWaitMessage(it.Lockfile, "Serialized config access [config lock]")
 	locker, err := pathlib.Locker(it.Lockfile, 125)
 	completed()
@@ -85,7 +85,7 @@ func (it *config) Reload() {
 func (it *config) Reset(filename string) {
 	it.Filename = filename
 	it.Lockfile = fmt.Sprintf("%s.lck", filename)
-	it.Reload()
+	it.reload()
 }
 
 func (it *config) Summon() *viper.Viper {
@@ -98,7 +98,7 @@ func (it *config) Summon() *viper.Viper {
 	}
 	if when.After(it.Timestamp) {
 		common.Debug("Configuration %v changed, reloading!", it.Filename)
-		it.Reload()
+		it.reload()
 	}
 	return it.Viper
 }

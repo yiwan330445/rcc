@@ -1,5 +1,10 @@
 # rcc change log
 
+## v13.6.1 (date: 15.2.2023)
+
+- experiment: using probability to run some of maintenance functions and
+  making rcc little bit faster depending on chance
+
 ## v13.6.0 (date: 10.2.2023)
 
 - upgrade: upgrading github actions and also using newer golang and python there

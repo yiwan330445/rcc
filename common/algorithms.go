@@ -4,6 +4,7 @@ import (
 	"crypto/sha256"
 	"fmt"
 	"math"
+	"math/rand"
 	"time"
 
 	"github.com/dchest/siphash"
@@ -55,4 +56,11 @@ func DayCountSince(timestamp time.Time) int {
 	duration := time.Since(timestamp)
 	days := math.Floor(duration.Hours() / 24.0)
 	return int(days)
+}
+
+func OneOutOf(limit uint8) bool {
+	if limit > 1 {
+		return rand.Intn(int(limit)) == 0
+	}
+	return true
 }

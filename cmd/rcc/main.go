@@ -101,13 +101,17 @@ func main() {
 		common.TimelineBegin("Start [private mode]. (parent/pid: %d/%d)", os.Getppid(), os.Getpid())
 	}
 	defer common.EndOfTimeline()
-	go startTempRecycling()
+	if common.OneOutOf(6) {
+		go startTempRecycling()
+	}
 	defer markTempForRecycling()
 	defer os.Stderr.Sync()
 	defer os.Stdout.Sync()
 	cmd.Execute()
 	common.Timeline("Command execution done.")
-	TimezoneMetric()
+	if common.OneOutOf(5) {
+		TimezoneMetric()
+	}
 
 	anywork.Sync()
 }
