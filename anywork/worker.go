@@ -5,11 +5,10 @@ import (
 	"io"
 	"os"
 	"runtime"
-	"sync"
 )
 
 var (
-	group       *sync.WaitGroup
+	group       WorkGroup
 	pipeline    WorkQueue
 	failpipe    Failures
 	errcount    Counters
@@ -30,7 +29,6 @@ func catcher(title string, identity uint64) {
 }
 
 func process(fun Work, identity uint64) {
-	defer group.Done()
 	defer catcher("process", identity)
 	fun()
 }
@@ -43,6 +41,7 @@ func member(identity uint64) {
 			break
 		}
 		process(work, identity)
+		group.done()
 	}
 }
 
@@ -60,7 +59,7 @@ func watcher(failures Failures, counters Counters) {
 }
 
 func init() {
-	group = &sync.WaitGroup{}
+	group = NewGroup()
 	pipeline = make(WorkQueue, 100000)
 	failpipe = make(Failures)
 	errcount = make(Counters)
@@ -92,7 +91,7 @@ func AutoScale() {
 
 func Backlog(todo Work) {
 	if todo != nil {
-		group.Add(1)
+		group.add()
 		pipeline <- todo
 	}
 }

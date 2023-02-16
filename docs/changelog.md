@@ -1,5 +1,9 @@
 # rcc change log
 
+## v13.6.2 (date: 16.2.2023) UNSTABLE
+
+- bugfix: changed WaitGroup to WorkGroup (self implemented work synchronization)
+
 ## v13.6.1 (date: 15.2.2023)
 
 - experiment: using probability to run some of maintenance functions and
