@@ -1,5 +1,10 @@
 # rcc change log
 
+## v13.6.3 (date: 20.2.2023)
+
+- change: changed WorkGroup to not use buffers on incoming messages, since it
+  will be more deterministic
+
 ## v13.6.2 (date: 16.2.2023) UNSTABLE
 
 - bugfix: changed WaitGroup to WorkGroup (self implemented work synchronization)

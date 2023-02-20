@@ -18,8 +18,8 @@ type (
 
 func NewGroup() WorkGroup {
 	group := &workgroup{
-		level:   make(waitpipe, 5),
-		waiting: make(waiting, 5),
+		level:   make(waitpipe),
+		waiting: make(waiting),
 	}
 	go group.waiter()
 	return group
