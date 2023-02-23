@@ -1,5 +1,10 @@
 # rcc change log
 
+## v13.6.5 (date: 23.2.2023)
+
+- dependabot raised update on golang.org/x/text module (upgraded)
+- security related dependency upgrade
+
 ## v13.6.4 (date: 23.2.2023) DOCUMENTATION
 
 - documentation updates on netdiagnostics and troubleshooting
