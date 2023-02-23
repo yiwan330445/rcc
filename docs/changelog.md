@@ -1,5 +1,9 @@
 # rcc change log
 
+## v13.6.4 (date: 23.2.2023) DOCUMENTATION
+
+- documentation updates on netdiagnostics and troubleshooting
+
 ## v13.6.3 (date: 20.2.2023)
 
 - change: changed WorkGroup to not use buffers on incoming messages, since it

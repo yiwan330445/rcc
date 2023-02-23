@@ -440,6 +440,31 @@ rcc configure speedtest
 - generic flag `--trace` shows more verbose debugging messages during execution
 - flag `--timeline` can be used to see execution timeline and where time was spent
 
+## Advanced network diagnostics
+
+When using custom endpoints or just needing more control over what network
+checks are done, command `rcc configure netdiagnostics` may become helpful.
+
+```sh
+# to test advanced network diagnostics with defaults
+rcc configure netdiagnostics
+
+# to capture advanced network diagnostics defaults to new configuration file
+rcc configure netdiagnostics --show > path/to/modified.yaml
+
+# to test advanced network diagnostics with custom tests
+rcc configure netdiagnostics --checks path/to/modified.yaml
+```
+
+### Configuration
+
+- get example configuration out using `--show` option (as seen above)
+- configuration file format is YAML
+- add or remove points to DNS, HTTP HEAD and GET methods
+- `url:` and `codes:` are required fields for HEAD and GET checks
+- `codes:` field is list of acceptable HTTP response codes
+- `content-sha256` is optional, and provides additional confidence when content
+  is static and result content hash can be calculated (using sha256 algorithm)
 
 ## What is in `robot.yaml`?
 

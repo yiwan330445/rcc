@@ -5,7 +5,7 @@
 ## Tools to help with troubleshooting issues
 
 - run command `rcc configuration diagnostics` and see if there are warnings
-  or errors in output
+  or errors in output (and same with `rcc configuration netdiagnostics`)
 - if failure is with specific robot, then try running command
   `rcc configuration diagnostics --robot path/to/robot.yaml` and see if
   those robot diagnostics have something that identifies a problem
@@ -44,6 +44,25 @@
 - you should share your `robot.yaml` that defines your robot
 - you should share your code, or minimal sample code, that can reproduce
   problem you are having
+
+## Network access related troubleshooting questions
+
+- are you behind proxy, firewall, VPN, endpoint security solutions, or any
+  combination of those?
+- if you are, do you know, what brand are those products, and if they are
+  provided by third party service providers, who are those third parties?
+- are all those services configured to allow access to essential network places
+  so that they don't cause interference on cloud access (change request or
+  response headers, filter out URL parameters, change request or response
+  bodies, etc.)?
+- if those services require additional configuration in robot running machine,
+  are those configurations in place in profiles used by rcc (service URLs,
+  usernames and passwords, custom certificates, etc.)?
+- if profile is in place, is that specific user account switched to use that
+  profile?
+- are there errors or warnings on `rcc configuration diagnostics` or in
+  `rcc configuration netdiagnostics` runs?
+- does `rcc configuration speedtest` work, and how does performance look like?
 
 ## Known solutions
 
