@@ -22,6 +22,7 @@ import (
 
 const (
 	X_RCC_RANDOM_IDENTITY = `X-Rcc-Random-Identity`
+	AUTHORIZATION         = "Authorization"
 )
 
 func pullOriginFingerprints(origin, catalogName string) (fingerprints string, count int, err error) {
@@ -36,6 +37,10 @@ func pullOriginFingerprints(origin, catalogName string) (fingerprints string, co
 	url := fmt.Sprintf("%s/parts/%s", origin, catalogName)
 	request := client.NewRequest(fmt.Sprintf("/parts/%s", catalogName))
 	request.Headers[X_RCC_RANDOM_IDENTITY] = common.RandomIdentifier()
+	authorization, ok := common.RccRemoteAuthorization()
+	if ok {
+		request.Headers[AUTHORIZATION] = authorization
+	}
 	response := client.Get(request)
 	common.Timeline("status %d from GET %q", response.Status, url)
 
@@ -80,6 +85,10 @@ func downloadMissingEnvironmentParts(count int, origin, catalogName, selection s
 	request.Header.Add("robocorp-installation-id", xviper.TrackingIdentity())
 	request.Header.Add("User-Agent", common.UserAgent())
 	request.Header.Add(X_RCC_RANDOM_IDENTITY, common.RandomIdentifier())
+	authorization, ok := common.RccRemoteAuthorization()
+	if ok {
+		request.Header.Add(AUTHORIZATION, authorization)
+	}
 
 	response, err := client.Do(request)
 	fail.On(err != nil, "Web request to %q failed, reason: %v", url, err)

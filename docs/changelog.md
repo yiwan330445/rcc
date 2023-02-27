@@ -1,5 +1,10 @@
 # rcc change log
 
+## v13.7.1 (date: 27.2.2023)
+
+- added missing `RCC_REMOTE_AUTHORIZATION` variable handling to rcc and passing
+  that variable to rccremote on pull requests
+
 ## v13.7.0 (date: 27.2.2023)
 
 - troubleshooting documentation added as `rcc man troubleshooting` command

@@ -13,6 +13,7 @@ import (
 const (
 	ROBOCORP_HOME_VARIABLE                = `ROBOCORP_HOME`
 	RCC_REMOTE_ORIGIN                     = `RCC_REMOTE_ORIGIN`
+	RCC_REMOTE_AUTHORIZATION              = `RCC_REMOTE_AUTHORIZATION`
 	VERBOSE_ENVIRONMENT_BUILDING          = `RCC_VERBOSE_ENVIRONMENT_BUILDING`
 	ROBOCORP_OVERRIDE_SYSTEM_REQUIREMENTS = `ROBOCORP_OVERRIDE_SYSTEM_REQUIREMENTS`
 )
@@ -82,6 +83,11 @@ func RobocorpHome() string {
 
 func RccRemoteOrigin() string {
 	return os.Getenv(RCC_REMOTE_ORIGIN)
+}
+
+func RccRemoteAuthorization() (string, bool) {
+	result := os.Getenv(RCC_REMOTE_AUTHORIZATION)
+	return result, len(result) > 0
 }
 
 func RobocorpLock() string {
