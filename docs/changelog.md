@@ -1,5 +1,11 @@
 # rcc change log
 
+## v13.7.0 (date: 27.2.2023)
+
+- troubleshooting documentation added as `rcc man troubleshooting` command
+- consolidated and streamlined documentation commands into fewer source files
+- added robot tests for documentation commands
+
 ## v13.6.5 (date: 23.2.2023)
 
 - dependabot raised update on golang.org/x/text module (upgraded)

@@ -1,7 +1,13 @@
 package cmd
 
 import (
+	"github.com/robocorp/rcc/blobs"
+	"github.com/robocorp/rcc/pretty"
 	"github.com/spf13/cobra"
+)
+
+type (
+	cobraCommand func(*cobra.Command, []string)
 )
 
 var manCmd = &cobra.Command{
@@ -13,4 +19,76 @@ var manCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(manCmd)
+
+	manCmd.AddCommand(&cobra.Command{
+		Use:     "changelog",
+		Short:   "Show the rcc changelog.",
+		Long:    "Show the rcc changelog.",
+		Aliases: []string{"changes"},
+		Run:     makeShowDoc("changelog", "docs/changelog.md"),
+	})
+
+	manCmd.AddCommand(&cobra.Command{
+		Use:   "features",
+		Short: "Show some of rcc features.",
+		Long:  "Show some of rcc features.",
+		Run:   makeShowDoc("features", "docs/features.md"),
+	})
+
+	manCmd.AddCommand(&cobra.Command{
+		Use:   "license",
+		Short: "Show the rcc License.",
+		Long:  "Show the rcc License.",
+		Run:   makeShowDoc("LICENSE", "assets/man/LICENSE.txt"),
+	})
+
+	manCmd.AddCommand(&cobra.Command{
+		Use:   "profiles",
+		Short: "Show configuration profiles documentation.",
+		Long:  "Show configuration profiles documentation.",
+		Run:   makeShowDoc("profile documentation", "docs/profile_configuration.md"),
+	})
+
+	manCmd.AddCommand(&cobra.Command{
+		Use:     "recipes",
+		Short:   "Show rcc recipes, tips, and tricks.",
+		Long:    "Show rcc recipes, tips, and tricks.",
+		Aliases: []string{"recipe", "tips", "tricks"},
+		Run:     makeShowDoc("recipes", "docs/recipes.md"),
+	})
+
+	manCmd.AddCommand(&cobra.Command{
+		Use:   "troubleshooting",
+		Short: "Show the rcc troubleshooting documentation.",
+		Long:  "Show the rcc troubleshooting documentation.",
+		Run:   makeShowDoc("troubleshooting", "docs/troubleshooting.md"),
+	})
+
+	manCmd.AddCommand(&cobra.Command{
+		Use:   "usecases",
+		Short: "Show some of rcc use cases.",
+		Long:  "Show some of rcc use cases.",
+		Run:   makeShowDoc("use-cases", "docs/usecases.md"),
+	})
+
+	tutorial := &cobra.Command{
+		Use:     "tutorial",
+		Short:   "Show the rcc tutorial.",
+		Long:    "Show the rcc tutorial.",
+		Aliases: []string{"tut"},
+		Run:     makeShowDoc("tutorial", "assets/man/tutorial.txt"),
+	}
+
+	manCmd.AddCommand(tutorial)
+	rootCmd.AddCommand(tutorial)
+}
+
+func makeShowDoc(label, asset string) cobraCommand {
+	return func(cmd *cobra.Command, args []string) {
+		content, err := blobs.Asset(asset)
+		if err != nil {
+			pretty.Exit(1, "Cannot show %s documentation, reason: %v", label, err)
+		}
+		pretty.Page(content)
+	}
 }

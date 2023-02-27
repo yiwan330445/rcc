@@ -3,7 +3,6 @@ Library  OperatingSystem
 Library  supporting.py
 Resource  resources.robot
 Suite Setup  Holotree setup
-Default tags   WIP
 
 *** Keywords ***
 Holotree setup
