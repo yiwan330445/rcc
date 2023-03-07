@@ -63,7 +63,7 @@ func NewEnvironment(condafile, holozip string, restore, force bool, puller Catal
 
 	_, holotreeBlueprint, err := ComposeFinalBlueprint([]string{condafile}, "")
 	fail.On(err != nil, "%s", err)
-	common.EnvironmentHash = BlueprintHash(holotreeBlueprint)
+	common.EnvironmentHash, common.FreshlyBuildEnvironment = BlueprintHash(holotreeBlueprint), false
 	common.Progress(2, "Holotree blueprint is %q [%s].", common.EnvironmentHash, common.Platform())
 	journal.CurrentBuildEvent().Blueprint(common.EnvironmentHash)
 
@@ -126,6 +126,7 @@ func RecordEnvironment(tree MutableLibrary, blueprint []byte, force bool, scorec
 	common.Debug("Has blueprint environment: %v", exists)
 
 	if force || !exists {
+		common.FreshlyBuildEnvironment = true
 		remoteOrigin := common.RccRemoteOrigin()
 		if len(remoteOrigin) > 0 {
 			common.Progress(3, "Fill hololib from RCC_REMOTE_ORIGIN.")

@@ -18,6 +18,7 @@ import (
 var (
 	metafileFlag bool
 	forceBuild   bool
+	exportFile   string
 )
 
 func conditionalExpand(filename string) string {
@@ -109,13 +110,21 @@ var holotreePrebuildCmd = &cobra.Command{
 
 		configurations := metafileExpansion(args, metafileFlag)
 		total, failed := len(configurations), 0
+		success := make([]string, 0, total)
 		for at, configfile := range configurations {
 			pretty.Note("%d/%d: Now building config %q", at+1, total, configfile)
 			_, _, err := htfs.NewEnvironment(configfile, "", false, forceBuild, operations.PullCatalog)
 			if err != nil {
 				failed += 1
 				pretty.Warning("%d/%d: Holotree recording error: %v", at+1, total, err)
+			} else {
+				if common.FreshlyBuildEnvironment {
+					success = append(success, htfs.CatalogName(common.EnvironmentHash))
+				}
 			}
+		}
+		if len(exportFile) > 0 && len(success) > 0 {
+			holotreeExport(selectCatalogs(success), nil, exportFile)
 		}
 		pretty.Guard(failed == 0, 2, "%d out of %d environment builds failed! See output above for details.", failed, total)
 		pretty.Ok()
@@ -126,4 +135,5 @@ func init() {
 	holotreeCmd.AddCommand(holotreePrebuildCmd)
 	holotreePrebuildCmd.Flags().BoolVarP(&metafileFlag, "metafile", "m", false, "Input arguments are actually files containing links/filenames of environment descriptors.")
 	holotreePrebuildCmd.Flags().BoolVarP(&forceBuild, "force", "f", false, "Force environment builds, even when blueprint is already present.")
+	holotreePrebuildCmd.Flags().StringVarP(&exportFile, "export", "e", "", "Optional filename to export new, successfully build catalogs.")
 }

@@ -19,28 +19,29 @@ const (
 )
 
 var (
-	NoBuild            bool
-	Silent             bool
-	DebugFlag          bool
-	TraceFlag          bool
-	DeveloperFlag      bool
-	StrictFlag         bool
-	SharedHolotree     bool
-	LogLinenumbers     bool
-	NoCache            bool
-	NoOutputCapture    bool
-	Liveonly           bool
-	UnmanagedSpace     bool
-	StageFolder        string
-	ControllerType     string
-	HolotreeSpace      string
-	EnvironmentHash    string
-	SemanticTag        string
-	ForcedRobocorpHome string
-	When               int64
-	ProgressMark       time.Time
-	Clock              *stopwatch
-	randomIdentifier   string
+	NoBuild                 bool
+	Silent                  bool
+	DebugFlag               bool
+	TraceFlag               bool
+	DeveloperFlag           bool
+	StrictFlag              bool
+	SharedHolotree          bool
+	LogLinenumbers          bool
+	NoCache                 bool
+	NoOutputCapture         bool
+	Liveonly                bool
+	UnmanagedSpace          bool
+	FreshlyBuildEnvironment bool
+	StageFolder             string
+	ControllerType          string
+	HolotreeSpace           string
+	EnvironmentHash         string
+	SemanticTag             string
+	ForcedRobocorpHome      string
+	When                    int64
+	ProgressMark            time.Time
+	Clock                   *stopwatch
+	randomIdentifier        string
 )
 
 func init() {

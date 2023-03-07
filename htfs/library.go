@@ -191,10 +191,6 @@ func (it *hololib) Export(catalogs, known []string, archive string) (err error) 
 
 	for _, name := range catalogs {
 		catalog := filepath.Join(common.HololibCatalogLocation(), name)
-		relative, err := filepath.Rel(common.HololibLocation(), catalog)
-		fail.On(err != nil, "Could not get relative location for catalog -> %v.", err)
-		err = zipper.Add(catalog, relative)
-		fail.On(err != nil, "Could not add catalog to zip -> %v.", err)
 
 		fs, err := NewRoot(".")
 		fail.On(err != nil, "Could not create root location -> %v.", err)
@@ -202,6 +198,12 @@ func (it *hololib) Export(catalogs, known []string, archive string) (err error) 
 		fail.On(err != nil, "Could not load catalog from %s -> %v.", catalog, err)
 		err = fs.Treetop(ZipRoot(it, fs, zipper))
 		fail.On(err != nil, "Could not zip catalog %s -> %v.", catalog, err)
+
+		relative, err := filepath.Rel(common.HololibLocation(), catalog)
+		fail.On(err != nil, "Could not get relative location for catalog -> %v.", err)
+		err = zipper.Add(catalog, relative)
+		fail.On(err != nil, "Could not add catalog to zip -> %v.", err)
+
 		exported = true
 	}
 	fail.On(!exported, "None of given catalogs were available for export!")

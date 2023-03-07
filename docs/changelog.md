@@ -1,5 +1,12 @@
 # rcc change log
 
+## v13.8.0 (date: 7.3.2023)
+
+- new `--export` option to `rcc holotree prebuild` command, to enable direct
+  export to given hololib.zip filename of new, successfully build catalogs
+- bugfix: catalog was exported before its content, which would make it so, that
+  catalog is present before its parts
+
 ## v13.7.1 (date: 27.2.2023)
 
 - added missing `RCC_REMOTE_AUTHORIZATION` variable handling to rcc and passing
