@@ -6,6 +6,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 
 	"github.com/robocorp/rcc/common"
@@ -20,21 +21,39 @@ const (
 	slash     = `/`
 )
 
+var (
+	libraryPattern = regexp.MustCompile("(?i)^library/[0-9a-f]{2}/[0-9a-f]{2}/[0-9a-f]{2}/[0-9a-f]{64}$")
+	catalogPattern = regexp.MustCompile("(?i)^catalog/[0-9a-f]{16}v[0-9a-f]{2}\\.(?:windows|darwin|linux)_(?:amd64|arm64)")
+)
+
+type (
+	Verifier func(file *zip.File) error
+
+	WriteTarget struct {
+		Source *zip.File
+		Target string
+	}
+
+	Command interface {
+		Execute() bool
+	}
+
+	CommandChannel   chan Command
+	CompletedChannel chan bool
+)
+
 func slashed(text string) string {
 	return strings.Replace(text, backslash, slash, -1)
 }
 
-type WriteTarget struct {
-	Source *zip.File
-	Target string
+func HololibZipShape(file *zip.File) error {
+	library := libraryPattern.MatchString(file.Name)
+	catalog := catalogPattern.MatchString(file.Name)
+	if !library && !catalog {
+		return fmt.Errorf("filename %q does not match Holotree catalog or library entry pattern.", file.Name)
+	}
+	return nil
 }
-
-type Command interface {
-	Execute() bool
-}
-
-type CommandChannel chan Command
-type CompletedChannel chan bool
 
 func (it *WriteTarget) Execute() bool {
 	err := it.execute()
@@ -113,6 +132,17 @@ func loopExecutor(work CommandChannel, done CompletedChannel) {
 		task.Execute()
 	}
 	done <- true
+}
+
+func (it *unzipper) VerifyShape(verifier Verifier) []error {
+	errors := []error{}
+	for _, entry := range it.reader.File {
+		err := verifier(entry)
+		if err != nil {
+			errors = append(errors, err)
+		}
+	}
+	return errors
 }
 
 func (it *unzipper) Explode(workers int, directory string) error {
@@ -346,6 +376,19 @@ func CarrierUnzip(directory, carrier string, force, temporary bool) error {
 		return err
 	}
 	return FixDirectory(fullpath)
+}
+
+func VerifyZip(zipfile string, verifier Verifier) []error {
+	common.TimelineBegin("zip verify %q [size: %s]", zipfile, pathlib.HumaneSize(zipfile))
+	defer common.TimelineEnd()
+
+	unzip, err := newUnzipper(zipfile, false)
+	if err != nil {
+		return []error{err}
+	}
+	defer unzip.Close()
+
+	return unzip.VerifyShape(verifier)
 }
 
 func Unzip(directory, zipfile string, force, temporary, flatten bool) error {

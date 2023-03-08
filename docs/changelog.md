@@ -1,5 +1,10 @@
 # rcc change log
 
+## v13.9.0 (date: 8.3.2023)
+
+- added initial support for verifying that holotree imported zip structure shape
+  matches expected hololib catalog patterns (behind `--strict` flag, for now)
+
 ## v13.8.0 (date: 7.3.2023)
 
 - new `--export` option to `rcc holotree prebuild` command, to enable direct

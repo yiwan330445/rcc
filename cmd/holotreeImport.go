@@ -32,6 +32,20 @@ func temporaryDownload(at int, link string) (string, error) {
 	return zipfile, nil
 }
 
+func reportAllErrors(filename string, errors []error) error {
+	if errors == nil || len(errors) == 0 {
+		return nil
+	}
+	if len(errors) == 1 {
+		return errors[0]
+	}
+	common.Log("Errors from zip %q:", filename)
+	for at, err := range errors {
+		common.Log("- %d: %v", at+1, err)
+	}
+	return errors[0]
+}
+
 var holotreeImportCmd = &cobra.Command{
 	Use:   "import hololib.zip+",
 	Short: "Import one or more hololib.zip files into local hololib.",
@@ -48,6 +62,11 @@ var holotreeImportCmd = &cobra.Command{
 				filename, err = temporaryDownload(at, filename)
 				pretty.Guard(err == nil, 2, "Could not download %q, reason: %v", filename, err)
 				defer os.Remove(filename)
+			}
+			if common.StrictFlag {
+				errors := operations.VerifyZip(filename, operations.HololibZipShape)
+				err = reportAllErrors(filename, errors)
+				pretty.Guard(err == nil, 3, "Could not verify %q, first reason: %v", filename, err)
 			}
 			err = operations.ProtectedImport(filename)
 			pretty.Guard(err == nil, 1, "Could not import %q, reason: %v", filename, err)
