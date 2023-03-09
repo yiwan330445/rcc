@@ -5,7 +5,7 @@ import re
 from os.path import basename
 
 DELETE_PATTERN = re.compile(r'[/:]+')
-NONCHAR_PATTERN = re.compile(r'[^.a-z0-9-]+')
+NONCHAR_PATTERN = re.compile(r'[^.a-z0-9_-]+')
 HEADING_PATTERN = re.compile(r'^\s*(#{1,3})\s+(.*?)\s*$')
 CODE_PATTERN = re.compile(r'^\s*[`]{3}')
 

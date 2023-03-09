@@ -1,6 +1,10 @@
 # rcc change log
 
-## v13.9.1 (date: 8.3.2023)
+## v13.9.2 (date: 9.3.2023) DOCUMENTATION
+
+- bugfix: updated toc.py to generate improved table of contents
+
+## v13.9.1 (date: 9.3.2023)
 
 - bugfix: zip verification failed when Windows uses backslashes in paths
 - adding diagnostics around `ROBOCORP_HOME` location and robots
