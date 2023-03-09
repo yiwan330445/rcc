@@ -1,5 +1,11 @@
 # rcc change log
 
+## v13.9.1 (date: 8.3.2023)
+
+- bugfix: zip verification failed when Windows uses backslashes in paths
+- adding diagnostics around `ROBOCORP_HOME` location and robots
+- minor documentation updates in relation to `ROBOCORP_HOME` usage
+
 ## v13.9.0 (date: 8.3.2023)
 
 - added initial support for verifying that holotree imported zip structure shape

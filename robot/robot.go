@@ -190,6 +190,10 @@ func (it *robot) Diagnostics(target *common.DiagnosticStatus, production bool) {
 	diagnose := target.Diagnose("Robot")
 	it.diagnoseTasks(diagnose)
 	it.diagnoseVariousPaths(diagnose)
+	inside, err := common.IsInsideRobocorpHome(it.WorkingDirectory())
+	if err == nil && inside {
+		diagnose.Warning(0, "", "Robot working directory %q is inside ROBOCORP_HOME (%s)", it.WorkingDirectory(), common.RobocorpHome())
+	}
 	if it.Artifacts == "" {
 		diagnose.Fail(0, "", "In robot.yaml, 'artifactsDir:' is required!")
 	} else {

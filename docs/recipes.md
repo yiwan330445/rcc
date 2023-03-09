@@ -360,6 +360,40 @@ rcc task shell --robot path/to/robot.yaml
 ```
 
 
+## What is `ROBOCORP_HOME`?
+
+It is environment variable level settings, that says where Robocorp tooling
+can keep tooling specific files and configurations. It has default values,
+and normal case is that defaults are fine. But if there is need to "relocate"
+that somewhere else, then this environment variable does the trick.
+
+### Are there some rules for `ROBOCORP_HOME` variable?
+
+- go with defaults, unless you have very good reason to override it
+- avoid using spaces or special characters in path that is `ROBOCORP_HOME`,
+  so stick to basic english letters and numbers
+- never use your "home" directory as `ROBOCORP_HOME`, it will cause conflicts
+- never share `ROBOCORP_HOME` between two users, it should be unique to each
+  different user account
+- also keep it private and protected, other users should not have access
+  to that directory
+- never use `ROBOCORP_HOME` as working directory for user, or any other
+  tools; this directory is only meant for Robocorp tooling to use, change,
+  and operate on
+- never put `ROBOCORP_HOME` on network drive, since those tend to be slow,
+  and using those can cause real performance issues
+
+
+### When you might actually need to setup `ROBOCORP_HOME`?
+
+- if your username contains spaces, or some special characters that can cause
+  tooling to break
+- if path to your home directory is very long, it might cause long path  issues,
+  and one way to go around is have `ROBOCORP_HOME` on shorter path
+- if you need to have `ROBOCORP_HOME` on some different disk than default
+- if your home directory is on HDD drive (or even network drive), but you
+  have fast SSD direve available, performance might be much better on SSD
+
 ## What is shared holotree?
 
 Shared holotree is way to multiple users use same environment blueprint in

@@ -22,8 +22,8 @@ const (
 )
 
 var (
-	libraryPattern = regexp.MustCompile("(?i)^library/[0-9a-f]{2}/[0-9a-f]{2}/[0-9a-f]{2}/[0-9a-f]{64}$")
-	catalogPattern = regexp.MustCompile("(?i)^catalog/[0-9a-f]{16}v[0-9a-f]{2}\\.(?:windows|darwin|linux)_(?:amd64|arm64)")
+	libraryPattern = regexp.MustCompile("(?i)^library[/\\\\]{1,2}[0-9a-f]{2}[/\\\\]{1,2}[0-9a-f]{2}[/\\\\]{1,2}[0-9a-f]{2}[/\\\\]{1,2}[0-9a-f]{64}$")
+	catalogPattern = regexp.MustCompile("(?i)^catalog[/\\\\]{1,2}[0-9a-f]{16}v[0-9a-f]{2}\\.(?:windows|darwin|linux)_(?:amd64|arm64)")
 )
 
 type (

@@ -47,7 +47,7 @@ loop:
 	if TimelineEnabled && death.Milliseconds() > 0 {
 		history = append(history, &timevent{0, death, "Now."})
 		Log("----  rcc timeline  ----")
-		Log(" #  percent  seconds  event")
+		Log(" #  percent  seconds  event [rcc %s]", Version)
 		for at, event := range history {
 			permille := event.when * 1000 / death
 			percent := float64(permille) / 10.0

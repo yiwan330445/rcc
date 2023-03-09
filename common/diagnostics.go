@@ -3,6 +3,9 @@ package common
 import (
 	"encoding/json"
 	"fmt"
+	"path/filepath"
+
+	"github.com/robocorp/rcc/fail"
 )
 
 const (
@@ -73,4 +76,23 @@ func (it *DiagnosticStatus) AsJson() (string, error) {
 		return "", err
 	}
 	return string(body), nil
+}
+
+func IsInsideRobocorpHome(location string) (_ bool, err error) {
+	defer fail.Around(&err)
+
+	candidate, err := filepath.Abs(location)
+	fail.On(err != nil, "Failed to get absolute path to %q, reason: %v", location, err)
+
+	rchome, err := filepath.Abs(RobocorpHome())
+	fail.On(err != nil, "Failed to get absolute path to ROBOCORP_HOME, reason: %v", err)
+
+	for len(rchome) <= len(candidate) {
+		if rchome == candidate {
+			return true, nil
+		}
+		candidate = filepath.Dir(candidate)
+	}
+
+	return false, nil
 }

@@ -119,6 +119,10 @@ func RunDiagnostics() *common.DiagnosticStatus {
 		result.Checks = append(result.Checks, verifySharedDirectory(common.HololibLibraryLocation()))
 	}
 	result.Checks = append(result.Checks, robocorpHomeCheck())
+	check := workdirCheck()
+	if check != nil {
+		result.Checks = append(result.Checks, check)
+	}
 	result.Checks = append(result.Checks, anyPathCheck("PYTHONPATH"))
 	result.Checks = append(result.Checks, anyPathCheck("PLAYWRIGHT_BROWSERS_PATH"))
 	result.Checks = append(result.Checks, anyPathCheck("NODE_OPTIONS"))
@@ -288,6 +292,28 @@ func verifySharedDirectory(fullpath string) *common.DiagnosticCheck {
 	}
 }
 
+func workdirCheck() *common.DiagnosticCheck {
+	supportGeneralUrl := settings.Global.DocsLink("troubleshooting")
+	workarea, err := os.Getwd()
+	if err != nil {
+		return nil
+	}
+	inside, err := common.IsInsideRobocorpHome(workarea)
+	if err != nil {
+		return nil
+	}
+	if inside {
+		return &common.DiagnosticCheck{
+			Type:     "RPA",
+			Category: common.CategoryPathCheck,
+			Status:   statusWarning,
+			Message:  fmt.Sprintf("Working directory %q is inside ROBOCORP_HOME (%s).", workarea, common.RobocorpHome()),
+			Link:     supportGeneralUrl,
+		}
+	}
+	return nil
+}
+
 func robocorpHomeCheck() *common.DiagnosticCheck {
 	supportGeneralUrl := settings.Global.DocsLink("troubleshooting")
 	if !conda.ValidLocation(common.RobocorpHome()) {
@@ -297,6 +323,19 @@ func robocorpHomeCheck() *common.DiagnosticCheck {
 			Status:   statusFatal,
 			Message:  fmt.Sprintf("ROBOCORP_HOME (%s) contains characters that makes RPA fail.", common.RobocorpHome()),
 			Link:     supportGeneralUrl,
+		}
+	}
+	userhome, err := os.UserHomeDir()
+	if err == nil {
+		inside, err := common.IsInsideRobocorpHome(userhome)
+		if err == nil && inside {
+			return &common.DiagnosticCheck{
+				Type:     "RPA",
+				Category: common.CategoryRobocorpHome,
+				Status:   statusWarning,
+				Message:  fmt.Sprintf("User home directory %q is inside ROBOCORP_HOME (%s).", userhome, common.RobocorpHome()),
+				Link:     supportGeneralUrl,
+			}
 		}
 	}
 	return &common.DiagnosticCheck{
