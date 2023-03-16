@@ -1,5 +1,11 @@
 # rcc change log
 
+## v13.10.0 (date: 16.3.2023)
+
+- documentation: added holotree maintenance documentation
+- documentation: added vocabulary/glossary for rcc used terms
+- both above also as `rcc docs` subcommands
+
 ## v13.9.2 (date: 9.3.2023) DOCUMENTATION
 
 - bugfix: updated toc.py to generate improved table of contents

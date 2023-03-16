@@ -21,7 +21,9 @@ PRIORITY_LIST = (
         'docs/recipes.md',
         'docs/profile_configuration.md',
         'docs/environment-caching.md',
+        'docs/maintenance.md',
         'docs/troubleshooting.md',
+        'docs/vocabulary.md',
         'docs/history.md',
         )
 

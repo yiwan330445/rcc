@@ -43,6 +43,13 @@ func init() {
 	})
 
 	manCmd.AddCommand(&cobra.Command{
+		Use:   "maintenance",
+		Short: "Show holotree maintenance documentation.",
+		Long:  "Show holotree maintenance documentation.",
+		Run:   makeShowDoc("holotree maintenance documentation", "docs/maintenance.md"),
+	})
+
+	manCmd.AddCommand(&cobra.Command{
 		Use:   "profiles",
 		Short: "Show configuration profiles documentation.",
 		Long:  "Show configuration profiles documentation.",
@@ -78,6 +85,14 @@ func init() {
 		Aliases: []string{"tut"},
 		Run:     makeShowDoc("tutorial", "assets/man/tutorial.txt"),
 	}
+
+	manCmd.AddCommand(&cobra.Command{
+		Use:     "vocabulary",
+		Short:   "Show vocabulary documentation",
+		Long:    "Show vocabulary documentation",
+		Aliases: []string{"glossary", "lexicon"},
+		Run:     makeShowDoc("vocabulary documentation", "docs/vocabulary.md"),
+	})
 
 	manCmd.AddCommand(tutorial)
 	rootCmd.AddCommand(tutorial)
