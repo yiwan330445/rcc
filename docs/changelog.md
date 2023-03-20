@@ -1,5 +1,10 @@
 # rcc change log
 
+## v13.10.1 (date: 20.3.2023)
+
+- diagnostics: minor wording change (removing "toplevel" references)
+- documentation: some refinements and additions
+
 ## v13.10.0 (date: 16.3.2023)
 
 - documentation: added holotree maintenance documentation

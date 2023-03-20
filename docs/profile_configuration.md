@@ -24,6 +24,12 @@ can be active at any moment.
 
 ## Quick start guide
 
+### Setup Utility -- user interface for this
+
+More behind [this link](https://robocorp.com/docs/control-room/setup-utility).
+
+### Pure rcc workflow
+
 ```sh
 # interactively create "Office" profile
 rcc interactive configuration Office

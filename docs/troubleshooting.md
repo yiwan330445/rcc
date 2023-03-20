@@ -4,13 +4,16 @@
 
 ## Tools to help with troubleshooting issues
 
-- run command `rcc configuration diagnostics` and see if there are warnings
-  or errors in output (and same with `rcc configuration netdiagnostics`)
+- run command `rcc configuration diagnostics` and see if there are warnings,
+  failures or errors in output (and same with `rcc configuration netdiagnostics`)
 - if failure is with specific robot, then try running command
   `rcc configuration diagnostics --robot path/to/robot.yaml` and see if
-  those robot diagnostics have something that identifies a problem
+  those robot diagnostics have something that identifies a problem (or to get
+  only robot diagnostics, you can also use `rcc robot diagnostics` command)
 - run command `rcc configuration speedtest` to see, if problem is actually
   performance related (like slow disk or network access)
+- run command `rcc holotree check --retries 5` to verify (and fix possibly)
+  problems inside hololib storage
 - run rcc commands with `--debug` and `--timeline` flags, and see if anything
   there adds more information on why failure is happening
 
@@ -39,7 +42,8 @@
 - describe what error messages did you see
 - describe steps that are needed to be able to reproduce this issue
 - describe what have you already tried to resolve this issue
-- describe what has changed since this was not present and everything worked ok
+- describe what has changed since this issue was not present and when everything
+  worked ok
 - you should share your `conda.yaml` used with robot or environment
 - you should share your `robot.yaml` that defines your robot
 - you should share your code, or minimal sample code, that can reproduce
@@ -49,12 +53,12 @@
 
 - are you behind proxy, firewall, VPN, endpoint security solutions, or any
   combination of those?
-- if you are, do you know, what brand are those products, and if they are
-  provided by third party service providers, who are those third parties?
+- if you are, do you know, what brand are those products, and are they
+  provided by third party service providers, and who are those third parties?
 - are all those services configured to allow access to essential network places
   so that they don't cause interference on cloud access (change request or
   response headers, filter out URL parameters, change request or response
-  bodies, etc.)?
+  bodies, disallow DNS resolution, etc.)?
 - if those services require additional configuration in robot running machine,
   are those configurations in place in profiles used by rcc (service URLs,
   usernames and passwords, custom certificates, etc.)?
@@ -71,7 +75,7 @@
 If file is .dll or .exe file, then there is probably some process running, that
 has actually locked that file, and tooling cannot complete its operation while
 that other process is running. Other process might be virus scanner, some other
-tool (Assistant, Workforce Agent, Automation Studio, VS Code, rcc) using same
+tool (Assistant, Worker, Automation Studio, VS Code, rcc) using same
 environment, or even open Explorer view.
 
 To resolve this, close other applications, or wait them to finish before trying

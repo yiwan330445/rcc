@@ -194,7 +194,7 @@ func (it *Settings) CriticalEnvironmentDiagnostics(target *common.DiagnosticStat
 		correct = diagnoseUrl(it.Endpoints["downloads"], "endpoints/downloads", diagnose, correct)
 	}
 	if correct {
-		diagnose.Ok(0, "Toplevel settings are ok.")
+		diagnose.Ok(0, "Critical environment diagnostics are ok.")
 	}
 }
 
@@ -226,7 +226,7 @@ func (it *Settings) Diagnostics(target *common.DiagnosticStatus) {
 		correct = false
 	}
 	if correct {
-		diagnose.Ok(0, "Toplevel settings are ok.")
+		diagnose.Ok(0, "In general, 'settings.yaml' is ok.")
 	}
 }
 

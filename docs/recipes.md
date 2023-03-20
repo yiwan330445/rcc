@@ -163,8 +163,8 @@ rcc task script --interactive -- ipython
 ### What next?
 
 * Your python project is now converted to rcc and should be locally "runnable".
-* Setup Assistant or Workforce Agent in your machine and create Assistant or
-  Robot in Robocorp Control Room, and try to run it from there.
+* Setup Assistant or Worker in your machine and create Assistant or Robot
+  in Robocorp Control Room, and try to run it from there.
 * If your robot is "headless", has all dependencies, and should be runnable
   in Linux, then you can try to run it in container from Control Room.
 * If your project is python2 project, then consider converting it to python3.
@@ -866,7 +866,7 @@ You then need to do these steps:
   URL that starts with https:
 
 Note: templates are needed only on development context, and they are not used
-or needed in Assistant or Workforce Agent context.
+or needed in Assistant or Worker context.
 
 ### Custom template configuration in `settings.yaml`.
 
