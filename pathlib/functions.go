@@ -22,6 +22,10 @@ func TempDir() string {
 	return base
 }
 
+func RestrictOwnerOnly(filename string) error {
+	return os.Chmod(filename, 0o600)
+}
+
 func Create(filename string) (*os.File, error) {
 	_, err := EnsureParentDirectory(filename)
 	if err != nil {

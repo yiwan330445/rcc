@@ -52,6 +52,7 @@ func (it *config) Save() {
 		common.Log("FATAL: could not write %v, reason %v; ignored.", it.Filename, err)
 		return
 	}
+	defer pathlib.RestrictOwnerOnly(it.Filename)
 	when, err := pathlib.Modtime(it.Filename)
 	if err == nil {
 		it.Timestamp = when
@@ -70,6 +71,7 @@ func (it *config) reload() {
 
 	it.Viper = viper.New()
 	it.Viper.SetConfigFile(it.Filename)
+	defer pathlib.RestrictOwnerOnly(it.Filename)
 	err = it.Viper.ReadInConfig()
 	var when time.Time
 	if err == nil {

@@ -1,5 +1,10 @@
 # rcc change log
 
+## v13.11.0 (date: 5.4.2023)
+
+- tighter permissions restrictions of rcc.yaml and rcccache.yaml using
+  os.Chmod, so probably works on Mac and Linux, but Windows is uncertain
+
 ## v13.10.1 (date: 20.3.2023)
 
 - diagnostics: minor wording change (removing "toplevel" references)

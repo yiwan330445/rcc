@@ -73,11 +73,13 @@ func SummonCache() (*Cache, error) {
 	}
 	defer locker.Release()
 
-	source, err := os.Open(cacheLocation())
+	cacheFile := cacheLocation()
+	source, err := os.Open(cacheFile)
 	if err != nil {
 		return result.Ready(), nil
 	}
 	defer source.Close()
+	defer pathlib.RestrictOwnerOnly(cacheFile)
 	decoder := yaml.NewDecoder(source)
 	err = decoder.Decode(&result)
 	if err != nil {
@@ -96,10 +98,13 @@ func (it *Cache) Save() error {
 	}
 	defer locker.Release()
 
-	sink, err := pathlib.Create(cacheLocation())
+	cacheFile := cacheLocation()
+	sink, err := pathlib.Create(cacheFile)
 	if err != nil {
 		return err
 	}
+	defer sink.Close()
+	defer pathlib.RestrictOwnerOnly(cacheFile)
 	encoder := yaml.NewEncoder(sink)
 	err = encoder.Encode(it)
 	if err != nil {
