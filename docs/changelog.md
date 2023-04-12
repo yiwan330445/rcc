@@ -1,5 +1,9 @@
 # rcc change log
 
+## v13.12.1 (date: 12.4.2023)
+
+- fix: added .poetry to list of ignored paths
+
 ## v13.12.0 (date: 12.4.2023)
 
 - micromamba upgrade to v1.4.2

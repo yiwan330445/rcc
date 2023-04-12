@@ -30,6 +30,7 @@ var (
 		"pyenv",
 		"venv",
 		"pypoetry",
+		".poetry",
 		"virtualenv",
 	}
 	hashPattern    = regexp.MustCompile("^[0-9a-f]{16}(?:\\.meta)?$")
