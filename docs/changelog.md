@@ -1,5 +1,11 @@
 # rcc change log
 
+## v13.12.0 (date: 12.4.2023)
+
+- micromamba upgrade to v1.4.2
+- test change: removed test that can fail because of probabilistic feature
+  on some metric updates (which cause rcccache.yaml not to be written at all)
+
 ## v13.11.0 (date: 5.4.2023)
 
 - tighter permissions restrictions of rcc.yaml and rcccache.yaml using
