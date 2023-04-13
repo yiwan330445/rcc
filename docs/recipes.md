@@ -563,14 +563,40 @@ PYTHONPATH:
 It is declarative description in [YAML format](https://en.wikipedia.org/wiki/YAML)
 of what robot is and what it can do.
 
-It is also a pointer to "a robot center of universe" for directory it resides.
+It is also a pointer to "a robot center of a universe" for directory it resides.
 So it is marker of "current working folder" when robot starts to execute and
 that will be indicated in `ROBOT_ROOT` environment variable. All declarations
-inside `robot.yaml` should be relative to this location, so do not use
-absolute paths here.
+inside `robot.yaml` should be relative to and inside of this location, so do
+not use absolute paths here, or relative references to any parent directory.
+
+It also marks root location that gets wrapped into `robot.zip` when either
+wrapping locally or pushing to Control Room. Nothing above directory holding
+`robot.yaml` gets wrapped into that zip file.
 
 Also note that `robot.yaml` is just a name of a file. Other names can be used
-and then given to commands using `--robot othername.yaml` CLI option.
+and then given to commands using `--robot othername.yaml` CLI option. But
+in Robocorp tooling, this default name `robot.yaml` is used to have common
+ground without additional configuration needs.
+
+### Why "the center of the universe"?
+
+Firstly, it is not "the center", it is just "a center of a universe" for
+specific robot. So it only applies to that specific robot, when operations
+are done around that one specific robot. Other robots have their own centers.
+
+And reason for thinking this way is, that it is "convention over configuration",
+meaning that when we have this concept, there is much less configuration to do.
+It gives following things automatically, without additional configuration:
+
+- what is "root" folder, when wrapping robot into deliverable package
+- what is starting working directory when robot is executed (robot itself can
+  of course change its working directory freely while running)
+- it gives solid starting point for relative paths inside robot, so that
+  PATH, PYTHONPATH, artifactsDir, and other relative references can be
+  converted absolute ones
+- it allows robot location to be different for different users and on different
+  machines, and still have everything declared with known (but relative)
+  locations
 
 ### What are `tasks:`?
 
