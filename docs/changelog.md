@@ -1,5 +1,10 @@
 # rcc change log
 
+## v13.12.3 (date: 14.4.2023)
+
+- improvement: more clear messaging on hololib corruption
+- fix: full cleanup will first remove catalogs and then hololib
+
 ## v13.12.2 (date: 13.4.2023)
 
 - updating documentation around `robot.yaml` and its functionality

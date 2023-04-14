@@ -22,7 +22,7 @@ func JustFileExistCheck(library MutableLibrary, path, name, digest string) anywo
 		location := library.ExactLocation(digest)
 		if !pathlib.IsFile(location) {
 			fullpath := filepath.Join(path, name)
-			panic(fmt.Errorf("Content for %q [%s] is missing!", fullpath, digest))
+			panic(fmt.Errorf("Content for %q [%s] is missing; hololib is broken, requires check!", fullpath, digest))
 		}
 	}
 }

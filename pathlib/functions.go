@@ -54,6 +54,9 @@ func Exists(pathname string) bool {
 }
 
 func Abs(path string) (string, error) {
+	if filepath.IsAbs(path) {
+		return path, nil
+	}
 	fullpath, err := filepath.Abs(path)
 	if err != nil {
 		return "", err
