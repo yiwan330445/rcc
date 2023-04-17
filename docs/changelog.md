@@ -1,5 +1,12 @@
 # rcc change log
 
+## v14.0.0 (date: 17.4.2023) UNSTABLE
+
+- major breaking change: this will remove some old, now unwanted functionality
+- this will be ongoing work for short while, making things unstable for now
+- removal of "virtual environment" support (pyvenv.cfg), and `VIRTUAL_ENV`
+  variable is no longer available
+
 ## v13.12.3 (date: 14.4.2023)
 
 - improvement: more clear messaging on hololib corruption

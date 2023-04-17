@@ -19,13 +19,6 @@ import (
 	"github.com/robocorp/rcc/shell"
 )
 
-const (
-	venvTemplate = `home = %s
-include-system-site-packages = true
-version = %s
-`
-)
-
 func metafile(folder string) string {
 	return common.ExpandPath(folder + ".meta")
 }
@@ -277,25 +270,7 @@ func newLiveInternal(yaml, condaYaml, requirementsText, key string, force, fresh
 		return false, false
 	}
 
-	_, ok = HolotreePath(targetFolder).Which("python", FileExtensions)
-	if ok {
-		venvContent := fmt.Sprintf(venvTemplate, targetFolder, pythonVersionAt(targetFolder))
-		venvFile := filepath.Join(targetFolder, "pyvenv.cfg")
-		err = pathlib.WriteFile(venvFile, []byte(venvContent), 0o644)
-		if err != nil {
-			return false, false
-		}
-	}
-
 	return true, false
-}
-
-func pythonVersionAt(targetFolder string) string {
-	versionText, code, _ := LiveCapture(targetFolder, "python", "--version")
-	if code != 0 {
-		return "?.?.?"
-	}
-	return strings.Replace(versionText, "Python ", "", 1)
 }
 
 func temporaryConfig(condaYaml, requirementsText string, save bool, filenames ...string) (string, string, *Environment, error) {
