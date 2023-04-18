@@ -64,12 +64,6 @@ Goal: Initialize new standard robot into tmp/fluffy folder using force.
   Use STDERR
   Must Have   OK.
 
-Goal: There should now be fluffy in robot listing
-  Step        build/rcc robot list --controller citests -j
-  Must Be Json Response
-  Must Have   fluffy
-  Must Have   "robot"
-
 Goal: Fail to initialize new standard robot into tmp/fluffy without force.
   Step        build/rcc robot init -i --controller citests -t extended -d tmp/fluffy  2
   Use STDERR

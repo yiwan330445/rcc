@@ -243,6 +243,5 @@ func InitializeWorkarea(directory, name string, internal, force bool) error {
 	if err != nil {
 		return err
 	}
-	UpdateRobot(fullpath)
 	return unpack(content, fullpath)
 }

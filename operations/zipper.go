@@ -371,10 +371,6 @@ func CarrierUnzip(directory, carrier string, force, temporary bool) error {
 	if temporary {
 		return nil
 	}
-	err = UpdateRobot(fullpath)
-	if err != nil {
-		return err
-	}
 	return FixDirectory(fullpath)
 }
 
@@ -418,10 +414,6 @@ func Unzip(directory, zipfile string, force, temporary, flatten bool) error {
 	}
 	if temporary {
 		return nil
-	}
-	err = UpdateRobot(fullpath)
-	if err != nil {
-		return err
 	}
 	return FixDirectory(fullpath)
 }

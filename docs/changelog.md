@@ -1,5 +1,10 @@
 # rcc change log
 
+## v14.1.0 (date: 18.4.2023) UNSTABLE
+
+- major breaking change: removed `rcc robot list` command and history handling
+  support (this was old Lab requested functionality)
+
 ## v14.0.0 (date: 17.4.2023) UNSTABLE
 
 - major breaking change: this will remove some old, now unwanted functionality
