@@ -13,7 +13,7 @@ import (
 func safeRemove(hint, pathling string) error {
 	var err error
 	if !pathlib.Exists(pathling) {
-		common.Debug("[%s] Missing %v, not need to remove.", hint, pathling)
+		common.Debug("[%s] Missing %v, no need to remove.", hint, pathling)
 		return nil
 	}
 	if pathlib.IsDir(pathling) {
@@ -39,6 +39,16 @@ func doCleanup(fullpath string, dryrun bool) error {
 		return nil
 	}
 	return safeRemove("path", fullpath)
+}
+
+func bugsCleanup(dryrun bool) {
+	if dryrun {
+		common.Log("- %v", common.BadHololibSitePackagesLocation())
+		common.Log("- %v", common.BadHololibScriptsLocation())
+		return
+	}
+	safeRemove("bugs", common.BadHololibSitePackagesLocation())
+	safeRemove("bugs", common.BadHololibScriptsLocation())
 }
 
 func alwaysCleanup(dryrun bool) {
@@ -139,6 +149,10 @@ func cleanupTemp(deadline time.Time, dryrun bool) error {
 	return nil
 }
 
+func BugsCleanup() {
+	bugsCleanup(false)
+}
+
 func Cleanup(daylimit int, dryrun, quick, all, micromamba, downloads bool) error {
 	lockfile := common.RobocorpLock()
 	completed := pathlib.LockWaitMessage(lockfile, "Serialized environment cleanup [robocorp lock]")
@@ -151,6 +165,7 @@ func Cleanup(daylimit int, dryrun, quick, all, micromamba, downloads bool) error
 	defer locker.Release()
 
 	alwaysCleanup(dryrun)
+	bugsCleanup(dryrun)
 
 	if downloads {
 		return downloadCleanup(dryrun)

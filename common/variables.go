@@ -206,6 +206,17 @@ func HolotreeLock() string {
 	return filepath.Join(HolotreeLocation(), "global.lck")
 }
 
+func BadHololibSitePackagesLocation() string {
+	return filepath.Join(HololibLocation(), "site-packages")
+}
+
+func BadHololibScriptsLocation() string {
+	if SharedHolotree {
+		return filepath.Join(HoloLocation(), "Scripts")
+	}
+	return filepath.Join(RobocorpHome(), "Scripts")
+}
+
 func UsesHolotree() bool {
 	return len(HolotreeSpace) > 0
 }

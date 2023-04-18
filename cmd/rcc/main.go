@@ -10,6 +10,7 @@ import (
 	"github.com/robocorp/rcc/cloud"
 	"github.com/robocorp/rcc/cmd"
 	"github.com/robocorp/rcc/common"
+	"github.com/robocorp/rcc/conda"
 	"github.com/robocorp/rcc/operations"
 	"github.com/robocorp/rcc/pathlib"
 )
@@ -94,6 +95,8 @@ func markTempForRecycling() {
 
 func main() {
 	defer ExitProtection()
+
+	anywork.Backlog(conda.BugsCleanup)
 
 	if common.SharedHolotree {
 		common.TimelineBegin("Start [shared mode]. (parent/pid: %d/%d)", os.Getppid(), os.Getpid())

@@ -1,5 +1,10 @@
 # rcc change log
 
+## v14.2.0 (date: 18.4.2023) UNSTABLE
+
+- cleanup functionality for "Scripts" and "site-packages" that are in wrong
+  place (due virtual environment bug fixed in v14.0.0)
+
 ## v14.1.0 (date: 18.4.2023) UNSTABLE
 
 - major breaking change: removed `rcc robot list` command and history handling
