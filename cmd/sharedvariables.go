@@ -7,6 +7,7 @@ var (
 	forceFlag      bool
 	listFlag       bool
 	jsonFlag       bool
+	dryFlag        bool
 	productionFlag bool
 	verifiedFlag   bool
 )

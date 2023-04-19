@@ -1,5 +1,10 @@
 # rcc change log
 
+## v14.4.0 (date: 19.4.2023) UNSTABLE
+
+- major breaking change: removed `rcc robot libs` command, since it is not
+  used in tooling, and if needed, needs better design
+
 ## v14.3.0 (date: 19.4.2023) UNSTABLE
 
 - major breaking change: removed `rcc robot fix` command (just command,
