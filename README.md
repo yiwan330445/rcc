@@ -1,6 +1,6 @@
 ![RCC](/docs/title.png)
 
-RCC is a set of tooling that allows you to create, manage, and distribute Python-based self-contained automation packages - or robots :robot: as we call them.
+RCC is a set of tooling that allows you to create, manage, and distribute Python-based self-contained automation packages - or robots :robot: as we call them. And run them on soft-containers that have access to rest of your machine.
 
 Together with [robot.yaml](https://robocorp.com/docs/setup/robot-yaml-format) configuration file, `rcc` is a foundation that allows anyone to build and share automation with ease.
 

@@ -1,5 +1,18 @@
 # rcc change log
 
+## v14.4.1 (date: 19.4.2023)
+
+- MAJOR BREAKING CHANGES:
+  - under "spring cleaning" umbrella
+  - virtual environment and `pyvenv.cfg` support removed after realization
+    that holotree environments are not virtual environments, they are full
+    environments and then some, they can also be called soft-containers
+  - by trying to be virtual environment also caused bug in Windows, where
+    `site-pacakges` and `Scripts` directories could be polluting all other
+    environments as well, and that is why there is some cleanup in place now
+  - removed old, unused functionality, specially commands `rcc robot fix`,
+    `rcc robot libs`, and `rcc robot list` and their relating functionality
+
 ## v14.4.0 (date: 19.4.2023) UNSTABLE
 
 - major breaking change: removed `rcc robot libs` command, since it is not

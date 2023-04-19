@@ -15,6 +15,8 @@
   prohibited (using pre-made hololib.zip environments, or importing prebuild
   environments build elsewhere)
 * pull and run community created robots without Control Room requirement
+* use rcc provided holotree environments as soft-containers (they are isolated
+  environments, but also have access to rest of your machine resources)
 
 ## What is available from conda-forge?
 
