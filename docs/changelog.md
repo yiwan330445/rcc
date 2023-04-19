@@ -1,5 +1,10 @@
 # rcc change log
 
+## v14.3.0 (date: 19.4.2023) UNSTABLE
+
+- major breaking change: removed `rcc robot fix` command (just command,
+  internal functionality is still used by rcc)
+
 ## v14.2.0 (date: 18.4.2023) UNSTABLE
 
 - cleanup functionality for "Scripts" and "site-packages" that are in wrong
