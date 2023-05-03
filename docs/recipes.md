@@ -877,13 +877,14 @@ compromising variable content inside repository).
 ## How to setup custom templates?
 
 Custom templates allows making your own templates that can be used when
-new robot is created. So if you have your standard way of doing things,
+new robot is created. So if you have your own standard way of doing things,
 then custom template is good way to codify it.
 
 You then need to do these steps:
 
 - setup custom settings.yaml that point location where template configuration
   file is located (the templates.yaml file)
+- if you are using profiles, then make above change in settings.yaml used there
 - create that custom templates.yaml configuration file that lists available
   templates, and where template bundle can be found (the templates.zip file)
 - and finally build that templates.zip to bundle together all those templates

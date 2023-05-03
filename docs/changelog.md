@@ -1,5 +1,11 @@
 # rcc change log
 
+## v14.5.0 (date: 3.5.2023)
+
+- subprocess exit codes are now visible, when subprocess fails (that is, when
+  exit code in non-zero)
+- minor update on "custom templates" documentation
+
 ## v14.4.1 (date: 19.4.2023)
 
 - MAJOR BREAKING CHANGES:

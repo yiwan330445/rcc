@@ -68,7 +68,11 @@ func (it *Task) execute(stdin io.Reader, stdout, stderr io.Writer) (int, error) 
 	common.Timeline("exec %q started", it.executable)
 	common.Debug("PID #%d is %q.", command.Process.Pid, command)
 	defer func() {
-		common.Debug("PID #%d finished: %v.", command.Process.Pid, command.ProcessState)
+		if command.ProcessState.ExitCode() != 0 {
+			common.Log("Process %d: %v, command: %s %s [%s/%d]", command.Process.Pid, command.ProcessState, it.executable, it.args, common.Version, os.Getpid())
+		} else {
+			common.Debug("PID #%d finished: %v.", command.Process.Pid, command.ProcessState)
+		}
 	}()
 	err = command.Wait()
 	exit, ok := err.(*exec.ExitError)
