@@ -57,7 +57,7 @@ func createIssueZip(attachmentsFiles []string) (string, error) {
 
 func createDiagnosticsReport(robotfile string) (string, *common.DiagnosticStatus, error) {
 	file := filepath.Join(common.RobocorpTemp(), "diagnostics.txt")
-	diagnostics, err := ProduceDiagnostics(file, robotfile, false, false)
+	diagnostics, err := ProduceDiagnostics(file, robotfile, false, false, false)
 	if err != nil {
 		return "", nil, err
 	}

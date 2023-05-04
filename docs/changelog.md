@@ -1,5 +1,11 @@
 # rcc change log
 
+## v14.6.0 (date: 4.5.2023)
+
+- adding `--quick` flag to diagnostics to filter out slow diagnostics
+- for now, "slow diagnostics" are mostly network related checks, some of
+  subprocesses still get executed (like micromamba for example)
+
 ## v14.5.0 (date: 3.5.2023)
 
 - subprocess exit codes are now visible, when subprocess fails (that is, when

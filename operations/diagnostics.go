@@ -57,7 +57,7 @@ func justText(source stringerr) string {
 	return result
 }
 
-func RunDiagnostics() *common.DiagnosticStatus {
+func runDiagnostics(quick bool) *common.DiagnosticStatus {
 	result := &common.DiagnosticStatus{
 		Details: make(map[string]string),
 		Checks:  []*common.DiagnosticCheck{},
@@ -132,6 +132,12 @@ func RunDiagnostics() *common.DiagnosticStatus {
 	}
 	result.Checks = append(result.Checks, lockpidsCheck()...)
 	result.Checks = append(result.Checks, lockfilesCheck()...)
+	if quick {
+		return result
+	}
+
+	// Move slow checks below this position
+
 	hostnames := settings.Global.Hostnames()
 	dnsStopwatch := common.Stopwatch("DNS lookup time for %d hostnames was about", len(hostnames))
 	for _, host := range hostnames {
@@ -529,13 +535,13 @@ func ProduceNetDiagnostics(body []byte, json bool) (*common.DiagnosticStatus, er
 	return nil, nil
 }
 
-func ProduceDiagnostics(filename, robotfile string, json, production bool) (*common.DiagnosticStatus, error) {
+func ProduceDiagnostics(filename, robotfile string, json, production, quick bool) (*common.DiagnosticStatus, error) {
 	file, err := fileIt(filename)
 	if err != nil {
 		return nil, err
 	}
 	defer file.Close()
-	result := RunDiagnostics()
+	result := runDiagnostics(quick)
 	if len(robotfile) > 0 {
 		addRobotDiagnostics(robotfile, result, production)
 	}

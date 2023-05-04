@@ -9,8 +9,9 @@ import (
 )
 
 var (
-	fileOption  string
-	robotOption string
+	fileOption      string
+	robotOption     string
+	quickFilterFlag bool
 )
 
 var diagnosticsCmd = &cobra.Command{
@@ -22,7 +23,7 @@ var diagnosticsCmd = &cobra.Command{
 		if common.DebugFlag {
 			defer common.Stopwatch("Diagnostic run lasted").Report()
 		}
-		_, err := operations.ProduceDiagnostics(fileOption, robotOption, jsonFlag, productionFlag)
+		_, err := operations.ProduceDiagnostics(fileOption, robotOption, jsonFlag, productionFlag, quickFilterFlag)
 		if err != nil {
 			pretty.Exit(1, "Error: %v", err)
 		}
@@ -34,7 +35,8 @@ func init() {
 	configureCmd.AddCommand(diagnosticsCmd)
 	rootCmd.AddCommand(diagnosticsCmd)
 
-	diagnosticsCmd.Flags().BoolVarP(&jsonFlag, "json", "j", false, "Output in JSON format")
+	diagnosticsCmd.Flags().BoolVarP(&jsonFlag, "json", "j", false, "Output in JSON format.")
+	diagnosticsCmd.Flags().BoolVarP(&quickFilterFlag, "quick", "q", false, "Only run quick diagnostics.")
 	diagnosticsCmd.Flags().StringVarP(&fileOption, "file", "f", "", "Save output into a file.")
 	diagnosticsCmd.Flags().StringVarP(&robotOption, "robot", "r", "", "Full path to 'robot.yaml' configuration file. [optional]")
 	diagnosticsCmd.Flags().BoolVarP(&productionFlag, "production", "p", false, "Checks for production level robots. [optional]")
