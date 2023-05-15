@@ -112,31 +112,9 @@ func newLive(yaml, condaYaml, requirementsText, key string, force, freshInstall 
 	}
 	return success, nil
 }
-
-func newLiveInternal(yaml, condaYaml, requirementsText, key string, force, freshInstall bool, postInstall []string) (bool, bool) {
-	targetFolder := common.StageFolder
-	planfile := fmt.Sprintf("%s.plan", targetFolder)
-	planSink, err := os.OpenFile(planfile, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0o644)
-	if err != nil {
-		return false, false
-	}
-	defer func() {
-		planSink.Close()
-		content, err := os.ReadFile(planfile)
-		if err == nil {
-			common.Log("%s", string(content))
-		}
-		os.Remove(planfile)
-	}()
-
-	planalyzer := NewPlanAnalyzer(true)
-	defer planalyzer.Close()
-
-	planWriter := io.MultiWriter(planSink, planalyzer)
-	fmt.Fprintf(planWriter, "---  installation plan %q %s [force: %v, fresh: %v| rcc %s]  ---\n\n", key, time.Now().Format(time.RFC3339), force, freshInstall, common.Version)
-	stopwatch := common.Stopwatch("installation plan")
-	fmt.Fprintf(planWriter, "---  plan blueprint @%ss  ---\n\n", stopwatch)
-	fmt.Fprintf(planWriter, "%s\n", yaml)
+func micromambaLayer(condaYaml, targetFolder string, stopwatch fmt.Stringer, planWriter io.Writer, force bool) (bool, bool) {
+	common.TimelineBegin("Layer: micromamba")
+	defer common.TimelineEnd()
 
 	common.Debug("Setting up new conda environment using %v to folder %v", condaYaml, targetFolder)
 	ttl := "57600"
@@ -165,12 +143,20 @@ func newLiveInternal(yaml, condaYaml, requirementsText, key string, force, fresh
 	if observer.HasFailures(targetFolder) {
 		return false, true
 	}
+	return true, false
+}
+
+func pipLayer(requirementsText, targetFolder string, stopwatch fmt.Stringer, planWriter io.Writer, planSink *os.File) (bool, bool, bool, string) {
+	common.TimelineBegin("Layer: pip")
+	defer common.TimelineEnd()
+
+	pipUsed := false
 	fmt.Fprintf(planWriter, "\n---  pip plan @%ss  ---\n\n", stopwatch)
 	python, pyok := FindPython(targetFolder)
 	if !pyok {
 		fmt.Fprintf(planWriter, "Note: no python in target folder: %s\n", targetFolder)
 	}
-	pipUsed, pipCache, wheelCache := false, common.PipCache(), common.WheelCache()
+	pipCache, wheelCache := common.PipCache(), common.WheelCache()
 	size, ok := pathlib.Size(requirementsText)
 	if !ok || size == 0 {
 		common.Progress(7, "Skipping pip install phase -- no pip dependencies.")
@@ -179,7 +165,7 @@ func newLiveInternal(yaml, condaYaml, requirementsText, key string, force, fresh
 			cloud.BackgroundMetric(common.ControllerIdentity(), "rcc.env.fatal.pip", fmt.Sprintf("%d_%x", 9999, 9999))
 			common.Timeline("pip fail. no python found.")
 			common.Fatal("pip fail. no python found.", errors.New("No python found, but required!"))
-			return false, false
+			return false, false, pipUsed, ""
 		}
 		common.Progress(7, "Running pip install phase. (pip v%s)", PipVersion(python))
 		common.Debug("Updating new environment at %v with pip requirements from %v (size: %v)", targetFolder, requirementsText, size)
@@ -188,18 +174,25 @@ func newLiveInternal(yaml, condaYaml, requirementsText, key string, force, fresh
 		pipCommand.Option("--trusted-host", settings.Global.PypiTrustedHost())
 		pipCommand.ConditionalFlag(common.VerboseEnvironmentBuilding(), "--verbose")
 		common.Debug("===  pip install phase ===")
-		code, err = LiveExecution(planWriter, targetFolder, pipCommand.CLI()...)
+		code, err := LiveExecution(planWriter, targetFolder, pipCommand.CLI()...)
 		planSink.Sync()
 		if err != nil || code != 0 {
 			cloud.BackgroundMetric(common.ControllerIdentity(), "rcc.env.fatal.pip", fmt.Sprintf("%d_%x", code, code))
 			common.Timeline("pip fail.")
 			common.Fatal(fmt.Sprintf("Pip [%d/%x]", code, code), err)
-			return false, false
+			return false, false, pipUsed, ""
 		}
 		journal.CurrentBuildEvent().PipComplete()
 		common.Timeline("pip done.")
 		pipUsed = true
 	}
+	return true, false, pipUsed, python
+}
+
+func postInstallLayer(postInstall []string, targetFolder string, stopwatch fmt.Stringer, planWriter io.Writer, planSink *os.File) (bool, bool) {
+	common.TimelineBegin("Layer: post install scripts")
+	defer common.TimelineEnd()
+
 	fmt.Fprintf(planWriter, "\n---  post install plan @%ss  ---\n\n", stopwatch)
 	if postInstall != nil && len(postInstall) > 0 {
 		common.Progress(8, "Post install scripts phase started.")
@@ -224,6 +217,58 @@ func newLiveInternal(yaml, condaYaml, requirementsText, key string, force, fresh
 	} else {
 		common.Progress(8, "Post install scripts phase skipped -- no scripts.")
 	}
+	return true, false
+}
+
+func holotreeLayers(condaYaml, requirementsText string, postInstall []string, targetFolder string, stopwatch fmt.Stringer, planWriter io.Writer, planSink *os.File, force bool) (bool, bool, bool, string) {
+	common.TimelineBegin("Holotree layers")
+	defer common.TimelineEnd()
+
+	success, fatal := micromambaLayer(condaYaml, targetFolder, stopwatch, planWriter, force)
+	if !success {
+		return success, fatal, false, ""
+	}
+	success, fatal, pipUsed, python := pipLayer(requirementsText, targetFolder, stopwatch, planWriter, planSink)
+	if !success {
+		return success, fatal, pipUsed, python
+	}
+	success, fatal = postInstallLayer(postInstall, targetFolder, stopwatch, planWriter, planSink)
+	if !success {
+		return success, fatal, pipUsed, python
+	}
+	return true, false, pipUsed, python
+}
+
+func newLiveInternal(yaml, condaYaml, requirementsText, key string, force, freshInstall bool, postInstall []string) (bool, bool) {
+	targetFolder := common.StageFolder
+	planfile := fmt.Sprintf("%s.plan", targetFolder)
+	planSink, err := os.OpenFile(planfile, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0o644)
+	if err != nil {
+		return false, false
+	}
+	defer func() {
+		planSink.Close()
+		content, err := os.ReadFile(planfile)
+		if err == nil {
+			common.Log("%s", string(content))
+		}
+		os.Remove(planfile)
+	}()
+
+	planalyzer := NewPlanAnalyzer(true)
+	defer planalyzer.Close()
+
+	planWriter := io.MultiWriter(planSink, planalyzer)
+	fmt.Fprintf(planWriter, "---  installation plan %q %s [force: %v, fresh: %v| rcc %s]  ---\n\n", key, time.Now().Format(time.RFC3339), force, freshInstall, common.Version)
+	stopwatch := common.Stopwatch("installation plan")
+	fmt.Fprintf(planWriter, "---  plan blueprint @%ss  ---\n\n", stopwatch)
+	fmt.Fprintf(planWriter, "%s\n", yaml)
+
+	success, fatal, pipUsed, python := holotreeLayers(condaYaml, requirementsText, postInstall, targetFolder, stopwatch, planWriter, planSink, force)
+	if !success {
+		return success, fatal
+	}
+
 	common.Progress(9, "Activate environment started phase.")
 	common.Debug("===  activate phase ===")
 	fmt.Fprintf(planWriter, "\n---  activation plan @%ss  ---\n\n", stopwatch)
@@ -244,7 +289,7 @@ func newLiveInternal(yaml, condaYaml, requirementsText, key string, force, fresh
 		pipCommand := common.NewCommander(python, "-m", "pip", "check", "--no-color")
 		pipCommand.ConditionalFlag(common.VerboseEnvironmentBuilding(), "--verbose")
 		common.Debug("===  pip check phase ===")
-		code, err = LiveExecution(planWriter, targetFolder, pipCommand.CLI()...)
+		code, err := LiveExecution(planWriter, targetFolder, pipCommand.CLI()...)
 		planSink.Sync()
 		if err != nil || code != 0 {
 			cloud.BackgroundMetric(common.ControllerIdentity(), "rcc.env.fatal.pipcheck", fmt.Sprintf("%d_%x", code, code))

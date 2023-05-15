@@ -1,5 +1,9 @@
 # rcc change log
 
+## v14.7.0 (date: 15.5.2023)
+
+- adding logical layers on holotree installation (visible on timeline)
+
 ## v14.6.0 (date: 4.5.2023)
 
 - adding `--quick` flag to diagnostics to filter out slow diagnostics
