@@ -184,7 +184,7 @@ func (it *Root) HolotreeBase() string {
 }
 
 func (it *Root) Signature() uint64 {
-	return sipit([]byte(strings.ToLower(fmt.Sprintf("%s %q", it.Platform, it.Path))))
+	return common.Sipit([]byte(strings.ToLower(fmt.Sprintf("%s %q", it.Platform, it.Path))))
 }
 
 func (it *Root) Rewrite() []byte {

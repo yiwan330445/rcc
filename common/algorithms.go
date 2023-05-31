@@ -64,3 +64,19 @@ func OneOutOf(limit uint8) bool {
 	}
 	return true
 }
+
+func BlueprintHash(blueprint []byte) string {
+	return Textual(Sipit(blueprint), 0)
+}
+
+func Sipit(key []byte) uint64 {
+	return Siphash(9007199254740993, 2147483647, key)
+}
+
+func Textual(key uint64, size int) string {
+	text := fmt.Sprintf("%016x", key)
+	if size > 0 {
+		return text[:size]
+	}
+	return text
+}

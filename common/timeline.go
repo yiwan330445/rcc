@@ -52,7 +52,7 @@ loop:
 			permille := event.when * 1000 / death
 			percent := float64(permille) / 10.0
 			indent := strings.Repeat("| ", event.level)
-			Log("%2d:  %5.1f%%  %7s  %s%s", at+1, percent, event.when, indent, event.what)
+			Log("%3d:  %5.1f%%  %7s  %s%s", at+1, percent, event.when, indent, event.what)
 		}
 		Log("----  rcc timeline  ----")
 	}

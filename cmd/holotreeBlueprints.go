@@ -21,7 +21,7 @@ func holotreeExpandBlueprint(userFiles []string, packfile string) map[string]int
 	tree, err := htfs.New()
 	pretty.Guard(err == nil, 6, "%s", err)
 
-	result["hash"] = htfs.BlueprintHash(holotreeBlueprint)
+	result["hash"] = common.BlueprintHash(holotreeBlueprint)
 	result["exist"] = tree.HasBlueprint(holotreeBlueprint)
 
 	return result

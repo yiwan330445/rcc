@@ -3,6 +3,7 @@ package conda_test
 import (
 	"testing"
 
+	"github.com/robocorp/rcc/common"
 	"github.com/robocorp/rcc/conda"
 	"github.com/robocorp/rcc/hamlet"
 )
@@ -116,4 +117,30 @@ func TestCanCreateEmptyEnvironment(t *testing.T) {
 
 	sut := conda.SummonEnvironment("tmp/missing.yaml")
 	wont_be.Nil(sut)
+}
+
+func TestCanGetLayersFromCondaYaml(t *testing.T) {
+	must_be, wont_be := hamlet.Specifications(t)
+
+	sut, err := conda.ReadCondaYaml("testdata/layers.yaml")
+	must_be.Nil(err)
+	wont_be.Nil(sut)
+
+	layers := sut.AsLayers()
+	wont_be.Nil(layers)
+	wont_be.Equal(len(layers[0]), 0)
+	must_be.True(len(layers[0]) < len(layers[1]))
+	must_be.True(len(layers[1]) < len(layers[2]))
+	wont_be.Equal(layers[0], layers[1])
+	wont_be.Equal(layers[0], layers[2])
+	wont_be.Equal(layers[1], layers[2])
+
+	must_be.Equal("0d8cc85130420984", common.BlueprintHash([]byte(layers[0])))
+	must_be.Equal("5be3e197c8c2c67d", common.BlueprintHash([]byte(layers[1])))
+	must_be.Equal("d310697aca0840a1", common.BlueprintHash([]byte(layers[2])))
+
+	fingerprints := sut.FingerprintLayers()
+	must_be.Equal("0d8cc85130420984", fingerprints[0])
+	must_be.Equal("5be3e197c8c2c67d", fingerprints[1])
+	must_be.Equal("d310697aca0840a1", fingerprints[2])
 }

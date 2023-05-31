@@ -416,11 +416,23 @@ func (it *Environment) PipMap() map[interface{}]interface{} {
 
 func (it *Environment) AsPureConda() *Environment {
 	return &Environment{
-		Name:     it.Name,
-		Prefix:   it.Prefix,
-		Channels: it.Channels,
-		Conda:    it.Conda,
-		Pip:      []*Dependency{},
+		Name:        it.Name,
+		Prefix:      it.Prefix,
+		Channels:    it.Channels,
+		Conda:       it.Conda,
+		Pip:         []*Dependency{},
+		PostInstall: []string{},
+	}
+}
+
+func (it *Environment) WithoutPostInstall() *Environment {
+	return &Environment{
+		Name:        it.Name,
+		Prefix:      it.Prefix,
+		Channels:    it.Channels,
+		Conda:       it.Conda,
+		Pip:         it.Pip,
+		PostInstall: []string{},
 	}
 }
 
@@ -463,6 +475,26 @@ func (it *Environment) AsRequirementsText() string {
 		lines = append(lines, entry.Original)
 	}
 	return strings.Join(lines, Newline)
+}
+
+func (it *Environment) AsLayers() [3]string {
+	conda, _ := it.AsPureConda().AsYaml()
+	pip, _ := it.WithoutPostInstall().AsYaml()
+	full, _ := it.AsYaml()
+	return [3]string{
+		strings.TrimSpace(conda),
+		strings.TrimSpace(pip),
+		strings.TrimSpace(full),
+	}
+}
+
+func (it *Environment) FingerprintLayers() [3]string {
+	layers := it.AsLayers()
+	return [3]string{
+		common.BlueprintHash([]byte(layers[0])),
+		common.BlueprintHash([]byte(layers[1])),
+		common.BlueprintHash([]byte(layers[2])),
+	}
 }
 
 func (it *Environment) Diagnostics(target *common.DiagnosticStatus, production bool) {

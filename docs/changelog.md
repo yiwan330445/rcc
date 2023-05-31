@@ -1,5 +1,12 @@
 # rcc change log
 
+## v14.8.0 (date: 31.5.2023) UNSTABLE
+
+- support for separating layers and calculating their fingerprints
+- showing fingerprints on build output and in timeline (still only visualization)
+- added controlling flag `--layered` to enable layer handling
+- added recording of layers if above flag is given
+
 ## v14.7.0 (date: 15.5.2023)
 
 - adding logical layers on holotree installation (visible on timeline)

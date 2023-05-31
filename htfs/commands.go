@@ -63,7 +63,7 @@ func NewEnvironment(condafile, holozip string, restore, force bool, puller Catal
 
 	_, holotreeBlueprint, err := ComposeFinalBlueprint([]string{condafile}, "")
 	fail.On(err != nil, "%s", err)
-	common.EnvironmentHash, common.FreshlyBuildEnvironment = BlueprintHash(holotreeBlueprint), false
+	common.EnvironmentHash, common.FreshlyBuildEnvironment = common.BlueprintHash(holotreeBlueprint), false
 	common.Progress(2, "Holotree blueprint is %q [%s].", common.EnvironmentHash, common.Platform())
 	journal.CurrentBuildEvent().Blueprint(common.EnvironmentHash)
 
@@ -130,7 +130,7 @@ func RecordEnvironment(tree MutableLibrary, blueprint []byte, force bool, scorec
 		remoteOrigin := common.RccRemoteOrigin()
 		if len(remoteOrigin) > 0 {
 			common.Progress(3, "Fill hololib from RCC_REMOTE_ORIGIN.")
-			hash := BlueprintHash(blueprint)
+			hash := common.BlueprintHash(blueprint)
 			catalog := CatalogName(hash)
 			err = puller(remoteOrigin, catalog, false)
 			if err != nil {
@@ -155,7 +155,7 @@ func RecordEnvironment(tree MutableLibrary, blueprint []byte, force bool, scorec
 		identityfile := filepath.Join(tree.Stage(), "identity.yaml")
 		err = os.WriteFile(identityfile, blueprint, 0o644)
 		fail.On(err != nil, "Failed to save %q, reason %w.", identityfile, err)
-		err = conda.LegacyEnvironment(force, identityfile)
+		err = conda.LegacyEnvironment(tree, force, identityfile)
 		fail.On(err != nil, "Failed to create environment, reason %w.", err)
 
 		scorecard.Midpoint()

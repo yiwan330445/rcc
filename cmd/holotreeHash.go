@@ -19,7 +19,7 @@ var holotreeHashCmd = &cobra.Command{
 		}
 		_, holotreeBlueprint, err := htfs.ComposeFinalBlueprint(args, "")
 		pretty.Guard(err == nil, 1, "Blueprint calculation failed: %v", err)
-		hash := htfs.BlueprintHash(holotreeBlueprint)
+		hash := common.BlueprintHash(holotreeBlueprint)
 		common.Log("Blueprint hash for %v is %v.", args, hash)
 		if common.Silent {
 			common.Stdout("%s\n", hash)

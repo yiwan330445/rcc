@@ -119,6 +119,7 @@ func init() {
 	rootCmd.PersistentFlags().BoolVarP(&common.StrictFlag, "strict", "", false, "be more strict on environment creation and handling")
 	rootCmd.PersistentFlags().IntVarP(&anywork.WorkerCount, "workers", "", 0, "scale background workers manually (do not use, unless you know what you are doing)")
 	rootCmd.PersistentFlags().BoolVarP(&common.UnmanagedSpace, "unmanaged", "", false, "work with unmanaged holotree spaces, DO NOT USE (unless you know what you are doing)")
+	rootCmd.PersistentFlags().BoolVarP(&common.LayeredHolotree, "layered", "", false, "use layered holotree spaces, experimental, DO NOT USE (unless you know what you are doing)")
 }
 
 func initConfig() {

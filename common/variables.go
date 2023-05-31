@@ -32,6 +32,7 @@ var (
 	Liveonly                bool
 	UnmanagedSpace          bool
 	FreshlyBuildEnvironment bool
+	LayeredHolotree         bool
 	StageFolder             string
 	ControllerType          string
 	HolotreeSpace           string

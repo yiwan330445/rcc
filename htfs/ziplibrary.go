@@ -34,7 +34,7 @@ func ZipLibrary(zipfile string) (Library, error) {
 	identity := strings.ToLower(fmt.Sprintf("%s %s", runtime.GOOS, runtime.GOARCH))
 	return &ziplibrary{
 		content:  content,
-		identity: sipit([]byte(identity)),
+		identity: common.Sipit([]byte(identity)),
 		lookup:   lookup,
 	}, nil
 }
@@ -44,7 +44,7 @@ func (it *ziplibrary) ValidateBlueprint(blueprint []byte) error {
 }
 
 func (it *ziplibrary) HasBlueprint(blueprint []byte) bool {
-	key := BlueprintHash(blueprint)
+	key := common.BlueprintHash(blueprint)
 	_, ok := it.lookup[it.CatalogPath(key)]
 	return ok
 }
@@ -80,7 +80,7 @@ func (it *ziplibrary) CatalogPath(key string) string {
 
 func (it *ziplibrary) TargetDir(blueprint, client, tag []byte) (path string, err error) {
 	defer fail.Around(&err)
-	key := BlueprintHash(blueprint)
+	key := common.BlueprintHash(blueprint)
 	name := ControllerSpaceName(client, tag)
 	fs, err := NewRoot(".")
 	fail.On(err != nil, "Failed to create root -> %v", err)
@@ -96,7 +96,7 @@ func (it *ziplibrary) TargetDir(blueprint, client, tag []byte) (path string, err
 func (it *ziplibrary) Restore(blueprint, client, tag []byte) (result string, err error) {
 	defer fail.Around(&err)
 	defer common.Stopwatch("Holotree restore took:").Debug()
-	key := BlueprintHash(blueprint)
+	key := common.BlueprintHash(blueprint)
 	common.Timeline("holotree restore start %s (zip)", key)
 	name := ControllerSpaceName(client, tag)
 	fs, err := NewRoot(".")

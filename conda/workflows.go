@@ -19,6 +19,12 @@ import (
 	"github.com/robocorp/rcc/shell"
 )
 
+type (
+	Recorder interface {
+		Record([]byte) error
+	}
+)
+
 func metafile(folder string) string {
 	return common.ExpandPath(folder + ".meta")
 }
@@ -80,7 +86,7 @@ func (it InstallObserver) HasFailures(targetFolder string) bool {
 	return false
 }
 
-func newLive(yaml, condaYaml, requirementsText, key string, force, freshInstall bool, postInstall []string) (bool, error) {
+func newLive(yaml, condaYaml, requirementsText, key string, force, freshInstall bool, finalEnv *Environment, recorder Recorder) (bool, error) {
 	if !MustMicromamba() {
 		return false, fmt.Errorf("Could not get micromamba installed.")
 	}
@@ -93,7 +99,7 @@ func newLive(yaml, condaYaml, requirementsText, key string, force, freshInstall 
 	}
 	common.Debug("===  first try phase ===")
 	common.Timeline("first try.")
-	success, fatal := newLiveInternal(yaml, condaYaml, requirementsText, key, force, freshInstall, postInstall)
+	success, fatal := newLiveInternal(yaml, condaYaml, requirementsText, key, force, freshInstall, finalEnv, recorder)
 	if !success && !force && !fatal {
 		journal.CurrentBuildEvent().Rebuild()
 		cloud.BackgroundMetric(common.ControllerIdentity(), "rcc.env.creation.retry", common.Version)
@@ -105,15 +111,15 @@ func newLive(yaml, condaYaml, requirementsText, key string, force, freshInstall 
 		if err != nil {
 			return false, err
 		}
-		success, _ = newLiveInternal(yaml, condaYaml, requirementsText, key, true, freshInstall, postInstall)
+		success, _ = newLiveInternal(yaml, condaYaml, requirementsText, key, true, freshInstall, finalEnv, recorder)
 	}
 	if success {
 		journal.CurrentBuildEvent().Successful()
 	}
 	return success, nil
 }
-func micromambaLayer(condaYaml, targetFolder string, stopwatch fmt.Stringer, planWriter io.Writer, force bool) (bool, bool) {
-	common.TimelineBegin("Layer: micromamba")
+func micromambaLayer(fingerprint, condaYaml, targetFolder string, stopwatch fmt.Stringer, planWriter io.Writer, force bool) (bool, bool) {
+	common.TimelineBegin("Layer: micromamba [%s]", fingerprint)
 	defer common.TimelineEnd()
 
 	common.Debug("Setting up new conda environment using %v to folder %v", condaYaml, targetFolder)
@@ -121,7 +127,7 @@ func micromambaLayer(condaYaml, targetFolder string, stopwatch fmt.Stringer, pla
 	if force {
 		ttl = "0"
 	}
-	common.Progress(6, "Running micromamba phase. (micromamba v%s)", MicromambaVersion())
+	common.Progress(6, "Running micromamba phase. (micromamba v%s) [layer: %s]", MicromambaVersion(), fingerprint)
 	mambaCommand := common.NewCommander(BinMicromamba(), "create", "--always-copy", "--no-env", "--safety-checks", "enabled", "--extra-safety-checks", "--retry-clean-cache", "--strict-channel-priority", "--repodata-ttl", ttl, "-y", "-f", condaYaml, "-p", targetFolder)
 	mambaCommand.Option("--channel-alias", settings.Global.CondaURL())
 	mambaCommand.ConditionalFlag(common.VerboseEnvironmentBuilding(), "--verbose")
@@ -146,8 +152,8 @@ func micromambaLayer(condaYaml, targetFolder string, stopwatch fmt.Stringer, pla
 	return true, false
 }
 
-func pipLayer(requirementsText, targetFolder string, stopwatch fmt.Stringer, planWriter io.Writer, planSink *os.File) (bool, bool, bool, string) {
-	common.TimelineBegin("Layer: pip")
+func pipLayer(fingerprint, requirementsText, targetFolder string, stopwatch fmt.Stringer, planWriter io.Writer, planSink *os.File) (bool, bool, bool, string) {
+	common.TimelineBegin("Layer: pip [%s]", fingerprint)
 	defer common.TimelineEnd()
 
 	pipUsed := false
@@ -167,7 +173,7 @@ func pipLayer(requirementsText, targetFolder string, stopwatch fmt.Stringer, pla
 			common.Fatal("pip fail. no python found.", errors.New("No python found, but required!"))
 			return false, false, pipUsed, ""
 		}
-		common.Progress(7, "Running pip install phase. (pip v%s)", PipVersion(python))
+		common.Progress(7, "Running pip install phase. (pip v%s) [layer: %s]", PipVersion(python), fingerprint)
 		common.Debug("Updating new environment at %v with pip requirements from %v (size: %v)", targetFolder, requirementsText, size)
 		pipCommand := common.NewCommander(python, "-m", "pip", "install", "--isolated", "--no-color", "--disable-pip-version-check", "--prefer-binary", "--cache-dir", pipCache, "--find-links", wheelCache, "--requirement", requirementsText)
 		pipCommand.Option("--index-url", settings.Global.PypiURL())
@@ -189,13 +195,13 @@ func pipLayer(requirementsText, targetFolder string, stopwatch fmt.Stringer, pla
 	return true, false, pipUsed, python
 }
 
-func postInstallLayer(postInstall []string, targetFolder string, stopwatch fmt.Stringer, planWriter io.Writer, planSink *os.File) (bool, bool) {
-	common.TimelineBegin("Layer: post install scripts")
+func postInstallLayer(fingerprint string, postInstall []string, targetFolder string, stopwatch fmt.Stringer, planWriter io.Writer, planSink *os.File) (bool, bool) {
+	common.TimelineBegin("Layer: post install scripts [%s]", fingerprint)
 	defer common.TimelineEnd()
 
 	fmt.Fprintf(planWriter, "\n---  post install plan @%ss  ---\n\n", stopwatch)
 	if postInstall != nil && len(postInstall) > 0 {
-		common.Progress(8, "Post install scripts phase started.")
+		common.Progress(8, "Post install scripts phase started. [layer: %s]", fingerprint)
 		common.Debug("===  post install phase ===")
 		for _, script := range postInstall {
 			scriptCommand, err := shell.Split(script)
@@ -220,26 +226,38 @@ func postInstallLayer(postInstall []string, targetFolder string, stopwatch fmt.S
 	return true, false
 }
 
-func holotreeLayers(condaYaml, requirementsText string, postInstall []string, targetFolder string, stopwatch fmt.Stringer, planWriter io.Writer, planSink *os.File, force bool) (bool, bool, bool, string) {
+func holotreeLayers(condaYaml, requirementsText string, finalEnv *Environment, targetFolder string, stopwatch fmt.Stringer, planWriter io.Writer, planSink *os.File, force bool, recorder Recorder) (bool, bool, bool, string) {
 	common.TimelineBegin("Holotree layers")
 	defer common.TimelineEnd()
 
-	success, fatal := micromambaLayer(condaYaml, targetFolder, stopwatch, planWriter, force)
+	pipNeeded := len(requirementsText) > 0
+	postInstall := len(finalEnv.PostInstall) > 0
+
+	layers := finalEnv.AsLayers()
+	fingerprints := finalEnv.FingerprintLayers()
+
+	success, fatal := micromambaLayer(fingerprints[0], condaYaml, targetFolder, stopwatch, planWriter, force)
 	if !success {
 		return success, fatal, false, ""
 	}
-	success, fatal, pipUsed, python := pipLayer(requirementsText, targetFolder, stopwatch, planWriter, planSink)
+	if common.LayeredHolotree && (pipNeeded || postInstall) {
+		recorder.Record([]byte(layers[0]))
+	}
+	success, fatal, pipUsed, python := pipLayer(fingerprints[1], requirementsText, targetFolder, stopwatch, planWriter, planSink)
 	if !success {
 		return success, fatal, pipUsed, python
 	}
-	success, fatal = postInstallLayer(postInstall, targetFolder, stopwatch, planWriter, planSink)
+	if common.LayeredHolotree && pipUsed && postInstall {
+		recorder.Record([]byte(layers[1]))
+	}
+	success, fatal = postInstallLayer(fingerprints[2], finalEnv.PostInstall, targetFolder, stopwatch, planWriter, planSink)
 	if !success {
 		return success, fatal, pipUsed, python
 	}
 	return true, false, pipUsed, python
 }
 
-func newLiveInternal(yaml, condaYaml, requirementsText, key string, force, freshInstall bool, postInstall []string) (bool, bool) {
+func newLiveInternal(yaml, condaYaml, requirementsText, key string, force, freshInstall bool, finalEnv *Environment, recorder Recorder) (bool, bool) {
 	targetFolder := common.StageFolder
 	planfile := fmt.Sprintf("%s.plan", targetFolder)
 	planSink, err := os.OpenFile(planfile, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0o644)
@@ -264,7 +282,7 @@ func newLiveInternal(yaml, condaYaml, requirementsText, key string, force, fresh
 	fmt.Fprintf(planWriter, "---  plan blueprint @%ss  ---\n\n", stopwatch)
 	fmt.Fprintf(planWriter, "%s\n", yaml)
 
-	success, fatal, pipUsed, python := holotreeLayers(condaYaml, requirementsText, postInstall, targetFolder, stopwatch, planWriter, planSink, force)
+	success, fatal, pipUsed, python := holotreeLayers(condaYaml, requirementsText, finalEnv, targetFolder, stopwatch, planWriter, planSink, force, recorder)
 	if !success {
 		return success, fatal
 	}
@@ -309,32 +327,31 @@ func newLiveInternal(yaml, condaYaml, requirementsText, key string, force, fresh
 	os.Rename(planfile, finalplan)
 	common.Debug("===  finalize phase ===")
 
-	markerFile := filepath.Join(targetFolder, "identity.yaml")
-	err = pathlib.WriteFile(markerFile, []byte(yaml), 0o644)
-	if err != nil {
-		return false, false
-	}
-
 	return true, false
 }
 
-func temporaryConfig(condaYaml, requirementsText string, save bool, filenames ...string) (string, string, *Environment, error) {
-	var left, right *Environment
-	var err error
-
+func mergedEnvironment(filenames ...string) (right *Environment, err error) {
 	for _, filename := range filenames {
-		left = right
+		left := right
 		right, err = ReadCondaYaml(filename)
 		if err != nil {
-			return "", "", nil, err
+			return nil, err
 		}
 		if left == nil {
 			continue
 		}
 		right, err = left.Merge(right)
 		if err != nil {
-			return "", "", nil, err
+			return nil, err
 		}
+	}
+	return right, nil
+}
+
+func temporaryConfig(condaYaml, requirementsText string, save bool, filenames ...string) (string, string, *Environment, error) {
+	right, err := mergedEnvironment(filenames...)
+	if err != nil {
+		return "", "", nil, err
 	}
 	yaml, err := right.AsYaml()
 	if err != nil {
@@ -354,7 +371,7 @@ func temporaryConfig(condaYaml, requirementsText string, save bool, filenames ..
 	return hash, yaml, right, err
 }
 
-func LegacyEnvironment(force bool, configurations ...string) error {
+func LegacyEnvironment(recorder Recorder, force bool, configurations ...string) error {
 	cloud.BackgroundMetric(common.ControllerIdentity(), "rcc.env.create.start", common.Version)
 
 	lockfile := common.RobocorpLock()
@@ -379,7 +396,7 @@ func LegacyEnvironment(force bool, configurations ...string) error {
 	defer os.Remove(condaYaml)
 	defer os.Remove(requirementsText)
 
-	success, err := newLive(yaml, condaYaml, requirementsText, key, force, freshInstall, finalEnv.PostInstall)
+	success, err := newLive(yaml, condaYaml, requirementsText, key, force, freshInstall, finalEnv, recorder)
 	if err != nil {
 		return err
 	}

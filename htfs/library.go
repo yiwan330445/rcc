@@ -70,6 +70,7 @@ type MutableLibrary interface {
 	Record([]byte) error
 	Stage() string
 	CatalogPath(string) string
+	WriteIdentity([]byte) error
 }
 
 type hololib struct {
@@ -103,6 +104,11 @@ func (it *hololib) ExactLocation(digest string) string {
 func (it *hololib) Identity() string {
 	suffix := fmt.Sprintf("%016x", it.identity)
 	return fmt.Sprintf("h%s_%st", common.UserHomeIdentity(), suffix[:14])
+}
+
+func (it *hololib) WriteIdentity(yaml []byte) error {
+	markerFile := filepath.Join(it.Stage(), "identity.yaml")
+	return pathlib.WriteFile(markerFile, yaml, 0o644)
 }
 
 func (it *hololib) Stage() string {
@@ -212,8 +218,13 @@ func (it *hololib) Export(catalogs, known []string, archive string) (err error) 
 
 func (it *hololib) Record(blueprint []byte) error {
 	defer common.Stopwatch("Holotree recording took:").Debug()
-	key := BlueprintHash(blueprint)
-	common.Timeline("holotree record start %s", key)
+	err := it.WriteIdentity(blueprint)
+	if err != nil {
+		return err
+	}
+	key := common.BlueprintHash(blueprint)
+	common.TimelineBegin("holotree record start %s", key)
+	defer common.TimelineEnd()
 	fs, err := NewRoot(it.Stage())
 	if err != nil {
 		return err
@@ -256,7 +267,7 @@ func (it *hololib) ValidateBlueprint(blueprint []byte) error {
 }
 
 func (it *hololib) HasBlueprint(blueprint []byte) bool {
-	key := BlueprintHash(blueprint)
+	key := common.BlueprintHash(blueprint)
 	found, ok := it.queryCache[key]
 	if !ok {
 		found = it.queryBlueprint(key)
@@ -301,8 +312,8 @@ func CatalogNames() []string {
 }
 
 func ControllerSpaceName(client, tag []byte) string {
-	prefix := textual(sipit(client), 7)
-	suffix := textual(sipit(tag), 8)
+	prefix := common.Textual(common.Sipit(client), 7)
+	suffix := common.Textual(common.Sipit(tag), 8)
 	return common.UserHomeIdentity() + "_" + prefix + "_" + suffix
 }
 
@@ -314,7 +325,7 @@ func touchUsedHash(hash string) {
 
 func (it *hololib) TargetDir(blueprint, controller, space []byte) (result string, err error) {
 	defer fail.Around(&err)
-	key := BlueprintHash(blueprint)
+	key := common.BlueprintHash(blueprint)
 	catalog := it.CatalogPath(key)
 	fs, err := NewRoot(it.Stage())
 	fail.On(err != nil, "Failed to create stage -> %v", err)
@@ -334,7 +345,7 @@ func UserHolotreeLockfile() string {
 func (it *hololib) Restore(blueprint, client, tag []byte) (result string, err error) {
 	defer fail.Around(&err)
 	defer common.Stopwatch("Holotree restore took:").Debug()
-	key := BlueprintHash(blueprint)
+	key := common.BlueprintHash(blueprint)
 	catalog := it.CatalogPath(key)
 	common.TimelineBegin("holotree space restore start [%s]", key)
 	defer common.TimelineEnd()
@@ -401,22 +412,6 @@ func (it *hololib) Restore(blueprint, client, tag []byte) (result string, err er
 	return targetdir, nil
 }
 
-func BlueprintHash(blueprint []byte) string {
-	return textual(sipit(blueprint), 0)
-}
-
-func sipit(key []byte) uint64 {
-	return common.Siphash(9007199254740993, 2147483647, key)
-}
-
-func textual(key uint64, size int) string {
-	text := fmt.Sprintf("%016x", key)
-	if size > 0 {
-		return text[:size]
-	}
-	return text
-}
-
 func makedirs(prefix string, suffixes ...string) error {
 	if common.Liveonly {
 		return nil
@@ -439,7 +434,7 @@ func New() (MutableLibrary, error) {
 	basedir := common.RobocorpHome()
 	identity := strings.ToLower(fmt.Sprintf("%s %s", runtime.GOOS, runtime.GOARCH))
 	return &hololib{
-		identity:   sipit([]byte(identity)),
+		identity:   common.Sipit([]byte(identity)),
 		basedir:    basedir,
 		queryCache: make(map[string]bool),
 	}, nil

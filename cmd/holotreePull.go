@@ -24,7 +24,7 @@ var holotreePullCmd = &cobra.Command{
 		}
 		_, holotreeBlueprint, err := htfs.ComposeFinalBlueprint(nil, pullRobot)
 		pretty.Guard(err == nil, 1, "Blueprint calculation failed: %v", err)
-		hash := htfs.BlueprintHash(holotreeBlueprint)
+		hash := common.BlueprintHash(holotreeBlueprint)
 		tree, err := htfs.New()
 		pretty.Guard(err == nil, 2, "%s", err)
 

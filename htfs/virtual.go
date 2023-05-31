@@ -21,7 +21,7 @@ type virtual struct {
 
 func Virtual() MutableLibrary {
 	return &virtual{
-		identity: sipit([]byte(common.RobocorpHome())),
+		identity: common.Sipit([]byte(common.RobocorpHome())),
 	}
 }
 
@@ -51,10 +51,14 @@ func (it *virtual) Export([]string, []string, string) error {
 	return fmt.Errorf("Not supported yet on virtual holotree.")
 }
 
+func (it *virtual) WriteIdentity([]byte) error {
+	return fmt.Errorf("Not supported yet on virtual holotree.")
+}
+
 func (it *virtual) Record(blueprint []byte) (err error) {
 	defer fail.Around(&err)
 	defer common.Stopwatch("Holotree recording took:").Debug()
-	key := BlueprintHash(blueprint)
+	key := common.BlueprintHash(blueprint)
 	common.Timeline("holotree record start %s (virtual)", key)
 	fs, err := NewRoot(it.Stage())
 	fail.On(err != nil, "Failed to create stage root: %v", err)
@@ -79,7 +83,7 @@ func (it *virtual) TargetDir(blueprint, client, tag []byte) (string, error) {
 
 func (it *virtual) Restore(blueprint, client, tag []byte) (string, error) {
 	defer common.Stopwatch("Holotree restore took:").Debug()
-	key := BlueprintHash(blueprint)
+	key := common.BlueprintHash(blueprint)
 	common.Timeline("holotree restore start %s (virtual)", key)
 	name := ControllerSpaceName(client, tag)
 	metafile := filepath.Join(common.HolotreeLocation(), fmt.Sprintf("%s.meta", name))
@@ -148,5 +152,5 @@ func (it *virtual) ValidateBlueprint(blueprint []byte) error {
 }
 
 func (it *virtual) HasBlueprint(blueprint []byte) bool {
-	return it.key == BlueprintHash(blueprint)
+	return it.key == common.BlueprintHash(blueprint)
 }

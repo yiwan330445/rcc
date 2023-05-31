@@ -34,6 +34,10 @@ func (it *unmanaged) Stage() string {
 	return it.delegate.Stage()
 }
 
+func (it *unmanaged) WriteIdentity([]byte) error {
+	return fmt.Errorf("Not supported yet on virtual holotree.")
+}
+
 func (it *unmanaged) CatalogPath(key string) string {
 	return "Unmanaged Does Not Support Catalog Path Request"
 }
@@ -50,7 +54,7 @@ func (it *unmanaged) resolve(blueprint []byte) error {
 	if it.resolved {
 		return nil
 	}
-	defer common.Log("%sThis is unmanaged holotree space, checking suitability for blueprint: %v%s", pretty.Magenta, BlueprintHash(blueprint), pretty.Reset)
+	defer common.Log("%sThis is unmanaged holotree space, checking suitability for blueprint: %v%s", pretty.Magenta, common.BlueprintHash(blueprint), pretty.Reset)
 	controller := []byte(common.ControllerIdentity())
 	space := []byte(common.HolotreeSpace)
 	path, err := it.TargetDir(blueprint, controller, space)
@@ -68,8 +72,8 @@ func (it *unmanaged) resolve(blueprint []byte) error {
 	if err != nil {
 		return nil
 	}
-	expected := BlueprintHash(blueprint)
-	actual := BlueprintHash(identity)
+	expected := common.BlueprintHash(blueprint)
+	actual := common.BlueprintHash(identity)
 	if actual != expected {
 		it.protected = true
 		it.resolved = true
