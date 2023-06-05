@@ -57,6 +57,7 @@ type Library interface {
 	Open(string) (io.Reader, Closer, error)
 	TargetDir([]byte, []byte, []byte) (string, error)
 	Restore([]byte, []byte, []byte) (string, error)
+	RestoreTo([]byte, string, string, string, bool) (string, error)
 }
 
 type MutableLibrary interface {
@@ -343,20 +344,24 @@ func UserHolotreeLockfile() string {
 }
 
 func (it *hololib) Restore(blueprint, client, tag []byte) (result string, err error) {
+	return it.RestoreTo(blueprint, ControllerSpaceName(client, tag), string(client), string(tag), false)
+}
+
+func (it *hololib) RestoreTo(blueprint []byte, label, controller, space string, partial bool) (result string, err error) {
 	defer fail.Around(&err)
 	defer common.Stopwatch("Holotree restore took:").Debug()
+
 	key := common.BlueprintHash(blueprint)
 	catalog := it.CatalogPath(key)
 	common.TimelineBegin("holotree space restore start [%s]", key)
 	defer common.TimelineEnd()
-	name := ControllerSpaceName(client, tag)
 	fs, err := NewRoot(it.Stage())
 	fail.On(err != nil, "Failed to create stage -> %v", err)
 	err = fs.LoadFrom(catalog)
 	fail.On(err != nil, "Failed to load catalog %s -> %v", catalog, err)
-	metafile := filepath.Join(fs.HolotreeBase(), fmt.Sprintf("%s.meta", name))
-	targetdir := filepath.Join(fs.HolotreeBase(), name)
-	lockfile := filepath.Join(fs.HolotreeBase(), fmt.Sprintf("%s.lck", name))
+	targetdir := filepath.Join(fs.HolotreeBase(), label)
+	metafile := fmt.Sprintf("%s.meta", targetdir)
+	lockfile := fmt.Sprintf("%s.lck", targetdir)
 	completed := pathlib.LockWaitMessage(lockfile, "Serialized holotree restore [holotree base lock]")
 	locker, err := pathlib.Locker(lockfile, 30000)
 	completed()
@@ -395,17 +400,17 @@ func (it *hololib) Restore(blueprint, client, tag []byte) (result string, err er
 	defer common.Timeline("- dirty %d/%d", score.dirty, score.total)
 	common.Debug("Holotree dirty workload: %d/%d\n", score.dirty, score.total)
 	journal.CurrentBuildEvent().Dirty(score.Dirtyness())
-	fs.Controller = string(client)
-	fs.Space = string(tag)
+	fs.Controller = controller
+	fs.Space = space
 	err = fs.SaveAs(metafile)
 	fail.On(err != nil, "Failed to save metafile %q -> %v", metafile, err)
 	pathlib.TouchWhen(catalog, time.Now())
 	planfile := filepath.Join(targetdir, "rcc_plan.log")
-	if pathlib.FileExist(planfile) {
+	if !partial && pathlib.FileExist(planfile) {
 		common.Log("%sInstallation plan is: %v%s", pretty.Yellow, planfile, pretty.Reset)
 	}
 	identityfile := filepath.Join(targetdir, "identity.yaml")
-	if pathlib.FileExist(identityfile) {
+	if !partial && pathlib.FileExist(identityfile) {
 		common.Log("%sEnvironment configuration descriptor is: %v%s", pretty.Yellow, identityfile, pretty.Reset)
 	}
 	touchUsedHash(key)

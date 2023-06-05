@@ -35,8 +35,8 @@ Goal: Create environment for standalone robot
   Must Have   RCC_INSTALLATION_ID=
   Must Have   4e67cd8_fcb4b859
   Use STDERR
-  Must Have   Progress: 01/14
-  Must Have   Progress: 14/14
+  Must Have   Progress: 01/15
+  Must Have   Progress: 15/15
 
 Goal: Must have author space visible
   Step        build/rcc ht ls

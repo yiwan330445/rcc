@@ -75,9 +75,9 @@ Goal: Run task in place in debug mode and with timeline.
   Step        build/rcc task run --task "Run Example task" --controller citests -r tmp/fluffy/robot.yaml --debug --timeline
   Must Have   1 task, 1 passed, 0 failed
   Use STDERR
-  Must Have   Progress: 01/14
-  Must Have   Progress: 02/14
-  Must Have   Progress: 14/14
+  Must Have   Progress: 01/15
+  Must Have   Progress: 02/15
+  Must Have   Progress: 15/15
   Must Have   rpaframework
   Must Have   PID #
   Must Have   [N]
@@ -108,13 +108,13 @@ Goal: Run task in clean temporary directory.
   Must Have   1 task, 1 passed, 0 failed
   Use STDERR
   Must Have   rpaframework
-  Must Have   Progress: 01/14
-  Wont Have   Progress: 03/14
-  Wont Have   Progress: 05/14
-  Wont Have   Progress: 07/14
-  Wont Have   Progress: 09/14
-  Must Have   Progress: 13/14
-  Must Have   Progress: 14/14
+  Must Have   Progress: 01/15
+  Wont Have   Progress: 03/15
+  Wont Have   Progress: 05/15
+  Wont Have   Progress: 07/15
+  Wont Have   Progress: 09/15
+  Must Have   Progress: 14/15
+  Must Have   Progress: 15/15
   Must Have   OK.
 
 Goal: Merge two different conda.yaml files with conflict fails

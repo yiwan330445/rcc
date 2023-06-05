@@ -32,13 +32,13 @@ Goal: See variables from specific unamanged space
   Wont Have   ROBOT_ARTIFACTS=
   Use STDERR
   Must Have   This is unmanaged holotree space
-  Must Have   Progress: 01/14
-  Must Have   Progress: 02/14
-  Must Have   Progress: 04/14
-  Must Have   Progress: 05/14
-  Must Have   Progress: 06/14
-  Must Have   Progress: 13/14
-  Must Have   Progress: 14/14
+  Must Have   Progress: 01/15
+  Must Have   Progress: 02/15
+  Must Have   Progress: 04/15
+  Must Have   Progress: 05/15
+  Must Have   Progress: 06/15
+  Must Have   Progress: 14/15
+  Must Have   Progress: 15/15
 
 Goal: Wont allow use of unmanaged space with incompatible conda.yaml
   Step        build/rcc holotree variables --debug --unmanaged --space python39 --controller citests robot_tests/python375.yaml    6
@@ -48,14 +48,14 @@ Goal: Wont allow use of unmanaged space with incompatible conda.yaml
   Wont Have   RCC_INSTALLATION_ID=
   Use STDERR
   Must Have   This is unmanaged holotree space
-  Must Have   Progress: 01/14
-  Must Have   Progress: 02/14
-  Must Have   Progress: 14/14
+  Must Have   Progress: 01/15
+  Must Have   Progress: 02/15
+  Must Have   Progress: 15/15
 
-  Wont Have   Progress: 04/14
-  Wont Have   Progress: 05/14
-  Wont Have   Progress: 06/14
-  Wont Have   Progress: 13/14
+  Wont Have   Progress: 04/15
+  Wont Have   Progress: 05/15
+  Wont Have   Progress: 06/15
+  Wont Have   Progress: 14/15
 
   Must Have   Existing unmanaged space fingerprint
   Must Have   does not match requested one
@@ -83,24 +83,24 @@ Goal: Allows different unmanaged space for different conda.yaml
   Wont Have   ROBOT_ARTIFACTS=
   Use STDERR
   Must Have   This is unmanaged holotree space
-  Must Have   Progress: 01/14
-  Must Have   Progress: 02/14
-  Must Have   Progress: 04/14
-  Must Have   Progress: 05/14
-  Must Have   Progress: 06/14
-  Must Have   Progress: 13/14
-  Must Have   Progress: 14/14
+  Must Have   Progress: 01/15
+  Must Have   Progress: 02/15
+  Must Have   Progress: 04/15
+  Must Have   Progress: 05/15
+  Must Have   Progress: 06/15
+  Must Have   Progress: 14/15
+  Must Have   Progress: 15/15
 
 Goal: Wont allow use of unmanaged space with incompatible conda.yaml when two unmanaged spaces exists
   Step        build/rcc holotree variables --debug --unmanaged --space python37 --controller citests robot_tests/python3913.yaml    6
   Use STDERR
   Must Have   This is unmanaged holotree space
-  Must Have   Progress: 01/14
-  Must Have   Progress: 02/14
-  Must Have   Progress: 14/14
+  Must Have   Progress: 01/15
+  Must Have   Progress: 02/15
+  Must Have   Progress: 15/15
 
-  Wont Have   Progress: 05/14
-  Wont Have   Progress: 13/14
+  Wont Have   Progress: 05/15
+  Wont Have   Progress: 14/15
 
   Must Have   Existing unmanaged space fingerprint
   Must Have   does not match requested one

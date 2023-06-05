@@ -81,14 +81,17 @@ func (it *virtual) TargetDir(blueprint, client, tag []byte) (string, error) {
 	return filepath.Join(common.HolotreeLocation(), name), nil
 }
 
-func (it *virtual) Restore(blueprint, client, tag []byte) (string, error) {
+func (it *virtual) Restore(blueprint, client, tag []byte) (result string, err error) {
+	return it.RestoreTo(blueprint, ControllerSpaceName(client, tag), string(client), string(tag), false)
+}
+
+func (it *virtual) RestoreTo(blueprint []byte, label, controller, space string, partial bool) (result string, err error) {
 	defer common.Stopwatch("Holotree restore took:").Debug()
 	key := common.BlueprintHash(blueprint)
 	common.Timeline("holotree restore start %s (virtual)", key)
-	name := ControllerSpaceName(client, tag)
-	metafile := filepath.Join(common.HolotreeLocation(), fmt.Sprintf("%s.meta", name))
-	targetdir := filepath.Join(common.HolotreeLocation(), name)
-	lockfile := filepath.Join(common.HolotreeLocation(), fmt.Sprintf("%s.lck", name))
+	targetdir := filepath.Join(common.HolotreeLocation(), label)
+	metafile := fmt.Sprintf("%s.meta", targetdir)
+	lockfile := fmt.Sprintf("%s.lck", targetdir)
 	completed := pathlib.LockWaitMessage(lockfile, "Serialized holotree restore [holotree virtual lock]")
 	locker, err := pathlib.Locker(lockfile, 30000)
 	completed()
@@ -126,8 +129,8 @@ func (it *virtual) Restore(blueprint, client, tag []byte) (string, error) {
 	defer common.Timeline("- dirty %d/%d", score.dirty, score.total)
 	common.Debug("Holotree dirty workload: %d/%d\n", score.dirty, score.total)
 	journal.CurrentBuildEvent().Dirty(score.Dirtyness())
-	fs.Controller = string(client)
-	fs.Space = string(tag)
+	fs.Controller = controller
+	fs.Space = space
 	err = fs.SaveAs(metafile)
 	if err != nil {
 		return "", err

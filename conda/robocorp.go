@@ -138,6 +138,7 @@ func CondaExecutionEnvironment(location string, inject []string, full bool) []st
 		"ROBOCORP_HOME="+common.RobocorpHome(),
 		"RCC_ENVIRONMENT_HASH="+common.EnvironmentHash,
 		"RCC_INSTALLATION_ID="+xviper.TrackingIdentity(),
+		"RCC_HOLOTREE_SPACE_ROOT="+location,
 		"RCC_TRACKING_ALLOWED="+fmt.Sprintf("%v", xviper.CanTrack()),
 		"RCC_EXE="+common.BinRcc(),
 		"RCC_VERSION="+common.Version,

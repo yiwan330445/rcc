@@ -1,5 +1,15 @@
 # rcc change log
 
+## v14.8.1 (date: 5.6.2023) UNSTABLE
+
+- added `RCC_HOLOTREE_SPACE_ROOT` to environment variables provided by rcc
+- saving `rcc_plan.log` into intermediate layers as well (and it is now in
+  memory presentation while building environment)
+- restoring partial environment from layers and skipping already available
+  layers (but still only behind `--layered` flag)
+- layers add new Progress step to rcc, now total is 15 steps. Test changed
+  to match that.
+
 ## v14.8.0 (date: 31.5.2023) UNSTABLE
 
 - support for separating layers and calculating their fingerprints

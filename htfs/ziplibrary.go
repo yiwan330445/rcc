@@ -94,11 +94,14 @@ func (it *ziplibrary) TargetDir(blueprint, client, tag []byte) (path string, err
 }
 
 func (it *ziplibrary) Restore(blueprint, client, tag []byte) (result string, err error) {
+	return it.RestoreTo(blueprint, ControllerSpaceName(client, tag), string(client), string(tag), false)
+}
+
+func (it *ziplibrary) RestoreTo(blueprint []byte, label, controller, space string, partial bool) (result string, err error) {
 	defer fail.Around(&err)
 	defer common.Stopwatch("Holotree restore took:").Debug()
 	key := common.BlueprintHash(blueprint)
 	common.Timeline("holotree restore start %s (zip)", key)
-	name := ControllerSpaceName(client, tag)
 	fs, err := NewRoot(".")
 	fail.On(err != nil, "Failed to create root -> %v", err)
 	catalog := it.CatalogPath(key)
@@ -107,9 +110,9 @@ func (it *ziplibrary) Restore(blueprint, client, tag []byte) (result string, err
 	defer closer()
 	err = fs.ReadFrom(reader)
 	fail.On(err != nil, "Failed to read catalog %q -> %v", catalog, err)
-	metafile := filepath.Join(fs.HolotreeBase(), fmt.Sprintf("%s.meta", name))
-	targetdir := filepath.Join(fs.HolotreeBase(), name)
-	lockfile := filepath.Join(fs.HolotreeBase(), fmt.Sprintf("%s.lck", name))
+	targetdir := filepath.Join(fs.HolotreeBase(), label)
+	metafile := fmt.Sprintf("%s.meta", targetdir)
+	lockfile := fmt.Sprintf("%s.lck", targetdir)
 	completed := pathlib.LockWaitMessage(lockfile, "Serialized holotree restore [holotree base lock]")
 	locker, err := pathlib.Locker(lockfile, 30000)
 	completed()
@@ -140,8 +143,8 @@ func (it *ziplibrary) Restore(blueprint, client, tag []byte) (result string, err
 	defer common.Timeline("- dirty %d/%d", score.dirty, score.total)
 	common.Debug("Holotree dirty workload: %d/%d\n", score.dirty, score.total)
 	journal.CurrentBuildEvent().Dirty(score.Dirtyness())
-	fs.Controller = string(client)
-	fs.Space = string(tag)
+	fs.Controller = controller
+	fs.Space = space
 	err = fs.SaveAs(metafile)
 	fail.On(err != nil, "Failed to save metafile %q -> %v", metafile, err)
 	return targetdir, nil

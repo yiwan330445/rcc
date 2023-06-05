@@ -35,7 +35,7 @@ func NewEnvironment(condafile, holozip string, restore, force bool, puller Catal
 
 	path := ""
 	defer func() {
-		common.Progress(14, "Fresh holotree done [with %d workers].", anywork.Scale())
+		common.Progress(15, "Fresh holotree done [with %d workers].", anywork.Scale())
 		if haszip {
 			pretty.Note("There is hololib.zip present at: %q", holozip)
 		}
@@ -93,12 +93,12 @@ func NewEnvironment(condafile, holozip string, restore, force bool, puller Catal
 	}
 
 	if restore {
-		common.Progress(13, "Restore space from library [with %d workers].", anywork.Scale())
+		common.Progress(14, "Restore space from library [with %d workers].", anywork.Scale())
 		path, err = library.Restore(holotreeBlueprint, []byte(common.ControllerIdentity()), []byte(common.HolotreeSpace))
 		fail.On(err != nil, "Failed to restore blueprint %q, reason: %v", string(holotreeBlueprint), err)
 		journal.CurrentBuildEvent().RestoreComplete()
 	} else {
-		common.Progress(13, "Restoring space skipped.")
+		common.Progress(14, "Restoring space skipped.")
 	}
 
 	return path, scorecard, nil
@@ -151,22 +151,59 @@ func RecordEnvironment(tree MutableLibrary, blueprint []byte, force bool, scorec
 		err = os.MkdirAll(tree.Stage(), 0o755)
 		fail.On(err != nil, "Failed to create stage, reason %v.", err)
 
-		common.Progress(5, "Build environment into holotree stage.")
+		common.Progress(5, "Build environment into holotree stage %q.", tree.Stage())
 		identityfile := filepath.Join(tree.Stage(), "identity.yaml")
 		err = os.WriteFile(identityfile, blueprint, 0o644)
 		fail.On(err != nil, "Failed to save %q, reason %w.", identityfile, err)
-		err = conda.LegacyEnvironment(tree, force, identityfile)
+
+		skip := conda.SkipNoLayers
+		if !force && common.LayeredHolotree {
+			common.Progress(6, "Restore partial environment into holotree stage %q.", tree.Stage())
+			skip = RestoreLayersTo(tree, identityfile, tree.Stage())
+		} else {
+			common.Progress(6, "Restore partial environment skipped. Layers disabled or force used.")
+		}
+
+		err = os.WriteFile(identityfile, blueprint, 0o644)
+		fail.On(err != nil, "Failed to save %q, reason %w.", identityfile, err)
+
+		err = conda.LegacyEnvironment(tree, force, skip, identityfile)
 		fail.On(err != nil, "Failed to create environment, reason %w.", err)
 
 		scorecard.Midpoint()
 
-		common.Progress(12, "Record holotree stage to hololib [with %d workers].", anywork.Scale())
+		common.Progress(13, "Record holotree stage to hololib [with %d workers].", anywork.Scale())
 		err = tree.Record(blueprint)
 		fail.On(err != nil, "Failed to record blueprint %q, reason: %w", string(blueprint), err)
 		journal.CurrentBuildEvent().RecordComplete()
 	}
 
 	return nil
+}
+
+func RestoreLayersTo(tree MutableLibrary, identityfile string, targetDir string) conda.SkipLayer {
+	config, err := conda.ReadCondaYaml(identityfile)
+	if err != nil {
+		return conda.SkipNoLayers
+	}
+
+	layers := config.AsLayers()
+	mambaLayer := []byte(layers[0])
+	pipLayer := []byte(layers[1])
+	base := filepath.Base(targetDir)
+	if tree.HasBlueprint(pipLayer) {
+		_, err = tree.RestoreTo(pipLayer, base, common.ControllerIdentity(), common.HolotreeSpace, true)
+		if err == nil {
+			return conda.SkipPipLayer
+		}
+	}
+	if tree.HasBlueprint(mambaLayer) {
+		_, err = tree.RestoreTo(mambaLayer, base, common.ControllerIdentity(), common.HolotreeSpace, true)
+		if err == nil {
+			return conda.SkipMicromambaLayer
+		}
+	}
+	return conda.SkipNoLayers
 }
 
 func RobotBlueprints(userBlueprints []string, packfile string) (robot.Robot, []string) {

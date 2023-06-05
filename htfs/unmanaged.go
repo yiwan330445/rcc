@@ -109,10 +109,14 @@ func (it *unmanaged) TargetDir(blueprint, client, tag []byte) (string, error) {
 	return it.delegate.TargetDir(blueprint, client, tag)
 }
 
-func (it *unmanaged) Restore(blueprint, client, tag []byte) (string, error) {
+func (it *unmanaged) Restore(blueprint, client, tag []byte) (result string, err error) {
+	return it.RestoreTo(blueprint, ControllerSpaceName(client, tag), string(client), string(tag), false)
+}
+
+func (it *unmanaged) RestoreTo(blueprint []byte, label, controller, space string, partial bool) (result string, err error) {
 	it.resolve(blueprint)
 	if !it.protected {
-		return it.delegate.Restore(blueprint, client, tag)
+		return it.delegate.RestoreTo(blueprint, label, controller, space, partial)
 	}
 	common.Timeline("holotree unmanaged restore prevention")
 	if len(it.path) > 0 {
