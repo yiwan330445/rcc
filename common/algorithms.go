@@ -80,3 +80,13 @@ func Textual(key uint64, size int) string {
 	}
 	return text
 }
+
+func Gcd(left, right int64) int64 {
+	for left != 0 {
+		left, right = right%left, left
+	}
+	if right == 0 {
+		return 1
+	}
+	return right
+}

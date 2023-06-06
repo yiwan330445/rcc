@@ -64,7 +64,7 @@ func NewEnvironment(condafile, holozip string, restore, force bool, puller Catal
 	_, holotreeBlueprint, err := ComposeFinalBlueprint([]string{condafile}, "")
 	fail.On(err != nil, "%s", err)
 	common.EnvironmentHash, common.FreshlyBuildEnvironment = common.BlueprintHash(holotreeBlueprint), false
-	common.Progress(2, "Holotree blueprint is %q [%s].", common.EnvironmentHash, common.Platform())
+	common.Progress(2, "Holotree blueprint is %q [%s with %d workers].", common.EnvironmentHash, common.Platform(), anywork.Scale())
 	journal.CurrentBuildEvent().Blueprint(common.EnvironmentHash)
 
 	tree, err := New()

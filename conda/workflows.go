@@ -294,6 +294,7 @@ func holotreeLayers(condaYaml, requirementsText string, finalEnv *Environment, t
 		if common.LayeredHolotree && (pipNeeded || postInstall) {
 			fmt.Fprintf(theplan, "\n---  micromamba layer complete [on layerd holotree]  ---\n\n")
 			common.Error("saving rcc_plan.log", theplan.Save())
+			common.Error("saving golden master", goldenMaster(targetFolder, false))
 			recorder.Record([]byte(layers[0]))
 		}
 	} else {
@@ -307,6 +308,7 @@ func holotreeLayers(condaYaml, requirementsText string, finalEnv *Environment, t
 		if common.LayeredHolotree && pipUsed && postInstall {
 			fmt.Fprintf(theplan, "\n---  pip layer complete [on layerd holotree]  ---\n\n")
 			common.Error("saving rcc_plan.log", theplan.Save())
+			common.Error("saving golden master", goldenMaster(targetFolder, true))
 			recorder.Record([]byte(layers[1]))
 		}
 	} else {

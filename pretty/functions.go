@@ -26,6 +26,11 @@ func Highlight(format string, rest ...interface{}) {
 	common.Log(niceform, rest...)
 }
 
+func Lowlight(format string, rest ...interface{}) {
+	niceform := fmt.Sprintf("%s%s%s%s", Grey, Faint, format, Reset)
+	common.Log(niceform, rest...)
+}
+
 func Exit(code int, format string, rest ...interface{}) {
 	var niceform string
 	if code == 0 {

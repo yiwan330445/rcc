@@ -1,5 +1,12 @@
 # rcc change log
 
+## v14.8.2 (date: 6.6.2023) UNSTABLE
+
+- added missing golden yaml file saving on layers
+- added worker count on second progress indicator
+- reporting relative time ratios on setup/run balances
+- fixed bug in buildstats, where it was using global variables (instead of "it")
+
 ## v14.8.1 (date: 5.6.2023) UNSTABLE
 
 - added `RCC_HOLOTREE_SPACE_ROOT` to environment variables provided by rcc

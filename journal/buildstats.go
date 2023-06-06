@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"math"
 	"os"
 	"path/filepath"
 	"sort"
@@ -68,6 +69,17 @@ var (
 
 func init() {
 	buildevent = NewBuildEvent()
+}
+
+func CurrentBuildEvent() *BuildEvent {
+	return buildevent
+}
+
+func BuildEventStats(label string) {
+	err := serialize(buildevent.finished(label))
+	if err != nil {
+		pretty.Warning("build stats for %q failed, reason: %v", label, err)
+	}
 }
 
 func asPercent(value float64) string {
@@ -363,10 +375,6 @@ func tabs(columns ...any) []byte {
 	return []byte(fmt.Sprintf(form, columns...))
 }
 
-func CurrentBuildEvent() *BuildEvent {
-	return buildevent
-}
-
 func BuildEventFilenameFor(stamp time.Time) string {
 	year, week := stamp.ISOWeek()
 	filename := fmt.Sprintf("stats_%s_%04d_%02d.log", common.UserHomeIdentity(), year, week)
@@ -387,13 +395,6 @@ func BuildEventFilenamesFor(weekcount int) []string {
 		weekcount--
 	}
 	return result
-}
-
-func BuildEventStats(label string) {
-	err := serialize(buildevent.finished(label))
-	if err != nil {
-		pretty.Warning("build stats for %q failed, reason: %v", label, err)
-	}
 }
 
 func serialize(event *BuildEvent) (err error) {
@@ -428,64 +429,73 @@ func (it *BuildEvent) Successful() {
 }
 
 func (it *BuildEvent) StartNow(force bool) {
-	buildevent.Started = it.stowatch()
-	buildevent.Force = force
+	it.Started = it.stowatch()
+	it.Force = force
 }
 
 func (it *BuildEvent) Blueprint(blueprint string) {
-	buildevent.BlueprintHash = blueprint
+	it.BlueprintHash = blueprint
 }
 
 func (it *BuildEvent) Rebuild() {
-	buildevent.Retry = true
-	buildevent.Build = true
+	it.Retry = true
+	it.Build = true
 }
 
 func (it *BuildEvent) PrepareComplete() {
-	buildevent.Build = true
-	buildevent.Prepared = it.stowatch()
+	it.Build = true
+	it.Prepared = it.stowatch()
 }
 
 func (it *BuildEvent) MicromambaComplete() {
-	buildevent.Build = true
-	buildevent.MicromambaDone = it.stowatch()
+	it.Build = true
+	it.MicromambaDone = it.stowatch()
 }
 
 func (it *BuildEvent) PipComplete() {
-	buildevent.Build = true
-	buildevent.PipDone = it.stowatch()
+	it.Build = true
+	it.PipDone = it.stowatch()
 }
 
 func (it *BuildEvent) PostInstallComplete() {
-	buildevent.Build = true
-	buildevent.PostInstallDone = it.stowatch()
+	it.Build = true
+	it.PostInstallDone = it.stowatch()
 }
 
 func (it *BuildEvent) RecordComplete() {
-	buildevent.RecordDone = it.stowatch()
+	it.RecordDone = it.stowatch()
 }
 
 func (it *BuildEvent) Dirty(dirtyness float64) {
-	buildevent.Dirtyness = dirtyness
+	it.Dirtyness = dirtyness
 }
 
 func (it *BuildEvent) RestoreComplete() {
-	buildevent.RestoreDone = it.stowatch()
+	it.RestoreDone = it.stowatch()
 }
 
 func (it *BuildEvent) PreRunComplete() {
-	buildevent.Run = true
-	buildevent.PreRunDone = it.stowatch()
+	it.Run = true
+	it.PreRunDone = it.stowatch()
 }
 
 func (it *BuildEvent) RobotStarts() {
-	buildevent.Run = true
-	buildevent.RobotStart = it.stowatch()
+	it.Run = true
+	it.RobotStart = it.stowatch()
 }
 
 func (it *BuildEvent) RobotEnds() {
-	buildevent.Run = true
-	buildevent.RobotEnd = it.stowatch()
+	it.Run = true
+	it.RobotEnd = it.stowatch()
+	reportRatio("Build/Pre-run", it.first(prerun, restore)-it.Started, it.first(prerun, restore)-it.RestoreDone)
+	reportRatio("Setup/Run", it.first(prerun, restore)-it.Started, it.RobotEnd-it.first(prerun, restore))
+}
+
+func reportRatio(label string, first, second float64) {
+	left := int64(math.Ceil(10 * first))
+	right := int64(math.Ceil(10 * second))
+	gcd := common.Gcd(left, right)
+	pretty.Lowlight("  |  %q  relative time allocation ratio:  %d:%d", label, left/gcd, right/gcd)
 }
 
 func (it *BuildEvent) first(tools ...picker) float64 {

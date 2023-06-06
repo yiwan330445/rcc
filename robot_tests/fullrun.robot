@@ -89,8 +89,7 @@ Goal: Run task in place in debug mode and with timeline.
   Must Have   Installation plan is:
   Must Have   Command line is: [
   Must Have   rcc timeline
-  Must Have   robot execution starts (simple=false).
-  Must Have   robot execution done.
+  Must Have   robot execution (simple=false).
   Must Have   Now.
   Must Have   Wanted
   Must Have   Available
