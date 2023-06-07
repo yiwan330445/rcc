@@ -1,5 +1,9 @@
 # rcc change log
 
+## v14.9.1 (date: 7.6.2023)
+
+- micromamba upgrade to v1.4.3
+
 ## v14.9.0 (date: 7.6.2023)
 
 - added one user per `ROBOCORP_HOME` warnings
