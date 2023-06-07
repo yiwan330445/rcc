@@ -119,7 +119,11 @@ func runDiagnostics(quick bool) *common.DiagnosticStatus {
 		result.Checks = append(result.Checks, verifySharedDirectory(common.HololibLibraryLocation()))
 	}
 	result.Checks = append(result.Checks, robocorpHomeCheck())
-	check := workdirCheck()
+	check := robocorpHomeMemberCheck()
+	if check != nil {
+		result.Checks = append(result.Checks, check)
+	}
+	check = workdirCheck()
 	if check != nil {
 		result.Checks = append(result.Checks, check)
 	}
@@ -318,6 +322,22 @@ func workdirCheck() *common.DiagnosticCheck {
 		}
 	}
 	return nil
+}
+
+func robocorpHomeMemberCheck() *common.DiagnosticCheck {
+	supportGeneralUrl := settings.Global.DocsLink("troubleshooting")
+	cache, err := SummonCache()
+	if err != nil || len(cache.Users) < 2 {
+		return nil
+	}
+	members := strings.Join(cache.Users, ", ")
+	return &common.DiagnosticCheck{
+		Type:     "RPA",
+		Category: common.CategoryRobocorpHomeMembers,
+		Status:   statusWarning,
+		Message:  fmt.Sprintf("More than one user is sharing ROBOCORP_HOME (%s). Those users are: %s.", common.RobocorpHome(), members),
+		Link:     supportGeneralUrl,
+	}
 }
 
 func robocorpHomeCheck() *common.DiagnosticCheck {

@@ -1,9 +1,12 @@
 package main
 
 import (
+	"fmt"
 	"os"
+	"os/user"
 	"path/filepath"
 	"runtime"
+	"strings"
 	"time"
 
 	"github.com/robocorp/rcc/anywork"
@@ -13,6 +16,8 @@ import (
 	"github.com/robocorp/rcc/conda"
 	"github.com/robocorp/rcc/operations"
 	"github.com/robocorp/rcc/pathlib"
+	"github.com/robocorp/rcc/pretty"
+	"github.com/robocorp/rcc/set"
 )
 
 const (
@@ -24,6 +29,29 @@ const (
 var (
 	markedAlready = false
 )
+
+func EnsureUserRegistered() (string, error) {
+	var warning string
+
+	cache, err := operations.SummonCache()
+	if err != nil {
+		return warning, err
+	}
+	who, err := user.Current()
+	if err != nil {
+		return warning, err
+	}
+	updated, ok := set.Update(cache.Users, who.Username)
+	size := len(updated)
+	if size > 1 {
+		warning = fmt.Sprintf("More than one user is using same ROBOCORP_HOME location! Those users are: %s!", strings.Join(updated, ", "))
+	}
+	if !ok {
+		return warning, nil
+	}
+	cache.Users = updated
+	return warning, cache.Save()
+}
 
 func TimezoneMetric() error {
 	cache, err := operations.SummonCache()
@@ -95,6 +123,11 @@ func markTempForRecycling() {
 
 func main() {
 	defer ExitProtection()
+
+	warning, _ := EnsureUserRegistered()
+	if len(warning) > 0 {
+		defer pretty.Warning("%s", warning)
+	}
 
 	anywork.Backlog(conda.BugsCleanup)
 

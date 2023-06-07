@@ -1,5 +1,12 @@
 # rcc change log
 
+## v14.9.0 (date: 7.6.2023)
+
+- added one user per `ROBOCORP_HOME` warnings
+- added also diagnostics to warn about above issue
+- full cleanup now also removes `rcccache.yaml` file
+- removed "Robots" section from `rcccache.yaml` file
+
 ## v14.8.2 (date: 6.6.2023) UNSTABLE
 
 - added missing golden yaml file saving on layers

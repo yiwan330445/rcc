@@ -99,9 +99,11 @@ func spotlessCleanup(dryrun bool) error {
 	if err != nil {
 		return err
 	}
+	rcccache := filepath.Join(common.RobocorpHome(), "rcccache.yaml")
 	if dryrun {
 		common.Log("- %v", BinMicromamba())
 		common.Log("- %v", common.RobotCache())
+		common.Log("- %v", rcccache)
 		common.Log("- %v", common.OldEventJournal())
 		common.Log("- %v", common.JournalLocation())
 		common.Log("- %v", common.HololibCatalogLocation())
@@ -110,6 +112,7 @@ func spotlessCleanup(dryrun bool) error {
 	}
 	safeRemove("executable", BinMicromamba())
 	safeRemove("cache", common.RobotCache())
+	safeRemove("cache", rcccache)
 	safeRemove("old", common.OldEventJournal())
 	safeRemove("journals", common.JournalLocation())
 	safeRemove("catalogs", common.HololibCatalogLocation())

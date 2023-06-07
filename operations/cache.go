@@ -31,20 +31,20 @@ type CredentialMap map[string]*Credential
 type StampMap map[string]int64
 
 type Cache struct {
-	Robots      FolderMap     `yaml:"robots"`
 	Credentials CredentialMap `yaml:"credentials"`
 	Stamps      StampMap      `yaml:"stamps"`
+	Users       []string      `yaml:"users"`
 }
 
 func (it Cache) Ready() *Cache {
-	if it.Robots == nil {
-		it.Robots = make(FolderMap)
-	}
 	if it.Credentials == nil {
 		it.Credentials = make(CredentialMap)
 	}
 	if it.Stamps == nil {
 		it.Stamps = make(StampMap)
+	}
+	if it.Users == nil {
+		it.Users = []string{}
 	}
 	return &it
 }
