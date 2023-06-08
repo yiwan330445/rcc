@@ -12,13 +12,6 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-type Folder struct {
-	Path    string `yaml:"path" json:"robot"`
-	Created int64  `yaml:"created" json:"created"`
-	Updated int64  `yaml:"updated" json:"updated"`
-	Deleted int64  `yaml:"deleted" json:"deleted"`
-}
-
 type Credential struct {
 	Account  string `yaml:"account"`
 	Context  string `yaml:"context"`
@@ -26,7 +19,6 @@ type Credential struct {
 	Deadline int64  `yaml:"deadline"`
 }
 
-type FolderMap map[string]*Folder
 type CredentialMap map[string]*Credential
 type StampMap map[string]int64
 

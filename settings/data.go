@@ -247,19 +247,6 @@ func (it *Certificates) onTopOf(target *Settings) {
 	}
 }
 
-type Endpoints struct {
-	CloudApi     string `yaml:"cloud-api,omitempty" json:"cloud-api,omitempty"`
-	CloudLinking string `yaml:"cloud-linking,omitempty" json:"cloud-linking,omitempty"`
-	CloudUi      string `yaml:"cloud-ui,omitempty" json:"cloud-ui,omitempty"`
-	Conda        string `yaml:"conda,omitempty" json:"conda,omitempty"`
-	Docs         string `yaml:"docs,omitempty" json:"docs,omitempty"`
-	Downloads    string `yaml:"downloads,omitempty" json:"downloads,omitempty"`
-	Issues       string `yaml:"issues,omitempty" json:"issues,omitempty"`
-	Pypi         string `yaml:"pypi,omitempty" json:"pypi,omitempty"`
-	PypiTrusted  string `yaml:"pypi-trusted,omitempty" json:"pypi-trusted,omitempty"`
-	Telemetry    string `yaml:"telemetry,omitempty" json:"telemetry,omitempty"`
-}
-
 func justHostAndPort(link string) string {
 	if len(link) == 0 {
 		return ""
@@ -277,26 +264,6 @@ func hostFromUrl(link string, collector map[string]bool) {
 		parts := strings.SplitN(host, ":", 2)
 		collector[parts[0]] = true
 	}
-}
-
-func (it *Endpoints) Hostnames() []string {
-	collector := make(map[string]bool)
-	hostFromUrl(it.CloudApi, collector)
-	hostFromUrl(it.CloudLinking, collector)
-	hostFromUrl(it.CloudUi, collector)
-	hostFromUrl(it.Conda, collector)
-	hostFromUrl(it.Docs, collector)
-	hostFromUrl(it.Downloads, collector)
-	hostFromUrl(it.Issues, collector)
-	hostFromUrl(it.Pypi, collector)
-	hostFromUrl(it.PypiTrusted, collector)
-	hostFromUrl(it.Telemetry, collector)
-	result := make([]string, 0, len(collector))
-	for key, _ := range collector {
-		result = append(result, key)
-	}
-	sort.Strings(result)
-	return result
 }
 
 type Meta struct {

@@ -27,7 +27,7 @@ func Highlight(format string, rest ...interface{}) {
 }
 
 func Lowlight(format string, rest ...interface{}) {
-	niceform := fmt.Sprintf("%s%s%s%s", Grey, Faint, format, Reset)
+	niceform := fmt.Sprintf("%s%s%s", Grey, format, Reset)
 	common.Log(niceform, rest...)
 }
 

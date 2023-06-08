@@ -1,5 +1,10 @@
 # rcc change log
 
+## v14.9.2 (date: 8.6.2023)
+
+- more cleaning up of dead code and data structures
+- made it visible if artifactsDir already have files before run starts
+
 ## v14.9.1 (date: 7.6.2023)
 
 - micromamba upgrade to v1.4.3

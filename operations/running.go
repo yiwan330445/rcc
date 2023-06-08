@@ -184,6 +184,7 @@ func SelectExecutionModel(runFlags *RunFlags, simple bool, template []string, co
 	defer common.TimelineEnd()
 	pathlib.EnsureDirectoryExists(config.ArtifactDirectory())
 	if simple {
+		pathlib.NoteDirectoryContent("[Before run] Artifact dir", config.ArtifactDirectory())
 		ExecuteSimpleTask(runFlags, template, config, todo, interactive, extraEnv)
 	} else {
 		ExecuteTask(runFlags, template, config, todo, label, interactive, extraEnv)
@@ -305,8 +306,10 @@ func ExecuteTask(flags *RunFlags, template []string, config robot.Robot, todo ro
 		wantedfile, _ := config.DependenciesFile()
 		ExecutionEnvironmentListing(wantedfile, label, searchPath, directory, outputDir, environment)
 	}
-	FreezeEnvironmentListing(label, config)
 
+	pathlib.NoteDirectoryContent("[Before run] Artifact dir", config.ArtifactDirectory())
+
+	FreezeEnvironmentListing(label, config)
 	preRunScripts := config.PreRunScripts()
 	if !common.DeveloperFlag && preRunScripts != nil && len(preRunScripts) > 0 {
 		common.Timeline("pre run scripts started")
