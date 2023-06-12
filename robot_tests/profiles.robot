@@ -79,6 +79,17 @@ Goal: Diagnostics can show beta profile information
   Must Have   "config-https-proxy": "http://bad.betaputkinen.net:1234/"
   Must Have   "config-http-proxy": "http://bad.betaputkinen.net:2345/"
 
+Goal: Can import and switch to Gamma profile immediately
+  Step        build/rcc configuration import --filename robot_tests/profile_gamma.yaml --switch
+  Use STDERR
+  Must Have   OK.
+
+  Step        build/rcc configuration switch
+  Use STDOUT
+  Must Have   Currently active profile is: Gamma
+  Use STDERR
+  Must Have   OK.
+
 Goal: Can switch to no profile
   Step        build/rcc configuration switch --noprofile
   Use STDERR

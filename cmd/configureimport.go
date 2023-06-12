@@ -8,6 +8,10 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var (
+	immediateSwitch bool
+)
+
 var configureImportCmd = &cobra.Command{
 	Use:   "import",
 	Short: "Import a configuration profile for Robocorp tooling.",
@@ -21,12 +25,16 @@ var configureImportCmd = &cobra.Command{
 		pretty.Guard(err == nil, 1, "Error while loading profile: %v", err)
 		err = profile.Import()
 		pretty.Guard(err == nil, 2, "Error while importing profile: %v", err)
+		if immediateSwitch {
+			switchProfileTo(profile.Name)
+		}
 		pretty.Ok()
 	},
 }
 
 func init() {
 	configureCmd.AddCommand(configureImportCmd)
+	configureImportCmd.Flags().BoolVarP(&immediateSwitch, "switch", "s", false, "Immediately switch to use new profile.")
 	configureImportCmd.Flags().StringVarP(&configFile, "filename", "f", "exported_profile.yaml", "The filename to import as configuration profile.")
 	configureImportCmd.MarkFlagRequired("filename")
 }

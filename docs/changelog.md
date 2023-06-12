@@ -1,5 +1,10 @@
 # rcc change log
 
+## v14.11.0 (date: 12.6.2023)
+
+- added `--switch` option to profile import to immediately switch to imported
+  profile once it is successfully imported
+
 ## v14.10.0 (date: 12.6.2023)
 
 - saving separate info file for catalogs and holotrees (to speed up some
