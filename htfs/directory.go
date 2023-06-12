@@ -39,24 +39,69 @@ func init() {
 	pathlib.MakeSharedDir(common.HololibPids())
 }
 
-type Filetask func(string, *File) anywork.Work
-type Dirtask func(string, *Dir) anywork.Work
-type Treetop func(string, *Dir) error
+type (
+	Filetask func(string, *File) anywork.Work
+	Dirtask  func(string, *Dir) anywork.Work
+	Treetop  func(string, *Dir) error
 
-type Root struct {
-	RccVersion string `json:"rcc"`
-	Identity   string `json:"identity"`
-	Path       string `json:"path"`
-	Controller string `json:"controller"`
-	Space      string `json:"space"`
-	Platform   string `json:"platform"`
-	Blueprint  string `json:"blueprint"`
-	Lifted     bool   `json:"lifted"`
-	Tree       *Dir   `json:"tree"`
-	source     string
+	Info struct {
+		RccVersion string `json:"rcc"`
+		Identity   string `json:"identity"`
+		Path       string `json:"path"`
+		Controller string `json:"controller"`
+		Space      string `json:"space"`
+		Platform   string `json:"platform"`
+		Blueprint  string `json:"blueprint"`
+	}
+
+	Root struct {
+		*Info
+		Lifted bool `json:"lifted"`
+		Tree   *Dir `json:"tree"`
+		source string
+	}
+
+	Roots []*Root
+	Dir   struct {
+		Name    string           `json:"name"`
+		Symlink string           `json:"symlink,omitempty"`
+		Mode    fs.FileMode      `json:"mode"`
+		Dirs    map[string]*Dir  `json:"subdirs"`
+		Files   map[string]*File `json:"files"`
+		Shadow  bool             `json:"shadow,omitempty"`
+	}
+
+	File struct {
+		Name    string      `json:"name"`
+		Symlink string      `json:"symlink,omitempty"`
+		Size    int64       `json:"size"`
+		Mode    fs.FileMode `json:"mode"`
+		Digest  string      `json:"digest"`
+		Rewrite []int64     `json:"rewrite"`
+	}
+)
+
+func (it *Info) AsJson() ([]byte, error) {
+	return json.MarshalIndent(it, "", "  ")
 }
 
-type Roots []*Root
+func (it *Info) saveAs(filename string) error {
+	content, err := it.AsJson()
+	if err != nil {
+		return err
+	}
+	sink, err := pathlib.Create(filename)
+	if err != nil {
+		return err
+	}
+	defer sink.Close()
+	defer sink.Sync()
+	_, err = sink.Write(content)
+	if err != nil {
+		return err
+	}
+	return nil
+}
 
 func (it Roots) BaseFolders() []string {
 	result := []string{}
@@ -132,20 +177,29 @@ func (it Roots) RemoveHolotreeSpace(label string) (err error) {
 	return nil
 }
 
-func NewRoot(path string) (*Root, error) {
+func NewInfo(path string) (*Info, error) {
 	fullpath, err := pathlib.Abs(path)
 	if err != nil {
 		return nil, err
 	}
-	basename := filepath.Base(fullpath)
-	return &Root{
-		Identity:   basename,
+	return &Info{
+		RccVersion: common.Version,
+		Identity:   filepath.Base(fullpath),
 		Path:       fullpath,
 		Platform:   common.Platform(),
-		Lifted:     false,
-		Tree:       newDir("", "", false),
-		RccVersion: common.Version,
-		source:     fullpath,
+	}, nil
+}
+
+func NewRoot(path string) (*Root, error) {
+	info, err := NewInfo(path)
+	if err != nil {
+		return nil, err
+	}
+	return &Root{
+		Info:   info,
+		Lifted: false,
+		Tree:   newDir("", "", false),
+		source: info.Path,
 	}, nil
 }
 
@@ -273,7 +327,7 @@ func (it *Root) SaveAs(filename string) error {
 	if err != nil {
 		return err
 	}
-	return nil
+	return it.Info.saveAs(filename + ".info")
 }
 
 func (it *Root) ReadFrom(source io.Reader) error {
@@ -295,15 +349,6 @@ func (it *Root) LoadFrom(filename string) error {
 	defer common.Timeline("holotree catalog %q loaded", filename)
 	defer reader.Close()
 	return it.ReadFrom(reader)
-}
-
-type Dir struct {
-	Name    string           `json:"name"`
-	Symlink string           `json:"symlink,omitempty"`
-	Mode    fs.FileMode      `json:"mode"`
-	Dirs    map[string]*Dir  `json:"subdirs"`
-	Files   map[string]*File `json:"files"`
-	Shadow  bool             `json:"shadow,omitempty"`
 }
 
 func showFile(filename string) (content []byte, err error) {
@@ -403,15 +448,6 @@ func (it *Dir) Lift(path string) error {
 		}
 	}
 	return nil
-}
-
-type File struct {
-	Name    string      `json:"name"`
-	Symlink string      `json:"symlink,omitempty"`
-	Size    int64       `json:"size"`
-	Mode    fs.FileMode `json:"mode"`
-	Digest  string      `json:"digest"`
-	Rewrite []int64     `json:"rewrite"`
 }
 
 func (it *File) IsSymlink() bool {

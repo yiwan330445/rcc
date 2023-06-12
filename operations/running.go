@@ -335,11 +335,13 @@ func ExecuteTask(flags *RunFlags, template []string, config robot.Robot, todo ro
 
 	common.Debug("about to run command - %v", task)
 	journal.CurrentBuildEvent().RobotStarts()
-	if common.NoOutputCapture {
-		_, err = shell.New(environment, directory, task...).Execute(interactive)
-	} else {
-		_, err = shell.New(environment, directory, task...).Tee(outputDir, interactive)
-	}
+	shell.WithInterrupt(func() {
+		if common.NoOutputCapture {
+			_, err = shell.New(environment, directory, task...).Execute(interactive)
+		} else {
+			_, err = shell.New(environment, directory, task...).Tee(outputDir, interactive)
+		}
+	})
 	journal.CurrentBuildEvent().RobotEnds()
 	after := make(map[string]string)
 	afterHash, afterErr := conda.DigestFor(label, after)

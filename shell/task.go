@@ -5,26 +5,32 @@ import (
 	"io"
 	"os"
 	"os/exec"
+	"os/signal"
 	"path/filepath"
 
 	"github.com/google/shlex"
 	"github.com/robocorp/rcc/common"
 	"github.com/robocorp/rcc/pathlib"
+	"github.com/robocorp/rcc/pretty"
 )
 
-type Common interface {
-	Debug(string, ...interface{}) error
-	Trace(string, ...interface{}) error
-	Timeline(string, ...interface{})
-}
+type (
+	Common interface {
+		Debug(string, ...interface{}) error
+		Trace(string, ...interface{}) error
+		Timeline(string, ...interface{})
+	}
 
-type Task struct {
-	environment []string
-	directory   string
-	executable  string
-	args        []string
-	stderronly  bool
-}
+	Task struct {
+		environment []string
+		directory   string
+		executable  string
+		args        []string
+		stderronly  bool
+	}
+
+	Wrapper func()
+)
 
 func Split(commandline string) ([]string, error) {
 	return shlex.Split(commandline)
@@ -144,4 +150,19 @@ func (it *Task) CaptureOutput() (string, int, error) {
 	stdout := bytes.NewBuffer(nil)
 	code, err := it.execute(stdin, stdout, os.Stderr)
 	return stdout.String(), code, err
+}
+
+func WithInterrupt(task Wrapper) {
+	signals := make(chan os.Signal, 1)
+	defer signal.Stop(signals)
+	defer close(signals)
+	go func() {
+		signal.Notify(signals, os.Interrupt)
+		got, ok := <-signals
+		if ok {
+			pretty.Note("Detected and ignored %q signal. Second one will not be ignored. [rcc]", got)
+		}
+		signal.Stop(signals)
+	}()
+	task()
 }

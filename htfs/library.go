@@ -307,7 +307,9 @@ func (it *hololib) queryBlueprint(key string) bool {
 func CatalogNames() []string {
 	result := make([]string, 0, 10)
 	for _, catalog := range pathlib.Glob(common.HololibCatalogLocation(), "[0-9a-f]*v12.*") {
-		result = append(result, filepath.Base(catalog))
+		if filepath.Ext(catalog) != ".info" {
+			result = append(result, filepath.Base(catalog))
+		}
 	}
 	return set.Set(result)
 }

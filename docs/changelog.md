@@ -1,5 +1,13 @@
 # rcc change log
 
+## v14.10.0 (date: 12.6.2023)
+
+- saving separate info file for catalogs and holotrees (to speed up some
+  commands in future)
+- added interrupt signal ignoring around robot run, so that robot can actually
+  react and respond to interrupt (and if send twice, then second interrupt
+  will actually interrupt rcc)
+
 ## v14.9.2 (date: 8.6.2023)
 
 - more cleaning up of dead code and data structures
