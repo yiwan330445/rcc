@@ -1,5 +1,11 @@
 # rcc change log
 
+## v14.12.0 (date: 13.6.2023)
+
+- adding listing of still running processes after robot run
+- upgrading github actions to use go v1.20.x
+- bugfix: panic when using lockpids with nil value
+
 ## v14.11.0 (date: 12.6.2023)
 
 - added `--switch` option to profile import to immediately switch to imported

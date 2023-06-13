@@ -74,6 +74,9 @@ browsing:
 	for _, entry := range entries {
 		fullpath := filepath.Join(root, entry.Name())
 		info, err := entry.Info()
+		if err != nil || info == nil {
+			continue
+		}
 		if info.IsDir() {
 			anywork.Backlog(func() {
 				TryRemoveAll("lockpid/dir", fullpath)
@@ -81,7 +84,7 @@ browsing:
 			})
 			continue browsing
 		}
-		if err == nil && info.ModTime().Before(deadline) {
+		if info.ModTime().Before(deadline) {
 			anywork.Backlog(func() {
 				TryRemove("lockpid/stale", fullpath)
 				common.Trace(">> Trying to remove old file at lockpids: %q", fullpath)

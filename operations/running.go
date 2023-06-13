@@ -342,6 +342,10 @@ func ExecuteTask(flags *RunFlags, template []string, config robot.Robot, todo ro
 			_, err = shell.New(environment, directory, task...).Tee(outputDir, interactive)
 		}
 	})
+	err = SubprocessWarning()
+	if err != nil {
+		pretty.Warning("Problem with subprocess warnings, reason: %v", err)
+	}
 	journal.CurrentBuildEvent().RobotEnds()
 	after := make(map[string]string)
 	afterHash, afterErr := conda.DigestFor(label, after)

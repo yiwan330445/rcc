@@ -7,6 +7,7 @@ import (
 	"os/exec"
 	"os/signal"
 	"path/filepath"
+	"time"
 
 	"github.com/google/shlex"
 	"github.com/robocorp/rcc/common"
@@ -67,6 +68,7 @@ func (it *Task) execute(stdin io.Reader, stdout, stderr io.Writer) (int, error) 
 	command.Stdin = stdin
 	command.Stdout = stdout
 	command.Stderr = stderr
+	command.WaitDelay = 2 * time.Minute
 	err := command.Start()
 	if err != nil {
 		return -500, err
