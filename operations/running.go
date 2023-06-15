@@ -2,6 +2,7 @@ package operations
 
 import (
 	"fmt"
+	"os"
 	"path/filepath"
 	"runtime"
 	"strings"
@@ -335,6 +336,7 @@ func ExecuteTask(flags *RunFlags, template []string, config robot.Robot, todo ro
 
 	common.Debug("about to run command - %v", task)
 	journal.CurrentBuildEvent().RobotStarts()
+	pipe := WatchChildren(os.Getpid(), 2*time.Second)
 	shell.WithInterrupt(func() {
 		if common.NoOutputCapture {
 			_, err = shell.New(environment, directory, task...).Execute(interactive)
@@ -342,7 +344,8 @@ func ExecuteTask(flags *RunFlags, template []string, config robot.Robot, todo ro
 			_, err = shell.New(environment, directory, task...).Tee(outputDir, interactive)
 		}
 	})
-	err = SubprocessWarning()
+	seen, ok := <-pipe
+	err = SubprocessWarning(seen, ok)
 	if err != nil {
 		pretty.Warning("Problem with subprocess warnings, reason: %v", err)
 	}

@@ -1,5 +1,11 @@
 # rcc change log
 
+## v14.13.0 (date: 15.6.2023)
+
+- improved listing of still running processes
+- set process wait delay to 15 seconds after process has completed but has not
+  released it IO pipes yet
+
 ## v14.12.0 (date: 13.6.2023)
 
 - adding listing of still running processes after robot run

@@ -68,7 +68,7 @@ func (it *Task) execute(stdin io.Reader, stdout, stderr io.Writer) (int, error) 
 	command.Stdin = stdin
 	command.Stdout = stdout
 	command.Stderr = stderr
-	command.WaitDelay = 2 * time.Minute
+	command.WaitDelay = 15 * time.Second
 	err := command.Start()
 	if err != nil {
 		return -500, err
