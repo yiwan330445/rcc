@@ -345,16 +345,16 @@ func ExecuteTask(flags *RunFlags, template []string, config robot.Robot, todo ro
 		}
 	})
 	seen, ok := <-pipe
-	err = SubprocessWarning(seen, ok)
-	if err != nil {
-		pretty.Warning("Problem with subprocess warnings, reason: %v", err)
+	suberr := SubprocessWarning(seen, ok)
+	if suberr != nil {
+		pretty.Warning("Problem with subprocess warnings, reason: %v", suberr)
 	}
 	journal.CurrentBuildEvent().RobotEnds()
 	after := make(map[string]string)
 	afterHash, afterErr := conda.DigestFor(label, after)
 	conda.DiagnoseDirty(label, label, beforeHash, afterHash, beforeErr, afterErr, before, after, true)
 	if err != nil {
-		pretty.Exit(10, "Error: %v", err)
+		pretty.Exit(10, "Error: %v (robot run exit)", err)
 	}
 	pretty.Ok()
 }

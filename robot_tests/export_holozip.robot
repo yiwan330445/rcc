@@ -10,11 +10,11 @@ Export setup
   Remove Directory  tmp/developer  True
   Remove Directory  tmp/guest  True
   Remove Directory  tmp/standalone  True
-  Set Environment Variable  ROBOCORP_HOME  tmp/developer
+  Prepare Robocorp Home    tmp/developer
   Fire And Forget   build/rcc ht delete 4e67cd8
 
 Export teardown
-  Set Environment Variable  ROBOCORP_HOME  tmp/robocorp
+  Prepare Robocorp Home    tmp/robocorp
   Remove Directory  tmp/developer  True
   Remove Directory  tmp/guest  True
   Remove Directory  tmp/standalone  True
@@ -83,13 +83,13 @@ Goal: Can delete author space
 
 Goal: Can run as guest
   Fire And Forget   build/rcc ht delete 4e67cd8
-  Set Environment Variable  ROBOCORP_HOME  tmp/guest
+  Prepare Robocorp Home    tmp/guest
   Step        build/rcc task run --controller citests -s guest -r tmp/standalone/robot.yaml -t 'run example task'
   Use STDERR
   Must Have   OK.
 
 Goal: Space created under author for guest
-  Set Environment Variable  ROBOCORP_HOME  tmp/developer
+  Prepare Robocorp Home    tmp/developer
   Step        build/rcc ht ls
   Use STDERR
   Wont Have   4e67cd8_fcb4b859

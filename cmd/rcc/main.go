@@ -77,6 +77,7 @@ func ExitProtection() {
 		exit, ok := status.(common.ExitCode)
 		if ok {
 			exit.ShowMessage()
+			pretty.Highlight("[rcc] exit status will be: %d!", exit.Code)
 			cloud.WaitTelemetry()
 			common.WaitLogs()
 			os.Exit(exit.Code)

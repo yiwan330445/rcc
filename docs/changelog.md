@@ -1,5 +1,13 @@
 # rcc change log
 
+## v14.13.1 (date: 20.6.2023)
+
+- bugfix: fixing exit code masking by subprocess handling
+- predicting rcc exit code made visible
+- making robot run exit code more visible
+- robot tests now use special settings.yaml to prevent template updates and
+  will only use internal templates for testing
+
 ## v14.13.0 (date: 15.6.2023)
 
 - improved listing of still running processes

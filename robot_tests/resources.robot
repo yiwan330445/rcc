@@ -7,13 +7,18 @@ Library  supporting.py
 Clean Local
   Remove Directory  tmp/robocorp  True
 
+Prepare Robocorp Home
+  [Arguments]  ${location}
+  Create Directory  ${location}
+  Set Environment Variable  ROBOCORP_HOME  ${location}
+  Copy File   robot_tests/settings.yaml    ${location}/settings.yaml
+
 Prepare Local
   Remove Directory  tmp/fluffy  True
   Remove Directory  tmp/nodogs  True
   Remove Directory  tmp/robocorp  True
   Remove File  tmp/nodogs.zip
-  Create Directory  tmp/robocorp
-  Set Environment Variable  ROBOCORP_HOME  tmp/robocorp
+  Prepare Robocorp Home    tmp/robocorp
 
   Comment           Make sure that tests do not use shared holotree
   Fire And Forget   build/rcc ht init --revoke
