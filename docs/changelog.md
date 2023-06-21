@@ -1,6 +1,10 @@
 # rcc change log
 
-## v14.13.1 (date: 20.6.2023)
+## v14.13.2 (date: 21.6.2023)
+
+- micromamba downgrade to v1.4.2, because micromamba bug in Windows
+
+## v14.13.1 (date: 20.6.2023) UNSTABLE
 
 - bugfix: fixing exit code masking by subprocess handling
 - predicting rcc exit code made visible
@@ -8,24 +12,24 @@
 - robot tests now use special settings.yaml to prevent template updates and
   will only use internal templates for testing
 
-## v14.13.0 (date: 15.6.2023)
+## v14.13.0 (date: 15.6.2023) UNSTABLE
 
 - improved listing of still running processes
 - set process wait delay to 15 seconds after process has completed but has not
   released it IO pipes yet
 
-## v14.12.0 (date: 13.6.2023)
+## v14.12.0 (date: 13.6.2023) UNSTABLE
 
 - adding listing of still running processes after robot run
 - upgrading github actions to use go v1.20.x
 - bugfix: panic when using lockpids with nil value
 
-## v14.11.0 (date: 12.6.2023)
+## v14.11.0 (date: 12.6.2023) UNSTABLE
 
 - added `--switch` option to profile import to immediately switch to imported
   profile once it is successfully imported
 
-## v14.10.0 (date: 12.6.2023)
+## v14.10.0 (date: 12.6.2023) UNSTABLE
 
 - saving separate info file for catalogs and holotrees (to speed up some
   commands in future)
@@ -33,12 +37,12 @@
   react and respond to interrupt (and if send twice, then second interrupt
   will actually interrupt rcc)
 
-## v14.9.2 (date: 8.6.2023)
+## v14.9.2 (date: 8.6.2023) UNSTABLE
 
 - more cleaning up of dead code and data structures
 - made it visible if artifactsDir already have files before run starts
 
-## v14.9.1 (date: 7.6.2023)
+## v14.9.1 (date: 7.6.2023) UNSTABLE
 
 - micromamba upgrade to v1.4.3
 
