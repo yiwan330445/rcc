@@ -35,7 +35,7 @@ func EnsureEmptyDirectory(directory string) error {
 	return nil
 }
 
-func NoteDirectoryContent(context, directory string) {
+func NoteDirectoryContent(context, directory string, guide bool) {
 	if !IsDir(directory) {
 		return
 	}
@@ -49,5 +49,11 @@ func NoteDirectoryContent(context, directory string) {
 	}
 	for _, entry := range entries {
 		pretty.Note("%s %q already has %q in it.", context, fullpath, entry.Name())
+	}
+	if guide && len(entries) > 0 {
+		pretty.Highlight("Above notes mean, that there were files present in directory that was supposed to be empty!")
+		pretty.Highlight("In robot development phase, it might be ok to have these files while building robot.")
+		pretty.Highlight("In production robot/assistant, this might be mistake, where development files were")
+		pretty.Highlight("left inside robot.zip file. Report these to developer who made this robot/assistant.")
 	}
 }

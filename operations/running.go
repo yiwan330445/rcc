@@ -185,7 +185,7 @@ func SelectExecutionModel(runFlags *RunFlags, simple bool, template []string, co
 	defer common.TimelineEnd()
 	pathlib.EnsureDirectoryExists(config.ArtifactDirectory())
 	if simple {
-		pathlib.NoteDirectoryContent("[Before run] Artifact dir", config.ArtifactDirectory())
+		pathlib.NoteDirectoryContent("[Before run] Artifact dir", config.ArtifactDirectory(), true)
 		ExecuteSimpleTask(runFlags, template, config, todo, interactive, extraEnv)
 	} else {
 		ExecuteTask(runFlags, template, config, todo, label, interactive, extraEnv)
@@ -308,7 +308,7 @@ func ExecuteTask(flags *RunFlags, template []string, config robot.Robot, todo ro
 		ExecutionEnvironmentListing(wantedfile, label, searchPath, directory, outputDir, environment)
 	}
 
-	pathlib.NoteDirectoryContent("[Before run] Artifact dir", config.ArtifactDirectory())
+	pathlib.NoteDirectoryContent("[Before run] Artifact dir", config.ArtifactDirectory(), true)
 
 	FreezeEnvironmentListing(label, config)
 	preRunScripts := config.PreRunScripts()
@@ -336,7 +336,7 @@ func ExecuteTask(flags *RunFlags, template []string, config robot.Robot, todo ro
 
 	common.Debug("about to run command - %v", task)
 	journal.CurrentBuildEvent().RobotStarts()
-	pipe := WatchChildren(os.Getpid(), 2*time.Second)
+	pipe := WatchChildren(os.Getpid(), 200*time.Millisecond)
 	shell.WithInterrupt(func() {
 		if common.NoOutputCapture {
 			_, err = shell.New(environment, directory, task...).Execute(interactive)

@@ -1,5 +1,10 @@
 # rcc change log
 
+## v14.13.3 (date: 22.6.2023)
+
+- faster heartbeat for snapshotting subprocesses during robot run (200ms)
+- added guiding text on "non-empty artifacts directory case"
+
 ## v14.13.2 (date: 21.6.2023)
 
 - micromamba downgrade to v1.4.2, because micromamba bug in Windows
