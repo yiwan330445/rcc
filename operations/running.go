@@ -18,6 +18,10 @@ import (
 	"github.com/robocorp/rcc/shell"
 )
 
+const (
+	rccpov = `From rcc point of view, actual main robot run was`
+)
+
 var (
 	rcHosts  = []string{"RC_API_SECRET_HOST", "RC_API_WORKITEM_HOST"}
 	rcTokens = []string{"RC_API_SECRET_TOKEN", "RC_API_WORKITEM_TOKEN"}
@@ -344,6 +348,7 @@ func ExecuteTask(flags *RunFlags, template []string, config robot.Robot, todo ro
 			_, err = shell.New(environment, directory, task...).Tee(outputDir, interactive)
 		}
 	})
+	showRccPointOfView(err)
 	seen, ok := <-pipe
 	suberr := SubprocessWarning(seen, ok)
 	if suberr != nil {
@@ -357,4 +362,17 @@ func ExecuteTask(flags *RunFlags, template []string, config robot.Robot, todo ro
 		pretty.Exit(10, "Error: %v (robot run exit)", err)
 	}
 	pretty.Ok()
+}
+
+func showRccPointOfView(err error) {
+	printer := pretty.Lowlight
+	message := fmt.Sprintf("@@@  %s SUCCESS. @@@", rccpov)
+	if err != nil {
+		printer = pretty.Highlight
+		message = fmt.Sprintf("@@@  %s FAILURE, reason: %q. See details above.  @@@", rccpov, err)
+	}
+	banner := strings.Repeat("@", len(message))
+	printer(banner)
+	printer(message)
+	printer(banner)
 }

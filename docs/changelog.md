@@ -1,5 +1,10 @@
 # rcc change log
 
+## v14.14.0 (date: 27.6.2023)
+
+- unless silenced, always show "rcc point of view" of success or failure of
+  actual main robot run, on point of robot process exit
+
 ## v14.13.3 (date: 22.6.2023)
 
 - faster heartbeat for snapshotting subprocesses during robot run (200ms)

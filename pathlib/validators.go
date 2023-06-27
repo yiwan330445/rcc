@@ -53,7 +53,7 @@ func NoteDirectoryContent(context, directory string, guide bool) {
 	if guide && len(entries) > 0 {
 		pretty.Highlight("Above notes mean, that there were files present in directory that was supposed to be empty!")
 		pretty.Highlight("In robot development phase, it might be ok to have these files while building robot.")
-		pretty.Highlight("In production robot/assistant, this might be mistake, where development files were")
+		pretty.Highlight("In production robot/assistant, this might be a mistake, where development files were")
 		pretty.Highlight("left inside robot.zip file. Report these to developer who made this robot/assistant.")
 	}
 }
