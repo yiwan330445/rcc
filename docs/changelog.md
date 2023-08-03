@@ -1,5 +1,9 @@
 # rcc change log
 
+## v14.15.0 (date: 3.8.2023)
+
+- micromamba upgrade to v1.4.9
+
 ## v14.14.0 (date: 27.6.2023)
 
 - unless silenced, always show "rcc point of view" of success or failure of
