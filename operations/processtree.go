@@ -109,7 +109,7 @@ func SubprocessWarning(seen ChildMap, use bool) error {
 		for pid, executable := range seen {
 			ref, ok := processes[pid]
 			if ok {
-				updateActiveChildren(ref, masked, 30)
+				updateActiveChildren(ref, masked, 70)
 			} else {
 				masked[pid] = executable
 			}
@@ -145,11 +145,8 @@ func updateActiveChildren(host *ProcessNode, seen ChildMap, maxDepth int) {
 		return
 	}
 	for pid, child := range host.Children {
-		_, ok := seen[pid]
-		if !ok {
-			seen[pid] = child.Executable
-			updateActiveChildren(child, seen, maxDepth-1)
-		}
+		seen[pid] = child.Executable
+		updateActiveChildren(child, seen, maxDepth-1)
 	}
 }
 
@@ -157,7 +154,7 @@ func updateSeenChildren(pid int, processes ProcessMap, seen ChildMap) {
 	source, ok := processes[pid]
 	if ok {
 		removeStaleChildren(processes, seen)
-		updateActiveChildren(source, seen, 30)
+		updateActiveChildren(source, seen, 70)
 	}
 }
 

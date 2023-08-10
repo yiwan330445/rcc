@@ -1,10 +1,14 @@
 # rcc change log
 
-## v14.15.1 (date: 9.8.2023)
+## v14.15.2 (date: 10.8.2023)
+
+- bugfix, now giving little bit more stack to process tree
+
+## v14.15.1 (date: 9.8.2023) BROKEN
 
 - bugfix on process tree ending up eating too much stack (stack overflow)
 
-## v14.15.0 (date: 3.8.2023)
+## v14.15.0 (date: 3.8.2023) BROKEN
 
 - micromamba upgrade to v1.4.9
 
