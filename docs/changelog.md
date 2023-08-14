@@ -1,5 +1,10 @@
 # rcc change log
 
+## v14.15.3 (date: 14.8.2023)
+
+- added error message on canary failures
+- added one diagnostics detail to show if global shared holotree is enabled
+
 ## v14.15.2 (date: 10.8.2023)
 
 - bugfix, now giving little bit more stack to process tree

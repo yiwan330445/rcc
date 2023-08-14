@@ -93,6 +93,7 @@ func runDiagnostics(quick bool) *common.DiagnosticStatus {
 	result.Details["hololib-library-location"] = common.HololibLibraryLocation()
 	result.Details["holotree-location"] = common.HolotreeLocation()
 	result.Details["holotree-shared"] = fmt.Sprintf("%v", common.SharedHolotree)
+	result.Details["holotree-global-shared"] = fmt.Sprintf("%v", pathlib.IsFile(common.SharedMarkerLocation()))
 	result.Details["holotree-user-id"] = common.UserHomeIdentity()
 	result.Details["os"] = common.Platform()
 	result.Details["cpus"] = fmt.Sprintf("%d", runtime.NumCPU())
@@ -413,7 +414,7 @@ func condaHeadCheck() *common.DiagnosticCheck {
 			Type:     "network",
 			Category: common.CategoryNetworkHEAD,
 			Status:   statusWarning,
-			Message:  fmt.Sprintf("Conda canary download failed: %d", response.Status),
+			Message:  fmt.Sprintf("Conda canary download failed: %d %v", response.Status, response.Err),
 			Link:     supportNetworkUrl,
 		}
 	}
@@ -445,7 +446,7 @@ func pypiHeadCheck() *common.DiagnosticCheck {
 			Type:     "network",
 			Category: common.CategoryNetworkHEAD,
 			Status:   statusWarning,
-			Message:  fmt.Sprintf("PyPI canary download failed: %d", response.Status),
+			Message:  fmt.Sprintf("PyPI canary download failed: %d %v", response.Status, response.Err),
 			Link:     supportNetworkUrl,
 		}
 	}
@@ -477,7 +478,7 @@ func canaryDownloadCheck() *common.DiagnosticCheck {
 			Type:     "network",
 			Category: common.CategoryNetworkCanary,
 			Status:   statusFail,
-			Message:  fmt.Sprintf("Canary download failed: %d: %s", response.Status, response.Body),
+			Message:  fmt.Sprintf("Canary download failed: %d: %v %s", response.Status, response.Err, response.Body),
 			Link:     supportNetworkUrl,
 		}
 	}
