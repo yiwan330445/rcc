@@ -1,5 +1,9 @@
 # rcc change log
 
+## v14.15.4 (date: 17.8.2023)
+
+- micromamba downgraded to v1.4.2 due to argument change
+
 ## v14.15.3 (date: 14.8.2023)
 
 - added error message on canary failures
