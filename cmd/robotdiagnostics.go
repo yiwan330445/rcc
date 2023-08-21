@@ -13,7 +13,7 @@ var robotDiagnosticsCmd = &cobra.Command{
 	Short: "Run system diagnostics to help resolve rcc issues.",
 	Long:  "Run system diagnostics to help resolve rcc issues.",
 	Run: func(cmd *cobra.Command, args []string) {
-		if common.DebugFlag {
+		if common.DebugFlag() {
 			defer common.Stopwatch("Diagnostic run lasted").Report()
 		}
 		err := operations.PrintRobotDiagnostics(robotFile, jsonFlag, productionFlag)

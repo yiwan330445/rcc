@@ -23,7 +23,7 @@ var communityPullCmd = &cobra.Command{
 	Long:  "Pull a robot from URL or community sources.",
 	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		if common.DebugFlag {
+		if common.DebugFlag() {
 			defer common.Stopwatch("Pull lasted").Report()
 		}
 

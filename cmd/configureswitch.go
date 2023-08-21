@@ -73,7 +73,7 @@ var configureSwitchCmd = &cobra.Command{
 	Short: "Switch active configuration profile for Robocorp tooling.",
 	Long:  "Switch active configuration profile for Robocorp tooling.",
 	Run: func(cmd *cobra.Command, args []string) {
-		if common.DebugFlag {
+		if common.DebugFlag() {
 			defer common.Stopwatch("Configuration switch lasted").Report()
 		}
 		if clearProfile {

@@ -23,7 +23,7 @@ var prepareCloudCmd = &cobra.Command{
 	Long:  "Prepare cloud robot for fast startup time in local computer.",
 	Run: func(cmd *cobra.Command, args []string) {
 		defer journal.BuildEventStats("prepare")
-		if common.DebugFlag {
+		if common.DebugFlag() {
 			defer common.Stopwatch("Cloud prepare lasted").Report()
 		}
 
@@ -39,7 +39,7 @@ var prepareCloudCmd = &cobra.Command{
 		client, err := cloud.NewClient(account.Endpoint)
 		pretty.Guard(err == nil, 3, "Could not create client for endpoint: %v, reason: %v", account.Endpoint, err)
 
-		err = operations.DownloadCommand(client, account, workspaceId, robotId, zipfile, common.DebugFlag)
+		err = operations.DownloadCommand(client, account, workspaceId, robotId, zipfile, common.DebugFlag())
 		pretty.Guard(err == nil, 4, "Error: %v", err)
 
 		common.Debug("Using temporary workarea: %v", workarea)

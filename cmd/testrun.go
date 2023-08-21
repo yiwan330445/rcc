@@ -24,7 +24,7 @@ var testrunCmd = &cobra.Command{
 	Long:    "Run a task in a clean environment and clean directory.",
 	Run: func(cmd *cobra.Command, args []string) {
 		defer conda.RemoveCurrentTemp()
-		if common.DebugFlag {
+		if common.DebugFlag() {
 			defer common.Stopwatch("Task testrun lasted").Report()
 		}
 		now := time.Now()

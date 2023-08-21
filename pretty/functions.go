@@ -11,6 +11,11 @@ func Ok() error {
 	return nil
 }
 
+func DebugNote(format string, rest ...interface{}) {
+	niceform := fmt.Sprintf("%s%sNote: %s%s", Blue, Bold, format, Reset)
+	common.Debug(niceform, rest...)
+}
+
 func Note(format string, rest ...interface{}) {
 	niceform := fmt.Sprintf("%s%sNote: %s%s", Cyan, Bold, format, Reset)
 	common.Log(niceform, rest...)

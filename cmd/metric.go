@@ -20,7 +20,7 @@ var metricCmd = &cobra.Command{
 	Short: "Send some metric to Robocorp Control Room.",
 	Long:  "Send some metric to Robocorp Control Room.",
 	Run: func(cmd *cobra.Command, args []string) {
-		if common.DebugFlag {
+		if common.DebugFlag() {
 			defer common.Stopwatch("Feedback metric lasted").Report()
 		}
 		if !xviper.CanTrack() {

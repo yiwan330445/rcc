@@ -19,7 +19,7 @@ var holotreePullCmd = &cobra.Command{
 	Short: "Try to pull existing holotree catalog from remote source.",
 	Long:  "Try to pull existing holotree catalog from remote source.",
 	Run: func(cmd *cobra.Command, args []string) {
-		if common.DebugFlag {
+		if common.DebugFlag() {
 			defer common.Stopwatch("Holotree pull command lasted").Report()
 		}
 		_, holotreeBlueprint, err := htfs.ComposeFinalBlueprint(nil, pullRobot)

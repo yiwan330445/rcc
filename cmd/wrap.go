@@ -15,7 +15,7 @@ var wrapCmd = &cobra.Command{
 filename, source directory and optional ignore files. When wrap is run again
 existing robot file will silently be overwritten..`,
 	Run: func(cmd *cobra.Command, args []string) {
-		if common.DebugFlag {
+		if common.DebugFlag() {
 			defer common.Stopwatch("Wrap lasted").Report()
 		}
 		err := operations.Zip(directory, zipfile, ignores)

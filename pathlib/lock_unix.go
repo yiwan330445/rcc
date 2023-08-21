@@ -14,7 +14,7 @@ func Locker(filename string, trycount int) (Releaser, error) {
 	if Lockless {
 		return Fake(), nil
 	}
-	if common.TraceFlag {
+	if common.TraceFlag() {
 		defer common.Stopwatch("LOCKER: Got lock on %v in", filename).Report()
 	}
 	common.Trace("LOCKER: Want lock on: %v", filename)

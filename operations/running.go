@@ -307,7 +307,7 @@ func ExecuteTask(flags *RunFlags, template []string, config robot.Robot, todo ro
 	if err != nil {
 		pretty.Exit(9, "Error: %v", err)
 	}
-	if !flags.NoPipFreeze && !flags.Assistant && !common.Silent && !interactive {
+	if !flags.NoPipFreeze && !flags.Assistant && !common.Silent() && !interactive {
 		wantedfile, _ := config.DependenciesFile()
 		ExecutionEnvironmentListing(wantedfile, label, searchPath, directory, outputDir, environment)
 	}

@@ -15,7 +15,7 @@ var authorizeCmd = &cobra.Command{
 	Short: "Convert an API key to a valid authorization JWT token.",
 	Long:  "Convert an API key to a valid authorization JWT token.",
 	Run: func(cmd *cobra.Command, args []string) {
-		if common.DebugFlag {
+		if common.DebugFlag() {
 			defer common.Stopwatch("Authorize query lasted").Report()
 		}
 		period := &operations.TokenPeriod{

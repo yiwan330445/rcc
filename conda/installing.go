@@ -13,7 +13,7 @@ func MustMicromamba() bool {
 }
 
 func DoDownload(delay time.Duration) bool {
-	if common.DebugFlag {
+	if common.DebugFlag() {
 		defer common.Stopwatch("Download done in").Report()
 	}
 
@@ -32,7 +32,7 @@ func DoDownload(delay time.Duration) bool {
 }
 
 func DoInstall() bool {
-	if common.DebugFlag {
+	if common.DebugFlag() {
 		defer common.Stopwatch("Installation done in").Report()
 	}
 

@@ -17,7 +17,7 @@ var configureImportCmd = &cobra.Command{
 	Short: "Import a configuration profile for Robocorp tooling.",
 	Long:  "Import a configuration profile for Robocorp tooling.",
 	Run: func(cmd *cobra.Command, args []string) {
-		if common.DebugFlag {
+		if common.DebugFlag() {
 			defer common.Stopwatch("Configuration import lasted").Report()
 		}
 		profile := &settings.Profile{}

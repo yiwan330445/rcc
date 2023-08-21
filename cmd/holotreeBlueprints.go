@@ -33,7 +33,7 @@ var holotreeBlueprintCmd = &cobra.Command{
 	Long:    "Verify that resulting blueprint is in hololibrary.",
 	Aliases: []string{"bp"},
 	Run: func(cmd *cobra.Command, args []string) {
-		if common.DebugFlag {
+		if common.DebugFlag() {
 			defer common.Stopwatch("Holotree blueprints command lasted").Report()
 		}
 

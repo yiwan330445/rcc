@@ -17,7 +17,7 @@ var userinfoCmd = &cobra.Command{
 	Short:   "Query user information from Robocorp Control Room.",
 	Long:    "Query user information from Robocorp Control Room.",
 	Run: func(cmd *cobra.Command, args []string) {
-		if common.DebugFlag {
+		if common.DebugFlag() {
 			defer common.Stopwatch("Userinfo query lasted").Report()
 		}
 		account := operations.AccountByName(AccountName())

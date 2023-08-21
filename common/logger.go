@@ -27,7 +27,7 @@ func loggerLoop(writers logwriters) {
 		}
 		out, message := todo()
 
-		if TraceFlag {
+		if TraceFlag() {
 			stamp = time.Now().Format("02.150405.000 ")
 		} else if LogLinenumbers {
 			stamp = fmt.Sprintf("%3d ", line)
@@ -64,9 +64,9 @@ func Error(context string, err error) {
 }
 
 func Log(format string, details ...interface{}) {
-	if !Silent {
+	if !Silent() {
 		prefix := ""
-		if DebugFlag || TraceFlag {
+		if DebugFlag() || TraceFlag() {
 			prefix = "[N] "
 		}
 		printout(os.Stderr, fmt.Sprintf(prefix+format, details...))
@@ -74,14 +74,14 @@ func Log(format string, details ...interface{}) {
 }
 
 func Debug(format string, details ...interface{}) error {
-	if DebugFlag {
+	if DebugFlag() {
 		printout(os.Stderr, fmt.Sprintf("[D] "+format, details...))
 	}
 	return nil
 }
 
 func Trace(format string, details ...interface{}) error {
-	if TraceFlag {
+	if TraceFlag() {
 		printout(os.Stderr, fmt.Sprintf("[T] "+format, details...))
 	}
 	return nil

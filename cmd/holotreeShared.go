@@ -20,7 +20,7 @@ var holotreeSharedCommand = &cobra.Command{
 	Short: "Enable shared holotree usage.",
 	Long:  "Enable shared holotree usage.",
 	Run: func(cmd *cobra.Command, args []string) {
-		if common.DebugFlag {
+		if common.DebugFlag() {
 			defer common.Stopwatch("Enabling shared holotree lasted").Report()
 		}
 		enabled := pathlib.IsFile(common.SharedMarkerLocation())

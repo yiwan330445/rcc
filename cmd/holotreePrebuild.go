@@ -102,7 +102,7 @@ var holotreePrebuildCmd = &cobra.Command{
 	Long:  "Prebuild hololib from given set of environment descriptors. Requires shared holotree to be enabled and active.",
 	Args:  cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		if common.DebugFlag {
+		if common.DebugFlag() {
 			defer common.Stopwatch("Holotree prebuild lasted").Report()
 		}
 

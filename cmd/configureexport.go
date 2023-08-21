@@ -18,7 +18,7 @@ var configureExportCmd = &cobra.Command{
 	Short: "Export a configuration profile for Robocorp tooling.",
 	Long:  "Export a configuration profile for Robocorp tooling.",
 	Run: func(cmd *cobra.Command, args []string) {
-		if common.DebugFlag {
+		if common.DebugFlag() {
 			defer common.Stopwatch("Configuration export lasted").Report()
 		}
 		profile := loadNamedProfile(profileName)

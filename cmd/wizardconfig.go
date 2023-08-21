@@ -17,7 +17,7 @@ var wizardConfigCommand = &cobra.Command{
 		if !pretty.Interactive {
 			pretty.Exit(1, "This is for interactive use only. Do not use in scripting/CI!")
 		}
-		if common.DebugFlag {
+		if common.DebugFlag() {
 			defer common.Stopwatch("Interactive configuration lasted").Report()
 		}
 		err := wizard.Configure(args)

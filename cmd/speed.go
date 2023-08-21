@@ -50,18 +50,17 @@ var speedtestCmd = &cobra.Command{
 	Short:   "Run system speed test to find how rcc performs in your system.",
 	Long:    "Run system speed test to find how rcc performs in your system.",
 	Run: func(cmd *cobra.Command, args []string) {
-		if common.DebugFlag {
+		if common.DebugFlag() {
 			defer common.Stopwatch("Speed test run lasted").Report()
 		}
 		common.Log("Running network and filesystem performance tests with %d workers.", anywork.Scale())
 		common.Log("This may take several minutes, please be patient.")
 		signal := make(chan bool)
 		timing := make(chan int)
-		silent, trace, debug := common.Silent, common.TraceFlag, common.DebugFlag
+		silent, trace, debug := common.Silent(), common.TraceFlag(), common.DebugFlag()
 		if !debug {
 			go workingWorm(signal, timing)
-			common.Silent = true
-			common.UnifyVerbosityFlags()
+			common.DefineVerbosity(true, false, false)
 		}
 		folder := common.RobocorpTemp()
 		content, err := blobs.Asset("assets/speedtest.yaml")
@@ -75,8 +74,7 @@ var speedtestCmd = &cobra.Command{
 		}
 		common.ForcedRobocorpHome = folder
 		_, score, err := htfs.NewEnvironment(condafile, "", true, true, operations.PullCatalog)
-		common.Silent, common.TraceFlag, common.DebugFlag = silent, trace, debug
-		common.UnifyVerbosityFlags()
+		common.DefineVerbosity(silent, debug, trace)
 		if err != nil {
 			pretty.Exit(3, "Error: %v", err)
 		}

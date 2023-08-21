@@ -38,7 +38,7 @@ func runCarrier() error {
 	if !ok {
 		return fmt.Errorf("This executable is not carrier!")
 	}
-	if common.DebugFlag {
+	if common.DebugFlag() {
 		defer common.Stopwatch("Task testrun lasted").Report()
 	}
 	now := time.Now()

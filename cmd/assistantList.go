@@ -17,7 +17,7 @@ var assistantListCmd = &cobra.Command{
 	Short:   "Robot Assistant listing",
 	Long:    "Robot Assistant listing.",
 	Run: func(cmd *cobra.Command, args []string) {
-		if common.DebugFlag {
+		if common.DebugFlag() {
 			defer common.Stopwatch("Robot Assistant list query lasted").Report()
 		}
 		account := operations.AccountByName(AccountName())

@@ -49,7 +49,7 @@ var holotreeBootstrapCmd = &cobra.Command{
 	Long:    "Bootstrap holotree from set of templates.",
 	Args:    cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {
-		if common.DebugFlag {
+		if common.DebugFlag() {
 			defer common.Stopwatch("Holotree bootstrap lasted").Report()
 		}
 

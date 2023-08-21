@@ -13,13 +13,10 @@ var (
 )
 
 func createWorkarea() {
-	if len(directory) == 0 {
-		pretty.Exit(1, "Error: missing target directory")
-	}
+	pretty.Guard(len(directory) > 0, 1, "Error: missing target directory (option: --directory)")
+	pretty.Guard(len(templateName) > 0, 3, "Error: missing template name (option: --template)")
 	err := operations.InitializeWorkarea(directory, templateName, internalOnlyFlag, forceFlag)
-	if err != nil {
-		pretty.Exit(2, "Error: %v", err)
-	}
+	pretty.Guard(err == nil, 2, "Error: %v", err)
 }
 
 func listJsonTemplates() {
@@ -45,7 +42,7 @@ var initializeCmd = &cobra.Command{
 	Short:   "Create a directory structure for a robot.",
 	Long:    "Create a directory structure for a robot.",
 	Run: func(cmd *cobra.Command, args []string) {
-		if common.DebugFlag {
+		if common.DebugFlag() {
 			defer common.Stopwatch("Initialization lasted").Report()
 		}
 		if jsonFlag {
@@ -64,9 +61,9 @@ var initializeCmd = &cobra.Command{
 func init() {
 	robotCmd.AddCommand(initializeCmd)
 	initializeCmd.Flags().StringVarP(&directory, "directory", "d", ".", "Root directory to create the new robot in.")
-	initializeCmd.Flags().StringVarP(&templateName, "template", "t", "standard", "Template to use to generate the robot content.")
+	initializeCmd.Flags().StringVarP(&templateName, "template", "t", "", "Template to use to generate the robot content.")
 	initializeCmd.Flags().BoolVarP(&forceFlag, "force", "f", false, "Force the creation of the robot and possibly overwrite data.")
 	initializeCmd.Flags().BoolVarP(&listFlag, "list", "l", false, "List available templates.")
 	initializeCmd.Flags().BoolVarP(&jsonFlag, "json", "j", false, "List available templates as JSON.")
-	initializeCmd.Flags().BoolVarP(&internalOnlyFlag, "internal", "i", false, "Use only builtin internal templates.")
+	initializeCmd.Flags().BoolVarP(&internalOnlyFlag, "internal", "i", false, "Undocumented. Deprecated. DO NOT USE.")
 }

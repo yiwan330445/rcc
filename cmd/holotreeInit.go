@@ -37,7 +37,7 @@ var holotreeInitCmd = &cobra.Command{
 	Short: "Initialize shared holotree location.",
 	Long:  "Initialize shared holotree location.",
 	Run: func(cmd *cobra.Command, args []string) {
-		if common.DebugFlag {
+		if common.DebugFlag() {
 			defer common.Stopwatch("Initialize shared holotree location lasted").Report()
 		}
 		pretty.Warning("Running this command might need 'rcc holotree shared --enable' first. Still, trying ...")

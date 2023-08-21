@@ -162,7 +162,7 @@ var holotreeCatalogsCmd = &cobra.Command{
 	Short: "List native and imported holotree catalogs.",
 	Long:  "List native and imported holotree catalogs.",
 	Run: func(cmd *cobra.Command, args []string) {
-		if common.DebugFlag {
+		if common.DebugFlag() {
 			defer common.Stopwatch("Holotree catalogs command lasted").Report()
 		}
 		_, roots := htfs.LoadCatalogs()

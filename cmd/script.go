@@ -17,7 +17,7 @@ var scriptCmd = &cobra.Command{
 `,
 	Args: cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		if common.DebugFlag {
+		if common.DebugFlag() {
 			defer common.Stopwatch("Task run lasted").Report()
 		}
 		simple, config, todo, label := operations.LoadAnyTaskEnvironment(robotFile, forceFlag)

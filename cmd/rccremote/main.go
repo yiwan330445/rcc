@@ -17,6 +17,8 @@ var (
 	serverPort  int
 	versionFlag bool
 	holdingArea string
+	debugFlag   bool
+	traceFlag   bool
 )
 
 func defaultHoldLocation() string {
@@ -28,8 +30,8 @@ func defaultHoldLocation() string {
 }
 
 func init() {
-	flag.BoolVar(&common.DebugFlag, "debug", false, "Turn on debugging output.")
-	flag.BoolVar(&common.TraceFlag, "trace", false, "Turn on tracing output.")
+	flag.BoolVar(&debugFlag, "debug", false, "Turn on debugging output.")
+	flag.BoolVar(&traceFlag, "trace", false, "Turn on tracing output.")
 
 	flag.BoolVar(&versionFlag, "version", false, "Just show rccremote version and exit.")
 	flag.StringVar(&serverName, "hostname", "localhost", "Hostname/address to bind server to.")
@@ -72,6 +74,6 @@ func main() {
 	pretty.Setup()
 
 	flag.Parse()
-	common.UnifyVerbosityFlags()
+	common.DefineVerbosity(false, debugFlag, traceFlag)
 	process()
 }

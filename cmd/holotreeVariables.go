@@ -132,7 +132,7 @@ var holotreeVariablesCmd = &cobra.Command{
 	Long:    "Do holotree operations.",
 	Run: func(cmd *cobra.Command, args []string) {
 		defer journal.BuildEventStats("variables")
-		if common.DebugFlag {
+		if common.DebugFlag() {
 			defer common.Stopwatch("Holotree variables command lasted").Report()
 		}
 

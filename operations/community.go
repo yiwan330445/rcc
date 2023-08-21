@@ -74,7 +74,7 @@ func DownloadCommunityRobot(url, filename string) error {
 		return err
 	}
 
-	if common.DebugFlag {
+	if common.DebugFlag() {
 		sum := fmt.Sprintf("%02x", digest.Sum(nil))
 		common.Debug("SHA256 sum: %s", sum)
 	}

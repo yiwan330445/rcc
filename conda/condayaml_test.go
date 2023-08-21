@@ -144,3 +144,35 @@ func TestCanGetLayersFromCondaYaml(t *testing.T) {
 	must_be.Equal("5be3e197c8c2c67d", fingerprints[1])
 	must_be.Equal("d310697aca0840a1", fingerprints[2])
 }
+
+func TestCacheability(t *testing.T) {
+	must_be, wont_be := hamlet.Specifications(t)
+
+	// some are from https://peps.python.org/pep-0508/
+
+	must_be.True(conda.IsCacheable("A.B-C_D"))
+	must_be.True(conda.IsCacheable("simple"))
+	must_be.True(conda.IsCacheable("simple space separated")) // by itself, ok
+	must_be.True(conda.IsCacheable("simple-parts"))
+	must_be.True(conda.IsCacheable("simple_parts"))
+	must_be.True(conda.IsCacheable("1.2.3"))
+	must_be.True(conda.IsCacheable("2023c"))
+	must_be.True(conda.IsCacheable("2023.3"))
+	must_be.True(conda.IsCacheable("0.1.0.post0"))
+
+	wont_be.True(conda.IsCacheable("a,b"))
+	wont_be.True(conda.IsCacheable("simple or not"))
+	wont_be.True(conda.IsCacheable("simple and other"))
+	wont_be.True(conda.IsCacheable("-simple"))
+	wont_be.True(conda.IsCacheable(" -simple"))
+	wont_be.True(conda.IsCacheable("-c constraints.txt"))
+	wont_be.True(conda.IsCacheable("-r requirements.txt"))
+	wont_be.True(conda.IsCacheable("simple*"))
+	wont_be.True(conda.IsCacheable("3.5.*"))
+	wont_be.True(conda.IsCacheable("name@http://foo.com"))
+	wont_be.True(conda.IsCacheable("requests[security]"))
+	wont_be.True(conda.IsCacheable("./downloads/numpy-1.9.2-cp34-none-win32.whl"))
+	wont_be.True(conda.IsCacheable("urllib3 @ https://github.com/urllib3/urllib3/archive/refs/tags/1.26.8.zip"))
+	wont_be.True(conda.IsCacheable("urllib3@https://github.com/urllib3/urllib3/archive/refs/tags/1.26.8.zip"))
+	wont_be.True(conda.IsCacheable("https://github.com/urllib3/urllib3/archive/refs/tags/1.26.8.zip"))
+}

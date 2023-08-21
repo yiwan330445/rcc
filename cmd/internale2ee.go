@@ -21,7 +21,7 @@ var e2eeCmd = &cobra.Command{
 	Long:  "Internal end-to-end encryption tester method",
 	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		if common.DebugFlag {
+		if common.DebugFlag() {
 			defer common.Stopwatch("Encryption lasted").Report()
 		}
 		if encryptionVersion == 1 {

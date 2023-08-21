@@ -25,7 +25,7 @@ in your own machine.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		defer conda.RemoveCurrentTemp()
 		defer journal.BuildEventStats("robot")
-		if common.DebugFlag {
+		if common.DebugFlag() {
 			defer common.Stopwatch("Task run lasted").Report()
 		}
 		simple, config, todo, label := operations.LoadTaskWithEnvironment(robotFile, runTask, forceFlag)

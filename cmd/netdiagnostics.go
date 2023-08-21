@@ -29,7 +29,7 @@ var netDiagnosticsCmd = &cobra.Command{
 	Short:   "Run additional diagnostics to help resolve network issues.",
 	Long:    "Run additional diagnostics to help resolve network issues.",
 	Run: func(cmd *cobra.Command, args []string) {
-		if common.DebugFlag {
+		if common.DebugFlag() {
 			defer common.Stopwatch("Netdiagnostic run lasted").Report()
 		}
 		config, err := summonNetworkDiagConfig(netConfigFilename)

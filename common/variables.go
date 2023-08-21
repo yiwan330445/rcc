@@ -10,19 +10,32 @@ import (
 	"time"
 )
 
+type (
+	Verbosity uint8
+)
+
+const (
+	Undefined Verbosity = 0
+	Silently  Verbosity = 1
+	Normal    Verbosity = 2
+	Debugging Verbosity = 3
+	Tracing   Verbosity = 4
+)
+
 const (
 	ROBOCORP_HOME_VARIABLE                = `ROBOCORP_HOME`
 	RCC_REMOTE_ORIGIN                     = `RCC_REMOTE_ORIGIN`
 	RCC_REMOTE_AUTHORIZATION              = `RCC_REMOTE_AUTHORIZATION`
 	VERBOSE_ENVIRONMENT_BUILDING          = `RCC_VERBOSE_ENVIRONMENT_BUILDING`
 	ROBOCORP_OVERRIDE_SYSTEM_REQUIREMENTS = `ROBOCORP_OVERRIDE_SYSTEM_REQUIREMENTS`
+	RCC_VERBOSITY                         = `RCC_VERBOSITY`
+	SILENTLY                              = `silent`
+	TRACING                               = `trace`
+	DEBUGGING                             = `debug`
 )
 
 var (
 	NoBuild                 bool
-	Silent                  bool
-	DebugFlag               bool
-	TraceFlag               bool
 	DeveloperFlag           bool
 	StrictFlag              bool
 	SharedHolotree          bool
@@ -43,6 +56,7 @@ var (
 	ProgressMark            time.Time
 	Clock                   *stopwatch
 	randomIdentifier        string
+	verbosity               Verbosity
 )
 
 func init() {
@@ -96,8 +110,16 @@ func RobocorpLock() string {
 	return filepath.Join(RobocorpHome(), "robocorp.lck")
 }
 
+func DebugFlag() bool {
+	return verbosity >= Debugging
+}
+
+func TraceFlag() bool {
+	return verbosity >= Tracing
+}
+
 func VerboseEnvironmentBuilding() bool {
-	return DebugFlag || TraceFlag || len(os.Getenv(VERBOSE_ENVIRONMENT_BUILDING)) > 0
+	return DebugFlag() || TraceFlag() || len(os.Getenv(VERBOSE_ENVIRONMENT_BUILDING)) > 0
 }
 
 func OverrideSystemRequirements() bool {
@@ -258,14 +280,22 @@ func CaBundleFile() string {
 	return ExpandPath(filepath.Join(RobocorpHome(), "ca-bundle.pem"))
 }
 
-func UnifyVerbosityFlags() {
-	if Silent {
-		DebugFlag = false
-		TraceFlag = false
+func DefineVerbosity(silent, debug, trace bool) {
+	override := os.Getenv(RCC_VERBOSITY)
+	switch {
+	case silent || override == SILENTLY:
+		verbosity = Silently
+	case trace || override == TRACING:
+		verbosity = Tracing
+	case debug || override == DEBUGGING:
+		verbosity = Debugging
+	default:
+		verbosity = Normal
 	}
-	if TraceFlag {
-		DebugFlag = true
-	}
+}
+
+func Silent() bool {
+	return verbosity == Silently
 }
 
 func UnifyStageHandling() {
@@ -275,9 +305,7 @@ func UnifyStageHandling() {
 }
 
 func ForceDebug() {
-	Silent = false
-	DebugFlag = true
-	UnifyVerbosityFlags()
+	DefineVerbosity(false, true, false)
 }
 
 func Platform() string {

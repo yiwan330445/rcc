@@ -19,7 +19,7 @@ var pullCmd = &cobra.Command{
 	Short: "Pull a robot from Robocorp Control Room and unwrap it into local directory.",
 	Long:  "Pull a robot from Robocorp Control Room and unwrap it into local directory.",
 	Run: func(cmd *cobra.Command, args []string) {
-		if common.DebugFlag {
+		if common.DebugFlag() {
 			defer common.Stopwatch("Pull lasted").Report()
 		}
 
@@ -37,7 +37,7 @@ var pullCmd = &cobra.Command{
 		defer os.Remove(zipfile)
 		common.Debug("Using temporary zipfile at %v", zipfile)
 
-		err = operations.DownloadCommand(client, account, workspaceId, robotId, zipfile, common.DebugFlag)
+		err = operations.DownloadCommand(client, account, workspaceId, robotId, zipfile, common.DebugFlag())
 		if err != nil {
 			pretty.Exit(3, "Error: %v", err)
 		}

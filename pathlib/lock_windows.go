@@ -34,7 +34,7 @@ func Locker(filename string, trycount int) (Releaser, error) {
 	}
 	var file *os.File
 	var err error
-	if common.TraceFlag {
+	if common.TraceFlag() {
 		defer func() {
 			common.Stopwatch("LOCKER: Leaving lock on %v with %v retries left in", filename, trycount).Report()
 		}()

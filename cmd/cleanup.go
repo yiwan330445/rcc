@@ -22,7 +22,7 @@ var cleanupCmd = &cobra.Command{
 	Long: `Cleanup removes old virtual environments from existence.
 After cleanup, they will not be available anymore.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		if common.DebugFlag {
+		if common.DebugFlag() {
 			defer common.Stopwatch("Env cleanup lasted").Report()
 		}
 		err := conda.Cleanup(daysOption, dryFlag, quickFlag, allFlag, micromambaFlag, downloadsFlag)

@@ -21,6 +21,9 @@ var (
 	profilefile string
 	profiling   *os.File
 	versionFlag bool
+	silentFlag  bool
+	debugFlag   bool
+	traceFlag   bool
 )
 
 func toplevelCommands(parent *cobra.Command) {
@@ -106,15 +109,15 @@ func init() {
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $ROBOCORP_HOME/rcc.yaml)")
 
 	rootCmd.PersistentFlags().BoolVarP(&common.NoBuild, "no-build", "", false, "never allow building new environments, only use what exists already in hololib")
-	rootCmd.PersistentFlags().BoolVarP(&common.Silent, "silent", "", false, "be less verbose on output")
+	rootCmd.PersistentFlags().BoolVarP(&silentFlag, "silent", "", false, "be less verbose on output")
 	rootCmd.PersistentFlags().BoolVarP(&common.Liveonly, "liveonly", "", false, "do not create base environment from live ... DANGER! For containers only!")
 	rootCmd.PersistentFlags().BoolVarP(&pathlib.Lockless, "lockless", "", false, "do not use file locking ... DANGER!")
 	rootCmd.PersistentFlags().BoolVarP(&pretty.Colorless, "colorless", "", false, "do not use colors in CLI UI")
 	rootCmd.PersistentFlags().BoolVarP(&common.NoCache, "nocache", "", false, "do not use cache for credentials and tokens, always request them from cloud")
 
 	rootCmd.PersistentFlags().BoolVarP(&common.LogLinenumbers, "numbers", "", false, "put line numbers on rcc produced log output")
-	rootCmd.PersistentFlags().BoolVarP(&common.DebugFlag, "debug", "", false, "to get debug output where available (not for production use)")
-	rootCmd.PersistentFlags().BoolVarP(&common.TraceFlag, "trace", "", false, "to get trace output where available (not for production use)")
+	rootCmd.PersistentFlags().BoolVarP(&debugFlag, "debug", "", false, "to get debug output where available (not for production use)")
+	rootCmd.PersistentFlags().BoolVarP(&traceFlag, "trace", "", false, "to get trace output where available (not for production use)")
 	rootCmd.PersistentFlags().BoolVarP(&common.TimelineEnabled, "timeline", "", false, "print timeline at the end of run")
 	rootCmd.PersistentFlags().BoolVarP(&common.StrictFlag, "strict", "", false, "be more strict on environment creation and handling")
 	rootCmd.PersistentFlags().IntVarP(&anywork.WorkerCount, "workers", "", 0, "scale background workers manually (do not use, unless you know what you are doing)")
@@ -137,7 +140,7 @@ func initConfig() {
 		xviper.SetConfigFile(filepath.Join(common.RobocorpHome(), "rcc.yaml"))
 	}
 
-	common.UnifyVerbosityFlags()
+	common.DefineVerbosity(silentFlag, debugFlag, traceFlag)
 	common.UnifyStageHandling()
 
 	pretty.Setup()

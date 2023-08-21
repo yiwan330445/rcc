@@ -13,8 +13,17 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
+const (
+	alternative     = `|`
+	reject_chars    = `(?:[][(){}%/:,;@*<=>!]+)`
+	and_or          = `\b(?:or|and)\b`
+	dash_start      = `^-+`
+	uncacheableForm = reject_chars + alternative + and_or + alternative + dash_start
+)
+
 var (
-	dependencyPattern = regexp.MustCompile("^([^<=~!> ]+)\\s*(?:([<=~!>]*)\\s*(\\S+.*?))?$")
+	dependencyPattern  = regexp.MustCompile("^([^<=~!> ]+)\\s*(?:([<=~!>]*)\\s*(\\S+.*?))?$")
+	uncacheablePattern = regexp.MustCompile(uncacheableForm)
 )
 
 type internalEnvironment struct {
@@ -55,9 +64,27 @@ func AsDependency(value string) *Dependency {
 	}
 }
 
+func IsCacheable(text string) bool {
+	flat := strings.TrimSpace(text)
+	return !uncacheablePattern.MatchString(flat)
+}
+
 func (it *Dependency) Representation() string {
 	parts := strings.SplitN(strings.ToLower(it.Name), "[", 2)
 	return parts[0]
+}
+
+func (it *Dependency) IsCacheable() bool {
+	if !it.IsExact() {
+		return false
+	}
+	if !IsCacheable(it.Name) {
+		return false
+	}
+	if !IsCacheable(it.Versions) {
+		return false
+	}
+	return true
 }
 
 func (it *Dependency) IsExact() bool {

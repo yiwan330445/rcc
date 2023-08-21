@@ -14,14 +14,14 @@ var holotreeHashCmd = &cobra.Command{
 	Long:  "Calculates a blueprint hash for managed holotree virtual environment from conda.yaml files.",
 	Args:  cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		if common.DebugFlag {
+		if common.DebugFlag() {
 			defer common.Stopwatch("Conda YAML hash calculation lasted").Report()
 		}
 		_, holotreeBlueprint, err := htfs.ComposeFinalBlueprint(args, "")
 		pretty.Guard(err == nil, 1, "Blueprint calculation failed: %v", err)
 		hash := common.BlueprintHash(holotreeBlueprint)
 		common.Log("Blueprint hash for %v is %v.", args, hash)
-		if common.Silent {
+		if common.Silent() {
 			common.Stdout("%s\n", hash)
 		}
 	},

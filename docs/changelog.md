@@ -1,5 +1,16 @@
 # rcc change log
 
+## v15.0.0 (date: 21.8.2023) WORK IN PROGRESS
+
+- breaking change: dropped default value `rcc robot initialize --template`
+  option (now it must be given)
+- breaking change: environment variable `RCC_VERBOSITY` with values "silent",
+  "debug", and "trace" now override CLI options
+- bugfix, process tree detecting and printing
+- added debug/trace logging into process baby sitter
+- work in progress: detecting cacheable environment configurations
+- micromamba upgrade back to v1.4.9 (next trial)
+
 ## v14.15.4 (date: 17.8.2023)
 
 - micromamba downgraded to v1.4.2 due to argument change

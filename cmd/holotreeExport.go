@@ -66,7 +66,7 @@ var holotreeExportCmd = &cobra.Command{
 	Short: "Export existing holotree catalog and library parts.",
 	Long:  "Export existing holotree catalog and library parts.",
 	Run: func(cmd *cobra.Command, args []string) {
-		if common.DebugFlag {
+		if common.DebugFlag() {
 			defer common.Stopwatch("Holotree export command lasted").Report()
 		}
 		if len(exportRobot) > 0 {

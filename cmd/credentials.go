@@ -23,7 +23,7 @@ var credentialsCmd = &cobra.Command{
 	Long:  "Manage Robocorp Control Room API credentials for later use.",
 	Args:  cobra.MaximumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		if common.DebugFlag {
+		if common.DebugFlag() {
 			defer common.Stopwatch("Credentials query lasted").Report()
 		}
 		var account, credentials, endpoint string

@@ -19,7 +19,7 @@ var pushCmd = &cobra.Command{
 	Short: "Wrap the local directory and push it into Robocorp Control Room as a specific robot.",
 	Long:  "Wrap the local directory and push it into Robocorp Control Room as a specific robot.",
 	Run: func(cmd *cobra.Command, args []string) {
-		if common.DebugFlag {
+		if common.DebugFlag() {
 			defer common.Stopwatch("Push lasted").Report()
 		}
 		account := operations.AccountByName(AccountName())
@@ -39,7 +39,7 @@ var pushCmd = &cobra.Command{
 		if err != nil {
 			pretty.Exit(3, "Error: %v", err)
 		}
-		err = operations.UploadCommand(client, account, workspaceId, robotId, zipfile, common.DebugFlag)
+		err = operations.UploadCommand(client, account, workspaceId, robotId, zipfile, common.DebugFlag())
 		if err != nil {
 			pretty.Exit(4, "Error: %v", err)
 		}

@@ -3,17 +3,19 @@ package operations
 import (
 	"fmt"
 	"os"
-	"sort"
 	"time"
 
 	"github.com/mitchellh/go-ps"
+	"github.com/robocorp/rcc/common"
 	"github.com/robocorp/rcc/pretty"
+	"github.com/robocorp/rcc/set"
 )
 
 type (
-	ChildMap    map[int]string
-	ProcessMap  map[int]*ProcessNode
-	ProcessNode struct {
+	ChildMap     map[int]string
+	ProcessMap   map[int]*ProcessNode
+	ProcessNodes []*ProcessNode
+	ProcessNode  struct {
 		Pid        int
 		Parent     int
 		Executable string
@@ -49,12 +51,18 @@ func ProcessMapNow() (ProcessMap, error) {
 }
 
 func (it ProcessMap) Keys() []int {
-	keys := make([]int, 0, len(it))
-	for key, _ := range it {
-		keys = append(keys, key)
+	return set.Keys(it)
+}
+
+func (it ProcessMap) Roots() []int {
+	roots := []int{}
+	for candidate, node := range it {
+		_, ok := it[node.Parent]
+		if !ok {
+			roots = append(roots, candidate)
+		}
 	}
-	sort.Ints(keys)
-	return keys
+	return set.Sort(roots)
 }
 
 func (it *ProcessNode) warnings(additional ProcessMap) {
@@ -66,8 +74,8 @@ func (it *ProcessNode) warnings(additional ProcessMap) {
 	}
 	if len(additional) > 0 {
 		pretty.Warning("+ migrated process still running:")
-		for _, zombie := range additional {
-			zombie.warningTree("| ", true)
+		for _, key := range additional.Roots() {
+			additional[key].warningTree("| ", true)
 		}
 	}
 	pretty.Note("Depending on OS, above processes may prevent robot to close properly.")
@@ -78,6 +86,7 @@ func (it *ProcessNode) warnings(additional ProcessMap) {
 	pretty.Note("- developer intentionally left processes running, which is not good for repeatable automation")
 	pretty.Highlight("So if you see this message, and robot still seems to be running, it is not!")
 	pretty.Highlight("You now have to take action and stop those processes that are preventing robot to complete.")
+	pretty.Highlight("Example cleanup command: %s", common.GenerateKillCommand(additional.Keys()))
 }
 
 func (it *ProcessNode) warningTree(prefix string, newparent bool) {
@@ -96,27 +105,25 @@ func (it *ProcessNode) warningTree(prefix string, newparent bool) {
 }
 
 func SubprocessWarning(seen ChildMap, use bool) error {
+	before := len(seen)
+	if before == 0 {
+		common.Debug("No tracked subprocesses, which is a good thing.")
+		return nil
+	}
 	processes, err := ProcessMapNow()
 	if err != nil {
 		return err
 	}
+	removeStaleChildren(processes, seen)
+	after := len(seen)
+	pretty.DebugNote("Final subprocess count %d -> %d. %v", before, after, seen)
+	if after == 0 {
+		common.Debug("No active tracked subprocesses anymore, and that is a good thing.")
+		return nil
+	}
 	self, ok := processes[os.Getpid()]
 	if !ok {
 		return fmt.Errorf("For some reason, could not find own process in process map.")
-	}
-	masked := make(ChildMap)
-	if use {
-		for pid, executable := range seen {
-			ref, ok := processes[pid]
-			if ok {
-				updateActiveChildren(ref, masked, 70)
-			} else {
-				masked[pid] = executable
-			}
-		}
-	}
-	for key, _ := range masked {
-		delete(seen, key)
 	}
 	additional := make(ProcessMap)
 	for pid, executable := range seen {
@@ -140,13 +147,20 @@ func removeStaleChildren(processes ProcessMap, seen ChildMap) {
 	}
 }
 
-func updateActiveChildren(host *ProcessNode, seen ChildMap, maxDepth int) {
-	if maxDepth < 0 {
-		return
-	}
-	for pid, child := range host.Children {
-		seen[pid] = child.Executable
-		updateActiveChildren(child, seen, maxDepth-1)
+func updateActiveChildrenLoop(start *ProcessNode, seen ChildMap) {
+	counted := make(map[int]bool)
+	counted[start.Pid] = true
+	at, todo := 0, ProcessNodes{start}
+	for at < len(todo) {
+		for pid, child := range todo[at].Children {
+			if counted[pid] {
+				continue
+			}
+			seen[pid] = child.Executable
+			todo = append(todo, child)
+			counted[pid] = true
+		}
+		at += 1
 	}
 }
 
@@ -154,7 +168,7 @@ func updateSeenChildren(pid int, processes ProcessMap, seen ChildMap) {
 	source, ok := processes[pid]
 	if ok {
 		removeStaleChildren(processes, seen)
-		updateActiveChildren(source, seen, 70)
+		updateActiveChildrenLoop(source, seen)
 	}
 }
 
@@ -167,13 +181,20 @@ func WatchChildren(pid int, delay time.Duration) chan ChildMap {
 func babySitter(pid int, reply chan ChildMap, delay time.Duration) {
 	defer close(reply)
 	seen := make(ChildMap)
-	failures := 0
+	failures, broadcasted := 0, 0
 forever:
 	for failures < 10 {
 		processes, err := ProcessMapNow()
 		if err == nil {
 			updateSeenChildren(pid, processes, seen)
 			failures = 0
+		} else {
+			common.Debug("Process snapshot failure: %v", err)
+		}
+		active := len(seen)
+		if active != broadcasted {
+			pretty.DebugNote("Active subprocess count %d -> %d. %v", broadcasted, active, seen)
+			broadcasted = active
 		}
 		select {
 		case reply <- seen:
@@ -182,4 +203,5 @@ forever:
 			continue forever
 		}
 	}
+	common.Debug("Final active subprocess count was %d.", broadcasted)
 }

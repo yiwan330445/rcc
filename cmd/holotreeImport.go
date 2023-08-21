@@ -54,7 +54,7 @@ var holotreeImportCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		var err error
 
-		if common.DebugFlag {
+		if common.DebugFlag() {
 			defer common.Stopwatch("Holotree import command lasted").Report()
 		}
 		for at, filename := range args {

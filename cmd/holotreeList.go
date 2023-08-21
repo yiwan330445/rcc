@@ -54,7 +54,7 @@ var holotreeListCmd = &cobra.Command{
 	Short:   "List holotree spaces.",
 	Long:    "List holotree spaces.",
 	Run: func(cmd *cobra.Command, args []string) {
-		if common.DebugFlag {
+		if common.DebugFlag() {
 			defer common.Stopwatch("Holotree list lasted").Report()
 		}
 

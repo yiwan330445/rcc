@@ -39,7 +39,7 @@ var robotDependenciesCmd = &cobra.Command{
 	Long:    "View wanted vs. available dependencies of robot execution environment.",
 	Aliases: []string{"deps"},
 	Run: func(cmd *cobra.Command, args []string) {
-		if common.DebugFlag {
+		if common.DebugFlag() {
 			defer common.Stopwatch("Robot dependencies run lasted").Report()
 		}
 		simple, config, _, label := operations.LoadAnyTaskEnvironment(robotFile, forceFlag)

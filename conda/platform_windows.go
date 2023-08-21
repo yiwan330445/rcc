@@ -22,7 +22,7 @@ const (
 	binSuffix      = "\\bin"
 	activateScript = "@echo off\n" +
 		"set \"MAMBA_ROOT_PREFIX={{.MambaRootPrefix}}\"\n" +
-		"for /f \"tokens=* usebackq\" %%a in ( `call \"{{.Robocorphome}}\\bin\\micromamba.exe\" shell -s cmd.exe activate -p \"{{.Live}}\"` ) do ( call \"%%a\" )\n" +
+		"for /f \"tokens=* usebackq\" %%a in ( `call \"{{.Robocorphome}}\\bin\\micromamba.exe\" shell activate -s cmd.exe -p \"{{.Live}}\"` ) do ( call \"%%a\" )\n" +
 		"call \"{{.Rcc}}\" internal env -l after\n"
 	commandSuffix = ".cmd"
 )

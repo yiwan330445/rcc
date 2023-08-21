@@ -22,7 +22,7 @@ var holotreeStatsCmd = &cobra.Command{
 	Long:    "Show holotree environment build and runtime statistics.",
 	Aliases: []string{"statistic", "stats", "stat", "st"},
 	Run: func(cmd *cobra.Command, args []string) {
-		if common.DebugFlag {
+		if common.DebugFlag() {
 			defer common.Stopwatch("Holotree stats calculation lasted").Report()
 		}
 		journal.ShowStatistics(statsWeeks, onlyAssistantStats, onlyRobotStats, onlyPrepareStats, onlyVariablesStats)

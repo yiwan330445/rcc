@@ -15,7 +15,7 @@ var unwrapCmd = &cobra.Command{
 robot filename, and target directory. And using --force option, files will
 be overwritten.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		if common.DebugFlag {
+		if common.DebugFlag() {
 			defer common.Stopwatch("Unwrap lasted").Report()
 		}
 		err := operations.Unzip(directory, zipfile, forceFlag, false, true)

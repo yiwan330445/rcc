@@ -46,7 +46,7 @@ var holotreeRemoveCmd = &cobra.Command{
 	Long:    "Remove existing holotree catalogs. Partial identities are ok.",
 	Aliases: []string{"rm"},
 	Run: func(cmd *cobra.Command, args []string) {
-		if common.DebugFlag {
+		if common.DebugFlag() {
 			defer common.Stopwatch("Holotree remove command lasted").Report()
 		}
 		if unusedDays > 0 {

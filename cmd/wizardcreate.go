@@ -16,7 +16,7 @@ var wizardCreateCmd = &cobra.Command{
 		if !pretty.Interactive {
 			pretty.Exit(1, "This is for interactive use only. Do not use in scripting/CI!")
 		}
-		if common.DebugFlag {
+		if common.DebugFlag() {
 			defer common.Stopwatch("Interactive create lasted").Report()
 		}
 		err := wizard.Create(args)

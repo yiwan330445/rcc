@@ -161,7 +161,7 @@ func (it *internalClient) does(method string, request *Request) *Response {
 	} else {
 		response.Body, response.Err = io.ReadAll(httpResponse.Body)
 	}
-	if common.DebugFlag {
+	if common.DebugFlag() {
 		body := "ignore"
 		if response.Status > 399 {
 			body = string(response.Body)

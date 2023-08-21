@@ -30,7 +30,7 @@ var assistantRunCmd = &cobra.Command{
 		var status, reason string
 		status, reason = "ERROR", "UNKNOWN"
 		elapser := common.Stopwatch("Robot Assistant startup lasted")
-		if common.DebugFlag {
+		if common.DebugFlag() {
 			defer common.Stopwatch("Robot Assistant run lasted").Report()
 		}
 		account := operations.AccountByName(AccountName())
@@ -85,7 +85,7 @@ var assistantRunCmd = &cobra.Command{
 				defer pathlib.Walk(artifactDir, pathlib.IgnoreOlder(sentinelTime).Ignore, TargetDir(copyDirectory).OverwriteBack)
 			}
 		}
-		if common.DebugFlag {
+		if common.DebugFlag() {
 			elapser.Report()
 		}
 

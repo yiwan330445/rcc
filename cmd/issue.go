@@ -19,7 +19,7 @@ var issueCmd = &cobra.Command{
 	Short: "Send an issue to Robocorp Control Room via rcc.",
 	Long:  "Send an issue to Robocorp Control Room via rcc.",
 	Run: func(cmd *cobra.Command, args []string) {
-		if common.DebugFlag {
+		if common.DebugFlag() {
 			defer common.Stopwatch("Feedback issue lasted").Report()
 		}
 		accountEmail := "unknown"

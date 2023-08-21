@@ -16,7 +16,7 @@ var workspaceCmd = &cobra.Command{
 	Short: "List the available workspaces and their tasks (with --workspace option).",
 	Long:  "List the available workspaces and their tasks (with --workspace option).",
 	Run: func(cmd *cobra.Command, args []string) {
-		if common.DebugFlag {
+		if common.DebugFlag() {
 			defer common.Stopwatch("Workspace query lasted").Report()
 		}
 		account := operations.AccountByName(AccountName())
