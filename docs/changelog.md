@@ -1,5 +1,13 @@
 # rcc change log
 
+## v15.1.0 (date: 22.8.2023)
+
+- robot diagnostics now has indication of environment cacheability and also
+  warnings (category 5010) when something prevents caching
+- lack of public cacheability is also visible on environment creation
+- documentation updates and improvements
+- minor improvements on process tree debugging
+
 ## v15.0.0 (date: 21.8.2023) WORK IN PROGRESS
 
 - breaking change: dropped default value `rcc robot initialize --template`

@@ -242,5 +242,10 @@ func ComposeFinalBlueprint(userFiles []string, packfile string) (config robot.Ro
 	fail.On(right == nil, "Missing environment specification(s).")
 	content, err := right.AsYaml()
 	fail.On(err != nil, "YAML error: %v", err)
-	return config, []byte(strings.TrimSpace(content)), nil
+	blueprint = []byte(strings.TrimSpace(content))
+	if !right.IsCacheable() {
+		fingerprint := common.BlueprintHash(blueprint)
+		pretty.Warning("Holotree blueprint %q is not publicly cacheable. Use `rcc robot diagnostics` to find out more.", fingerprint)
+	}
+	return config, blueprint, nil
 }

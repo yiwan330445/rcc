@@ -138,16 +138,20 @@ func SubprocessWarning(seen ChildMap, use bool) error {
 	return nil
 }
 
-func removeStaleChildren(processes ProcessMap, seen ChildMap) {
+func removeStaleChildren(processes ProcessMap, seen ChildMap) bool {
+	removed := false
 	for key, name := range seen {
 		found, ok := processes[key]
 		if !ok || found.Executable != name {
 			delete(seen, key)
+			removed = true
 		}
 	}
+	return removed
 }
 
-func updateActiveChildrenLoop(start *ProcessNode, seen ChildMap) {
+func updateActiveChildrenLoop(start *ProcessNode, seen ChildMap) bool {
+	updated := false
 	counted := make(map[int]bool)
 	counted[start.Pid] = true
 	at, todo := 0, ProcessNodes{start}
@@ -156,20 +160,27 @@ func updateActiveChildrenLoop(start *ProcessNode, seen ChildMap) {
 			if counted[pid] {
 				continue
 			}
+			counted[pid] = true
+			_, previously := seen[pid]
 			seen[pid] = child.Executable
 			todo = append(todo, child)
-			counted[pid] = true
+			if !previously {
+				updated = true
+			}
 		}
 		at += 1
 	}
+	return updated
 }
 
-func updateSeenChildren(pid int, processes ProcessMap, seen ChildMap) {
+func updateSeenChildren(pid int, processes ProcessMap, seen ChildMap) bool {
 	source, ok := processes[pid]
 	if ok {
-		removeStaleChildren(processes, seen)
-		updateActiveChildrenLoop(source, seen)
+		removed := removeStaleChildren(processes, seen)
+		updated := updateActiveChildrenLoop(source, seen)
+		return removed || updated
 	}
+	return false
 }
 
 func WatchChildren(pid int, delay time.Duration) chan ChildMap {
@@ -184,15 +195,16 @@ func babySitter(pid int, reply chan ChildMap, delay time.Duration) {
 	failures, broadcasted := 0, 0
 forever:
 	for failures < 10 {
+		updated := false
 		processes, err := ProcessMapNow()
 		if err == nil {
-			updateSeenChildren(pid, processes, seen)
+			updated = updateSeenChildren(pid, processes, seen)
 			failures = 0
 		} else {
 			common.Debug("Process snapshot failure: %v", err)
 		}
-		active := len(seen)
-		if active != broadcasted {
+		if updated {
+			active := len(seen)
 			pretty.DebugNote("Active subprocess count %d -> %d. %v", broadcasted, active, seen)
 			broadcasted = active
 		}

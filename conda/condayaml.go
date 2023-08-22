@@ -162,6 +162,20 @@ func SummonEnvironment(filename string) *Environment {
 	}
 }
 
+func (it *Environment) IsCacheable() bool {
+	for _, dependency := range it.Conda {
+		if !dependency.IsCacheable() {
+			return false
+		}
+	}
+	for _, dependency := range it.Pip {
+		if !dependency.IsCacheable() {
+			return false
+		}
+	}
+	return true
+}
+
 func (it *Environment) FreezeDependencies(fixed dependencies) *Environment {
 	result := &Environment{
 		Name:        it.Name,
@@ -525,6 +539,8 @@ func (it *Environment) FingerprintLayers() [3]string {
 }
 
 func (it *Environment) Diagnostics(target *common.DiagnosticStatus, production bool) {
+	target.Details["cacheable-environment-configuration"] = fmt.Sprintf("%v", it.IsCacheable())
+
 	diagnose := target.Diagnose("Conda")
 	notice := diagnose.Warning
 	if production {
@@ -560,6 +576,10 @@ func (it *Environment) Diagnostics(target *common.DiagnosticStatus, production b
 			notice(0, "", "Dependency %q seems to be duplicate of previous dependency.", dependency.Original)
 		}
 		packages[presentation] = true
+		if !dependency.IsCacheable() {
+			diagnose.Warning(common.CategoryEnvironmentCache, "", "Conda dependency %q is not publicly cacheable.", dependency.Original)
+			ok = false
+		}
 		if strings.Contains(dependency.Versions, "*") || len(dependency.Qualifier) == 0 || len(dependency.Versions) == 0 {
 			notice(0, "", "Floating conda dependency %q should be bound to exact version before taking robot into production.", dependency.Original)
 			ok = false
@@ -581,6 +601,10 @@ func (it *Environment) Diagnostics(target *common.DiagnosticStatus, production b
 			notice(0, "", "Dependency %q seems to be duplicate of previous dependency.", dependency.Original)
 		}
 		packages[presentation] = true
+		if !dependency.IsCacheable() {
+			diagnose.Warning(common.CategoryEnvironmentCache, "", "Pip dependency %q is not publicly cacheable.", dependency.Original)
+			ok = false
+		}
 		if strings.Contains(dependency.Versions, "*") || len(dependency.Qualifier) == 0 || len(dependency.Versions) == 0 {
 			notice(0, "", "Floating pip dependency %q should be bound to exact version before taking robot into production.", dependency.Original)
 			ok = false

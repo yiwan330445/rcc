@@ -59,8 +59,9 @@ This is how you can experiment with it.
   something like `environment_xxx_yyy_freeze.yaml`
 - copy that file back into your robot, right beside existing `conda.yaml`
   file (but do not overwrite it, you need that later)
-- edit your `robot.yaml` file to point `condaConfigFile` entry to your
-  newly created `environment_xxx_yyy_freeze.yaml` file
+- edit your `robot.yaml` file at `condaConfigFile` entry, and add your
+  newly copied `environment_xxx_yyy_freeze.yaml` file there if it does not
+  already exist there
 - repackage your robot and now your environment should stay quite frozen
 
 ### Limitations
@@ -453,6 +454,9 @@ rcc holotree init --revoke
 - `RCC_NO_BUILD` with any non-empty value will prevent rcc for creating
   new environments (also available as `--no-build` CLI flag, and as
   an option in `settings.yaml` file)
+- `RCC_VERBOSITY` controls how verbose rcc output will be. If this variable
+  is not set, then verbosity is taken from `--silent`, `--debug`, and `--trace`
+  CLI flags. Valid values for this variable are `silent`, `debug` and `trace`.
 
 
 ## How to troubleshoot rcc setup and robots?

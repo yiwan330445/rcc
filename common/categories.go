@@ -13,4 +13,5 @@ const (
 	CategoryNetworkLink         = 4020
 	CategoryNetworkHEAD         = 4030
 	CategoryNetworkCanary       = 4040
+	CategoryEnvironmentCache    = 5010
 )
