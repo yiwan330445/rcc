@@ -6,6 +6,8 @@ import (
 	"path/filepath"
 
 	"github.com/robocorp/rcc/common"
+	"github.com/robocorp/rcc/pathlib"
+	"github.com/robocorp/rcc/pretty"
 	"github.com/robocorp/rcc/settings"
 )
 
@@ -36,7 +38,12 @@ func CondaEnvironment() []string {
 }
 
 func BinMicromamba() string {
-	return common.ExpandPath(filepath.Join(common.BinLocation(), "micromamba"))
+	location := common.ExpandPath(filepath.Join(common.MicromambaLocation(), MicromambaVersionNumber))
+	err := pathlib.EnsureDirectoryExists(location)
+	if err != nil {
+		pretty.Warning("Problem creating %q, reason: %v", location, err)
+	}
+	return common.ExpandPath(filepath.Join(location, "micromamba"))
 }
 
 func CondaPaths(prefix string) []string {

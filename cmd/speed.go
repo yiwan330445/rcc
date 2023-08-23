@@ -26,13 +26,17 @@ func init() {
 	randomIdentifier = fmt.Sprintf("%016x", rand.Uint64()^uint64(os.Getpid()))
 }
 
-func workingWorm(pipe chan bool, reply chan int) {
-	fmt.Fprintf(os.Stderr, "\nWorking: -----")
+func workingWorm(pipe chan bool, reply chan int, debug bool) {
+	if !debug {
+		fmt.Fprintf(os.Stderr, "\nWorking: -----")
+	}
 	seconds := 0
 loop:
 	for {
-		fmt.Fprintf(os.Stderr, "\b\b\b\b\b%4ds", seconds)
-		os.Stderr.Sync()
+		if !debug {
+			fmt.Fprintf(os.Stderr, "\b\b\b\b\b%4ds", seconds)
+			os.Stderr.Sync()
+		}
 		select {
 		case <-time.After(1 * time.Second):
 			seconds += 1
@@ -57,40 +61,31 @@ var speedtestCmd = &cobra.Command{
 		common.Log("This may take several minutes, please be patient.")
 		signal := make(chan bool)
 		timing := make(chan int)
-		silent, trace, debug := common.Silent(), common.TraceFlag(), common.DebugFlag()
+		silent, debug, trace := common.Silent(), common.DebugFlag(), common.TraceFlag()
 		if !debug {
-			go workingWorm(signal, timing)
 			common.DefineVerbosity(true, false, false)
 		}
+		go workingWorm(signal, timing, debug)
 		folder := common.RobocorpTemp()
+		pretty.DebugNote("Speed test will force temporary ROBOCORP_HOME to be %q while testing.", folder)
+		err := os.RemoveAll(folder)
+		pretty.Guard(err == nil, 4, "Error: %v", err)
 		content, err := blobs.Asset("assets/speedtest.yaml")
-		if err != nil {
-			pretty.Exit(1, "Error: %v", err)
-		}
+		pretty.Guard(err == nil, 1, "Error: %v", err)
 		condafile := filepath.Join(folder, "speedtest.yaml")
 		err = pathlib.WriteFile(condafile, content, 0o666)
-		if err != nil {
-			pretty.Exit(2, "Error: %v", err)
-		}
+		pretty.Guard(err == nil, 2, "Error: %v", err)
 		common.ForcedRobocorpHome = folder
 		_, score, err := htfs.NewEnvironment(condafile, "", true, true, operations.PullCatalog)
 		common.DefineVerbosity(silent, debug, trace)
-		if err != nil {
-			pretty.Exit(3, "Error: %v", err)
-		}
+		pretty.Guard(err == nil, 3, "Error: %v", err)
 		common.ForcedRobocorpHome = ""
 		err = os.RemoveAll(folder)
-		if err != nil {
-			pretty.Exit(4, "Error: %v", err)
-		}
+		pretty.Guard(err == nil, 4, "Error: %v", err)
 		score.Done()
 		close(signal)
-		if !debug {
-			elapsed := <-timing
-			common.Log("%s", score.Score(anywork.Scale(), elapsed))
-		} else {
-			common.Log("%s", score.Score(anywork.Scale(), 0.0))
-		}
+		elapsed := <-timing
+		common.Log("%s", score.Score(anywork.Scale(), elapsed))
 		pretty.Ok()
 	},
 }

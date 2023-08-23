@@ -1,5 +1,13 @@
 # rcc change log
 
+## v15.2.0 (date: 23.8.2023)
+
+- new strategy to manage micromamba, with its own directory based on version
+  number: `ROBOCORP_HOME/micromamba/<version>/<executable>`
+- updated cleanup to manage micromamba location change
+- bugfix: speedtest now does timing also in debug/trace mode (and some other
+  minor improvements)
+
 ## v15.1.0 (date: 22.8.2023)
 
 - robot diagnostics now has indication of environment cacheability and also

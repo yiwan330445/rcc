@@ -125,7 +125,7 @@ Goal: Liveonly works and uses virtual holotree
 
 Goal: Do quick cleanup on environments
   Step        build/rcc config cleanup --controller citests --quick
-  Must Exist  %{ROBOCORP_HOME}/bin/micromamba
+  Must Exist  %{ROBOCORP_HOME}/micromamba/
   Wont Exist  %{ROBOCORP_HOME}/pkgs/
   Wont Exist  %{ROBOCORP_HOME}/pipcache/
   Wont Exist  %{ROBOCORP_HOME}/templates/

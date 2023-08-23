@@ -175,6 +175,10 @@ func BinLocation() string {
 	return filepath.Join(RobocorpHome(), "bin")
 }
 
+func MicromambaLocation() string {
+	return filepath.Join(RobocorpHome(), "micromamba")
+}
+
 func SharedMarkerLocation() string {
 	return filepath.Join(HoloLocation(), "shared.yes")
 }
