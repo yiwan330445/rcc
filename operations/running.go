@@ -173,6 +173,9 @@ func LoadTaskWithEnvironment(packfile, theTask string, force bool) (bool, robot.
 		pretty.Exit(4, "Error: this robot requires holotree, but no --space was given!")
 	}
 
+	journal.ForRun(filepath.Join(config.ArtifactDirectory(), "journal.run"))
+	common.RunJournal("start task", fmt.Sprintf("name=%s from=%s", theTask, packfile), "at task environment setup")
+
 	if !config.UsesConda() {
 		return true, config, todo, ""
 	}
@@ -186,12 +189,16 @@ func LoadTaskWithEnvironment(packfile, theTask string, force bool) (bool, robot.
 
 func SelectExecutionModel(runFlags *RunFlags, simple bool, template []string, config robot.Robot, todo robot.Task, label string, interactive bool, extraEnv map[string]string) {
 	common.TimelineBegin("robot execution (simple=%v).", simple)
+	common.RunJournal("start", "robot", "started")
+	defer common.RunJournal("stop", "robot", "done")
 	defer common.TimelineEnd()
 	pathlib.EnsureDirectoryExists(config.ArtifactDirectory())
 	if simple {
+		common.RunJournal("select", "robot", "simple run")
 		pathlib.NoteDirectoryContent("[Before run] Artifact dir", config.ArtifactDirectory(), true)
 		ExecuteSimpleTask(runFlags, template, config, todo, interactive, extraEnv)
 	} else {
+		common.RunJournal("run", "robot", "task run")
 		ExecuteTask(runFlags, template, config, todo, label, interactive, extraEnv)
 	}
 }
@@ -367,12 +374,15 @@ func ExecuteTask(flags *RunFlags, template []string, config robot.Robot, todo ro
 func showRccPointOfView(err error) {
 	printer := pretty.Lowlight
 	message := fmt.Sprintf("@@@  %s SUCCESS. @@@", rccpov)
+	journal := fmt.Sprintf("%s SUCCESS.", rccpov)
 	if err != nil {
 		printer = pretty.Highlight
 		message = fmt.Sprintf("@@@  %s FAILURE, reason: %q. See details above.  @@@", rccpov, err)
+		journal = fmt.Sprintf("%s FAILURE, reason: %s", rccpov, err)
 	}
 	banner := strings.Repeat("@", len(message))
 	printer(banner)
 	printer(message)
 	printer(banner)
+	common.RunJournal("robot exit", journal, "rcc point of view")
 }

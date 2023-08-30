@@ -106,4 +106,5 @@ func Progress(step int, form string, details ...interface{}) {
 	message := fmt.Sprintf(form, details...)
 	Log("####  Progress: %02d/15  %s  %8.3fs  %s", step, Version, delta, message)
 	Timeline("%d/15 %s", step, message)
+	RunJournal("environment", "build", "Progress: %02d/15  %s  %8.3fs  %s", step, Version, delta, message)
 }

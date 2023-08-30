@@ -8,6 +8,8 @@ import (
 	"os"
 	"regexp"
 	"strings"
+	"sync"
+	"time"
 
 	"github.com/robocorp/rcc/common"
 	"github.com/robocorp/rcc/fail"
@@ -15,14 +17,55 @@ import (
 
 var (
 	spacePattern = regexp.MustCompile("\\s+")
+	runJournal   *journal
 )
 
-type Event struct {
-	When       int64  `json:"when"`
-	Controller string `json:"controller"`
-	Event      string `json:"event"`
-	Detail     string `json:"detail"`
-	Comment    string `json:"comment,omitempty"`
+type (
+	journal struct {
+		sync.Mutex
+		filename string
+	}
+	Event struct {
+		When       int64  `json:"when"`
+		Controller string `json:"controller"`
+		Event      string `json:"event"`
+		Detail     string `json:"detail"`
+		Comment    string `json:"comment,omitempty"`
+	}
+)
+
+func init() {
+	runJournal = &journal{sync.Mutex{}, ""}
+	common.RegisterJournal(runJournal)
+}
+
+func ForRun(filename string) {
+	runJournal.Lock()
+	defer runJournal.Unlock()
+	runJournal.filename = filename
+}
+
+func StopRunJournal() {
+	ForRun("")
+}
+
+func (it *journal) Post(event, detail, commentForm string, fields ...interface{}) (err error) {
+	if it == nil || len(it.filename) == 0 {
+		return nil
+	}
+	defer fail.Around(&err)
+	it.Lock()
+	defer it.Unlock()
+	message := Event{
+		When:       time.Now().Unix(),
+		Controller: common.ControllerIdentity(),
+		Event:      Unify(event),
+		Detail:     detail,
+		Comment:    Unify(fmt.Sprintf(commentForm, fields...)),
+	}
+	blob, err := json.Marshal(message)
+	fail.On(err != nil, "Could not serialize event: %v -> %v", event, err)
+	return appendJournal(it.filename, blob)
 }
 
 func Unify(value string) string {

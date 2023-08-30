@@ -1,5 +1,10 @@
 # rcc change log
 
+## v15.3.0 (date: 30.8.2023)
+
+- added `journal.run` event log into artifacts directory
+- tidying some golang dependencies and removing some unused files
+
 ## v15.2.0 (date: 23.8.2023)
 
 - new strategy to manage micromamba, with its own directory based on version

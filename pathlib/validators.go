@@ -47,10 +47,14 @@ func NoteDirectoryContent(context, directory string, guide bool) {
 	if err != nil {
 		return
 	}
+	noted := false
 	for _, entry := range entries {
-		pretty.Note("%s %q already has %q in it.", context, fullpath, entry.Name())
+		if entry.Name() != "journal.run" {
+			pretty.Note("%s %q already has %q in it.", context, fullpath, entry.Name())
+			noted = true
+		}
 	}
-	if guide && len(entries) > 0 {
+	if guide && noted {
 		pretty.Highlight("Above notes mean, that there were files present in directory that was supposed to be empty!")
 		pretty.Highlight("In robot development phase, it might be ok to have these files while building robot.")
 		pretty.Highlight("In production robot/assistant, this might be a mistake, where development files were")

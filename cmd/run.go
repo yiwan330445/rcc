@@ -25,6 +25,7 @@ in your own machine.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		defer conda.RemoveCurrentTemp()
 		defer journal.BuildEventStats("robot")
+		defer journal.StopRunJournal()
 		if common.DebugFlag() {
 			defer common.Stopwatch("Task run lasted").Report()
 		}

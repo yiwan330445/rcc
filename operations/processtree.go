@@ -98,6 +98,7 @@ func (it *ProcessNode) warningTree(prefix string, newparent bool) {
 		kind = fmt.Sprintf("%s -> new parent PID: #%d", kind, it.Parent)
 	}
 	pretty.Warning("%s#%d  %q <%s>", prefix, it.Pid, it.Executable, kind)
+	common.RunJournal("orphan process", fmt.Sprintf("parent=%d pid=%d name=%s", it.Parent, it.Pid, it.Executable), "process pollution")
 	indent := prefix + "|   "
 	for _, key := range it.Children.Keys() {
 		it.Children[key].warningTree(indent, false)
@@ -193,6 +194,7 @@ func babySitter(pid int, reply chan ChildMap, delay time.Duration) {
 	defer close(reply)
 	seen := make(ChildMap)
 	failures, broadcasted := 0, 0
+	defer common.RunJournal("processes", "final", "count: %d", broadcasted)
 forever:
 	for failures < 10 {
 		updated := false
@@ -206,6 +208,7 @@ forever:
 		if updated {
 			active := len(seen)
 			pretty.DebugNote("Active subprocess count %d -> %d. %v", broadcasted, active, seen)
+			common.RunJournal("processes", "updated", "count from %d to %d ... %v", broadcasted, active, seen)
 			broadcasted = active
 		}
 		select {
