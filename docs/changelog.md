@@ -1,5 +1,9 @@
 # rcc change log
 
+## v16.1.1 (date: 5.9.2023) WORK IN PROGRESS
+
+- bug fix: added missing proxies to micromamba phase
+
 ## v16.1.0 (date: 5.9.2023) WORK IN PROGRESS
 
 - Now advanced network diagnostics also have separate `tls-verify` configuration

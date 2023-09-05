@@ -38,7 +38,7 @@ func CondaEnvironment() []string {
 	tempFolder := common.RobocorpTemp()
 	env = append(env, fmt.Sprintf("TEMP=%s", tempFolder))
 	env = append(env, fmt.Sprintf("TMP=%s", tempFolder))
-	return env
+	return injectNetworkEnvironment(env)
 }
 
 func BinMicromamba() string {
