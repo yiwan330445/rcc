@@ -1,5 +1,10 @@
 # rcc change log
 
+## v16.0.0 (date: 5.9.2023) WORK IN PROGRESS
+
+- Breaking change: there is new TLS verification in place in diagnostic, and
+  this can break some old setups because new warnings.
+
 ## v15.3.0 (date: 30.8.2023)
 
 - added `journal.run` event log into artifacts directory

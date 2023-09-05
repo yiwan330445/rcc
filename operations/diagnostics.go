@@ -150,6 +150,11 @@ func runDiagnostics(quick bool) *common.DiagnosticStatus {
 		result.Checks = append(result.Checks, dnsLookupCheck(host))
 	}
 	result.Details["dns-lookup-time"] = dnsStopwatch.Text()
+	tlsStopwatch := common.Stopwatch("TLS verification time for %d hostnames was about", len(hostnames))
+	for _, host := range hostnames {
+		result.Checks = append(result.Checks, tlsCheckHost(host)...)
+	}
+	result.Details["tls-lookup-time"] = tlsStopwatch.Text()
 	result.Checks = append(result.Checks, canaryDownloadCheck())
 	result.Checks = append(result.Checks, pypiHeadCheck())
 	result.Checks = append(result.Checks, condaHeadCheck())

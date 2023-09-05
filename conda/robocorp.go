@@ -150,7 +150,7 @@ func CondaExecutionEnvironment(location string, inject []string, full bool) []st
 	if settings.Global.NoRevocation() {
 		environment = append(environment, "MAMBA_SSL_NO_REVOKE=true")
 	}
-	if settings.Global.VerifySsl() {
+	if !settings.Global.VerifySsl() {
 		environment = append(environment, "MAMBA_SSL_VERIFY=false")
 	}
 	environment = appendIfValue(environment, "https_proxy", settings.Global.HttpsProxy())

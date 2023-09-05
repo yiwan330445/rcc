@@ -245,7 +245,7 @@ func (it gateway) NoBuild() bool {
 }
 
 func (it gateway) ConfiguredHttpTransport() *http.Transport {
-	return httpTransport
+	return httpTransport.Clone()
 }
 
 func (it gateway) loadRootCAs() *x509.CertPool {
