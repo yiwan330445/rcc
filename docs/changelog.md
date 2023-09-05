@@ -1,5 +1,10 @@
 # rcc change log
 
+## v16.0.1 (date: 5.9.2023) WORK IN PROGRESS
+
+- Added full signature chain "dump" in case where there is some kind of
+  certificate failure in TLS verification. Network diagnostics still.
+
 ## v16.0.0 (date: 5.9.2023) WORK IN PROGRESS
 
 - Breaking change: there is new TLS verification in place in diagnostic, and

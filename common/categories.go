@@ -15,5 +15,6 @@ const (
 	CategoryNetworkCanary       = 4040
 	CategoryNetworkTLSVersion   = 4050
 	CategoryNetworkTLSVerify    = 4060
+	CategoryNetworkTLSChain     = 4070
 	CategoryEnvironmentCache    = 5010
 )

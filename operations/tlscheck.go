@@ -5,6 +5,7 @@ import (
 	"crypto/x509"
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/robocorp/rcc/common"
 	"github.com/robocorp/rcc/settings"
@@ -31,6 +32,18 @@ func get(url string) (*tls.ConnectionState, error) {
 		return nil, err
 	}
 	return response.TLS, nil
+}
+
+func certificateChain(certificates []*x509.Certificate) string {
+	parts := make([]string, 0, len(certificates))
+	for at, certificate := range certificates {
+		names := strings.Join(certificate.DNSNames, ", ")
+		before := certificate.NotBefore.Format("2006-Jan-02")
+		after := certificate.NotAfter.Format("2006-Jan-02")
+		form := fmt.Sprintf("#%d: [% 02X ...] names [%s] %s...%s %q issued by %q", at, certificate.Signature[:6], names, before, after, certificate.Subject, certificate.Issuer)
+		parts = append(parts, form)
+	}
+	return strings.Join(parts, "; ")
 }
 
 func tlsCheckHost(host string) []*common.DiagnosticCheck {
@@ -100,6 +113,13 @@ func tlsCheckHost(host string) []*common.DiagnosticCheck {
 			Category: common.CategoryNetworkTLSVerify,
 			Status:   statusWarning,
 			Message:  fmt.Sprintf("TLS verification of %q failed, reason: %v [last issuer: %q]", server, err, last.Issuer),
+			Link:     supportNetworkUrl,
+		})
+		result = append(result, &common.DiagnosticCheck{
+			Type:     "network",
+			Category: common.CategoryNetworkTLSChain,
+			Status:   statusWarning,
+			Message:  fmt.Sprintf("%q certificate chain is {%s}.", host, certificateChain(certificates)),
 			Link:     supportNetworkUrl,
 		})
 	} else {
