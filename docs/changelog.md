@@ -1,5 +1,10 @@
 # rcc change log
 
+## v16.1.0 (date: 5.9.2023) WORK IN PROGRESS
+
+- Now advanced network diagnostics also have separate `tls-verify` configuration
+  to enable TLS verifications from custom addresses.
+
 ## v16.0.1 (date: 5.9.2023) WORK IN PROGRESS
 
 - Added full signature chain "dump" in case where there is some kind of

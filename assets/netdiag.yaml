@@ -1,6 +1,8 @@
 network:
     dns-lookup:
     - www.robocorp.com
+    tls-verify:
+    - chat.robocorp.com
     head-request:
     - url: https://www.robocorp.com
       codes: [200]

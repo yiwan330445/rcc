@@ -23,6 +23,7 @@ type (
 
 	NetConfig struct {
 		DNS  []string     `yaml:"dns-lookup"`
+		TLS  []string     `yaml:"tls-verify"`
 		Head []*WebConfig `yaml:"head-request"`
 		Get  []*WebConfig `yaml:"get-request"`
 	}
@@ -35,8 +36,9 @@ type (
 )
 
 func (it *NetConfig) Hostnames() []string {
-	result := make([]string, 0, len(it.DNS))
+	result := make([]string, 0, len(it.DNS)+len(it.TLS))
 	result = append(result, it.DNS...)
+	result = append(result, it.TLS...)
 	for _, entry := range it.Head {
 		parsed, err := url.Parse(entry.URL)
 		if err == nil {
@@ -73,6 +75,11 @@ func networkDiagnostics(config *Configuration, target *common.DiagnosticStatus) 
 		target.Checks = append(target.Checks, dnsLookupCheck(host))
 	}
 	target.Details["dns-lookup-time"] = dnsStopwatch.Text()
+	tlsStopwatch := common.Stopwatch("TLS verification time for %d hostnames was about", len(hostnames))
+	for _, host := range hostnames {
+		target.Checks = append(target.Checks, tlsCheckHost(host)...)
+	}
+	target.Details["tls-lookup-time"] = tlsStopwatch.Text()
 	headStopwatch := common.Stopwatch("HEAD request time for %d requests was about", len(config.Network.Head))
 	for _, entry := range config.Network.Head {
 		target.Checks = append(target.Checks, webDiagnostics("HEAD", common.CategoryNetworkHEAD, headRequest, entry, supportUrl)...)
