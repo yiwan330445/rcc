@@ -1,5 +1,11 @@
 # rcc change log
 
+## v16.1.2 (date: 6.9.2023) WORK IN PROGRESS
+
+- bug fix: allowing detection of lower levels of TLS versions
+- minor improvement: diagnostics TLS firewall/proxy detection
+- minor improvement: full certificate chain is now behind `--debug` flag
+
 ## v16.1.1 (date: 5.9.2023) WORK IN PROGRESS
 
 - bug fix: added missing proxies to micromamba phase

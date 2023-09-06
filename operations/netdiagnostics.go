@@ -75,11 +75,19 @@ func networkDiagnostics(config *Configuration, target *common.DiagnosticStatus) 
 		target.Checks = append(target.Checks, dnsLookupCheck(host))
 	}
 	target.Details["dns-lookup-time"] = dnsStopwatch.Text()
+	tlsRoots := make(map[string]bool)
 	tlsStopwatch := common.Stopwatch("TLS verification time for %d hostnames was about", len(hostnames))
 	for _, host := range hostnames {
-		target.Checks = append(target.Checks, tlsCheckHost(host)...)
+		target.Checks = append(target.Checks, tlsCheckHost(host, tlsRoots)...)
 	}
 	target.Details["tls-lookup-time"] = tlsStopwatch.Text()
+	if len(hostnames) > 1 && len(tlsRoots) == 1 {
+		for name, _ := range tlsRoots {
+			target.Details["tls-proxy-firewall"] = name
+		}
+	} else {
+		target.Details["tls-proxy-firewall"] = "undetectable"
+	}
 	headStopwatch := common.Stopwatch("HEAD request time for %d requests was about", len(config.Network.Head))
 	for _, entry := range config.Network.Head {
 		target.Checks = append(target.Checks, webDiagnostics("HEAD", common.CategoryNetworkHEAD, headRequest, entry, supportUrl)...)

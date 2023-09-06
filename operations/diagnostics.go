@@ -151,10 +151,18 @@ func runDiagnostics(quick bool) *common.DiagnosticStatus {
 	}
 	result.Details["dns-lookup-time"] = dnsStopwatch.Text()
 	tlsStopwatch := common.Stopwatch("TLS verification time for %d hostnames was about", len(hostnames))
+	tlsRoots := make(map[string]bool)
 	for _, host := range hostnames {
-		result.Checks = append(result.Checks, tlsCheckHost(host)...)
+		result.Checks = append(result.Checks, tlsCheckHost(host, tlsRoots)...)
 	}
 	result.Details["tls-lookup-time"] = tlsStopwatch.Text()
+	if len(hostnames) > 1 && len(tlsRoots) == 1 {
+		for name, _ := range tlsRoots {
+			result.Details["tls-proxy-firewall"] = name
+		}
+	} else {
+		result.Details["tls-proxy-firewall"] = "undetectable"
+	}
 	result.Checks = append(result.Checks, canaryDownloadCheck())
 	result.Checks = append(result.Checks, pypiHeadCheck())
 	result.Checks = append(result.Checks, condaHeadCheck())

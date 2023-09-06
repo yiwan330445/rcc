@@ -26,6 +26,7 @@ func init() {
 func get(url string) (*tls.ConnectionState, error) {
 	transport := settings.Global.ConfiguredHttpTransport()
 	transport.TLSClientConfig.InsecureSkipVerify = true
+	transport.TLSClientConfig.MinVersion = tls.VersionSSL30
 	client := http.Client{Transport: transport}
 	response, err := client.Head(url)
 	if err != nil {
@@ -46,7 +47,7 @@ func certificateChain(certificates []*x509.Certificate) string {
 	return strings.Join(parts, "; ")
 }
 
-func tlsCheckHost(host string) []*common.DiagnosticCheck {
+func tlsCheckHost(host string, roots map[string]bool) []*common.DiagnosticCheck {
 	transport := settings.Global.ConfiguredHttpTransport()
 	result := []*common.DiagnosticCheck{}
 	supportNetworkUrl := settings.Global.DocsLink("troubleshooting/firewall-and-proxies")
@@ -107,6 +108,7 @@ func tlsCheckHost(host string) []*common.DiagnosticCheck {
 		last = certificate
 	}
 	_, err = certificates[0].Verify(toVerify)
+	roots[last.Issuer.String()] = err == nil
 	if err != nil {
 		result = append(result, &common.DiagnosticCheck{
 			Type:     "network",
@@ -115,13 +117,15 @@ func tlsCheckHost(host string) []*common.DiagnosticCheck {
 			Message:  fmt.Sprintf("TLS verification of %q failed, reason: %v [last issuer: %q]", server, err, last.Issuer),
 			Link:     supportNetworkUrl,
 		})
-		result = append(result, &common.DiagnosticCheck{
-			Type:     "network",
-			Category: common.CategoryNetworkTLSChain,
-			Status:   statusWarning,
-			Message:  fmt.Sprintf("%q certificate chain is {%s}.", host, certificateChain(certificates)),
-			Link:     supportNetworkUrl,
-		})
+		if common.DebugFlag() {
+			result = append(result, &common.DiagnosticCheck{
+				Type:     "network",
+				Category: common.CategoryNetworkTLSChain,
+				Status:   statusWarning,
+				Message:  fmt.Sprintf("%q certificate chain is {%s}.", host, certificateChain(certificates)),
+				Link:     supportNetworkUrl,
+			})
+		}
 	} else {
 		result = append(result, &common.DiagnosticCheck{
 			Type:     "network",
