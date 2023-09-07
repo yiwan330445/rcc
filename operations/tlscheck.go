@@ -23,10 +23,16 @@ func init() {
 	tlsVersions[tls.VersionTLS13] = "TLS 1.3"
 }
 
-func get(url string) (*tls.ConnectionState, error) {
+func tlsCheckHeadOnly(url string) (*tls.ConnectionState, error) {
 	transport := settings.Global.ConfiguredHttpTransport()
 	transport.TLSClientConfig.InsecureSkipVerify = true
 	transport.TLSClientConfig.MinVersion = tls.VersionSSL30
+	// above two setting are needed for TLS checks
+	// they weaken security, and that is why this code is only used
+	// to get TLS connection state and nothing else
+	// this is intentional, so that network diagnosis can detect
+	// unsecure certificates, and connections to weaker TLS version
+	// [ref: Github CodeQL security warning]
 	client := http.Client{Transport: transport}
 	response, err := client.Head(url)
 	if err != nil {
@@ -52,7 +58,7 @@ func tlsCheckHost(host string, roots map[string]bool) []*common.DiagnosticCheck 
 	result := []*common.DiagnosticCheck{}
 	supportNetworkUrl := settings.Global.DocsLink("troubleshooting/firewall-and-proxies")
 	url := fmt.Sprintf("https://%s/", host)
-	state, err := get(url)
+	state, err := tlsCheckHeadOnly(url)
 	if err != nil {
 		result = append(result, &common.DiagnosticCheck{
 			Type:     "network",

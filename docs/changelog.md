@@ -1,5 +1,10 @@
 # rcc change log
 
+## v16.1.3 (date: 7.9.2023)
+
+- comment explaining why certain unsecure code forms is required when
+  TLS diagnostics are done (to explain Github CodeQL security warnings)
+
 ## v16.1.2 (date: 6.9.2023) WORK IN PROGRESS
 
 - bug fix: allowing detection of lower levels of TLS versions
