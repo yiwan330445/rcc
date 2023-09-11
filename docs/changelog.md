@@ -1,5 +1,9 @@
 # rcc change log
 
+## v16.2.0 (date: 11.9.2023)
+
+- added relocations statistics on catalog listing (Relocate column)
+
 ## v16.1.3 (date: 7.9.2023)
 
 - comment explaining why certain unsecure code forms is required when

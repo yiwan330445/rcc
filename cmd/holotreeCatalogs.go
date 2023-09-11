@@ -96,6 +96,7 @@ func jsonCatalogDetails(roots []*htfs.Root, topN int) {
 		data["directories"] = stats.Directories
 		data["files"] = stats.Files
 		data["bytes"] = stats.Bytes
+		data["relocations"] = stats.Relocations
 		holder[catalog.Blueprint] = data
 		age, _ := pathlib.DaysSinceModified(catalog.Source())
 		data["age_in_days"] = age
@@ -132,8 +133,8 @@ func dumpTopN(stats map[string]int64, total float64, tabbed *tabwriter.Writer) {
 func listCatalogDetails(roots []*htfs.Root, topN int) {
 	used := catalogUsedStats()
 	tabbed := tabwriter.NewWriter(os.Stderr, 2, 4, 2, ' ', 0)
-	tabbed.Write([]byte("Blueprint\tPlatform\tDirs  \tFiles  \tSize   \tidentity.yaml (gzipped blob inside hololib)\tHolotree path\tAge (days)\tIdle (days)\n"))
-	tabbed.Write([]byte("---------\t--------\t------\t-------\t-------\t-------------------------------------------\t-------------\t----------\t-----------\n"))
+	tabbed.Write([]byte("Blueprint\tPlatform\tDirs  \tFiles  \tSize   \tRelocate\tidentity.yaml (gzipped blob inside hololib)\tHolotree path\tAge (days)\tIdle (days)\n"))
+	tabbed.Write([]byte("---------\t--------\t------\t-------\t-------\t--------\t-------------------------------------------\t-------------\t----------\t-----------\n"))
 	for _, catalog := range roots {
 		lastUse, ok := used[catalog.Blueprint]
 		if !ok {
@@ -143,11 +144,11 @@ func listCatalogDetails(roots []*htfs.Root, topN int) {
 		stats, err := catalog.Stats()
 		pretty.Guard(err == nil, 1, "Could not get stats for %s, reason: %s", catalog.Blueprint, err)
 		days, _ := pathlib.DaysSinceModified(catalog.Source())
-		data := fmt.Sprintf("%s\t%s\t% 6d\t% 7d\t% 6dM\t%s\t%s\t%10d\t%11d\n", catalog.Blueprint, catalog.Platform, stats.Directories, stats.Files, megas(stats.Bytes), stats.Identity, catalog.HolotreeBase(), days, lastUse)
+		data := fmt.Sprintf("%s\t%s\t% 6d\t% 7d\t% 6dM\t% 8d\t%s\t%s\t%10d\t%11d\n", catalog.Blueprint, catalog.Platform, stats.Directories, stats.Files, megas(stats.Bytes), stats.Relocations, stats.Identity, catalog.HolotreeBase(), days, lastUse)
 		tabbed.Write([]byte(data))
 		if showIdentityYaml {
 			for _, line := range identityContentLines(catalog) {
-				tabbed.Write([]byte(fmt.Sprintf("\t\t\t\t\t%s\n", line)))
+				tabbed.Write([]byte(fmt.Sprintf("\t\t\t\t\t\t%s\n", line)))
 			}
 		}
 		if topN > 0 {

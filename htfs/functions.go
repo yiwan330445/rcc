@@ -309,6 +309,7 @@ type TreeStats struct {
 	Files       uint64
 	Bytes       uint64
 	Identity    string
+	Relocations uint64
 }
 
 func guessLocation(digest string) string {
@@ -327,6 +328,9 @@ func CalculateTreeStats() (Dirtask, *TreeStats) {
 				result.Bytes += uint64(file.Size)
 				if file.Name == "identity.yaml" {
 					result.Identity = guessLocation(file.Digest)
+				}
+				if len(file.Rewrite) > 0 {
+					result.Relocations += 1
 				}
 			}
 		}
