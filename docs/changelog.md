@@ -1,5 +1,9 @@
 # rcc change log
 
+## v16.2.1 (date: 12.9.2023)
+
+- bugfix: detecting and truncating process tree with too deep child structure
+
 ## v16.2.0 (date: 11.9.2023)
 
 - added relocations statistics on catalog listing (Relocate column)

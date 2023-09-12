@@ -67,15 +67,15 @@ func (it ProcessMap) Roots() []int {
 
 func (it *ProcessNode) warnings(additional ProcessMap) {
 	if len(it.Children) > 0 {
-		pretty.Warning("%q process %d still has running subprocesses:", it.Executable, it.Pid)
-		it.warningTree("> ", false)
+		pretty.Warning("%q process %d (parent %d) still has running subprocesses:", it.Executable, it.Pid, it.Parent)
+		it.warningTree("> ", false, 20)
 	} else {
-		pretty.Warning("%q process %d still has running migrated processes:", it.Executable, it.Pid)
+		pretty.Warning("%q process %d (parent %d) still has running migrated processes:", it.Executable, it.Pid, it.Parent)
 	}
 	if len(additional) > 0 {
 		pretty.Warning("+ migrated process still running:")
 		for _, key := range additional.Roots() {
-			additional[key].warningTree("| ", true)
+			additional[key].warningTree("| ", true, 20)
 		}
 	}
 	pretty.Note("Depending on OS, above processes may prevent robot to close properly.")
@@ -89,19 +89,25 @@ func (it *ProcessNode) warnings(additional ProcessMap) {
 	pretty.Highlight("Example cleanup command: %s", common.GenerateKillCommand(additional.Keys()))
 }
 
-func (it *ProcessNode) warningTree(prefix string, newparent bool) {
+func (it *ProcessNode) warningTree(prefix string, newparent bool, limit int) {
 	kind := "leaf"
 	if len(it.Children) > 0 {
 		kind = "container"
 	}
 	if newparent {
 		kind = fmt.Sprintf("%s -> new parent PID: #%d", kind, it.Parent)
+	} else {
+		kind = fmt.Sprintf("%s under #%d", kind, it.Parent)
 	}
 	pretty.Warning("%s#%d  %q <%s>", prefix, it.Pid, it.Executable, kind)
 	common.RunJournal("orphan process", fmt.Sprintf("parent=%d pid=%d name=%s", it.Parent, it.Pid, it.Executable), "process pollution")
+	if limit < 0 {
+		pretty.Warning("%s  Maximum recursion depth detected. Truncating output here.", prefix)
+		return
+	}
 	indent := prefix + "|   "
 	for _, key := range it.Children.Keys() {
-		it.Children[key].warningTree(indent, false)
+		it.Children[key].warningTree(indent, false, limit-1)
 	}
 }
 
