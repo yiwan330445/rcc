@@ -117,6 +117,7 @@ func SubprocessWarning(seen ChildMap, use bool) error {
 		common.Debug("No tracked subprocesses, which is a good thing.")
 		return nil
 	}
+	time.Sleep(1 * time.Second) // small nap to let things settle before asking all processes
 	processes, err := ProcessMapNow()
 	if err != nil {
 		return err

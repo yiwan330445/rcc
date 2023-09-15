@@ -390,38 +390,36 @@ func newLiveInternal(yaml, condaYaml, requirementsText, key string, force, fresh
 	return true, false
 }
 
-func mergedEnvironment(filenames ...string) (right *Environment, err error) {
-	for _, filename := range filenames {
-		left := right
-		right, err = ReadCondaYaml(filename)
-		if err != nil {
-			return nil, err
-		}
-		if left == nil {
-			continue
-		}
-		right, err = left.Merge(right)
-		if err != nil {
-			return nil, err
-		}
+func LogUnifiedEnvironment(content []byte) {
+	environment, err := CondaYamlFrom(content)
+	if err != nil {
+		return
 	}
-	return right, nil
+	yaml, err := environment.AsYaml()
+	if err != nil {
+		return
+	}
+	common.Log("FINAL unified conda environment descriptor:\n---\n%v---", yaml)
 }
 
-func temporaryConfig(condaYaml, requirementsText string, save bool, filenames ...string) (string, string, *Environment, error) {
-	right, err := mergedEnvironment(filenames...)
+func finalUnifiedEnvironment(filename string, verbose bool) (string, *Environment, error) {
+	right, err := ReadCondaYaml(filename)
 	if err != nil {
-		return "", "", nil, err
+		return "", nil, err
 	}
 	yaml, err := right.AsYaml()
+	if err != nil {
+		return "", nil, err
+	}
+	return yaml, right, nil
+}
+
+func temporaryConfig(condaYaml, requirementsText, filename string) (string, string, *Environment, error) {
+	yaml, right, err := finalUnifiedEnvironment(filename, true)
 	if err != nil {
 		return "", "", nil, err
 	}
 	hash := common.ShortDigest(yaml)
-	if !save {
-		return hash, yaml, right, nil
-	}
-	common.Log("FINAL union conda environment descriptor:\n---\n%v---", yaml)
 	err = right.SaveAsRequirements(requirementsText)
 	if err != nil {
 		return "", "", nil, err
@@ -431,7 +429,7 @@ func temporaryConfig(condaYaml, requirementsText string, save bool, filenames ..
 	return hash, yaml, right, err
 }
 
-func LegacyEnvironment(recorder Recorder, force bool, skip SkipLayer, configurations ...string) error {
+func LegacyEnvironment(recorder Recorder, force bool, skip SkipLayer, configuration string) error {
 	cloud.BackgroundMetric(common.ControllerIdentity(), "rcc.env.create.start", common.Version)
 
 	lockfile := common.RobocorpLock()
@@ -449,7 +447,7 @@ func LegacyEnvironment(recorder Recorder, force bool, skip SkipLayer, configurat
 	condaYaml := filepath.Join(pathlib.TempDir(), fmt.Sprintf("conda_%x.yaml", common.When))
 	requirementsText := filepath.Join(pathlib.TempDir(), fmt.Sprintf("require_%x.txt", common.When))
 	common.Debug("Using temporary conda.yaml file: %v and requirement.txt file: %v", condaYaml, requirementsText)
-	key, yaml, finalEnv, err := temporaryConfig(condaYaml, requirementsText, true, configurations...)
+	key, yaml, finalEnv, err := temporaryConfig(condaYaml, requirementsText, configuration)
 	if err != nil {
 		return err
 	}

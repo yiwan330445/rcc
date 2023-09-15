@@ -1,5 +1,11 @@
 # rcc change log
 
+## v16.2.2 (date: 13.9.2023)
+
+- bugfix: process tree 1 second delay to prevent "too fast" process snapshots
+  on Windows
+- refactoring some unused code out of codebase
+
 ## v16.2.1 (date: 12.9.2023)
 
 - bugfix: detecting and truncating process tree with too deep child structure

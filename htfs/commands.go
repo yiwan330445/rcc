@@ -125,6 +125,8 @@ func RecordEnvironment(tree MutableLibrary, blueprint []byte, force bool, scorec
 	exists := tree.HasBlueprint(blueprint)
 	common.Debug("Has blueprint environment: %v", exists)
 
+	conda.LogUnifiedEnvironment(blueprint)
+
 	if force || !exists {
 		common.FreshlyBuildEnvironment = true
 		remoteOrigin := common.RccRemoteOrigin()
