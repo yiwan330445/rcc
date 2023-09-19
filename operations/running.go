@@ -19,7 +19,9 @@ import (
 )
 
 const (
-	rccpov = `From rcc point of view, actual main robot run was`
+	actualRun      = `actual main robot run`
+	preRun         = `pre-run script execution`
+	newEnvironment = `environment creation`
 )
 
 var (
@@ -182,6 +184,7 @@ func LoadTaskWithEnvironment(packfile, theTask string, force bool) (bool, robot.
 
 	label, _, err := htfs.NewEnvironment(config.CondaConfigFile(), config.Holozip(), true, force, PullCatalog)
 	if err != nil {
+		pretty.RccPointOfView(newEnvironment, err)
 		pretty.Exit(4, "Error: %v", err)
 	}
 	return false, config, todo, label
@@ -332,12 +335,14 @@ func ExecuteTask(flags *RunFlags, template []string, config robot.Robot, todo ro
 			}
 			scriptCommand, err := shell.Split(script)
 			if err != nil {
+				pretty.RccPointOfView(preRun, err)
 				pretty.Exit(11, "%sScript '%s' parsing failure: %v%s", pretty.Red, script, err, pretty.Reset)
 			}
 			scriptCommand[0] = findExecutableOrDie(searchPath, scriptCommand[0])
 			common.Debug("Running pre run script '%s' ...", script)
 			_, err = shell.New(environment, directory, scriptCommand...).Execute(interactive)
 			if err != nil {
+				pretty.RccPointOfView(preRun, err)
 				pretty.Exit(12, "%sScript '%s' failure: %v%s", pretty.Red, script, err, pretty.Reset)
 			}
 		}
@@ -355,7 +360,7 @@ func ExecuteTask(flags *RunFlags, template []string, config robot.Robot, todo ro
 			_, err = shell.New(environment, directory, task...).Tee(outputDir, interactive)
 		}
 	})
-	showRccPointOfView(err)
+	pretty.RccPointOfView(actualRun, err)
 	seen, ok := <-pipe
 	suberr := SubprocessWarning(seen, ok)
 	if suberr != nil {
@@ -369,20 +374,4 @@ func ExecuteTask(flags *RunFlags, template []string, config robot.Robot, todo ro
 		pretty.Exit(10, "Error: %v (robot run exit)", err)
 	}
 	pretty.Ok()
-}
-
-func showRccPointOfView(err error) {
-	printer := pretty.Lowlight
-	message := fmt.Sprintf("@@@  %s SUCCESS. @@@", rccpov)
-	journal := fmt.Sprintf("%s SUCCESS.", rccpov)
-	if err != nil {
-		printer = pretty.Highlight
-		message = fmt.Sprintf("@@@  %s FAILURE, reason: %q. See details above.  @@@", rccpov, err)
-		journal = fmt.Sprintf("%s FAILURE, reason: %s", rccpov, err)
-	}
-	banner := strings.Repeat("@", len(message))
-	printer(banner)
-	printer(message)
-	printer(banner)
-	common.RunJournal("robot exit", journal, "rcc point of view")
 }

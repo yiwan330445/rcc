@@ -35,7 +35,11 @@ func NewEnvironment(condafile, holozip string, restore, force bool, puller Catal
 
 	path := ""
 	defer func() {
-		common.Progress(15, "Fresh holotree done [with %d workers].", anywork.Scale())
+		if err != nil {
+			pretty.Regression(15, "Holotree restoration failure, see above [with %d workers].", anywork.Scale())
+		} else {
+			pretty.Progress(15, "Fresh holotree done [with %d workers].", anywork.Scale())
+		}
 		if haszip {
 			pretty.Note("There is hololib.zip present at: %q", holozip)
 		}
@@ -49,9 +53,9 @@ func NewEnvironment(condafile, holozip string, restore, force bool, puller Catal
 		}
 	}()
 	if common.SharedHolotree {
-		common.Progress(1, "Fresh [shared mode] holotree environment %v. (parent/pid: %d/%d)", xviper.TrackingIdentity(), os.Getppid(), os.Getpid())
+		pretty.Progress(1, "Fresh [shared mode] holotree environment %v. (parent/pid: %d/%d)", xviper.TrackingIdentity(), os.Getppid(), os.Getpid())
 	} else {
-		common.Progress(1, "Fresh [private mode] holotree environment %v. (parent/pid: %d/%d)", xviper.TrackingIdentity(), os.Getppid(), os.Getpid())
+		pretty.Progress(1, "Fresh [private mode] holotree environment %v. (parent/pid: %d/%d)", xviper.TrackingIdentity(), os.Getppid(), os.Getpid())
 	}
 
 	lockfile := common.HolotreeLock()
@@ -64,7 +68,7 @@ func NewEnvironment(condafile, holozip string, restore, force bool, puller Catal
 	_, holotreeBlueprint, err := ComposeFinalBlueprint([]string{condafile}, "")
 	fail.On(err != nil, "%s", err)
 	common.EnvironmentHash, common.FreshlyBuildEnvironment = common.BlueprintHash(holotreeBlueprint), false
-	common.Progress(2, "Holotree blueprint is %q [%s with %d workers].", common.EnvironmentHash, common.Platform(), anywork.Scale())
+	pretty.Progress(2, "Holotree blueprint is %q [%s with %d workers].", common.EnvironmentHash, common.Platform(), anywork.Scale())
 	journal.CurrentBuildEvent().Blueprint(common.EnvironmentHash)
 
 	tree, err := New()
@@ -93,12 +97,12 @@ func NewEnvironment(condafile, holozip string, restore, force bool, puller Catal
 	}
 
 	if restore {
-		common.Progress(14, "Restore space from library [with %d workers].", anywork.Scale())
+		pretty.Progress(14, "Restore space from library [with %d workers].", anywork.Scale())
 		path, err = library.Restore(holotreeBlueprint, []byte(common.ControllerIdentity()), []byte(common.HolotreeSpace))
 		fail.On(err != nil, "Failed to restore blueprint %q, reason: %v", string(holotreeBlueprint), err)
 		journal.CurrentBuildEvent().RestoreComplete()
 	} else {
-		common.Progress(14, "Restoring space skipped.")
+		pretty.Progress(14, "Restoring space skipped.")
 	}
 
 	return path, scorecard, nil
@@ -131,7 +135,7 @@ func RecordEnvironment(tree MutableLibrary, blueprint []byte, force bool, scorec
 		common.FreshlyBuildEnvironment = true
 		remoteOrigin := common.RccRemoteOrigin()
 		if len(remoteOrigin) > 0 {
-			common.Progress(3, "Fill hololib from RCC_REMOTE_ORIGIN.")
+			pretty.Progress(3, "Fill hololib from RCC_REMOTE_ORIGIN.")
 			hash := common.BlueprintHash(blueprint)
 			catalog := CatalogName(hash)
 			err = puller(remoteOrigin, catalog, false)
@@ -142,9 +146,9 @@ func RecordEnvironment(tree MutableLibrary, blueprint []byte, force bool, scorec
 			}
 			exists = tree.HasBlueprint(blueprint)
 		} else {
-			common.Progress(3, "Fill hololib from RCC_REMOTE_ORIGIN skipped. RCC_REMOTE_ORIGIN was not defined.")
+			pretty.Progress(3, "Fill hololib from RCC_REMOTE_ORIGIN skipped. RCC_REMOTE_ORIGIN was not defined.")
 		}
-		common.Progress(4, "Cleanup holotree stage for fresh install.")
+		pretty.Progress(4, "Cleanup holotree stage for fresh install.")
 		fail.On(settings.Global.NoBuild(), "Building new holotree environment is blocked by settings, and could not be found from hololib cache!")
 		err = CleanupHolotreeStage(tree)
 		fail.On(err != nil, "Failed to clean stage, reason %v.", err)
@@ -153,17 +157,17 @@ func RecordEnvironment(tree MutableLibrary, blueprint []byte, force bool, scorec
 		err = os.MkdirAll(tree.Stage(), 0o755)
 		fail.On(err != nil, "Failed to create stage, reason %v.", err)
 
-		common.Progress(5, "Build environment into holotree stage %q.", tree.Stage())
+		pretty.Progress(5, "Build environment into holotree stage %q.", tree.Stage())
 		identityfile := filepath.Join(tree.Stage(), "identity.yaml")
 		err = os.WriteFile(identityfile, blueprint, 0o644)
 		fail.On(err != nil, "Failed to save %q, reason %w.", identityfile, err)
 
 		skip := conda.SkipNoLayers
 		if !force && common.LayeredHolotree {
-			common.Progress(6, "Restore partial environment into holotree stage %q.", tree.Stage())
+			pretty.Progress(6, "Restore partial environment into holotree stage %q.", tree.Stage())
 			skip = RestoreLayersTo(tree, identityfile, tree.Stage())
 		} else {
-			common.Progress(6, "Restore partial environment skipped. Layers disabled or force used.")
+			pretty.Progress(6, "Restore partial environment skipped. Layers disabled or force used.")
 		}
 
 		err = os.WriteFile(identityfile, blueprint, 0o644)
@@ -174,7 +178,7 @@ func RecordEnvironment(tree MutableLibrary, blueprint []byte, force bool, scorec
 
 		scorecard.Midpoint()
 
-		common.Progress(13, "Record holotree stage to hololib [with %d workers].", anywork.Scale())
+		pretty.Progress(13, "Record holotree stage to hololib [with %d workers].", anywork.Scale())
 		err = tree.Record(blueprint)
 		fail.On(err != nil, "Failed to record blueprint %q, reason: %w", string(blueprint), err)
 		journal.CurrentBuildEvent().RecordComplete()

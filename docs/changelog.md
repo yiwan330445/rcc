@@ -1,5 +1,13 @@
 # rcc change log
 
+## v16.3.0 (date: 19.9.2023)
+
+- extended using "rcc point of view" messaging to environment building,
+  post-install and pre-run scripts
+- holotree variables also now has "rcc point of view" visible
+- changed robot tests to match "rcc point of view" changes
+- highlighted Progress steps with cyan/green/red color (where available)
+
 ## v16.2.2 (date: 13.9.2023)
 
 - bugfix: process tree 1 second delay to prevent "too fast" process snapshots

@@ -27,6 +27,12 @@ const (
 	SkipError            SkipLayer = iota
 )
 
+const (
+	micromambaInstall  = `micromamba install`
+	pipInstall         = `pip install`
+	postInstallScripts = `post-install script execution`
+)
+
 type (
 	SkipLayer uint8
 	Recorder  interface {
@@ -173,7 +179,7 @@ func micromambaLayer(fingerprint, condaYaml, targetFolder string, stopwatch fmt.
 	if force {
 		ttl = "0"
 	}
-	common.Progress(7, "Running micromamba phase. (micromamba v%s) [layer: %s]", MicromambaVersion(), fingerprint)
+	pretty.Progress(7, "Running micromamba phase. (micromamba v%s) [layer: %s]", MicromambaVersion(), fingerprint)
 	mambaCommand := common.NewCommander(BinMicromamba(), "create", "--always-copy", "--no-env", "--safety-checks", "enabled", "--extra-safety-checks", "--retry-clean-cache", "--strict-channel-priority", "--repodata-ttl", ttl, "-y", "-f", condaYaml, "-p", targetFolder)
 	mambaCommand.Option("--channel-alias", settings.Global.CondaURL())
 	mambaCommand.ConditionalFlag(common.VerboseEnvironmentBuilding(), "--verbose")
@@ -188,6 +194,7 @@ func micromambaLayer(fingerprint, condaYaml, targetFolder string, stopwatch fmt.
 		cloud.BackgroundMetric(common.ControllerIdentity(), "rcc.env.fatal.micromamba", fmt.Sprintf("%d_%x", code, code))
 		common.Timeline("micromamba fail.")
 		common.Fatal(fmt.Sprintf("Micromamba [%d/%x]", code, code), err)
+		pretty.RccPointOfView(micromambaInstall, err)
 		return false, false
 	}
 	journal.CurrentBuildEvent().MicromambaComplete()
@@ -212,7 +219,7 @@ func pipLayer(fingerprint, requirementsText, targetFolder string, stopwatch fmt.
 	pipCache, wheelCache := common.PipCache(), common.WheelCache()
 	size, ok := pathlib.Size(requirementsText)
 	if !ok || size == 0 {
-		common.Progress(8, "Skipping pip install phase -- no pip dependencies.")
+		pretty.Progress(8, "Skipping pip install phase -- no pip dependencies.")
 	} else {
 		if !pyok {
 			cloud.BackgroundMetric(common.ControllerIdentity(), "rcc.env.fatal.pip", fmt.Sprintf("%d_%x", 9999, 9999))
@@ -220,7 +227,7 @@ func pipLayer(fingerprint, requirementsText, targetFolder string, stopwatch fmt.
 			common.Fatal("pip fail. no python found.", errors.New("No python found, but required!"))
 			return false, false, pipUsed, ""
 		}
-		common.Progress(8, "Running pip install phase. (pip v%s) [layer: %s]", PipVersion(python), fingerprint)
+		pretty.Progress(8, "Running pip install phase. (pip v%s) [layer: %s]", PipVersion(python), fingerprint)
 		common.Debug("Updating new environment at %v with pip requirements from %v (size: %v)", targetFolder, requirementsText, size)
 		pipCommand := common.NewCommander(python, "-m", "pip", "install", "--isolated", "--no-color", "--disable-pip-version-check", "--prefer-binary", "--cache-dir", pipCache, "--find-links", wheelCache, "--requirement", requirementsText)
 		pipCommand.Option("--index-url", settings.Global.PypiURL())
@@ -232,6 +239,7 @@ func pipLayer(fingerprint, requirementsText, targetFolder string, stopwatch fmt.
 			cloud.BackgroundMetric(common.ControllerIdentity(), "rcc.env.fatal.pip", fmt.Sprintf("%d_%x", code, code))
 			common.Timeline("pip fail.")
 			common.Fatal(fmt.Sprintf("Pip [%d/%x]", code, code), err)
+			pretty.RccPointOfView(pipInstall, err)
 			return false, false, pipUsed, ""
 		}
 		journal.CurrentBuildEvent().PipComplete()
@@ -248,13 +256,14 @@ func postInstallLayer(fingerprint string, postInstall []string, targetFolder str
 
 	fmt.Fprintf(planWriter, "\n---  post install plan @%ss  ---\n\n", stopwatch)
 	if postInstall != nil && len(postInstall) > 0 {
-		common.Progress(9, "Post install scripts phase started. [layer: %s]", fingerprint)
+		pretty.Progress(9, "Post install scripts phase started. [layer: %s]", fingerprint)
 		common.Debug("===  post install phase ===")
 		for _, script := range postInstall {
 			scriptCommand, err := shell.Split(script)
 			if err != nil {
 				common.Fatal("post-install", err)
 				common.Log("%sScript '%s' parsing failure: %v%s", pretty.Red, script, err, pretty.Reset)
+				pretty.RccPointOfView(postInstallScripts, err)
 				return false, false
 			}
 			common.Debug("Running post install script '%s' ...", script)
@@ -262,12 +271,13 @@ func postInstallLayer(fingerprint string, postInstall []string, targetFolder str
 			if err != nil {
 				common.Fatal("post-install", err)
 				common.Log("%sScript '%s' failure: %v%s", pretty.Red, script, err, pretty.Reset)
+				pretty.RccPointOfView(postInstallScripts, err)
 				return false, false
 			}
 		}
 		journal.CurrentBuildEvent().PostInstallComplete()
 	} else {
-		common.Progress(9, "Post install scripts phase skipped -- no scripts.")
+		pretty.Progress(9, "Post install scripts phase skipped -- no scripts.")
 	}
 	return true, false
 }
@@ -298,7 +308,7 @@ func holotreeLayers(condaYaml, requirementsText string, finalEnv *Environment, t
 			recorder.Record([]byte(layers[0]))
 		}
 	} else {
-		common.Progress(7, "Skipping micromamba phase, layer exists.")
+		pretty.Progress(7, "Skipping micromamba phase, layer exists.")
 	}
 	if skip < SkipPipLayer {
 		success, fatal, pipUsed, python = pipLayer(fingerprints[1], requirementsText, targetFolder, stopwatch, planWriter)
@@ -312,7 +322,7 @@ func holotreeLayers(condaYaml, requirementsText string, finalEnv *Environment, t
 			recorder.Record([]byte(layers[1]))
 		}
 	} else {
-		common.Progress(8, "Skipping pip phase, layer exists.")
+		pretty.Progress(8, "Skipping pip phase, layer exists.")
 	}
 	if skip < SkipPostinstallLayer {
 		success, fatal = postInstallLayer(fingerprints[2], finalEnv.PostInstall, targetFolder, stopwatch, planWriter)
@@ -320,7 +330,7 @@ func holotreeLayers(condaYaml, requirementsText string, finalEnv *Environment, t
 			return success, fatal, pipUsed, python
 		}
 	} else {
-		common.Progress(9, "Skipping post install scripts phase, layer exists.")
+		pretty.Progress(9, "Skipping post install scripts phase, layer exists.")
 	}
 	return true, false, pipUsed, python
 }
@@ -349,7 +359,7 @@ func newLiveInternal(yaml, condaYaml, requirementsText, key string, force, fresh
 		return success, fatal
 	}
 
-	common.Progress(10, "Activate environment started phase.")
+	pretty.Progress(10, "Activate environment started phase.")
 	common.Debug("===  activate phase ===")
 	fmt.Fprintf(planWriter, "\n---  activation plan @%ss  ---\n\n", stopwatch)
 	err := Activate(planWriter, targetFolder)
@@ -365,7 +375,7 @@ func newLiveInternal(yaml, condaYaml, requirementsText, key string, force, fresh
 	}
 	fmt.Fprintf(planWriter, "\n---  pip check plan @%ss  ---\n\n", stopwatch)
 	if common.StrictFlag && pipUsed {
-		common.Progress(11, "Running pip check phase.")
+		pretty.Progress(11, "Running pip check phase.")
 		pipCommand := common.NewCommander(python, "-m", "pip", "check", "--no-color")
 		pipCommand.ConditionalFlag(common.VerboseEnvironmentBuilding(), "--verbose")
 		common.Debug("===  pip check phase ===")
@@ -378,10 +388,10 @@ func newLiveInternal(yaml, condaYaml, requirementsText, key string, force, fresh
 		}
 		common.Timeline("pip check done.")
 	} else {
-		common.Progress(11, "Pip check skipped.")
+		pretty.Progress(11, "Pip check skipped.")
 	}
 	fmt.Fprintf(planWriter, "\n---  installation plan complete @%ss  ---\n\n", stopwatch)
-	common.Progress(12, "Update installation plan.")
+	pretty.Progress(12, "Update installation plan.")
 	common.Error("saving rcc_plan.log", theplan.Save())
 	common.Debug("===  finalize phase ===")
 

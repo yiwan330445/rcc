@@ -53,7 +53,6 @@ var (
 	SemanticTag             string
 	ForcedRobocorpHome      string
 	When                    int64
-	ProgressMark            time.Time
 	Clock                   *stopwatch
 	randomIdentifier        string
 	verbosity               Verbosity
@@ -62,7 +61,6 @@ var (
 func init() {
 	Clock = &stopwatch{"Clock", time.Now()}
 	When = Clock.When()
-	ProgressMark = time.Now()
 
 	randomIdentifier = fmt.Sprintf("%016x", rand.Uint64()^uint64(os.Getpid()))
 

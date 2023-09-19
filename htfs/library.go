@@ -323,7 +323,7 @@ func ControllerSpaceName(client, tag []byte) string {
 func touchUsedHash(hash string) {
 	filename := fmt.Sprintf("%s.%s", hash, common.UserHomeIdentity())
 	fullpath := filepath.Join(common.HololibUsageLocation(), filename)
-	pathlib.ForceTouchWhen(fullpath, common.ProgressMark)
+	pathlib.ForceTouchWhen(fullpath, pretty.ProgressMark)
 }
 
 func (it *hololib) TargetDir(blueprint, controller, space []byte) (result string, err error) {

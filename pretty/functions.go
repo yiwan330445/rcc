@@ -2,9 +2,24 @@ package pretty
 
 import (
 	"fmt"
+	"strings"
+	"time"
 
 	"github.com/robocorp/rcc/common"
 )
+
+const (
+	rccpov   = `From rcc point of view, %q was`
+	maxSteps = 15
+)
+
+var (
+	ProgressMark time.Time
+)
+
+func init() {
+	ProgressMark = time.Now()
+}
 
 func Ok() error {
 	common.Log("%sOK.%s", Green, Reset)
@@ -51,4 +66,43 @@ func Guard(truth bool, code int, format string, rest ...interface{}) {
 	if !truth {
 		Exit(code, format, rest...)
 	}
+}
+
+func RccPointOfView(context string, err error) {
+	explain := fmt.Sprintf(rccpov, context)
+	printer := Lowlight
+	message := fmt.Sprintf("@@@  %s SUCCESS. @@@", explain)
+	journal := fmt.Sprintf("%s SUCCESS.", explain)
+	if err != nil {
+		printer = Highlight
+		message = fmt.Sprintf("@@@  %s FAILURE, reason: %q. See details above.  @@@", explain, err)
+		journal = fmt.Sprintf("%s FAILURE, reason: %s", explain, err)
+	}
+	banner := strings.Repeat("@", len(message))
+	printer(banner)
+	printer(message)
+	printer(banner)
+	common.RunJournal("robot exit", journal, "rcc point of view")
+}
+
+func Regression(step int, form string, details ...interface{}) {
+	progress(Red, step, form, details...)
+}
+
+func Progress(step int, form string, details ...interface{}) {
+	color := Cyan
+	if step == maxSteps {
+		color = Green
+	}
+	progress(color, step, form, details...)
+}
+
+func progress(color string, step int, form string, details ...interface{}) {
+	previous := ProgressMark
+	ProgressMark = time.Now()
+	delta := ProgressMark.Sub(previous).Round(1 * time.Millisecond).Seconds()
+	message := fmt.Sprintf(form, details...)
+	common.Log("%s####  Progress: %02d/%d  %s  %8.3fs  %s%s", color, step, maxSteps, common.Version, delta, message, Reset)
+	common.Timeline("%d/%d %s", step, maxSteps, message)
+	common.RunJournal("environment", "build", "Progress: %02d/%d  %s  %8.3fs  %s", step, maxSteps, common.Version, delta, message)
 }

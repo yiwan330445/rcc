@@ -16,6 +16,10 @@ import (
 	"github.com/spf13/cobra"
 )
 
+const (
+	newEnvironment = `environment creation`
+)
+
 var (
 	holotreeBlueprint []byte
 	holotreeForce     bool
@@ -80,6 +84,7 @@ func holotreeExpandEnvironment(userFiles []string, packfile, environment, worksp
 		holozip = config.Holozip()
 	}
 	path, _, err := htfs.NewEnvironment(condafile, holozip, true, force, operations.PullCatalog)
+	pretty.RccPointOfView(newEnvironment, err)
 	pretty.Guard(err == nil, 6, "%s", err)
 
 	if Has(environment) {

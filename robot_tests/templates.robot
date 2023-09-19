@@ -17,7 +17,7 @@ Goal: Standard robot has correct hash.
 Goal: Running standard robot is succesful.
   Step        build/rcc task run --space templates --controller citests --robot tmp/standardi/robot.yaml
   Use STDERR
-  Must Have   From rcc point of view, actual main robot run was SUCCESS.
+  Must Have   From rcc point of view, "actual main robot run" was SUCCESS.
   Must Have   OK.
 
 Goal: Initialize new python robot.
@@ -32,7 +32,7 @@ Goal: Python robot has correct hash.
 Goal: Running python robot is succesful.
   Step        build/rcc task run --space templates --controller citests --robot tmp/pythoni/robot.yaml
   Use STDERR
-  Must Have   From rcc point of view, actual main robot run was SUCCESS.
+  Must Have   From rcc point of view, "actual main robot run" was SUCCESS.
   Must Have   OK.
 
 Goal: Initialize new extended robot.
@@ -47,13 +47,13 @@ Goal: Extended robot has correct hash.
 Goal: Running extended robot is succesful. (Run All Tasks)
   Step        build/rcc task run --space templates --task "Run All Tasks" --controller citests --robot tmp/extendedi/robot.yaml
   Use STDERR
-  Must Have   From rcc point of view, actual main robot run was SUCCESS.
+  Must Have   From rcc point of view, "actual main robot run" was SUCCESS.
   Must Have   OK.
 
 Goal: Running extended robot is succesful. (Run Example Task)
   Step        build/rcc task run --space templates --task "Run Example Task" --controller citests --robot tmp/extendedi/robot.yaml
   Use STDERR
-  Must Have   From rcc point of view, actual main robot run was SUCCESS.
+  Must Have   From rcc point of view, "actual main robot run" was SUCCESS.
   Must Have   OK.
 
 Goal: Correct holotree spaces were created.
