@@ -1,5 +1,10 @@
 # rcc change log
 
+## v16.3.1 (date: 20.9.2023)
+
+- bug fix: extracting big template failed
+- now some Progress steps have CPUs also visible, in addition to worker count
+
 ## v16.3.0 (date: 19.9.2023)
 
 - extended using "rcc point of view" messaging to environment building,

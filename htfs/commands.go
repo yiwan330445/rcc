@@ -3,6 +3,7 @@ package htfs
 import (
 	"os"
 	"path/filepath"
+	"runtime"
 	"strings"
 
 	"github.com/robocorp/rcc/anywork"
@@ -36,9 +37,9 @@ func NewEnvironment(condafile, holozip string, restore, force bool, puller Catal
 	path := ""
 	defer func() {
 		if err != nil {
-			pretty.Regression(15, "Holotree restoration failure, see above [with %d workers].", anywork.Scale())
+			pretty.Regression(15, "Holotree restoration failure, see above [with %d workers on %d CPUs].", anywork.Scale(), runtime.NumCPU())
 		} else {
-			pretty.Progress(15, "Fresh holotree done [with %d workers].", anywork.Scale())
+			pretty.Progress(15, "Fresh holotree done [with %d workers on %d CPUs].", anywork.Scale(), runtime.NumCPU())
 		}
 		if haszip {
 			pretty.Note("There is hololib.zip present at: %q", holozip)
@@ -68,7 +69,7 @@ func NewEnvironment(condafile, holozip string, restore, force bool, puller Catal
 	_, holotreeBlueprint, err := ComposeFinalBlueprint([]string{condafile}, "")
 	fail.On(err != nil, "%s", err)
 	common.EnvironmentHash, common.FreshlyBuildEnvironment = common.BlueprintHash(holotreeBlueprint), false
-	pretty.Progress(2, "Holotree blueprint is %q [%s with %d workers].", common.EnvironmentHash, common.Platform(), anywork.Scale())
+	pretty.Progress(2, "Holotree blueprint is %q [%s with %d workers on %d CPUs].", common.EnvironmentHash, common.Platform(), anywork.Scale(), runtime.NumCPU())
 	journal.CurrentBuildEvent().Blueprint(common.EnvironmentHash)
 
 	tree, err := New()
@@ -97,7 +98,7 @@ func NewEnvironment(condafile, holozip string, restore, force bool, puller Catal
 	}
 
 	if restore {
-		pretty.Progress(14, "Restore space from library [with %d workers].", anywork.Scale())
+		pretty.Progress(14, "Restore space from library [with %d workers on %d CPUs].", anywork.Scale(), runtime.NumCPU())
 		path, err = library.Restore(holotreeBlueprint, []byte(common.ControllerIdentity()), []byte(common.HolotreeSpace))
 		fail.On(err != nil, "Failed to restore blueprint %q, reason: %v", string(holotreeBlueprint), err)
 		journal.CurrentBuildEvent().RestoreComplete()
@@ -178,7 +179,7 @@ func RecordEnvironment(tree MutableLibrary, blueprint []byte, force bool, scorec
 
 		scorecard.Midpoint()
 
-		pretty.Progress(13, "Record holotree stage to hololib [with %d workers].", anywork.Scale())
+		pretty.Progress(13, "Record holotree stage to hololib [with %d workers on %d CPUs].", anywork.Scale(), runtime.NumCPU())
 		err = tree.Record(blueprint)
 		fail.On(err != nil, "Failed to record blueprint %q, reason: %w", string(blueprint), err)
 		journal.CurrentBuildEvent().RecordComplete()

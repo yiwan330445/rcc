@@ -2,6 +2,7 @@ package operations
 
 import (
 	"archive/zip"
+	"bytes"
 	"fmt"
 	"io"
 	"os"
@@ -187,15 +188,15 @@ func (it *unzipper) Asset(name string) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	payload := make([]byte, stat.Size())
-	total, err := stream.Read(payload)
+	payload := bytes.NewBuffer(nil)
+	total, err := io.Copy(payload, stream)
 	if err != nil && err != io.EOF {
 		return nil, err
 	}
 	if int64(total) != stat.Size() {
 		pretty.Warning("Asset %q read partially!", name)
 	}
-	return payload, nil
+	return payload.Bytes(), nil
 }
 
 func (it *unzipper) ExtraDirectoryPrefixLength() (int, string) {

@@ -5,6 +5,7 @@ import (
 	"math/rand"
 	"os"
 	"path/filepath"
+	"runtime"
 	"time"
 
 	"github.com/robocorp/rcc/anywork"
@@ -57,7 +58,7 @@ var speedtestCmd = &cobra.Command{
 		if common.DebugFlag() {
 			defer common.Stopwatch("Speed test run lasted").Report()
 		}
-		common.Log("Running network and filesystem performance tests with %d workers.", anywork.Scale())
+		common.Log("Running network and filesystem performance tests with %d workers on %d CPUs.", anywork.Scale(), runtime.NumCPU())
 		common.Log("This may take several minutes, please be patient.")
 		signal := make(chan bool)
 		timing := make(chan int)
