@@ -8,11 +8,24 @@ import (
 	"strings"
 
 	"github.com/robocorp/rcc/common"
+	"github.com/robocorp/rcc/fail"
+	"github.com/robocorp/rcc/pretty"
 	"github.com/robocorp/rcc/settings"
 )
 
+type (
+	tlsConfigs []*tls.Config
+)
+
 var (
-	tlsVersions = map[uint16]string{}
+	tlsVersions   = map[uint16]string{}
+	knownVersions = []uint16{
+		tls.VersionTLS13,
+		tls.VersionTLS12,
+		tls.VersionTLS11,
+		tls.VersionTLS10,
+		tls.VersionSSL30,
+	}
 )
 
 func init() {
@@ -142,4 +155,94 @@ func tlsCheckHost(host string, roots map[string]bool) []*common.DiagnosticCheck 
 		})
 	}
 	return result
+}
+
+func configurationVariations(root *x509.CertPool) tlsConfigs {
+	configs := make(tlsConfigs, len(knownVersions))
+	for at, version := range knownVersions {
+		configs[at] = &tls.Config{
+			InsecureSkipVerify: true,
+			RootCAs:            root,
+			MinVersion:         version,
+			MaxVersion:         version,
+		}
+	}
+	return configs
+}
+
+func certificateFingerprint(certificate *x509.Certificate) string {
+	if certificate == nil {
+		return "[nil]"
+	}
+	return fmt.Sprintf("[% 02X ...]", certificate.Signature[:10])
+}
+
+func probeVersion(serverport string, config *tls.Config, seen map[string]int) {
+	conn, err := tls.Dial("tcp", serverport, config)
+	if err != nil {
+		common.Log("  %s%s failed, reason: %v%s", pretty.Yellow, tlsVersions[config.MinVersion], err, pretty.Reset)
+		return
+	}
+	defer conn.Close()
+	state := conn.ConnectionState()
+	version, ok := tlsVersions[state.Version]
+	if !ok {
+		version = fmt.Sprintf("unknown: %03x", state.Version)
+	}
+	server := state.ServerName
+	toVerify := x509.VerifyOptions{
+		DNSName:       server,
+		Roots:         config.RootCAs,
+		Intermediates: x509.NewCertPool(),
+	}
+	common.Log("  %s%s supported, server: %q%s", pretty.Green, version, server, pretty.Reset)
+	certificates := state.PeerCertificates
+	for at, certificate := range certificates {
+		if at > 0 {
+			toVerify.Intermediates.AddCert(certificate)
+		}
+		fingerprint := certificateFingerprint(certificate)
+		hit, ok := seen[fingerprint]
+		if ok {
+			common.Log("    %s#%d: [ID:%d] again %s%s", pretty.Grey, at, hit, fingerprint, pretty.Reset)
+			continue
+		}
+		hit = len(seen) + 1
+		seen[fingerprint] = hit
+		names := strings.Join(certificate.DNSNames, ", ")
+		before := certificate.NotBefore.Format("2006-Jan-02")
+		after := certificate.NotAfter.Format("2006-Jan-02")
+		common.Log("    #%d: %s[ID:%d]%s %s %s - %s [%s]", at, pretty.Magenta, hit, pretty.Reset, fingerprint, before, after, names)
+		common.Log("      + subject %s", certificate.Subject)
+		common.Log("      + issuer %s", certificate.Issuer)
+	}
+	_, err = certificates[0].Verify(toVerify)
+	if err != nil {
+		common.Log("    %s!!! verification failure: %v%s", pretty.Red, err, pretty.Reset)
+	}
+}
+
+func probeServer(index int, serverport string, variations tlsConfigs, seen map[string]int) {
+	common.Log("%s#%d: Server %q%s", pretty.Cyan, index, serverport, pretty.Reset)
+	for _, variation := range variations {
+		probeVersion(serverport, variation, seen)
+	}
+}
+
+func TLSProbe(serverports []string) (err error) {
+	defer fail.Around(&err)
+
+	root, err := x509.SystemCertPool()
+	fail.On(err != nil, "Cannot get system certificate pool, reason: %v", err)
+
+	seen := make(map[string]int)
+
+	variations := configurationVariations(root)
+	for at, serverport := range serverports {
+		if at > 0 {
+			common.Log("--")
+		}
+		probeServer(at+1, serverport, variations, seen)
+	}
+	return nil
 }
