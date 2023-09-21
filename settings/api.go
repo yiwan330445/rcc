@@ -34,5 +34,6 @@ type Api interface {
 	HasCaBundle() bool
 	VerifySsl() bool
 	NoRevocation() bool
+	LegacyRenegotiation() bool
 	NoBuid() bool
 }

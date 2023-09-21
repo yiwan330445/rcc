@@ -231,9 +231,10 @@ func (it *Settings) Diagnostics(target *common.DiagnosticStatus) {
 }
 
 type Certificates struct {
-	VerifySsl   bool   `yaml:"verify-ssl" json:"verify-ssl"`
-	SslNoRevoke bool   `yaml:"ssl-no-revoke" json:"ssl-no-revoke"`
-	CaBundle    string `yaml:"ca-bundle,omitempty" json:"ca-bundle,omitempty"`
+	VerifySsl           bool   `yaml:"verify-ssl" json:"verify-ssl"`
+	SslNoRevoke         bool   `yaml:"ssl-no-revoke" json:"ssl-no-revoke"`
+	LegacyRenegotiation bool   `yaml:"legacy-renegotiation-allowed" json:"legacy-renegotiation-allowed"`
+	CaBundle            string `yaml:"ca-bundle,omitempty" json:"ca-bundle,omitempty"`
 }
 
 func (it *Certificates) onTopOf(target *Settings) {
@@ -242,6 +243,7 @@ func (it *Certificates) onTopOf(target *Settings) {
 	}
 	target.Certificates.VerifySsl = it.VerifySsl
 	target.Certificates.SslNoRevoke = it.SslNoRevoke
+	target.Certificates.LegacyRenegotiation = it.LegacyRenegotiation
 	if pathlib.IsFile(common.CaBundleFile()) {
 		target.Certificates.CaBundle = common.CaBundleFile()
 	}

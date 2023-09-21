@@ -1,11 +1,13 @@
 package operations
 
 import (
+	"context"
 	"crypto/tls"
 	"crypto/x509"
 	"fmt"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/robocorp/rcc/common"
 	"github.com/robocorp/rcc/fail"
@@ -178,12 +180,21 @@ func certificateFingerprint(certificate *x509.Certificate) string {
 }
 
 func probeVersion(serverport string, config *tls.Config, seen map[string]int) {
-	conn, err := tls.Dial("tcp", serverport, config)
+	dialer := &tls.Dialer{
+		Config: config,
+	}
+	timeout, _ := context.WithTimeout(context.Background(), 5*time.Second)
+	intermediate, err := dialer.DialContext(timeout, "tcp", serverport)
 	if err != nil {
 		common.Log("  %s%s failed, reason: %v%s", pretty.Yellow, tlsVersions[config.MinVersion], err, pretty.Reset)
 		return
 	}
-	defer conn.Close()
+	defer intermediate.Close()
+	conn, ok := intermediate.(*tls.Conn)
+	if !ok {
+		common.Log("  %s%s failed, reason: could not covert to TLS connection.%s", pretty.Yellow, tlsVersions[config.MinVersion], pretty.Reset)
+		return
+	}
 	state := conn.ConnectionState()
 	cipher := tls.CipherSuiteName(state.CipherSuite)
 	version, ok := tlsVersions[state.Version]

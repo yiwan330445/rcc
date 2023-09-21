@@ -114,6 +114,12 @@ func injectNetworkEnvironment(environment []string) []string {
 	}
 	if !settings.Global.VerifySsl() {
 		environment = append(environment, "MAMBA_SSL_VERIFY=false")
+		environment = append(environment, "RC_DISABLE_SSL=true")
+		environment = append(environment, "WDM_SSL_VERIFY=0")
+		environment = append(environment, "NODE_TLS_REJECT_UNAUTHORIZED=0")
+	}
+	if settings.Global.LegacyRenegotiation() {
+		environment = append(environment, "RC_TLS_LEGACY_RENEGOTIATION_ALLOWED=true")
 	}
 	environment = appendIfValue(environment, "https_proxy", settings.Global.HttpsProxy())
 	environment = appendIfValue(environment, "HTTPS_PROXY", settings.Global.HttpsProxy())

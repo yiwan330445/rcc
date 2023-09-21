@@ -1,5 +1,14 @@
 # rcc change log
 
+## v16.5.0 (date: 21.9.2023)
+
+- new variables set into environments: `RC_DISABLE_SSL`, `WDM_SSL_VERIFY`,
+  `NODE_TLS_REJECT_UNAUTHORIZED`, and `RC_TLS_LEGACY_RENEGOTIATION_ALLOWED`
+- new settings option `legacy-renegotiation-allowed`
+- removed `automation-studio` from `autoupdates:` in settings.yaml file
+- settings.yaml version number updated to `2023.09`
+- added 5 second timeout to probe connections
+
 ## v16.4.1 (date: 21.9.2023) INTERNAL
 
 - improve: refining TLS probe (added cipher suite)

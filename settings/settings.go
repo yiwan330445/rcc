@@ -235,6 +235,10 @@ func (it gateway) VerifySsl() bool {
 	return it.settings().Certificates.VerifySsl
 }
 
+func (it gateway) LegacyRenegotiation() bool {
+	return it.settings().Certificates.LegacyRenegotiation
+}
+
 func (it gateway) NoRevocation() bool {
 	return it.settings().Certificates.SslNoRevoke
 }
