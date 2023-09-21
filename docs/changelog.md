@@ -1,5 +1,9 @@
 # rcc change log
 
+## v16.4.1 (date: 21.9.2023) INTERNAL
+
+- improve: refining TLS probe (added cipher suite)
+
 ## v16.4.0 (date: 21.9.2023) INTERNAL
 
 - feature: internal TLS probe implementation

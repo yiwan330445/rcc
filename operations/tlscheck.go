@@ -185,6 +185,7 @@ func probeVersion(serverport string, config *tls.Config, seen map[string]int) {
 	}
 	defer conn.Close()
 	state := conn.ConnectionState()
+	cipher := tls.CipherSuiteName(state.CipherSuite)
 	version, ok := tlsVersions[state.Version]
 	if !ok {
 		version = fmt.Sprintf("unknown: %03x", state.Version)
@@ -195,8 +196,9 @@ func probeVersion(serverport string, config *tls.Config, seen map[string]int) {
 		Roots:         config.RootCAs,
 		Intermediates: x509.NewCertPool(),
 	}
-	common.Log("  %s%s supported, server: %q%s", pretty.Green, version, server, pretty.Reset)
+	common.Log("  %s%s supported, cipher suite %q, server: %q%s", pretty.Green, version, cipher, server, pretty.Reset)
 	certificates := state.PeerCertificates
+	before := len(seen)
 	for at, certificate := range certificates {
 		if at > 0 {
 			toVerify.Intermediates.AddCert(certificate)
@@ -215,6 +217,9 @@ func probeVersion(serverport string, config *tls.Config, seen map[string]int) {
 		common.Log("    #%d: %s[ID:%d]%s %s %s - %s [%s]", at, pretty.Magenta, hit, pretty.Reset, fingerprint, before, after, names)
 		common.Log("      + subject %s", certificate.Subject)
 		common.Log("      + issuer %s", certificate.Issuer)
+	}
+	if len(seen) == before {
+		return
 	}
 	_, err = certificates[0].Verify(toVerify)
 	if err != nil {
