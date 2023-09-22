@@ -20,8 +20,8 @@ func fixHosts(hosts []string) []string {
 	return servers
 }
 
-var internalProbeCmd = &cobra.Command{
-	Use:   "probe <host:port>+",
+var tlsProbeCmd = &cobra.Command{
+	Use:   "tlsprobe <host:port>+",
 	Short: "Probe host:port combinations for supported TLS versions.",
 	Long:  "Probe host:port combinations for supported TLS versions.",
 	Run: func(cmd *cobra.Command, args []string) {
@@ -33,5 +33,5 @@ var internalProbeCmd = &cobra.Command{
 }
 
 func init() {
-	internalCmd.AddCommand(internalProbeCmd)
+	configureCmd.AddCommand(tlsProbeCmd)
 }

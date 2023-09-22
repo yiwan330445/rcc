@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/robocorp/rcc/cloud"
 	"github.com/robocorp/rcc/common"
 	"github.com/robocorp/rcc/conda"
 	"github.com/robocorp/rcc/htfs"
@@ -354,10 +355,15 @@ func ExecuteTask(flags *RunFlags, template []string, config robot.Robot, todo ro
 	journal.CurrentBuildEvent().RobotStarts()
 	pipe := WatchChildren(os.Getpid(), 200*time.Millisecond)
 	shell.WithInterrupt(func() {
+		exitcode := 0
 		if common.NoOutputCapture {
-			_, err = shell.New(environment, directory, task...).Execute(interactive)
+			exitcode, err = shell.New(environment, directory, task...).Execute(interactive)
 		} else {
-			_, err = shell.New(environment, directory, task...).Tee(outputDir, interactive)
+			exitcode, err = shell.New(environment, directory, task...).Tee(outputDir, interactive)
+		}
+		if exitcode != 0 {
+			details := fmt.Sprintf("%s_%d_%08x", common.Platform(), exitcode, uint32(exitcode))
+			cloud.BackgroundMetric(common.ControllerIdentity(), "rcc.cli.run.failure", details)
 		}
 	})
 	pretty.RccPointOfView(actualRun, err)

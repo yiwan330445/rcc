@@ -1,5 +1,12 @@
 # rcc change log
 
+## v16.6.0 (date: 22.9.2023)
+
+- internal probe becomes `rcc configuration tlsprobe` command
+- tlsprobe output improvements (address and DNS resolution)
+- sending metrics of `rcc.cli.run.failure` when automation exit code is
+  something else than zero
+
 ## v16.5.0 (date: 21.9.2023)
 
 - new variables set into environments: `RC_DISABLE_SSL`, `WDM_SSL_VERIFY`,

@@ -5,6 +5,7 @@ import (
 	"crypto/tls"
 	"crypto/x509"
 	"fmt"
+	"net"
 	"net/http"
 	"strings"
 	"time"
@@ -179,6 +180,18 @@ func certificateFingerprint(certificate *x509.Certificate) string {
 	return fmt.Sprintf("[% 02X ...]", certificate.Signature[:10])
 }
 
+func dnsLookup(serverport string) string {
+	parts := strings.Split(serverport, ":")
+	if len(parts) == 0 {
+		return "DNS: []"
+	}
+	dns, err := net.LookupHost(parts[0])
+	if err != nil {
+		return fmt.Sprintf("DNS [%v]", err)
+	}
+	return fmt.Sprintf("DNS %q", dns)
+}
+
 func probeVersion(serverport string, config *tls.Config, seen map[string]int) {
 	dialer := &tls.Dialer{
 		Config: config,
@@ -207,7 +220,7 @@ func probeVersion(serverport string, config *tls.Config, seen map[string]int) {
 		Roots:         config.RootCAs,
 		Intermediates: x509.NewCertPool(),
 	}
-	common.Log("  %s%s supported, cipher suite %q, server: %q%s", pretty.Green, version, cipher, server, pretty.Reset)
+	common.Log("  %s%s supported, cipher suite %q, server: %q, address: %q%s", pretty.Green, version, cipher, server, conn.RemoteAddr(), pretty.Reset)
 	certificates := state.PeerCertificates
 	before := len(seen)
 	for at, certificate := range certificates {
@@ -239,7 +252,7 @@ func probeVersion(serverport string, config *tls.Config, seen map[string]int) {
 }
 
 func probeServer(index int, serverport string, variations tlsConfigs, seen map[string]int) {
-	common.Log("%s#%d: Server %q%s", pretty.Cyan, index, serverport, pretty.Reset)
+	common.Log("%s#%d: Server %q, %s%s", pretty.Cyan, index, serverport, dnsLookup(serverport), pretty.Reset)
 	for _, variation := range variations {
 		probeVersion(serverport, variation, seen)
 	}
