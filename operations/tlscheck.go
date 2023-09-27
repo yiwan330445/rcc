@@ -49,7 +49,10 @@ func tlsCheckHeadOnly(url string) (*tls.ConnectionState, error) {
 	// this is intentional, so that network diagnosis can detect
 	// unsecure certificates, and connections to weaker TLS version
 	// [ref: Github CodeQL security warning]
-	client := http.Client{Transport: transport}
+	client := http.Client{
+		Transport: transport,
+		Timeout:   3 * time.Second,
+	}
 	response, err := client.Head(url)
 	if err != nil {
 		return nil, err

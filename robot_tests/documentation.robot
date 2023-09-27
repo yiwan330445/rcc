@@ -1,7 +1,6 @@
 *** Settings ***
 Resource  resources.robot
 Test template  Verify documentation
-Default tags   WIP
 
 *** Test cases ***                  DOCUMENTATION      EXPECT
 

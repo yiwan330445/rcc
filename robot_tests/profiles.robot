@@ -2,6 +2,7 @@
 Library  OperatingSystem
 Library  supporting.py
 Resource  resources.robot
+Default tags   WIP
 
 *** Test cases ***
 
@@ -21,8 +22,9 @@ Goal: Can import profiles into rcc
 
 Goal: Can see imported profiles
   Step        build/rcc configuration switch
-  Must Have   Alpha settings
-  Must Have   Beta settings
+  Must Have   Alpha: Alpha settings
+  Must Have   Beta: Beta settings
+  Wont Have   Gamma: Gamma settings
   Must Have   Currently active profile is: default
   Use STDERR
   Must Have   OK.
@@ -46,8 +48,8 @@ Goal: Can switch to Alpha profile
   Use STDERR
   Must Have   OK.
 
-Goal: Diagnostics can show alpha profile information
-  Step        build/rcc configuration diagnostics --json
+Goal: Quick diagnostics can show alpha profile information
+  Step        build/rcc configuration diagnostics --quick --json
   Must Be Json Response
   Must Have   "config-micromambarc-used": "false"
   Must Have   "config-piprc-used": "false"
@@ -68,14 +70,15 @@ Goal: Can switch to Beta profile
   Use STDERR
   Must Have   OK.
 
-Goal: Diagnostics can show beta profile information
-  Step        build/rcc configuration diagnostics --json
+Goal: Quick diagnostics can show beta profile information
+  Step        build/rcc configuration diagnostics --quick --json
   Must Be Json Response
   Must Have   "config-micromambarc-used": "true"
   Must Have   "config-piprc-used": "true"
   Must Have   "config-settings-yaml-used": "true"
   Must Have   "config-ssl-no-revoke": "true"
   Must Have   "config-ssl-verify": "false"
+  Must Have   "config-legacy-renegotiation-allowed": "true"
   Must Have   "config-https-proxy": "http://bad.betaputkinen.net:1234/"
   Must Have   "config-http-proxy": "http://bad.betaputkinen.net:2345/"
 
@@ -86,6 +89,23 @@ Goal: Can import and switch to Gamma profile immediately
 
   Step        build/rcc configuration switch
   Use STDOUT
+  Must Have   Alpha: Alpha settings
+  Must Have   Beta: Beta settings
+  Must Have   Gamma: Gamma settings
+  Must Have   Currently active profile is: Gamma
+  Use STDERR
+  Must Have   OK.
+
+Goal: Can remove profile while it is still used
+  Step        build/rcc configuration remove --profile Gamma
+  Use STDERR
+  Must Have   OK.
+
+  Step        build/rcc configuration switch
+  Use STDOUT
+  Must Have   Alpha: Alpha settings
+  Must Have   Beta: Beta settings
+  Wont Have   Gamma: Gamma settings
   Must Have   Currently active profile is: Gamma
   Use STDERR
   Must Have   OK.

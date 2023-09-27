@@ -4,6 +4,7 @@ settings:
   certificates:
     verify-ssl: false
     ssl-no-revoke: true
+    legacy-renegotiation-allowed: true
   network:
     https-proxy: http://bad.betaputkinen.net:1234/
     http-proxy: http://bad.betaputkinen.net:2345/

@@ -1,5 +1,12 @@
 # rcc change log
 
+## v16.7.0 (date: 27.9.2023)
+
+- refactored profile commands into one file
+- added support for removing configuration profiles
+- updated robot tests to test profile removal
+- fix: added 3 second timeout to TLS checks
+
 ## v16.6.0 (date: 22.9.2023)
 
 - internal probe becomes `rcc configuration tlsprobe` command

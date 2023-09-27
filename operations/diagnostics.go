@@ -87,6 +87,7 @@ func runDiagnostics(quick bool) *common.DiagnosticStatus {
 	result.Details["config-http-proxy"] = settings.Global.HttpProxy()
 	result.Details["config-ssl-verify"] = fmt.Sprintf("%v", settings.Global.VerifySsl())
 	result.Details["config-ssl-no-revoke"] = fmt.Sprintf("%v", settings.Global.NoRevocation())
+	result.Details["config-legacy-renegotiation-allowed"] = fmt.Sprintf("%v", settings.Global.LegacyRenegotiation())
 	result.Details["os-holo-location"] = common.HoloLocation()
 	result.Details["hololib-location"] = common.HololibLocation()
 	result.Details["hololib-catalog-location"] = common.HololibCatalogLocation()
