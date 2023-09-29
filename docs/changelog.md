@@ -1,5 +1,12 @@
 # rcc change log
 
+## v16.7.1 (date: 29.9.2023)
+
+- bugfix: added process blacklist to prevent old processes shown as child
+  processes in process tree (also recycled PIDs will become "grey listed")
+  and this bug was detected in Windows
+- improvement: changed command WaitDelay from 15 seconds to 3 seconds
+
 ## v16.7.0 (date: 27.9.2023)
 
 - refactored profile commands into one file

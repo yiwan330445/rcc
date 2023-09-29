@@ -18,15 +18,33 @@ type (
 	ProcessNode  struct {
 		Pid        int
 		Parent     int
+		White      bool
 		Executable string
 		Children   ProcessMap
 	}
 )
 
+var (
+	processBlacklist = make(map[int]int)
+)
+
+func init() {
+	processes, err := ProcessMapNow()
+	if err == nil {
+		rcc := os.Getpid()
+		for _, process := range processes {
+			if process.Pid != rcc {
+				processBlacklist[process.Pid] = process.Parent
+			}
+		}
+	}
+}
+
 func NewProcessNode(core ps.Process) *ProcessNode {
 	return &ProcessNode{
 		Pid:        core.Pid(),
 		Parent:     core.PPid(),
+		White:      true,
 		Executable: core.Executable(),
 		Children:   make(ProcessMap),
 	}
@@ -39,7 +57,13 @@ func ProcessMapNow() (ProcessMap, error) {
 	}
 	result := make(ProcessMap)
 	for _, process := range processes {
-		result[process.Pid()] = NewProcessNode(process)
+		node := NewProcessNode(process)
+		old, ok := processBlacklist[node.Pid]
+		if ok && old == node.Parent {
+			continue
+		}
+		node.White = !ok
+		result[node.Pid] = node
 	}
 	for pid, process := range result {
 		parent, ok := result[process.Parent]
@@ -94,13 +118,17 @@ func (it *ProcessNode) warningTree(prefix string, newparent bool, limit int) {
 	if len(it.Children) > 0 {
 		kind = "container"
 	}
+	var grey string
+	if !it.White {
+		grey = " (grey listed)"
+	}
 	if newparent {
 		kind = fmt.Sprintf("%s -> new parent PID: #%d", kind, it.Parent)
 	} else {
 		kind = fmt.Sprintf("%s under #%d", kind, it.Parent)
 	}
-	pretty.Warning("%s#%d  %q <%s>", prefix, it.Pid, it.Executable, kind)
-	common.RunJournal("orphan process", fmt.Sprintf("parent=%d pid=%d name=%s", it.Parent, it.Pid, it.Executable), "process pollution")
+	pretty.Warning("%s#%d  %q <%s>%s%s", prefix, it.Pid, it.Executable, kind, pretty.Grey, grey)
+	common.RunJournal("orphan process", fmt.Sprintf("parent=%d pid=%d name=%s greylist=%v", it.Parent, it.Pid, it.Executable, !it.White), "process pollution")
 	if limit < 0 {
 		pretty.Warning("%s  Maximum recursion depth detected. Truncating output here.", prefix)
 		return
@@ -192,6 +220,7 @@ func updateSeenChildren(pid int, processes ProcessMap, seen ChildMap) bool {
 }
 
 func WatchChildren(pid int, delay time.Duration) chan ChildMap {
+	common.Debug("Process blacklist size is %d processes.", len(processBlacklist))
 	pipe := make(chan ChildMap)
 	go babySitter(pid, pipe, delay)
 	return pipe
