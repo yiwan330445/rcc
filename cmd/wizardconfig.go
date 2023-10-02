@@ -11,8 +11,8 @@ import (
 var wizardConfigCommand = &cobra.Command{
 	Use:     "configuration",
 	Aliases: []string{"conf", "config", "configure"},
-	Short:   "Create a configuration profile for Robocorp tooling interactively.",
-	Long:    "Create a configuration profile for Robocorp tooling interactively.",
+	Short:   "Create a configuration profile for Robocorp tooling interactively. Deprecated. Use Setup Utility instead.",
+	Long:    "Create a configuration profile for Robocorp tooling interactively. Deprecated. Use Setup Utility instead.",
 	Run: func(cmd *cobra.Command, args []string) {
 		if !pretty.Interactive {
 			pretty.Exit(1, "This is for interactive use only. Do not use in scripting/CI!")

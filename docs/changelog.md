@@ -1,5 +1,11 @@
 # rcc change log
 
+## v16.8.0 (date: 2.10.2023)
+
+- improvement: quick diagnostics now has settings.yaml age visible as seconds
+- added `RCC_REMOTE_ORIGIN` variable to diagnostics output
+- deprecated interactive configuration, since Setup Utility should be used
+
 ## v16.7.1 (date: 29.9.2023)
 
 - bugfix: added process blacklist to prevent old processes shown as child

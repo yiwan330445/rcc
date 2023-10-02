@@ -53,6 +53,19 @@ func Exists(pathname string) bool {
 	return !os.IsNotExist(err)
 }
 
+func Age(pathname string) uint64 {
+	var milliseconds int64
+	stat, err := os.Stat(pathname)
+	if !os.IsNotExist(err) {
+		milliseconds = time.Now().Sub(stat.ModTime()).Milliseconds()
+	}
+	seconds := milliseconds / 1000
+	if seconds < 0 {
+		return 0
+	}
+	return uint64(seconds)
+}
+
 func Abs(path string) (string, error) {
 	if filepath.IsAbs(path) {
 		return path, nil
