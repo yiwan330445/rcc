@@ -150,5 +150,10 @@ func main() {
 		TimezoneMetric()
 	}
 
+	if common.WarrantyVoided() {
+		common.Timeline("Running in 'warranty voided' mode.")
+		pretty.Warning("Note that 'rcc' is running in 'warranty voided' mode.")
+	}
+
 	anywork.Sync()
 }

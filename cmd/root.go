@@ -123,6 +123,7 @@ func init() {
 	rootCmd.PersistentFlags().IntVarP(&anywork.WorkerCount, "workers", "", 0, "scale background workers manually (do not use, unless you know what you are doing)")
 	rootCmd.PersistentFlags().BoolVarP(&common.UnmanagedSpace, "unmanaged", "", false, "work with unmanaged holotree spaces, DO NOT USE (unless you know what you are doing)")
 	rootCmd.PersistentFlags().BoolVarP(&common.LayeredHolotree, "layered", "", false, "use layered holotree spaces, experimental, DO NOT USE (unless you know what you are doing)")
+	rootCmd.PersistentFlags().BoolVarP(&common.WarrantyVoidedFlag, "warranty-voided", "", false, "experimental, warranty voided, dangerous mode ... DO NOT USE (unless you know what you are doing)")
 }
 
 func initConfig() {
@@ -144,6 +145,11 @@ func initConfig() {
 	common.UnifyStageHandling()
 
 	pretty.Setup()
+
+	if common.WarrantyVoided() {
+		pretty.Warning("Note that 'rcc' is running in 'warranty voided' mode.")
+	}
+
 	common.Timeline("%q", os.Args)
 	common.Trace("CLI command was: %#v", os.Args)
 	common.Debug("Using config file: %v", xviper.ConfigFileUsed())

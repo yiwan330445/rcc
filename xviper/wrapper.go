@@ -35,6 +35,9 @@ type config struct {
 }
 
 func (it *config) Save() {
+	if common.WarrantyVoided() {
+		return
+	}
 	if len(it.Filename) == 0 {
 		return
 	}

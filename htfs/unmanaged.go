@@ -105,6 +105,10 @@ func (it *unmanaged) Record(blueprint []byte) error {
 	return it.delegate.Record(blueprint)
 }
 
+func (it *unmanaged) WarrantyVoidedDir(controller, space []byte) string {
+	return it.delegate.WarrantyVoidedDir(controller, space)
+}
+
 func (it *unmanaged) TargetDir(blueprint, client, tag []byte) (string, error) {
 	return it.delegate.TargetDir(blueprint, client, tag)
 }

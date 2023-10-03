@@ -29,7 +29,7 @@ type filehandle interface {
 }
 
 func Locker(filename string, trycount int) (Releaser, error) {
-	if Lockless {
+	if common.WarrantyVoided() || Lockless {
 		return Fake(), nil
 	}
 	var file *os.File

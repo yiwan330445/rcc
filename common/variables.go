@@ -46,6 +46,7 @@ var (
 	UnmanagedSpace          bool
 	FreshlyBuildEnvironment bool
 	LayeredHolotree         bool
+	WarrantyVoidedFlag      bool
 	StageFolder             string
 	ControllerType          string
 	HolotreeSpace           string
@@ -106,6 +107,10 @@ func RccRemoteAuthorization() (string, bool) {
 
 func RobocorpLock() string {
 	return filepath.Join(RobocorpHome(), "robocorp.lck")
+}
+
+func WarrantyVoided() bool {
+	return WarrantyVoidedFlag
 }
 
 func DebugFlag() bool {

@@ -125,6 +125,9 @@ func injectNetworkEnvironment(environment []string) []string {
 	environment = appendIfValue(environment, "HTTPS_PROXY", settings.Global.HttpsProxy())
 	environment = appendIfValue(environment, "http_proxy", settings.Global.HttpProxy())
 	environment = appendIfValue(environment, "HTTP_PROXY", settings.Global.HttpProxy())
+	if common.WarrantyVoided() {
+		environment = append(environment, "RCC_WARRANTY_VOIDED=true")
+	}
 	return environment
 }
 

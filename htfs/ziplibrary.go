@@ -13,6 +13,7 @@ import (
 	"github.com/robocorp/rcc/fail"
 	"github.com/robocorp/rcc/journal"
 	"github.com/robocorp/rcc/pathlib"
+	"github.com/robocorp/rcc/pretty"
 )
 
 type ziplibrary struct {
@@ -76,6 +77,11 @@ func (it *ziplibrary) Open(digest string) (readable io.Reader, closer Closer, er
 
 func (it *ziplibrary) CatalogPath(key string) string {
 	return filepath.Join("catalog", CatalogName(key))
+}
+
+func (it *ziplibrary) WarrantyVoidedDir(controller, space []byte) string {
+	pretty.Exit(13, "hololib.zip does not support `--warranty-voided` running")
+	return ""
 }
 
 func (it *ziplibrary) TargetDir(blueprint, client, tag []byte) (path string, err error) {

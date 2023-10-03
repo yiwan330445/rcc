@@ -106,6 +106,7 @@ func runDiagnostics(quick bool) *common.DiagnosticStatus {
 	result.Details["ENV:ComSpec"] = os.Getenv("ComSpec")
 	result.Details["ENV:SHELL"] = os.Getenv("SHELL")
 	result.Details["ENV:LANG"] = os.Getenv("LANG")
+	result.Details["warranty-voided-mode"] = fmt.Sprintf("%v", common.WarrantyVoided())
 
 	for name, filename := range lockfiles() {
 		result.Details[name] = filename

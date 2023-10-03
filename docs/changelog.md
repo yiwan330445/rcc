@@ -1,5 +1,10 @@
 # rcc change log
 
+## v16.9.0 (date: 3.10.2023) UNSTABLE
+
+- deterioration: added `--warranty-voided` mode to make system less robust but
+  faster (do not use this mode, unless you really do know what you are doing)
+
 ## v16.8.0 (date: 2.10.2023)
 
 - improvement: quick diagnostics now has settings.yaml age visible as seconds

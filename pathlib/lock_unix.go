@@ -11,7 +11,7 @@ import (
 )
 
 func Locker(filename string, trycount int) (Releaser, error) {
-	if Lockless {
+	if common.WarrantyVoided() || Lockless {
 		return Fake(), nil
 	}
 	if common.TraceFlag() {

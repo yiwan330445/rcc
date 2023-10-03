@@ -10,6 +10,7 @@ import (
 	"github.com/robocorp/rcc/fail"
 	"github.com/robocorp/rcc/journal"
 	"github.com/robocorp/rcc/pathlib"
+	"github.com/robocorp/rcc/pretty"
 )
 
 type virtual struct {
@@ -74,6 +75,11 @@ func (it *virtual) Record(blueprint []byte) (err error) {
 	it.root = fs
 	it.key = key
 	return nil
+}
+
+func (it *virtual) WarrantyVoidedDir(controller, space []byte) string {
+	pretty.Exit(13, "hololib.zip does not support `--warranty-voided` running")
+	return ""
 }
 
 func (it *virtual) TargetDir(blueprint, client, tag []byte) (string, error) {

@@ -55,5 +55,5 @@ func ConsentTracking(state bool) {
 }
 
 func CanTrack() bool {
-	return GetBool(trackingConsentKey)
+	return GetBool(trackingConsentKey) && !common.WarrantyVoided()
 }

@@ -42,6 +42,9 @@ func sendMetric(metricsHost, kind, name, value string) {
 }
 
 func BackgroundMetric(kind, name, value string) {
+	if common.WarrantyVoided() {
+		return
+	}
 	metricsHost := settings.Global.TelemetryURL()
 	if len(metricsHost) == 0 {
 		return

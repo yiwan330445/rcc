@@ -55,6 +55,7 @@ type Library interface {
 	ValidateBlueprint([]byte) error
 	HasBlueprint([]byte) bool
 	Open(string) (io.Reader, Closer, error)
+	WarrantyVoidedDir([]byte, []byte) string
 	TargetDir([]byte, []byte, []byte) (string, error)
 	Restore([]byte, []byte, []byte) (string, error)
 	RestoreTo([]byte, string, string, string, bool) (string, error)
@@ -324,6 +325,10 @@ func touchUsedHash(hash string) {
 	filename := fmt.Sprintf("%s.%s", hash, common.UserHomeIdentity())
 	fullpath := filepath.Join(common.HololibUsageLocation(), filename)
 	pathlib.ForceTouchWhen(fullpath, pretty.ProgressMark)
+}
+
+func (it *hololib) WarrantyVoidedDir(controller, space []byte) string {
+	return filepath.Join(common.HolotreeLocation(), ControllerSpaceName(controller, space))
 }
 
 func (it *hololib) TargetDir(blueprint, controller, space []byte) (result string, err error) {

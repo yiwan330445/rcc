@@ -81,6 +81,9 @@ func SummonCache() (*Cache, error) {
 }
 
 func (it *Cache) Save() error {
+	if common.WarrantyVoided() {
+		return nil
+	}
 	lockfile := cacheLockFile()
 	completed := pathlib.LockWaitMessage(lockfile, "Serialized cache access [cache lock]")
 	locker, err := pathlib.Locker(lockfile, 125)

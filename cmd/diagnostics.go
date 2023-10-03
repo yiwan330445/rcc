@@ -23,7 +23,7 @@ var diagnosticsCmd = &cobra.Command{
 		if common.DebugFlag() {
 			defer common.Stopwatch("Diagnostic run lasted").Report()
 		}
-		_, err := operations.ProduceDiagnostics(fileOption, robotOption, jsonFlag, productionFlag, quickFilterFlag)
+		_, err := operations.ProduceDiagnostics(fileOption, robotOption, jsonFlag, productionFlag, quickFilterFlag || common.WarrantyVoided())
 		if err != nil {
 			pretty.Exit(1, "Error: %v", err)
 		}
