@@ -6,6 +6,8 @@
 
 - run command `rcc configuration diagnostics` and see if there are warnings,
   failures or errors in output (and same with `rcc configuration netdiagnostics`)
+- run command `rcc configuration tlsprobe` against various host:port targets
+  to get insights about supported TLS versions, and certificates used there
 - if failure is with specific robot, then try running command
   `rcc configuration diagnostics --robot path/to/robot.yaml` and see if
   those robot diagnostics have something that identifies a problem (or to get

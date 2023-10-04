@@ -8,7 +8,6 @@ import (
 	"strings"
 
 	"github.com/robocorp/rcc/common"
-	"github.com/robocorp/rcc/pathlib"
 	"github.com/robocorp/rcc/pretty"
 )
 
@@ -40,19 +39,6 @@ func memberValidation(members []string, erratic string) Validator {
 func regexpValidation(validator *regexp.Regexp, erratic string) Validator {
 	return func(input string) bool {
 		if !validator.MatchString(input) {
-			common.Stdout("%s%s%s\n\n", pretty.Red, erratic, pretty.Reset)
-			return false
-		}
-		return true
-	}
-}
-
-func optionalFileValidation(erratic string) Validator {
-	return func(input string) bool {
-		if len(strings.TrimSpace(input)) == 0 {
-			return true
-		}
-		if !pathlib.IsFile(input) {
 			common.Stdout("%s%s%s\n\n", pretty.Red, erratic, pretty.Reset)
 			return false
 		}

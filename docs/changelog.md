@@ -1,5 +1,13 @@
 # rcc change log
 
+## v17.0.0 (date: 4.10.2023) UNSTABLE
+
+- MAJOR breaking change: removed interactive configuration command, since
+  Setup Utility now better covers that functionality
+- MAJOR breaking change: holotree is now layered by default and `--layered`
+  option is gone
+- few documentation updates
+
 ## v16.9.0 (date: 3.10.2023) UNSTABLE
 
 - deterioration: added `--warranty-voided` mode to make system less robust but

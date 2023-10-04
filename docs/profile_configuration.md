@@ -28,12 +28,9 @@ can be active at any moment.
 
 More behind [this link](https://robocorp.com/docs/control-room/setup-utility).
 
-### Pure rcc workflow
+### Pure rcc workflow for handling existing profiles
 
 ```sh
-# interactively create "Office" profile
-rcc interactive configuration Office
-
 # import that Office profile, so that it can be used
 rcc configuration import --filename profile_office.yaml
 
@@ -66,9 +63,6 @@ rcc configuration export --profile Office --filename shared.yaml
 ## Discovery process
 
 1. You must be inside that network that you are targetting the configuration.
-2. Run interactive configuration and answer questions there.
-3. Take created profile in use.
-4. Run diagnostics and speed test to verify functionality.
-5. Repeat these steps until everything works.
-6. Export profile and share it with rest of your team/organization.
-7. Create other profiles for different network locations (remote, VPN, ...)
+2. Run Setup Utility and use it to setup and verify your profile.
+3. Export profile and share it with rest of your team/organization.
+4. Create other profiles for different network locations (remote, VPN, ...)

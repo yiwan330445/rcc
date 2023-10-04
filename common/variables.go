@@ -45,7 +45,6 @@ var (
 	Liveonly                bool
 	UnmanagedSpace          bool
 	FreshlyBuildEnvironment bool
-	LayeredHolotree         bool
 	WarrantyVoidedFlag      bool
 	StageFolder             string
 	ControllerType          string

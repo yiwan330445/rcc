@@ -78,7 +78,7 @@
 #### 4.1.2 [What does it contain?](https://github.com/robocorp/rcc/blob/master/docs/profile_configuration.md#what-does-it-contain)
 ### 4.2 [Quick start guide](https://github.com/robocorp/rcc/blob/master/docs/profile_configuration.md#quick-start-guide)
 #### 4.2.1 [Setup Utility -- user interface for this](https://github.com/robocorp/rcc/blob/master/docs/profile_configuration.md#setup-utility----user-interface-for-this)
-#### 4.2.2 [Pure rcc workflow](https://github.com/robocorp/rcc/blob/master/docs/profile_configuration.md#pure-rcc-workflow)
+#### 4.2.2 [Pure rcc workflow for handling existing profiles](https://github.com/robocorp/rcc/blob/master/docs/profile_configuration.md#pure-rcc-workflow-for-handling-existing-profiles)
 ### 4.3 [What is needed?](https://github.com/robocorp/rcc/blob/master/docs/profile_configuration.md#what-is-needed)
 ### 4.4 [Discovery process](https://github.com/robocorp/rcc/blob/master/docs/profile_configuration.md#discovery-process)
 ### 4.5 [What is execution environment isolation and caching?](https://github.com/robocorp/rcc/blob/master/docs/environment-caching.md#what-is-execution-environment-isolation-and-caching)

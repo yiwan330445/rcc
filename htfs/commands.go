@@ -173,11 +173,11 @@ func RecordEnvironment(tree MutableLibrary, blueprint []byte, force bool, scorec
 		fail.On(err != nil, "Failed to save %q, reason %w.", identityfile, err)
 
 		skip := conda.SkipNoLayers
-		if !force && common.LayeredHolotree {
+		if !force {
 			pretty.Progress(6, "Restore partial environment into holotree stage %q.", tree.Stage())
 			skip = RestoreLayersTo(tree, identityfile, tree.Stage())
 		} else {
-			pretty.Progress(6, "Restore partial environment skipped. Layers disabled or force used.")
+			pretty.Progress(6, "Restore partial environment skipped. Force used.")
 		}
 
 		err = os.WriteFile(identityfile, blueprint, 0o644)

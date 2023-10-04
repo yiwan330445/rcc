@@ -301,28 +301,30 @@ func holotreeLayers(condaYaml, requirementsText string, finalEnv *Environment, t
 		if !success {
 			return success, fatal, false, ""
 		}
-		if common.LayeredHolotree && (pipNeeded || postInstall) {
-			fmt.Fprintf(theplan, "\n---  micromamba layer complete [on layerd holotree]  ---\n\n")
+		if pipNeeded || postInstall {
+			fmt.Fprintf(theplan, "\n---  micromamba layer complete [on layered holotree]  ---\n\n")
 			common.Error("saving rcc_plan.log", theplan.Save())
 			common.Error("saving golden master", goldenMaster(targetFolder, false))
 			recorder.Record([]byte(layers[0]))
 		}
 	} else {
 		pretty.Progress(7, "Skipping micromamba phase, layer exists.")
+		fmt.Fprintf(planWriter, "\n---  micromamba plan skipped, layer exists ---\n\n")
 	}
 	if skip < SkipPipLayer {
 		success, fatal, pipUsed, python = pipLayer(fingerprints[1], requirementsText, targetFolder, stopwatch, planWriter)
 		if !success {
 			return success, fatal, pipUsed, python
 		}
-		if common.LayeredHolotree && pipUsed && postInstall {
-			fmt.Fprintf(theplan, "\n---  pip layer complete [on layerd holotree]  ---\n\n")
+		if pipUsed && postInstall {
+			fmt.Fprintf(theplan, "\n---  pip layer complete [on layered holotree]  ---\n\n")
 			common.Error("saving rcc_plan.log", theplan.Save())
 			common.Error("saving golden master", goldenMaster(targetFolder, true))
 			recorder.Record([]byte(layers[1]))
 		}
 	} else {
 		pretty.Progress(8, "Skipping pip phase, layer exists.")
+		fmt.Fprintf(planWriter, "\n---  pip plan skiped, layer exists  ---\n\n")
 	}
 	if skip < SkipPostinstallLayer {
 		success, fatal = postInstallLayer(fingerprints[2], finalEnv.PostInstall, targetFolder, stopwatch, planWriter)
@@ -331,6 +333,7 @@ func holotreeLayers(condaYaml, requirementsText string, finalEnv *Environment, t
 		}
 	} else {
 		pretty.Progress(9, "Skipping post install scripts phase, layer exists.")
+		fmt.Fprintf(planWriter, "\n---  post install plan skipped, layer exists  ---\n\n")
 	}
 	return true, false, pipUsed, python
 }

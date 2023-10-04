@@ -71,16 +71,6 @@ func LoadSetting(filename string) (*Settings, error) {
 	return config, nil
 }
 
-func TemporalSettingsLayer(filename string) error {
-	config, err := LoadSetting(filename)
-	if err != nil {
-		return err
-	}
-	chain[2] = config
-	cachedSettings = nil
-	return nil
-}
-
 func SummonSettings() (*Settings, error) {
 	if cachedSettings != nil {
 		return cachedSettings, nil

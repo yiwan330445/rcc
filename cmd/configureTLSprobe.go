@@ -23,7 +23,19 @@ func fixHosts(hosts []string) []string {
 var tlsProbeCmd = &cobra.Command{
 	Use:   "tlsprobe <host:port>+",
 	Short: "Probe host:port combinations for supported TLS versions.",
-	Long:  "Probe host:port combinations for supported TLS versions.",
+	Long: `Probe host:port combinations for supported TLS versions.
+
+This command will show following information on your TLS settings:
+- current DNS resolution give host
+- which TLS versions are available on specific host:port combo
+- server name, address, port, and cipher suite that actually was negotiated
+- certificate chains that was seen on that connection
+
+Examples:
+  rcc configuration tlsprobe www.bing.com www.google.com
+  rcc configuration tlsprobe outlook.office365.com:993 outlook.office365.com:995
+  rcc configuration tlsprobe api.us1.robocorp.com api.eu1.robocorp.com
+`,
 	Run: func(cmd *cobra.Command, args []string) {
 		servers := fixHosts(args)
 		err := operations.TLSProbe(servers)
