@@ -2,6 +2,7 @@ package htfs
 
 import (
 	"os"
+	"os/user"
 	"path/filepath"
 	"runtime"
 	"strings"
@@ -22,6 +23,10 @@ type CatalogPuller func(string, string, bool) error
 
 func NewEnvironment(condafile, holozip string, restore, force bool, puller CatalogPuller) (label string, scorecard common.Scorecard, err error) {
 	defer fail.Around(&err)
+
+	who, _ := user.Current()
+	host, _ := os.Hostname()
+	pretty.Progress(0, "Context: %q <%v@%v> [%v/%v].", who.Name, who.Username, host, common.Platform(), settings.OperatingSystem())
 
 	if common.WarrantyVoided() {
 		tree, err := New()

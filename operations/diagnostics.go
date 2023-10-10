@@ -99,6 +99,7 @@ func runDiagnostics(quick bool) *common.DiagnosticStatus {
 	result.Details["holotree-global-shared"] = fmt.Sprintf("%v", pathlib.IsFile(common.SharedMarkerLocation()))
 	result.Details["holotree-user-id"] = common.UserHomeIdentity()
 	result.Details["os"] = common.Platform()
+	result.Details["os-details"] = settings.OperatingSystem()
 	result.Details["cpus"] = fmt.Sprintf("%d", runtime.NumCPU())
 	result.Details["when"] = time.Now().Format(time.RFC3339 + " (MST)")
 	result.Details["timezone"] = time.Now().Format("MST")

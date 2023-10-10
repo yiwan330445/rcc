@@ -1,5 +1,9 @@
 # rcc change log
 
+## v17.1.0 (date: 10.10.2023) UNSTABLE
+
+- operating system infomation on diagnostics and progress items
+
 ## v17.0.1 (date: 10.10.2023) UNSTABLE
 
 - early detection of `--warranty-voided` flag to allow init usage
