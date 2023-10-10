@@ -8,6 +8,8 @@ import (
 	"runtime"
 	"strings"
 	"time"
+
+	"github.com/robocorp/rcc/set"
 )
 
 type (
@@ -63,6 +65,9 @@ func init() {
 	When = Clock.When()
 
 	randomIdentifier = fmt.Sprintf("%016x", rand.Uint64()^uint64(os.Getpid()))
+
+	// peek CLI options to pre-initialize "Warranty Voided" indicator
+	WarrantyVoidedFlag = set.Member(set.Set(os.Args), "--warranty-voided")
 
 	// Note: HololibCatalogLocation, HololibLibraryLocation and HololibUsageLocation
 	//       are force created from "htfs" direcotry.go init function
@@ -337,7 +342,7 @@ func isDir(pathname string) bool {
 }
 
 func ensureDirectory(name string) {
-	if !isDir(name) {
+	if !WarrantyVoided() && !isDir(name) {
 		Error("mkdir", os.MkdirAll(name, 0o750))
 	}
 }

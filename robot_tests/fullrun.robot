@@ -181,6 +181,33 @@ Goal: See variables from specific environment with robot.yaml but without task
   Must Have   ROBOT_ARTIFACTS=
   Step        build/rcc holotree check --controller citests
 
+Goal: See variables from specific environment with warranty voided
+  Step        build/rcc holotree variables --controller citests -r tmp/fluffy/robot.yaml --warranty-voided
+  Must Have   ROBOCORP_HOME=
+  Must Have   PYTHON_EXE=
+  Must Have   RCC_EXE=
+  Must Have   CONDA_DEFAULT_ENV=rcc
+  Must Have   CONDA_PREFIX=
+  Must Have   CONDA_PROMPT_MODIFIER=(rcc)
+  Must Have   CONDA_SHLVL=1
+  Must Have   PATH=
+  Must Have   PYTHONHOME=
+  Must Have   PYTHONEXECUTABLE=
+  Must Have   PYTHONNOUSERSITE=1
+  Must Have   TEMP=
+  Must Have   TMP=
+  Must Have   RCC_ENVIRONMENT_HASH=
+  Must Have   RCC_INSTALLATION_ID=
+  Must Have   RCC_TRACKING_ALLOWED=
+  Must Have   PYTHONPATH=
+  Must Have   ROBOT_ROOT=
+  Must Have   ROBOT_ARTIFACTS=
+  Use STDERR
+  Wont Have   Progress: 01/15
+  Wont Have   Progress: 02/15
+  Wont Have   Progress: 15/15
+  Must Have   Warning: Note that 'rcc' is running in 'warranty voided' mode.
+
 Goal: See variables from specific environment without robot.yaml knowledge in JSON form
   Step        build/rcc holotree variables --controller citests --json conda/testdata/conda.yaml
   Must Be Json Response

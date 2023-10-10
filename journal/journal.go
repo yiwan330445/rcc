@@ -88,6 +88,9 @@ func Post(event, detail, commentForm string, fields ...interface{}) (err error) 
 
 func appendJournal(journalname string, blob []byte) (err error) {
 	defer fail.Around(&err)
+	if common.WarrantyVoided() {
+		return nil
+	}
 	handle, err := os.OpenFile(journalname, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0o640)
 	fail.On(err != nil, "Failed to open event journal %v -> %v", journalname, err)
 	defer handle.Close()

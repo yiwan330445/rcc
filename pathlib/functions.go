@@ -35,6 +35,9 @@ func Create(filename string) (*os.File, error) {
 }
 
 func WriteFile(filename string, data []byte, mode os.FileMode) error {
+	if common.WarrantyVoided() {
+		return nil
+	}
 	_, err := EnsureParentDirectory(filename)
 	if err != nil {
 		return fmt.Errorf("Failed to ensure that parent directories for %q exist, reason: %v", filename, err)
@@ -233,6 +236,10 @@ func ensureCorrectMode(fullpath string, stat fs.FileInfo, correct fs.FileMode) (
 func makeModedDir(fullpath string, correct fs.FileMode) (path string, err error) {
 	defer fail.Around(&err)
 
+	if common.WarrantyVoided() {
+		return fullpath, nil
+	}
+
 	stat, err := os.Stat(fullpath)
 	if err == nil && stat.IsDir() {
 		return ensureCorrectMode(fullpath, stat, correct)
@@ -274,7 +281,7 @@ func doEnsureDirectory(directory string, mode fs.FileMode) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	if IsDir(fullpath) {
+	if common.WarrantyVoided() || IsDir(fullpath) {
 		return fullpath, nil
 	}
 	err = os.MkdirAll(fullpath, mode)

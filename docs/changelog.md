@@ -1,5 +1,11 @@
 # rcc change log
 
+## v17.0.1 (date: 10.10.2023) UNSTABLE
+
+- early detection of `--warranty-voided` flag to allow init usage
+- more functionality skipped when "warranty voided", so that rcc is more
+  read-only with that flag
+
 ## v17.0.0 (date: 4.10.2023) UNSTABLE
 
 - MAJOR breaking change: removed interactive configuration command, since

@@ -32,11 +32,13 @@ func init() {
 	killfile[".svn"] = true
 	killfile[".gitignore"] = true
 
-	pathlib.MakeSharedDir(common.HoloLocation())
-	pathlib.MakeSharedDir(common.HololibCatalogLocation())
-	pathlib.MakeSharedDir(common.HololibLibraryLocation())
-	pathlib.MakeSharedDir(common.HololibUsageLocation())
-	pathlib.MakeSharedDir(common.HololibPids())
+	if !common.WarrantyVoided() {
+		pathlib.MakeSharedDir(common.HoloLocation())
+		pathlib.MakeSharedDir(common.HololibCatalogLocation())
+		pathlib.MakeSharedDir(common.HololibLibraryLocation())
+		pathlib.MakeSharedDir(common.HololibUsageLocation())
+		pathlib.MakeSharedDir(common.HololibPids())
+	}
 }
 
 type (
