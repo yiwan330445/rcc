@@ -18,7 +18,7 @@ var (
 )
 
 func operatingSystem() string {
-	output, _, err := shell.New(nil, ".", osInfoCommand...).CaptureOutput()
+	output, _, err := shell.New(nil, ".", osInfoCommand...).NoStderr().CaptureOutput()
 	if err != nil {
 		output = err.Error()
 	}

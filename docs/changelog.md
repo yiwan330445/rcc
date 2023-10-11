@@ -1,5 +1,11 @@
 # rcc change log
 
+## v17.1.2 (date: 11.10.2023)
+
+- bugfix: Windows micromamba activation failures
+- bugfix: operating system information was leaking process STDERR
+- added operating system information to speed test output
+
 ## v17.1.1 (date: 11.10.2023) UNSTABLE
 
 - bugfix: operating system information executed differently in windows

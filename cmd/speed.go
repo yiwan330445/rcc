@@ -15,6 +15,7 @@ import (
 	"github.com/robocorp/rcc/operations"
 	"github.com/robocorp/rcc/pathlib"
 	"github.com/robocorp/rcc/pretty"
+	"github.com/robocorp/rcc/settings"
 
 	"github.com/spf13/cobra"
 )
@@ -58,6 +59,7 @@ var speedtestCmd = &cobra.Command{
 		if common.DebugFlag() {
 			defer common.Stopwatch("Speed test run lasted").Report()
 		}
+		common.Log("System %q running on %q.", settings.OperatingSystem(), common.Platform())
 		common.Log("Running network and filesystem performance tests with %d workers on %d CPUs.", anywork.Scale(), runtime.NumCPU())
 		common.Log("This may take several minutes, please be patient.")
 		signal := make(chan bool)

@@ -28,6 +28,7 @@ type (
 		executable  string
 		args        []string
 		stderronly  bool
+		nostderr    bool
 	}
 
 	Wrapper func()
@@ -45,11 +46,17 @@ func New(environment []string, directory string, task ...string) *Task {
 		executable:  executable,
 		args:        args,
 		stderronly:  false,
+		nostderr:    false,
 	}
 }
 
 func (it *Task) StderrOnly() *Task {
 	it.stderronly = true
+	return it
+}
+
+func (it *Task) NoStderr() *Task {
+	it.nostderr = true
 	return it
 }
 
@@ -67,7 +74,11 @@ func (it *Task) execute(stdin io.Reader, stdout, stderr io.Writer) (int, error) 
 	command.Dir = it.directory
 	command.Stdin = stdin
 	command.Stdout = stdout
-	command.Stderr = stderr
+	if it.nostderr {
+		command.Stderr = nil
+	} else {
+		command.Stderr = stderr
+	}
 	command.WaitDelay = 3 * time.Second
 	err := command.Start()
 	if err != nil {
