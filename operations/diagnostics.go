@@ -71,10 +71,14 @@ func runDiagnostics(quick bool) *common.DiagnosticStatus {
 	result.Details["ROBOCORP_OVERRIDE_SYSTEM_REQUIREMENTS"] = fmt.Sprintf("%v", common.OverrideSystemRequirements())
 	result.Details["RCC_VERBOSE_ENVIRONMENT_BUILDING"] = fmt.Sprintf("%v", common.VerboseEnvironmentBuilding())
 	result.Details["RCC_REMOTE_ORIGIN"] = fmt.Sprintf("%v", common.RccRemoteOrigin())
+	who, _ := user.Current()
+	result.Details["user-name"] = who.Name
+	result.Details["user-username"] = who.Username
 	result.Details["user-cache-dir"] = justText(os.UserCacheDir)
 	result.Details["user-config-dir"] = justText(os.UserConfigDir)
 	result.Details["user-home-dir"] = justText(os.UserHomeDir)
 	result.Details["working-dir"] = justText(os.Getwd)
+	result.Details["hostname"] = justText(os.Hostname)
 	result.Details["tempdir"] = os.TempDir()
 	result.Details["controller"] = common.ControllerIdentity()
 	result.Details["user-agent"] = common.UserAgent()

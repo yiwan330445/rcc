@@ -1,5 +1,10 @@
 # rcc change log
 
+## v17.1.1 (date: 11.10.2023) UNSTABLE
+
+- bugfix: operating system information executed differently in windows
+- added hostname and user name to diagnostic information
+
 ## v17.1.0 (date: 10.10.2023) UNSTABLE
 
 - operating system infomation on diagnostics and progress items

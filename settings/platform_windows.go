@@ -1,5 +1,5 @@
 package settings
 
 var (
-	osInfoCommand = []string{"ver"}
+	osInfoCommand = []string{"cmd.exe", "/c", "ver"}
 )
