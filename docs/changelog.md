@@ -1,5 +1,10 @@
 # rcc change log
 
+## v17.1.3 (date: 12.10.2023)
+
+- fix: made used environment configuration visible on progress entry and
+  also noted once on first unique contact
+
 ## v17.1.2 (date: 11.10.2023)
 
 - bugfix: Windows micromamba activation failures

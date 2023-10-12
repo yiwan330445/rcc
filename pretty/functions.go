@@ -14,7 +14,8 @@ const (
 )
 
 var (
-	ProgressMark time.Time
+	ProgressMark     time.Time
+	onlyOnceMessages = make(map[string]bool)
 )
 
 func init() {
@@ -24,6 +25,14 @@ func init() {
 func Ok() error {
 	common.Log("%sOK.%s", Green, Reset)
 	return nil
+}
+
+func JustOnce(format string, rest ...interface{}) {
+	message := fmt.Sprintf(format, rest...)
+	if !onlyOnceMessages[message] {
+		onlyOnceMessages[message] = true
+		Highlight(format, rest...)
+	}
 }
 
 func DebugNote(format string, rest ...interface{}) {

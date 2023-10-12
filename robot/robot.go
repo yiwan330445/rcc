@@ -375,6 +375,12 @@ func (it *robot) UsesConda() bool {
 }
 
 func (it *robot) CondaConfigFile() string {
+	resolved := it.resolveCondaConfigFile()
+	pretty.JustOnce("Note! For now, resolved effective environment configuration file is %q.", resolved)
+	return resolved
+}
+
+func (it *robot) resolveCondaConfigFile() string {
 	available := it.availableEnvironmentConfigurations(common.Platform())
 	if len(available) > 0 {
 		return available[0]
