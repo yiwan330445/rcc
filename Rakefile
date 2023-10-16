@@ -21,13 +21,29 @@ task :tooling do
 end
 
 task :noassets do
+  rm_f FileList['blobs/assets/micromamba.*']
   rm_f FileList['blobs/assets/*.zip']
   rm_f FileList['blobs/assets/*.yaml']
   rm_f FileList['blobs/assets/man/*.txt']
   rm_f FileList['blobs/docs/*.md']
 end
 
-task :assets => [:noassets] do
+def download_link(version, platform, filename)
+    "https://downloads.robocorp.com/micromamba/#{version}/#{platform}/#{filename}"
+end
+
+task :micromamba do
+    version = 'v1.5.1'
+    url = download_link(version, "macos64", "micromamba")
+    sh "curl -o blobs/assets/micromamba.darwin_amd64 #{url}"
+    url = download_link(version, "windows64", "micromamba.exe")
+    sh "curl -o blobs/assets/micromamba.windows_amd64 #{url}"
+    url = download_link(version, "linux64", "micromamba")
+    sh "curl -o blobs/assets/micromamba.linux_amd64 #{url}"
+    sh "gzip -9 blobs/assets/micromamba.*"
+end
+
+task :assets => [:noassets, :micromamba] do
   FileList['templates/*/'].each do |directory|
     basename = File.basename(directory)
     assetname = File.absolute_path(File.join("blobs", "assets", "#{basename}.zip"))
@@ -61,13 +77,6 @@ task :linux64 => [:what, :test] do
   sh "sha256sum build/linux64/* || true"
 end
 
-task :linux64arm => [:what, :test] do
-  ENV['GOOS'] = 'linux'
-  ENV['GOARCH'] = 'arm64'
-  sh "go build -ldflags '-s' -o build/linux64/arm/ ./cmd/..."
-  sh "sha256sum build/linux64/arm/* || true"
-end
-
 task :macos64 => [:support] do
   ENV['GOOS'] = 'darwin'
   ENV['GOARCH'] = 'amd64'
@@ -75,25 +84,11 @@ task :macos64 => [:support] do
   sh "sha256sum build/macos64/* || true"
 end
 
-task :macos64arm => [:support] do
-  ENV['GOOS'] = 'darwin'
-  ENV['GOARCH'] = 'arm64'
-  sh "go build -ldflags '-s' -o build/macos64/arm/ ./cmd/..."
-  sh "sha256sum build/macos64/arm/* || true"
-end
-
 task :windows64 => [:support] do
   ENV['GOOS'] = 'windows'
   ENV['GOARCH'] = 'amd64'
   sh "go build -ldflags '-s' -o build/windows64/ ./cmd/..."
   sh "sha256sum build/windows64/* || true"
-end
-
-task :windows64arm => [:support] do
-  ENV['GOOS'] = 'windows'
-  ENV['GOARCH'] = 'arm64'
-  sh "go build -ldflags '-s' -o build/windows64/arm/ ./cmd/..."
-  sh "sha256sum build/windows64/arm/* || true"
 end
 
 desc 'Setup build environment'
@@ -113,7 +108,7 @@ task :robot => :local do
 end
 
 desc 'Build commands to linux, macos, and windows.'
-task :build => [:tooling, :version_txt, :linux64, :linux64arm, :macos64, :macos64arm, :windows64, :windows64arm] do
+task :build => [:tooling, :version_txt, :linux64, :macos64, :windows64] do
   sh 'ls -l $(find build -type f)'
 end
 

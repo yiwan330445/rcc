@@ -5,6 +5,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 )
 
 const (
@@ -27,4 +28,8 @@ func GenerateKillCommand(keys []int) string {
 		command = append(command, fmt.Sprintf("%d", key))
 	}
 	return strings.Join(command, " ")
+}
+
+func PlatformSyncDelay() {
+	time.Sleep(3 * time.Millisecond)
 }

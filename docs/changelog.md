@@ -1,5 +1,12 @@
 # rcc change log
 
+## v17.3.0 (date: 16.10.2023) WORK IN PROGRESS
+
+- embedded micromamba inside rcc executable
+- removed micromamba download support since it extract all the way
+- removing support for arm64 architectures (linux, mac, windows) since
+  embedded micromamba is not available on those architectures
+
 ## v17.2.0 (date: 12.10.2023)
 
 - micromamba upgrade to v1.5.1

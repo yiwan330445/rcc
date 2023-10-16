@@ -43,6 +43,7 @@ func TestCanOtherAssets(t *testing.T) {
 	wont_be.Panic(func() { blobs.MustAsset("docs/profile_configuration.md") })
 	wont_be.Panic(func() { blobs.MustAsset("docs/recipes.md") })
 	wont_be.Panic(func() { blobs.MustAsset("docs/usecases.md") })
+	wont_be.Panic(func() { blobs.MustMicromamba() })
 }
 
 func TestCanGetTemplateNamesThruOperations(t *testing.T) {

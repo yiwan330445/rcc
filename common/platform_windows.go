@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 	"regexp"
 	"strings"
+	"time"
 )
 
 const (
@@ -45,4 +46,8 @@ func GenerateKillCommand(keys []int) string {
 		command = append(command, fmt.Sprintf("/pid %d", key))
 	}
 	return strings.Join(command, " ")
+}
+
+func PlatformSyncDelay() {
+	time.Sleep(300 * time.Millisecond)
 }

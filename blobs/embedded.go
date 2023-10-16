@@ -19,3 +19,11 @@ func MustAsset(name string) []byte {
 	}
 	return body
 }
+
+func MustMicromamba() []byte {
+	body, err := micromamba.ReadFile(micromambaName)
+	if err != nil {
+		panic(err)
+	}
+	return body
+}
