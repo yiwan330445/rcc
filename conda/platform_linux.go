@@ -5,6 +5,7 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/robocorp/rcc/blobs"
 	"github.com/robocorp/rcc/common"
 	"github.com/robocorp/rcc/pathlib"
 	"github.com/robocorp/rcc/pretty"
@@ -42,7 +43,7 @@ func CondaEnvironment() []string {
 }
 
 func BinMicromamba() string {
-	location := common.ExpandPath(filepath.Join(common.MicromambaLocation(), MicromambaVersionNumber))
+	location := common.ExpandPath(filepath.Join(common.MicromambaLocation(), blobs.MicromambaVersion()))
 	err := pathlib.EnsureDirectoryExists(location)
 	if err != nil {
 		pretty.Warning("Problem creating %q, reason: %v", location, err)

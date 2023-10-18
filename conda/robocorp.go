@@ -10,17 +10,12 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/robocorp/rcc/blobs"
 	"github.com/robocorp/rcc/common"
 	"github.com/robocorp/rcc/pathlib"
 	"github.com/robocorp/rcc/settings"
 	"github.com/robocorp/rcc/shell"
 	"github.com/robocorp/rcc/xviper"
-)
-
-const (
-	// for micromamba upgrade, change following constants to match
-	MicromambaVersionLimit  = 1_005_001
-	MicromambaVersionNumber = "v1.5.1"
 )
 
 var (
@@ -38,7 +33,7 @@ var (
 )
 
 func micromambaLink(platform, filename string) string {
-	return fmt.Sprintf("micromamba/%s/%s/%s", MicromambaVersionNumber, platform, filename)
+	return fmt.Sprintf("micromamba/%s/%s/%s", blobs.MicromambaVersion(), platform, filename)
 }
 
 func sorted(files []os.FileInfo) {
@@ -241,7 +236,7 @@ func HasMicroMamba() bool {
 		return false
 	}
 	version, versionText := AsVersion(MicromambaVersion())
-	goodEnough := version >= MicromambaVersionLimit
+	goodEnough := version >= blobs.MicromambaVersionLimit
 	common.Debug("%q version is %q -> %v (good enough: %v)", BinMicromamba(), versionText, version, goodEnough)
 	common.Timeline("µmamba version is %q (at %q).", versionText, BinMicromamba())
 	return goodEnough

@@ -2,10 +2,18 @@ package blobs
 
 import (
 	"embed"
+	"strings"
+)
+
+const (
+	// for micromamba upgrade, change following constants to match
+	// and also remember to update assets/micromamba_version.txt to match this
+	MicromambaVersionLimit = 1_005_001
 )
 
 //go:embed assets/*.yaml docs/*.md
 //go:embed assets/*.zip assets/man/*.txt
+//go:embed assets/micromamba_version.txt
 var content embed.FS
 
 func Asset(name string) ([]byte, error) {
@@ -26,4 +34,12 @@ func MustMicromamba() []byte {
 		panic(err)
 	}
 	return body
+}
+
+func MicromambaVersion() string {
+	body, err := Asset("assets/micromamba_version.txt")
+	if err != nil {
+		return "v0.0.0"
+	}
+	return strings.TrimSpace(string(body))
 }

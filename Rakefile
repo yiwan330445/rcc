@@ -33,14 +33,15 @@ def download_link(version, platform, filename)
 end
 
 task :micromamba do
-    version = 'v1.5.1'
+    version = File.read('assets/micromamba_version.txt').strip()
+    puts "Using micromamba version #{version}"
     url = download_link(version, "macos64", "micromamba")
     sh "curl -o blobs/assets/micromamba.darwin_amd64 #{url}"
     url = download_link(version, "windows64", "micromamba.exe")
     sh "curl -o blobs/assets/micromamba.windows_amd64 #{url}"
     url = download_link(version, "linux64", "micromamba")
     sh "curl -o blobs/assets/micromamba.linux_amd64 #{url}"
-    sh "gzip -9 blobs/assets/micromamba.*"
+    sh "gzip -f -9 blobs/assets/micromamba.*"
 end
 
 task :assets => [:noassets, :micromamba] do
@@ -51,6 +52,7 @@ task :assets => [:noassets, :micromamba] do
     puts "Directory #{directory} => #{assetname}"
     sh "cd #{directory} && zip -ryqD9 #{assetname} ."
   end
+  cp FileList['assets/micromamba_version.txt'], 'blobs/assets/'
   cp FileList['assets/*.yaml'], 'blobs/assets/'
   cp FileList['assets/man/*.txt'], 'blobs/assets/man/'
   cp FileList['docs/*.md'], 'blobs/docs/'

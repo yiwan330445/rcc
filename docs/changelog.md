@@ -1,5 +1,10 @@
 # rcc change log
 
+## v17.3.1 (date: 18.10.2023)
+
+- minor fix: now used micromamba version number is stored in separate asset
+  file, to keep things in sync between build scripts and rcc binary
+
 ## v17.3.0 (date: 16.10.2023) WORK IN PROGRESS
 
 - embedded micromamba inside rcc executable

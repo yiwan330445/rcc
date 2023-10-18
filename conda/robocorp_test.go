@@ -3,6 +3,7 @@ package conda_test
 import (
 	"testing"
 
+	"github.com/robocorp/rcc/blobs"
 	"github.com/robocorp/rcc/conda"
 	"github.com/robocorp/rcc/hamlet"
 )
@@ -31,6 +32,6 @@ func TestCanParsePipVersion(t *testing.T) {
 func TestInternalMicromambaVersionConsistency(t *testing.T) {
 	must_be, _ := hamlet.Specifications(t)
 
-	needs, _ := conda.AsVersion(conda.MicromambaVersionNumber)
-	must_be.Equal(uint64(conda.MicromambaVersionLimit), needs)
+	needs, _ := conda.AsVersion(blobs.MicromambaVersion())
+	must_be.Equal(uint64(blobs.MicromambaVersionLimit), needs)
 }
