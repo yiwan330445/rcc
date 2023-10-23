@@ -1,5 +1,12 @@
 # rcc change log
 
+## v17.4.0 (date: 23.10.2023) WORK IN PROGRESS
+
+- new subcommand, `rcc configuration tlsexport`, to export TLS certificates
+  from given set of secure and unsecure URLs
+- now tlsprobe reports fingerprint using sha256 from raw certificate, not
+  just plain signature
+
 ## v17.3.1 (date: 18.10.2023)
 
 - minor fix: now used micromamba version number is stored in separate asset

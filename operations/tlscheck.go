@@ -2,22 +2,35 @@ package operations
 
 import (
 	"context"
+	"crypto/md5"
+	"crypto/sha1"
+	"crypto/sha256"
 	"crypto/tls"
 	"crypto/x509"
+	"encoding/pem"
 	"fmt"
+	"hash"
 	"net"
 	"net/http"
+	"os"
 	"strings"
 	"time"
 
 	"github.com/robocorp/rcc/common"
 	"github.com/robocorp/rcc/fail"
 	"github.com/robocorp/rcc/pretty"
+	"github.com/robocorp/rcc/set"
 	"github.com/robocorp/rcc/settings"
+	"gopkg.in/yaml.v2"
 )
 
 type (
 	tlsConfigs []*tls.Config
+
+	UrlConfig struct {
+		TrustedURLs   []string `yaml:"trusted,omitempty"`
+		UntrustedURLs []string `yaml:"untrusted,omitempty"`
+	}
 )
 
 var (
@@ -176,11 +189,34 @@ func configurationVariations(root *x509.CertPool) tlsConfigs {
 	return configs
 }
 
+func formatFingerprint(digest hash.Hash, certificate *x509.Certificate) string {
+	if certificate == nil {
+		return "N/A"
+	}
+	digest.Write(certificate.Raw)
+	return strings.Replace(fmt.Sprintf("% 02x", digest.Sum(nil)), " ", ":", -1)
+}
+
+func md5Fingerprint(certificate *x509.Certificate) string {
+	return formatFingerprint(md5.New(), certificate)
+}
+
+func sha1Fingerprint(certificate *x509.Certificate) string {
+	return formatFingerprint(sha1.New(), certificate)
+}
+
+func sha256Fingerprint(certificate *x509.Certificate) string {
+	return formatFingerprint(sha256.New(), certificate)
+}
+
 func certificateFingerprint(certificate *x509.Certificate) string {
 	if certificate == nil {
 		return "[nil]"
 	}
-	return fmt.Sprintf("[% 02X ...]", certificate.Signature[:10])
+	digest := sha256.New()
+	digest.Write(certificate.Raw)
+	sum := digest.Sum(nil)
+	return fmt.Sprintf("[% 02X ...]", sum[:16])
 }
 
 func dnsLookup(serverport string) string {
@@ -277,4 +313,138 @@ func TLSProbe(serverports []string) (err error) {
 		probeServer(at+1, serverport, variations, seen)
 	}
 	return nil
+}
+
+func urlConfigFrom(content []byte) (*UrlConfig, error) {
+	result := new(UrlConfig)
+	err := yaml.Unmarshal(content, result)
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
+}
+
+func mergeConfigFiles(configfiles []string) (trusted []string, untrusted []string, err error) {
+	defer fail.Around(&err)
+	trusted, untrusted = []string{}, []string{}
+	for _, filename := range configfiles {
+		content, err := os.ReadFile(filename)
+		fail.On(err != nil, "Failed to read %q, reason: %v", filename, err)
+		config, err := urlConfigFrom(content)
+		fail.On(err != nil, "Failed to parse %q, reason: %v", filename, err)
+		trusted = append(trusted, config.TrustedURLs...)
+		untrusted = append(untrusted, config.UntrustedURLs...)
+	}
+	return trusted, untrusted, nil
+}
+
+func certificateExport(certificate *x509.Certificate, trusted bool) (text string, err error) {
+	defer fail.Around(&err)
+
+	label := "!UNTRUSTED"
+	if trusted {
+		label = "trusted"
+	}
+
+	stream := &strings.Builder{}
+	if certificate != nil {
+		fmt.Fprintf(stream, "# Category: %q with flags:%010b (rcc %s)\n", label, certificate.KeyUsage, common.Version)
+		fmt.Fprintln(stream, "# Issuer:", certificate.Issuer)
+		fmt.Fprintln(stream, "# Subject:", certificate.Subject)
+		fmt.Fprintf(stream, "# Label: %q\n", certificate.Subject.CommonName)
+		fmt.Fprintf(stream, "# Serial: %d\n", certificate.SerialNumber)
+		fmt.Fprintf(stream, "# MD5 Fingerprint: %s\n", md5Fingerprint(certificate))
+		fmt.Fprintf(stream, "# SHA1 Fingerprint: %s\n", sha1Fingerprint(certificate))
+		fmt.Fprintf(stream, "# SHA256 Fingerprint: %s\n", sha256Fingerprint(certificate))
+		block := &pem.Block{Type: "CERTIFICATE", Bytes: certificate.Raw}
+		err := pem.Encode(stream, block)
+		fail.On(err != nil, "Could not PEM encode certificate, reason: %v", err)
+	}
+	return stream.String(), nil
+}
+
+func pickVerifiedCertificates(roots *x509.CertPool, candidates []*x509.Certificate) ([]*x509.Certificate, []error) {
+	errors := make([]error, 0, len(candidates))
+	verified := make([]*x509.Certificate, 0, len(candidates))
+	toVerify := x509.VerifyOptions{Roots: roots}
+	for _, candidate := range candidates {
+		_, err := candidate.Verify(toVerify)
+		if err == nil {
+			verified = append(verified, candidate)
+		} else {
+			errors = append(errors, err)
+		}
+	}
+	return verified, errors
+}
+
+func tlsExportUrls(roots *x509.CertPool, unique map[string]bool, urls []string, untrusted bool) (ok bool, err error) {
+	defer fail.Around(&err)
+	ok = true
+search:
+	for _, url := range urls {
+		state, err := tlsCheckHeadOnly(url)
+		if err != nil {
+			ok = false
+			pretty.Warning("Failed to check URL %q for TLS certificates, reason: %v", url, err)
+			continue search
+		}
+		if state != nil {
+			total := len(state.PeerCertificates)
+			if total < 1 {
+				ok = false
+				pretty.Warning("Failed to check URL %q for TLS certificates, reason: too few certificates in chain", url)
+				continue search
+			}
+			exportable := state.PeerCertificates
+			if !untrusted {
+				verified, errors := pickVerifiedCertificates(roots, state.PeerCertificates)
+				if len(verified) == 0 {
+					pretty.Warning("Failed to verify any of TLS certificates for URL %q, reasons:", url)
+					for _, err := range errors {
+						pretty.Warning("- %v", err)
+					}
+					ok = false
+					continue search
+				}
+				exportable = verified
+			}
+			for _, export := range exportable {
+				text, err := certificateExport(export, !untrusted)
+				if err != nil {
+					pretty.Warning("Failed to export TLS certificates for URL %q, reason: %v", url, err)
+					ok = false
+					continue search
+				}
+				unique[text] = true
+			}
+		} else {
+			pretty.Warning("URL %q does not have TLS available!", url)
+			ok = false
+		}
+	}
+	return ok, nil
+}
+
+func TLSExport(filename string, configfiles []string) (err error) {
+	defer fail.Around(&err)
+
+	roots, err := x509.SystemCertPool()
+	fail.On(err != nil, "Cannot get system certificate pool, reason: %v", err)
+
+	trustedURLs, untrustedURLs, err := mergeConfigFiles(configfiles)
+	fail.Fast(err)
+
+	unique := make(map[string]bool)
+	trusted, err := tlsExportUrls(roots, unique, trustedURLs, false)
+	fail.Fast(err)
+	untrusted, err := tlsExportUrls(roots, unique, untrustedURLs, true)
+	fail.Fast(err)
+	if trusted && untrusted && len(unique) > 0 {
+		fullset := strings.Join(set.Keys(unique), "\n")
+		err := os.WriteFile(filename, []byte(fullset), 0o600)
+		fail.On(err != nil, "Failed to write certificate export file %q, reason: %v", filename, err)
+		return nil
+	}
+	return fmt.Errorf("Failed to export certificates. Reason unknown, maybe visible above. Flags are trusted:%v, untrusted:%v, count:%d.", trusted, untrusted, len(unique))
 }

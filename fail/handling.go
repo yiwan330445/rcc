@@ -19,6 +19,12 @@ func Around(err *error) {
 	*err = catch()
 }
 
+func Fast(err error) {
+	if err != nil {
+		panic(failure("%v", err))
+	}
+}
+
 func On(condition bool, form string, details ...interface{}) {
 	if condition {
 		panic(failure(form, details...))

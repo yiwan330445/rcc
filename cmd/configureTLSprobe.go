@@ -36,6 +36,7 @@ Examples:
   rcc configuration tlsprobe outlook.office365.com:993 outlook.office365.com:995
   rcc configuration tlsprobe api.us1.robocorp.com api.eu1.robocorp.com
 `,
+	Args: cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		servers := fixHosts(args)
 		err := operations.TLSProbe(servers)
