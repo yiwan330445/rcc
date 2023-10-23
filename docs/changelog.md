@@ -1,5 +1,13 @@
 # rcc change log
 
+## v17.4.1 (date: 23.10.2023) WORK IN PROGRESS
+
+- verifying that tlsexport bundle can imported into certificate pool
+- using system certificate store as base (if available), and updating
+  certificates there by default
+- fix on conda.yaml merging on pip options case
+- peeking `--debug` and `--trace` flags for preview of verbosity state
+
 ## v17.4.0 (date: 23.10.2023) WORK IN PROGRESS
 
 - new subcommand, `rcc configuration tlsexport`, to export TLS certificates

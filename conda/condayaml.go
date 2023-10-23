@@ -92,7 +92,7 @@ func (it *Dependency) IsExact() bool {
 }
 
 func (it *Dependency) SameAs(right *Dependency) bool {
-	return it.Name == right.Name
+	return !strings.HasPrefix(it.Name, "-") && it.Name == right.Name
 }
 
 func (it *Dependency) ExactlySame(right *Dependency) bool {

@@ -243,20 +243,25 @@ func (it gateway) ConfiguredHttpTransport() *http.Transport {
 }
 
 func (it gateway) loadRootCAs() *x509.CertPool {
-	if !it.HasCaBundle() {
-		return nil
+	roots, err := x509.SystemCertPool()
+	if err != nil {
+		roots = x509.NewCertPool()
 	}
+
+	if !it.HasCaBundle() {
+		return roots
+	}
+
+	common.Debug("Using CA bundle file from %q.", common.CaBundleFile())
 	certificates, err := os.ReadFile(common.CaBundleFile())
 	if err != nil {
 		common.Log("Warning! Problem reading %q, reason: %v", common.CaBundleFile(), err)
-		return nil
+		return roots
 	}
 
-	roots := x509.NewCertPool()
 	ok := roots.AppendCertsFromPEM(certificates)
 	if !ok {
 		common.Log("Warning! Problem appending sertificated from %q.", common.CaBundleFile())
-		return nil
 	}
 	return roots
 }

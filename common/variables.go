@@ -67,7 +67,14 @@ func init() {
 	randomIdentifier = fmt.Sprintf("%016x", rand.Uint64()^uint64(os.Getpid()))
 
 	// peek CLI options to pre-initialize "Warranty Voided" indicator
-	WarrantyVoidedFlag = set.Member(set.Set(os.Args), "--warranty-voided")
+	args := set.Set(os.Args)
+	WarrantyVoidedFlag = set.Member(args, "--warranty-voided")
+	if set.Member(args, "--debug") {
+		verbosity = Debugging
+	}
+	if set.Member(args, "--trace") {
+		verbosity = Tracing
+	}
 
 	// Note: HololibCatalogLocation, HololibLibraryLocation and HololibUsageLocation
 	//       are force created from "htfs" direcotry.go init function
