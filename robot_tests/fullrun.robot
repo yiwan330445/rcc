@@ -96,7 +96,7 @@ Goal: Run task in place in debug mode and with timeline.
   Must Have   Version
   Must Have   Origin
   Must Have   Status
-  Must Have   From rcc point of view, "actual main robot run" was SUCCESS.
+  Must Have   point of view, "actual main robot run" was SUCCESS.
   Must Have   OK.
   Must Exist  tmp/fluffy/output/environment_*_freeze.yaml
   Must Exist  %{ROBOCORP_HOME}/wheels/
@@ -115,7 +115,7 @@ Goal: Run task in clean temporary directory.
   Wont Have   Progress: 09/15
   Must Have   Progress: 14/15
   Must Have   Progress: 15/15
-  Must Have   From rcc point of view, "actual main robot run" was SUCCESS.
+  Must Have   point of view, "actual main robot run" was SUCCESS.
   Must Have   OK.
 
 Goal: Merge two different conda.yaml files with conflict fails
@@ -182,7 +182,7 @@ Goal: See variables from specific environment with robot.yaml but without task
   Step        build/rcc holotree check --controller citests
 
 Goal: See variables from specific environment with warranty voided
-  Step        build/rcc holotree variables --controller citests -r tmp/fluffy/robot.yaml --warranty-voided
+  Step        build/rcc holotree variables --controller citests -r tmp/fluffy/robot.yaml --warranty-voided --anything I_know_what_Im_doing
   Must Have   ROBOCORP_HOME=
   Must Have   PYTHON_EXE=
   Must Have   RCC_EXE=

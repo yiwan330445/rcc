@@ -18,12 +18,13 @@ import (
 )
 
 var (
-	profilefile string
-	profiling   *os.File
-	versionFlag bool
-	silentFlag  bool
-	debugFlag   bool
-	traceFlag   bool
+	anythingIgnore string
+	profilefile    string
+	profiling      *os.File
+	versionFlag    bool
+	silentFlag     bool
+	debugFlag      bool
+	traceFlag      bool
 )
 
 func toplevelCommands(parent *cobra.Command) {
@@ -107,6 +108,7 @@ func init() {
 	rootCmd.PersistentFlags().StringVar(&common.ControllerType, "controller", "user", "internal, DO NOT USE (unless you know what you are doing)")
 	rootCmd.PersistentFlags().StringVar(&common.SemanticTag, "tag", "transient", "semantic reason/context, why are you invoking rcc")
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $ROBOCORP_HOME/rcc.yaml)")
+	rootCmd.PersistentFlags().StringVar(&anythingIgnore, "anything", "", "freeform string value that can be set without any effect, for example CLI versioning/reference")
 
 	rootCmd.PersistentFlags().BoolVarP(&common.NoBuild, "no-build", "", false, "never allow building new environments, only use what exists already in hololib (also RCC_NO_BUILD=1)")
 	rootCmd.PersistentFlags().BoolVarP(&silentFlag, "silent", "", false, "be less verbose on output (also RCC_VERBOSITY=silent)")

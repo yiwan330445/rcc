@@ -86,7 +86,7 @@ Goal: Can run as guest
   Prepare Robocorp Home    tmp/guest
   Step        build/rcc task run --controller citests -s guest -r tmp/standalone/robot.yaml -t 'run example task'
   Use STDERR
-  Must Have   From rcc point of view, "actual main robot run" was SUCCESS.
+  Must Have   point of view, "actual main robot run" was SUCCESS.
   Must Have   OK.
 
 Goal: Space created under author for guest

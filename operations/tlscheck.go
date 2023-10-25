@@ -444,6 +444,7 @@ func TLSExport(filename string, configfiles []string) (err error) {
 		fullset := strings.Join(set.Keys(unique), "\n")
 		err := os.WriteFile(filename, []byte(fullset), 0o600)
 		fail.On(err != nil, "Failed to write certificate export file %q, reason: %v", filename, err)
+		pretty.Highlight("Exported total of %d certificates into %q.", len(unique), filename)
 		return nil
 	}
 	return fmt.Errorf("Failed to export certificates. Reason unknown, maybe visible above. Flags are trusted:%v, untrusted:%v, count:%d.", trusted, untrusted, len(unique))

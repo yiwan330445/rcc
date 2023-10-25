@@ -1,5 +1,12 @@
 # rcc change log
 
+## v17.4.2 (date: 25.10.2023)
+
+- minor fix: rcc point of view now has version number in it
+- new `--anything` flag to allow adding to command line something unique or
+  note worthy about that specific line (had no effect what so ever)
+- technical: updated some go module dependencies
+
 ## v17.4.1 (date: 23.10.2023) WORK IN PROGRESS
 
 - verifying that tlsexport bundle can imported into certificate pool
