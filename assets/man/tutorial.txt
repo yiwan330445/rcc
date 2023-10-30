@@ -4,6 +4,10 @@ Create you first Robot Framework or python robot and follow given instructions t
 
     rcc create
 
+Easy way to run existing, unwrapped robot is just like this:
+
+    rcc run --robot path/to/my/robot.yaml --task "My fine task"
+
 Jumpstart your development with robot examples and templates from our community. 
 Download and run any robot from Robocorp Portal https://robocorp.com/robots/
 For example:

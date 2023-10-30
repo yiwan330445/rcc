@@ -1,5 +1,13 @@
 # rcc change log
 
+## v17.5.0 (date: 30.10.2023)
+
+- added `SSL_CERT_DIR` and `NODE_EXTRA_CA_CERTS` as environment variables
+  when there is certificate bundle available
+- also added diagnostics of those environment variables (plus others)
+- minor documentation fixes
+- tutorial: example of easy robot run
+
 ## v17.4.2 (date: 25.10.2023)
 
 - minor fix: rcc point of view now has version number in it

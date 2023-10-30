@@ -138,10 +138,20 @@ func runDiagnostics(quick bool) *common.DiagnosticStatus {
 	if check != nil {
 		result.Checks = append(result.Checks, check)
 	}
-	result.Checks = append(result.Checks, anyPathCheck("PYTHONPATH"))
-	result.Checks = append(result.Checks, anyPathCheck("PLAYWRIGHT_BROWSERS_PATH"))
+
+	result.Checks = append(result.Checks, anyPathCheck("CURL_CA_BUNDLE"))
+	result.Checks = append(result.Checks, anyPathCheck("NODE_EXTRA_CA_CERTS"))
 	result.Checks = append(result.Checks, anyPathCheck("NODE_OPTIONS"))
 	result.Checks = append(result.Checks, anyPathCheck("NODE_PATH"))
+	result.Checks = append(result.Checks, anyPathCheck("NODE_TLS_REJECT_UNAUTHORIZED"))
+	result.Checks = append(result.Checks, anyPathCheck("PIP_CONFIG_FILE"))
+	result.Checks = append(result.Checks, anyPathCheck("PLAYWRIGHT_BROWSERS_PATH"))
+	result.Checks = append(result.Checks, anyPathCheck("PYTHONPATH"))
+	result.Checks = append(result.Checks, anyPathCheck("REQUESTS_CA_BUNDLE"))
+	result.Checks = append(result.Checks, anyPathCheck("SSL_CERT_DIR"))
+	result.Checks = append(result.Checks, anyPathCheck("SSL_CERT_FILE"))
+	result.Checks = append(result.Checks, anyPathCheck("WDM_SSL_VERIFY"))
+
 	if !common.OverrideSystemRequirements() {
 		result.Checks = append(result.Checks, longPathSupportCheck())
 	}

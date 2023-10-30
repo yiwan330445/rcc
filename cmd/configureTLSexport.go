@@ -33,6 +33,9 @@ Configuration example in YAML format:
 #     - https://files.pythonhosted.org/
 # untrusted:
 #     - https://self-signed.badssl.com/
+
+Note: exported PEM file is sorted, so it can be easily compared to other export.
+      Use your fabourite diffing tool there.
 `,
 	Args: cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, configfiles []string) {
