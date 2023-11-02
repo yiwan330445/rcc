@@ -1,5 +1,10 @@
 # rcc change log
 
+## v17.6.0 (date: 2.11.2023) WORK IN PROGRESS
+
+- replaced trollhash with simple relocation detection algorithm and remove
+  trollhash from codebase
+
 ## v17.5.0 (date: 30.10.2023)
 
 - added `SSL_CERT_DIR` and `NODE_EXTRA_CA_CERTS` as environment variables

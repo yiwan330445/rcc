@@ -14,7 +14,6 @@ import (
 	"github.com/robocorp/rcc/common"
 	"github.com/robocorp/rcc/fail"
 	"github.com/robocorp/rcc/pathlib"
-	"github.com/robocorp/rcc/trollhash"
 )
 
 func JustFileExistCheck(library MutableLibrary, path, name, digest string) anywork.Work {
@@ -131,7 +130,7 @@ func Locator(seek string) Filetask {
 			}
 			defer source.Close()
 			digest := sha256.New()
-			locator := trollhash.LocateWriter(digest, seek)
+			locator := RelocateWriter(digest, seek)
 			_, err = io.Copy(locator, source)
 			if err != nil {
 				panic(fmt.Sprintf("Copy[Locator] %q, reason: %v", fullpath, err))
