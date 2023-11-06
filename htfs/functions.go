@@ -16,9 +16,8 @@ import (
 	"github.com/robocorp/rcc/pathlib"
 )
 
-func JustFileExistCheck(library MutableLibrary, path, name, digest string) anywork.Work {
+func justFileExistCheck(location string, path, name, digest string) anywork.Work {
 	return func() {
-		location := library.ExactLocation(digest)
 		if !pathlib.IsFile(location) {
 			fullpath := filepath.Join(path, name)
 			panic(fmt.Errorf("Content for %q [%s] is missing; hololib is broken, requires check!", fullpath, digest))
@@ -28,9 +27,13 @@ func JustFileExistCheck(library MutableLibrary, path, name, digest string) anywo
 
 func CatalogCheck(library MutableLibrary, fs *Root) Treetop {
 	var tool Treetop
+	scheduled := make(map[string]bool)
 	tool = func(path string, it *Dir) error {
 		for name, file := range it.Files {
-			anywork.Backlog(JustFileExistCheck(library, path, name, file.Digest))
+			if !scheduled[file.Digest] {
+				anywork.Backlog(justFileExistCheck(library.ExactLocation(file.Digest), path, name, file.Digest))
+				scheduled[file.Digest] = true
+			}
 		}
 		for name, subdir := range it.Dirs {
 			err := tool(filepath.Join(path, name), subdir)

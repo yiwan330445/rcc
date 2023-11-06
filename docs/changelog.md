@@ -1,5 +1,12 @@
 # rcc change log
 
+## v17.6.1 (date: 6.11.2023) WORK IN PROGRESS
+
+- removed experimental `SSL_CERT_DIR` as environment variable, since it might
+  actually be confusing to have there (but diagnostics will remain)
+- removed duplicate work on checking catalog integrity which was called
+  during holotree restore
+
 ## v17.6.0 (date: 2.11.2023) WORK IN PROGRESS
 
 - replaced trollhash with simple relocation detection algorithm and remove

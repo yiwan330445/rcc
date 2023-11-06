@@ -173,7 +173,6 @@ func CondaExecutionEnvironment(location string, inject []string, full bool) []st
 		environment = appendIfValue(environment, "REQUESTS_CA_BUNDLE", common.CaBundleFile())
 		environment = appendIfValue(environment, "CURL_CA_BUNDLE", common.CaBundleFile())
 		environment = appendIfValue(environment, "SSL_CERT_FILE", common.CaBundleFile())
-		environment = appendIfValue(environment, "SSL_CERT_DIR", common.CaBundleDir())
 		environment = appendIfValue(environment, "NODE_EXTRA_CA_CERTS", common.CaBundleFile())
 	}
 	return environment
