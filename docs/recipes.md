@@ -477,6 +477,8 @@ rcc configure speedtest
 - generic flag `--debug` shows debug messages during execution
 - generic flag `--trace` shows more verbose debugging messages during execution
 - flag `--timeline` can be used to see execution timeline and where time was spent
+- with option `--pprof <filename>` enable profiling if performance is problem,
+  and want to help improve it (by submitting that profile file to developers)
 
 ## Advanced network diagnostics
 
@@ -644,6 +646,8 @@ option is missing, the `devTasks:` will be skipped/missing, and the normal
 `tasks:` will be the ones available for execution.
 
 ### What is `condaConfigFile:`?
+
+> Use of this is deprecated, please use `environmentConfigs:` instead.
 
 This is actual name used as `conda.yaml` environment configuration file.
 See next topic about details of `conda.yaml` file.

@@ -33,6 +33,7 @@
   and look them thru
 - what is first error your see in console output, and what is last error your
   see, then look between
+- also look thru all warnings and failures too
 
 ## Reporting an issue
 
@@ -50,6 +51,8 @@
 - you should share your `robot.yaml` that defines your robot
 - you should share your code, or minimal sample code, that can reproduce
   problem you are having
+- provide all evidence that you have gathered (as native form as possible,
+  and as fully as possible; do not truncate stack traces or logs unnecessarily)
 
 ## Network access related troubleshooting questions
 

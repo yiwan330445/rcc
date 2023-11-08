@@ -8,6 +8,7 @@ holotree/hololib setup.
 There are number of reasons for doing maintenance, some of which are:
 
 - running into problem with using holotree, and wanting to start over
+- something breaks in holotree/lib and there is need to fix it
 - running out of disk space, and wanting to reduced used foot print
 - remove old/unused spaces from holotree
 - remove old/unused catalogs from hololib
@@ -46,7 +47,9 @@ Catalogs can be listed using `rcc holotree catalogs` command, and
 if you add `--identity` you can see what was their environment specification.
 
 Then command `rcc holotree list` is used to list those concrete spaces that
-are consuming your disk space.
+are consuming your disk space. There you can also see how many times space
+has been used, and when was last time it was used. (And using in this context
+means, that rcc did create or refresh that specific space.)
 
 Once you know what is there, and there are needs to remove catalogs, then
 see `rcc holotree remove -h` for more about information on that. One good

@@ -112,7 +112,7 @@ specifications, but provided for each user as separate space.
 
 ## Space
 
-Concrete create environment where processes and robot actually run. Each
+Concrete created environment where processes and robot actually run. Each
 holotree space is identified by three things: user, controller, and space
 identifier. Each different combination of those values receives their own
 separate directory. These will each separately consume diskspace.
@@ -123,6 +123,9 @@ This is holotree space, that is created by `rcc` but it is not managed by
 `rcc` after it gets created. It is up to user or using tool to manage and
 maintain that environment. It can get dirty, can have traditional tooling
 adding dependencies there, and it can deviate from specification.
+
+Note: unmanaged holotree spaces are not user specific, and managing access
+to those spaces is left to tooling/users who use these unmanaged spaces.
 
 ## User
 

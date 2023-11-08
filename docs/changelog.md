@@ -1,5 +1,9 @@
 # rcc change log
 
+## v17.7.2 (date: 8.11.2023)
+
+- documentation updates on maintenance, and vocabulary, etc.
+
 ## v17.7.1 (date: 8.11.2023)
 
 - bugfix: changed used holotree space tracking so, that it is visible to
