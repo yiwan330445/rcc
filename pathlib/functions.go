@@ -327,7 +327,7 @@ func AppendFile(filename string, blob []byte) (err error) {
 	if common.WarrantyVoided() {
 		return nil
 	}
-	handle, err := os.OpenFile(filename, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0o640)
+	handle, err := os.OpenFile(filename, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0o644)
 	fail.On(err != nil, "Failed to open file %v -> %v", filename, err)
 	defer handle.Close()
 	_, err = handle.Write(blob)

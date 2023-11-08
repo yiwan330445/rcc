@@ -1,6 +1,11 @@
 # rcc change log
 
-## v17.7.0 (date: 8.11.2023)
+## v17.7.1 (date: 8.11.2023)
+
+- bugfix: changed used holotree space tracking so, that it is visible to
+  everybody on file level
+
+## v17.7.0 (date: 8.11.2023) INCOMPLETE
 
 - added simple tracking of used holotree spaces
 - added "Last used" and "Use count" to holotree space listings
