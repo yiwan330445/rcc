@@ -321,3 +321,16 @@ func RemoveEmptyDirectores(starting string) (err error) {
 		}
 	})
 }
+
+func AppendFile(filename string, blob []byte) (err error) {
+	defer fail.Around(&err)
+	if common.WarrantyVoided() {
+		return nil
+	}
+	handle, err := os.OpenFile(filename, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0o640)
+	fail.On(err != nil, "Failed to open file %v -> %v", filename, err)
+	defer handle.Close()
+	_, err = handle.Write(blob)
+	fail.On(err != nil, "Failed to write file %v -> %v", filename, err)
+	return handle.Sync()
+}

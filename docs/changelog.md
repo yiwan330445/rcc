@@ -1,5 +1,10 @@
 # rcc change log
 
+## v17.7.0 (date: 8.11.2023)
+
+- added simple tracking of used holotree spaces
+- added "Last used" and "Use count" to holotree space listings
+
 ## v17.6.1 (date: 6.11.2023) WORK IN PROGRESS
 
 - removed experimental `SSL_CERT_DIR` as environment variable, since it might

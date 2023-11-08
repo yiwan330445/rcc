@@ -1,6 +1,7 @@
 package htfs
 
 import (
+	"fmt"
 	"os"
 	"os/user"
 	"path/filepath"
@@ -53,6 +54,8 @@ func NewEnvironment(condafile, holozip string, restore, force bool, puller Catal
 			pretty.Regression(15, "Holotree restoration failure, see above [with %d workers on %d CPUs].", anywork.Scale(), runtime.NumCPU())
 		} else {
 			pretty.Progress(15, "Fresh holotree done [with %d workers on %d CPUs].", anywork.Scale(), runtime.NumCPU())
+			usefile := fmt.Sprintf("%s.use", path)
+			pathlib.AppendFile(usefile, []byte{'.'})
 		}
 		if haszip {
 			pretty.Note("There is hololib.zip present at: %q", holozip)
