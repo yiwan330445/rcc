@@ -176,7 +176,16 @@ func LoadTaskWithEnvironment(packfile, theTask string, force bool) (bool, robot.
 		pretty.Exit(4, "Error: this robot requires holotree, but no --space was given!")
 	}
 
+	pathlib.EnsureDirectoryExists(config.ArtifactDirectory())
 	journal.ForRun(filepath.Join(config.ArtifactDirectory(), "journal.run"))
+	cache, err := SummonCache()
+	if err == nil && len(cache.Userset()) > 1 {
+		pretty.Note("There seems to be multiple users sharing ROBOCORP_HOME, which might cause problems.")
+		pretty.Note("These are the users: %s.", cache.Userset())
+		pretty.Highlight("To correct this problem, make sure that there is only one user per ROBOCORP_HOME.")
+		common.RunJournal("sharing", fmt.Sprintf("name=%s from=%s users=%s", theTask, packfile, cache.Userset()), "multiple users shareing ROBOCORP_HOME")
+	}
+
 	common.RunJournal("start task", fmt.Sprintf("name=%s from=%s", theTask, packfile), "at task environment setup")
 
 	if !config.UsesConda() {

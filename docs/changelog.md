@@ -1,5 +1,11 @@
 # rcc change log
 
+## v17.8.1 (date: 14.11.2023)
+
+- bug fix: made check of users sharing `ROBOCORP_HOME` case insenstive
+- added note on `ROBOCORP_HOME` permissions into documentation
+- also `journal.run` has event when multiple users share same home
+
 ## v17.8.0 (date: 14.11.2023)
 
 - expanded documentation on `rcc robot dependencies` command

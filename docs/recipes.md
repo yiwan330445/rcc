@@ -383,6 +383,8 @@ that somewhere else, then this environment variable does the trick.
   and operate on
 - never put `ROBOCORP_HOME` on network drive, since those tend to be slow,
   and using those can cause real performance issues
+- always make sure, that user owning that `ROBOCORP_HOME` directory has full
+  control access and permissions to everything inside that directory structure
 
 
 ### When you might actually need to setup `ROBOCORP_HOME`?

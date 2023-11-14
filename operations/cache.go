@@ -4,9 +4,11 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/robocorp/rcc/common"
 	"github.com/robocorp/rcc/pathlib"
+	"github.com/robocorp/rcc/set"
 	"github.com/robocorp/rcc/xviper"
 
 	"gopkg.in/yaml.v2"
@@ -37,8 +39,18 @@ func (it Cache) Ready() *Cache {
 	}
 	if it.Users == nil {
 		it.Users = []string{}
+	} else {
+		it.Users = it.Userset()
 	}
 	return &it
+}
+
+func (it Cache) Userset() []string {
+	result := make([]string, 0, len(it.Users))
+	for _, username := range it.Users {
+		result, _ = set.Update(result, strings.ToLower(username))
+	}
+	return result
 }
 
 func cacheLockFile() string {
