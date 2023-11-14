@@ -1,5 +1,10 @@
 # rcc change log
 
+## v17.7.3 (date: 14.11.2023)
+
+- changed subprocess monitoring from 200ms to 550ms, since on slower machines,
+  that 200ms causes too much load (experiment; might need to change later again)
+
 ## v17.7.2 (date: 8.11.2023)
 
 - documentation updates on maintenance, and vocabulary, etc.

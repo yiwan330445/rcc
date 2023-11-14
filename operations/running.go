@@ -353,7 +353,7 @@ func ExecuteTask(flags *RunFlags, template []string, config robot.Robot, todo ro
 
 	common.Debug("about to run command - %v", task)
 	journal.CurrentBuildEvent().RobotStarts()
-	pipe := WatchChildren(os.Getpid(), 200*time.Millisecond)
+	pipe := WatchChildren(os.Getpid(), 550*time.Millisecond)
 	shell.WithInterrupt(func() {
 		exitcode := 0
 		if common.NoOutputCapture {
