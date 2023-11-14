@@ -1,5 +1,12 @@
 # rcc change log
 
+## v17.8.0 (date: 14.11.2023)
+
+- expanded documentation on `rcc robot dependencies` command
+- added warning when developer declared dependencies file is missing, and
+  when environment configuration drift is shown
+- added diagnostics to detect missing dependencies drift file
+
 ## v17.7.3 (date: 14.11.2023)
 
 - changed subprocess monitoring from 200ms to 550ms, since on slower machines,

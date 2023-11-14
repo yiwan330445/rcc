@@ -202,6 +202,10 @@ func SideBySideViewOfDependencies(goldenfile, wantedfile string) (err error) {
 	if !hasgold {
 		return fmt.Errorf("Running against old environment, which does not have 'golden-ee.yaml' file.")
 	}
+	if len(want) == 0 {
+		pretty.Note("There was no developer declared dependency file, so could not show actual configuration drift.")
+		pretty.Highlight("Ask developer to fix that by running `rcc robot dependencies --export` command in their desired environment.")
+	}
 	return nil
 }
 
