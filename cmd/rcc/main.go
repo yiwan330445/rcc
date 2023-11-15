@@ -125,6 +125,11 @@ func markTempForRecycling() {
 func main() {
 	defer ExitProtection()
 
+	notify := operations.RccVersionCheck()
+	if notify != nil {
+		defer notify()
+	}
+
 	warning, _ := EnsureUserRegistered()
 	if len(warning) > 0 {
 		defer pretty.Warning("%s", warning)

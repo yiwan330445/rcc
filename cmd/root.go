@@ -95,6 +95,7 @@ func Execute() {
 	}()
 
 	rootCmd.SetArgs(os.Args[1:])
+
 	err := rootCmd.Execute()
 	pretty.Guard(err == nil, 1, "Error: [rcc %v] %v", common.Version, err)
 }

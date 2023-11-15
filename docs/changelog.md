@@ -1,5 +1,10 @@
 # rcc change log
 
+## v17.9.0 (date: 15.11.2023)
+
+- rcc is now checking if newer released versions are available, and adds
+  notification into stderr if not using that version
+
 ## v17.8.1 (date: 14.11.2023)
 
 - bug fix: made check of users sharing `ROBOCORP_HOME` case insenstive
