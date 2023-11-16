@@ -92,6 +92,10 @@ func ExitProtection() {
 }
 
 func startTempRecycling() {
+	if common.DisableTempManagement() {
+		common.Timeline("temp management disabled -- no temp recycling")
+		return
+	}
 	defer common.Timeline("temp recycling done")
 	pattern := filepath.Join(common.RobocorpTempRoot(), "*", "recycle.now")
 	found, err := filepath.Glob(pattern)
@@ -110,6 +114,10 @@ func startTempRecycling() {
 }
 
 func markTempForRecycling() {
+	if common.DisableTempManagement() {
+		common.Timeline("temp management disabled -- temp not marked for recycling")
+		return
+	}
 	if markedAlready {
 		return
 	}

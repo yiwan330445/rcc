@@ -6,6 +6,7 @@ const (
 	CategoryLockFile            = 1020
 	CategoryLockPid             = 1021
 	CategoryPathCheck           = 1030
+	CategoryEnvVarCheck         = 1040
 	CategoryHolotreeShared      = 2010
 	CategoryRobocorpHome        = 3010
 	CategoryRobocorpHomeMembers = 3020

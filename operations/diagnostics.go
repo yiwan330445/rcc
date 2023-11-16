@@ -112,6 +112,8 @@ func runDiagnostics(quick bool) *common.DiagnosticStatus {
 	result.Details["ENV:SHELL"] = os.Getenv("SHELL")
 	result.Details["ENV:LANG"] = os.Getenv("LANG")
 	result.Details["warranty-voided-mode"] = fmt.Sprintf("%v", common.WarrantyVoided())
+	result.Details["temp-management-disabled"] = fmt.Sprintf("%v", common.DisableTempManagement())
+	result.Details["pyc-management-disabled"] = fmt.Sprintf("%v", common.DisablePycManagement())
 
 	for name, filename := range lockfiles() {
 		result.Details[name] = filename
@@ -151,6 +153,10 @@ func runDiagnostics(quick bool) *common.DiagnosticStatus {
 	result.Checks = append(result.Checks, anyPathCheck("SSL_CERT_DIR"))
 	result.Checks = append(result.Checks, anyPathCheck("SSL_CERT_FILE"))
 	result.Checks = append(result.Checks, anyPathCheck("WDM_SSL_VERIFY"))
+
+	result.Checks = append(result.Checks, anyEnvVarCheck("RCC_NO_TEMP_MANAGEMENT"))
+	result.Checks = append(result.Checks, anyEnvVarCheck("RCC_NO_PYC_MANAGEMENT"))
+	result.Checks = append(result.Checks, anyEnvVarCheck("ROBOCORP_OVERRIDE_SYSTEM_REQUIREMENTS"))
 
 	if !common.OverrideSystemRequirements() {
 		result.Checks = append(result.Checks, longPathSupportCheck())
@@ -292,6 +298,27 @@ func lockpidsCheck() []*common.DiagnosticCheck {
 		})
 	}
 	return result
+}
+
+func anyEnvVarCheck(key string) *common.DiagnosticCheck {
+	supportGeneralUrl := settings.Global.DocsLink("troubleshooting")
+	anyVar := os.Getenv(key)
+	if len(anyVar) > 0 {
+		return &common.DiagnosticCheck{
+			Type:     "OS",
+			Category: common.CategoryEnvVarCheck,
+			Status:   statusWarning,
+			Message:  fmt.Sprintf("%s is set to %q. This may cause problems.", key, anyVar),
+			Link:     supportGeneralUrl,
+		}
+	}
+	return &common.DiagnosticCheck{
+		Type:     "OS",
+		Category: common.CategoryEnvVarCheck,
+		Status:   statusOk,
+		Message:  fmt.Sprintf("%s is not set, which is good.", key),
+		Link:     supportGeneralUrl,
+	}
 }
 
 func anyPathCheck(key string) *common.DiagnosticCheck {

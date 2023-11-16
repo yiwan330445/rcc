@@ -28,6 +28,8 @@ const (
 	ROBOCORP_HOME_VARIABLE                = `ROBOCORP_HOME`
 	RCC_REMOTE_ORIGIN                     = `RCC_REMOTE_ORIGIN`
 	RCC_REMOTE_AUTHORIZATION              = `RCC_REMOTE_AUTHORIZATION`
+	RCC_NO_TEMP_MANAGEMENT                = `RCC_NO_TEMP_MANAGEMENT`
+	RCC_NO_PYC_MANAGEMENT                 = `RCC_NO_PYC_MANAGEMENT`
 	VERBOSE_ENVIRONMENT_BUILDING          = `RCC_VERBOSE_ENVIRONMENT_BUILDING`
 	ROBOCORP_OVERRIDE_SYSTEM_REQUIREMENTS = `ROBOCORP_OVERRIDE_SYSTEM_REQUIREMENTS`
 	RCC_VERBOSITY                         = `RCC_VERBOSITY`
@@ -38,6 +40,8 @@ const (
 
 var (
 	NoBuild                 bool
+	NoTempManagement        bool
+	NoPycManagement         bool
 	DeveloperFlag           bool
 	StrictFlag              bool
 	SharedHolotree          bool
@@ -66,14 +70,24 @@ func init() {
 
 	randomIdentifier = fmt.Sprintf("%016x", rand.Uint64()^uint64(os.Getpid()))
 
+	lowargs := make([]string, 0, len(os.Args))
+	for _, arg := range os.Args {
+		lowargs = append(lowargs, strings.ToLower(arg))
+	}
 	// peek CLI options to pre-initialize "Warranty Voided" indicator
-	args := set.Set(os.Args)
+	args := set.Set(lowargs)
 	WarrantyVoidedFlag = set.Member(args, "--warranty-voided")
 	if set.Member(args, "--debug") {
 		verbosity = Debugging
 	}
 	if set.Member(args, "--trace") {
 		verbosity = Tracing
+	}
+	if set.Member(args, "--no-temp-management") {
+		NoTempManagement = true
+	}
+	if set.Member(args, "--no-pyc-management") {
+		NoPycManagement = true
 	}
 
 	// Note: HololibCatalogLocation, HololibLibraryLocation and HololibUsageLocation
@@ -105,6 +119,14 @@ func RobocorpHome() string {
 		return ExpandPath(home)
 	}
 	return ExpandPath(defaultRobocorpLocation)
+}
+
+func DisableTempManagement() bool {
+	return NoTempManagement || len(os.Getenv(RCC_NO_TEMP_MANAGEMENT)) > 0
+}
+
+func DisablePycManagement() bool {
+	return NoPycManagement || len(os.Getenv(RCC_NO_PYC_MANAGEMENT)) > 0
 }
 
 func RccRemoteOrigin() string {

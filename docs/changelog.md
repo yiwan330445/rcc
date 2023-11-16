@@ -1,5 +1,17 @@
 # rcc change log
 
+## v17.10.0 (date: 16.11.2023)
+
+- functionality to tell rcc to not manage anything relating to temporaray
+  directories (that is, something else is managing those)
+- new environment variable `RCC_NO_TEMP_MANAGEMENT` and new command line flag
+  `--no-temp-management` to control above thing
+- functionality to tell rcc to not manage anything relating to python .pyc
+  files (that is, something else is managing those)
+- new environment variable `RCC_NO_PYC_MANAGEMENT` and new command line flag
+  `--no-pyc-management` to control above thing
+- added diagnostics warnings when above environment variables are set
+
 ## v17.9.0 (date: 15.11.2023)
 
 - rcc is now checking if newer released versions are available, and adds

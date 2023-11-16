@@ -459,6 +459,15 @@ rcc holotree init --revoke
 - `RCC_VERBOSITY` controls how verbose rcc output will be. If this variable
   is not set, then verbosity is taken from `--silent`, `--debug`, and `--trace`
   CLI flags. Valid values for this variable are `silent`, `debug` and `trace`.
+- `RCC_NO_TEMP_MANAGEMENT` with any non-empty value will prevent rcc for
+  doing any management in relation to temporary directories; using this
+  environment variable means, that something else is managing temporary
+  directories life cycles (and this might also break environment isolation)
+- `RCC_NO_PYC_MANAGEMENT` with any non-empty value will prevent rcc for
+  doing any .pyc file management; using this environment variable means, that
+  something else is doing that management (and using this makes rcc slower
+  and hololibs become bigger and grow faster, since .pyc files are unfriendly
+  to caching)
 
 
 ## How to troubleshoot rcc setup and robots?

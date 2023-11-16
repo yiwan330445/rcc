@@ -142,6 +142,22 @@ func CondaExecutionEnvironment(location string, inject []string, full bool) []st
 	if ok {
 		environment = append(environment, "PYTHON_EXE="+python)
 	}
+	if !common.DisablePycManagement() {
+		environment = append(environment,
+			"PYTHONDONTWRITEBYTECODE=x",
+			"PYTHONPYCACHEPREFIX="+common.RobocorpTemp(),
+		)
+	} else {
+		common.Timeline(".pyc file management was disabled.")
+	}
+	if !common.DisableTempManagement() {
+		environment = append(environment,
+			"TEMP="+common.RobocorpTemp(),
+			"TMP="+common.RobocorpTemp(),
+		)
+	} else {
+		common.Timeline("temp directory management was disabled.")
+	}
 	environment = append(environment,
 		"CONDA_DEFAULT_ENV=rcc",
 		"CONDA_PREFIX="+location,
@@ -151,8 +167,6 @@ func CondaExecutionEnvironment(location string, inject []string, full bool) []st
 		"PYTHONSTARTUP=",
 		"PYTHONEXECUTABLE=",
 		"PYTHONNOUSERSITE=1",
-		"PYTHONDONTWRITEBYTECODE=x",
-		"PYTHONPYCACHEPREFIX="+common.RobocorpTemp(),
 		"ROBOCORP_HOME="+common.RobocorpHome(),
 		"RCC_ENVIRONMENT_HASH="+common.EnvironmentHash,
 		"RCC_INSTALLATION_ID="+xviper.TrackingIdentity(),
@@ -160,8 +174,6 @@ func CondaExecutionEnvironment(location string, inject []string, full bool) []st
 		"RCC_TRACKING_ALLOWED="+fmt.Sprintf("%v", xviper.CanTrack()),
 		"RCC_EXE="+common.BinRcc(),
 		"RCC_VERSION="+common.Version,
-		"TEMP="+common.RobocorpTemp(),
-		"TMP="+common.RobocorpTemp(),
 		FindPath(location).AsEnvironmental("PATH"),
 	)
 	environment = append(environment, LoadActivationEnvironment(location)...)
