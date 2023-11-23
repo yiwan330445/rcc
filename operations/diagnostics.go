@@ -668,12 +668,6 @@ func diagnoseFilesUnmarshal(tool Unmarshaler, label, rootdir string, paths []str
 }
 
 func addFileDiagnostics(rootdir string, target *common.DiagnosticStatus) {
-	dependencies := robot.DependenciesFilename(rootdir)
-	if !pathlib.IsFile(dependencies) {
-		diagnose := target.Diagnose("Robot")
-		supportGeneralUrl := settings.Global.DocsLink("troubleshooting")
-		diagnose.Warning(common.CategoryRobotDriftfile, supportGeneralUrl, "Dependencies drift file %q is missing!", dependencies)
-	}
 	jsons := pathlib.RecursiveGlob(rootdir, "*.json")
 	diagnoseFilesUnmarshal(json.Unmarshal, "JSON", rootdir, jsons, target)
 	yamls := pathlib.RecursiveGlob(rootdir, "*.yaml")

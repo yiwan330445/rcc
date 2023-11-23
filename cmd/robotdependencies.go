@@ -34,21 +34,9 @@ func doCopyDependencies(config robot.Robot, label string) {
 }
 
 var robotDependenciesCmd = &cobra.Command{
-	Use:   "dependencies",
-	Short: "View wanted vs. available dependencies of robot execution environment.",
-	Long: `View wanted vs. available dependencies of robot execution environment.
-
-When developers capture this desired environment state in their automation
-development phase, it can later help resolving problems in production when
-dependencies have drifted away from original desire.
-
-This information can be viewed with this command, and will also be available
-when automation is executed using various "rcc run" commands.
-
-Examples:
-  rcc robot dependencies --export  # to export/refresh set of dependencies
-  rcc robot dependencies           # to view drift information agains specifi space
-`,
+	Use:     "dependencies",
+	Short:   "View wanted vs. available dependencies of robot execution environment.",
+	Long:    "View wanted vs. available dependencies of robot execution environment.",
 	Aliases: []string{"deps"},
 	Run: func(cmd *cobra.Command, args []string) {
 		if common.DebugFlag() {

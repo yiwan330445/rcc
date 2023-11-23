@@ -18,5 +18,4 @@ const (
 	CategoryNetworkTLSVerify    = 4060
 	CategoryNetworkTLSChain     = 4070
 	CategoryEnvironmentCache    = 5010
-	CategoryRobotDriftfile      = 6010
 )

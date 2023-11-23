@@ -1,5 +1,9 @@
 # rcc change log
 
+## v17.12.0 (date: 23.11.2023)
+
+- reverted changes done in v17.8.0 (git hash 8771d622443efae2aa04c2d8c85b5b5c2e7aa3d6)
+
 ## v17.11.0 (date: 23.11.2023)
 
 - adding functionality to mark holotree space as EXTERNALLY-MANAGED (PEP 668)
@@ -27,7 +31,7 @@
 - added note on `ROBOCORP_HOME` permissions into documentation
 - also `journal.run` has event when multiple users share same home
 
-## v17.8.0 (date: 14.11.2023)
+## v17.8.0 (date: 14.11.2023) REVERTED
 
 - expanded documentation on `rcc robot dependencies` command
 - added warning when developer declared dependencies file is missing, and

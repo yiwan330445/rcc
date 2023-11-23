@@ -265,12 +265,8 @@ func (it *robot) Validate() (bool, error) {
 	return true, nil
 }
 
-func DependenciesFilename(root string) string {
-	return filepath.Join(root, "dependencies.yaml")
-}
-
 func (it *robot) DependenciesFile() (string, bool) {
-	filename := DependenciesFilename(it.Root)
+	filename := filepath.Join(it.Root, "dependencies.yaml")
 	return filename, pathlib.IsFile(filename)
 }
 
