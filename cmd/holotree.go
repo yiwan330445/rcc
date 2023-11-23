@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"github.com/robocorp/rcc/common"
 	"github.com/robocorp/rcc/settings"
 	"github.com/spf13/cobra"
 )
@@ -17,4 +18,6 @@ var holotreeCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(holotreeCmd)
+
+	holotreeCmd.PersistentFlags().BoolVarP(&common.ExternallyManaged, "externally-managed", "", false, "mark created Python environments as EXTERNALLY-MANAGED (PEP 668)")
 }

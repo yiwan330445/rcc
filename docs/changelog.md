@@ -1,5 +1,9 @@
 # rcc change log
 
+## v17.11.0 (date: 23.11.2023)
+
+- adding functionality to mark holotree space as EXTERNALLY-MANAGED (PEP 668)
+
 ## v17.10.0 (date: 16.11.2023)
 
 - functionality to tell rcc to not manage anything relating to temporaray

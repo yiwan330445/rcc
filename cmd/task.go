@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"github.com/robocorp/rcc/common"
 	"github.com/spf13/cobra"
 )
 
@@ -14,4 +15,6 @@ executed either locally, or in connection to Robocorp Control Room and tooling.`
 
 func init() {
 	rootCmd.AddCommand(taskCmd)
+
+	taskCmd.PersistentFlags().BoolVarP(&common.ExternallyManaged, "externally-managed", "", false, "mark created Python environments as EXTERNALLY-MANAGED (PEP 668)")
 }

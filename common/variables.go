@@ -42,6 +42,7 @@ var (
 	NoBuild                 bool
 	NoTempManagement        bool
 	NoPycManagement         bool
+	ExternallyManaged       bool
 	DeveloperFlag           bool
 	StrictFlag              bool
 	SharedHolotree          bool

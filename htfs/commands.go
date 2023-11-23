@@ -48,12 +48,12 @@ func NewEnvironment(condafile, holozip string, restore, force bool, puller Catal
 		common.Debug("New zipped environment from %q!", holozip)
 	}
 
-	path := ""
+	path, externally := "", ""
 	defer func() {
 		if err != nil {
 			pretty.Regression(15, "Holotree restoration failure, see above [with %d workers on %d CPUs].", anywork.Scale(), runtime.NumCPU())
 		} else {
-			pretty.Progress(15, "Fresh holotree done [with %d workers on %d CPUs].", anywork.Scale(), runtime.NumCPU())
+			pretty.Progress(15, "Fresh %sholotree done [with %d workers on %d CPUs].", externally, anywork.Scale(), runtime.NumCPU())
 			usefile := fmt.Sprintf("%s.use", path)
 			pathlib.AppendFile(usefile, []byte{'.'})
 		}
@@ -83,14 +83,14 @@ func NewEnvironment(condafile, holozip string, restore, force bool, puller Catal
 	defer locker.Release()
 
 	_, holotreeBlueprint, err := ComposeFinalBlueprint([]string{condafile}, "")
-	fail.On(err != nil, "%s", err)
+	fail.Fast(err)
 
 	common.EnvironmentHash, common.FreshlyBuildEnvironment = common.BlueprintHash(holotreeBlueprint), false
 	pretty.Progress(2, "Holotree blueprint is %q [%s with %d workers on %d CPUs from %q].", common.EnvironmentHash, common.Platform(), anywork.Scale(), runtime.NumCPU(), filepath.Base(condafile))
 	journal.CurrentBuildEvent().Blueprint(common.EnvironmentHash)
 
 	tree, err := New()
-	fail.On(err != nil, "%s", err)
+	fail.Fast(err)
 
 	if !haszip && !tree.HasBlueprint(holotreeBlueprint) && common.Liveonly {
 		tree = Virtual()
@@ -99,8 +99,7 @@ func NewEnvironment(condafile, holozip string, restore, force bool, puller Catal
 	if common.UnmanagedSpace {
 		tree = Unmanaged(tree)
 	}
-	err = tree.ValidateBlueprint(holotreeBlueprint)
-	fail.On(err != nil, "%s", err)
+	fail.Fast(tree.ValidateBlueprint(holotreeBlueprint))
 	scorecard = common.NewScorecard()
 	var library Library
 	if haszip {
@@ -109,8 +108,7 @@ func NewEnvironment(condafile, holozip string, restore, force bool, puller Catal
 		common.Timeline("downgraded to holotree zip library")
 	} else {
 		scorecard.Start()
-		err = RecordEnvironment(tree, holotreeBlueprint, force, scorecard, puller)
-		fail.On(err != nil, "%s", err)
+		fail.Fast(RecordEnvironment(tree, holotreeBlueprint, force, scorecard, puller))
 		library = tree
 	}
 
@@ -122,6 +120,9 @@ func NewEnvironment(condafile, holozip string, restore, force bool, puller Catal
 	} else {
 		pretty.Progress(14, "Restoring space skipped.")
 	}
+
+	externally, err = conda.ApplyExternallyManaged(path)
+	fail.Fast(err)
 
 	return path, scorecard, nil
 }

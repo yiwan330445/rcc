@@ -28,6 +28,9 @@ func TestCanOtherAssets(t *testing.T) {
 
 	must_be.Panic(func() { blobs.MustAsset("assets/missing.yaml") })
 
+	wont_be.Panic(func() { blobs.MustAsset("assets/micromamba_version.txt") })
+	wont_be.Panic(func() { blobs.MustAsset("assets/externally_managed.txt") })
+
 	wont_be.Panic(func() { blobs.MustAsset("assets/templates.yaml") })
 	wont_be.Panic(func() { blobs.MustAsset("assets/settings.yaml") })
 	wont_be.Panic(func() { blobs.MustAsset("assets/speedtest.yaml") })

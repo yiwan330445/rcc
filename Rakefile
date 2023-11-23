@@ -52,7 +52,7 @@ task :assets => [:noassets, :micromamba] do
     puts "Directory #{directory} => #{assetname}"
     sh "cd #{directory} && zip -ryqD9 #{assetname} ."
   end
-  cp FileList['assets/micromamba_version.txt'], 'blobs/assets/'
+  cp FileList['assets/*.txt'], 'blobs/assets/'
   cp FileList['assets/*.yaml'], 'blobs/assets/'
   cp FileList['assets/man/*.txt'], 'blobs/assets/man/'
   cp FileList['docs/*.md'], 'blobs/docs/'

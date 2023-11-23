@@ -13,7 +13,7 @@ const (
 
 //go:embed assets/*.yaml docs/*.md
 //go:embed assets/*.zip assets/man/*.txt
-//go:embed assets/micromamba_version.txt
+//go:embed assets/*.txt
 var content embed.FS
 
 func Asset(name string) ([]byte, error) {

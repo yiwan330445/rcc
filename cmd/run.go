@@ -52,8 +52,8 @@ func captureRunFlags(assistant bool) *operations.RunFlags {
 }
 
 func init() {
-	taskCmd.AddCommand(runCmd)
 	rootCmd.AddCommand(runCmd)
+	taskCmd.AddCommand(runCmd)
 
 	runCmd.Flags().StringVarP(&environmentFile, "environment", "e", "", "Full path to the 'env.json' development environment data file.")
 	runCmd.Flags().StringVarP(&robotFile, "robot", "r", "robot.yaml", "Full path to the 'robot.yaml' configuration file.")
