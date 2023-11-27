@@ -4,13 +4,44 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
+
+	"github.com/robocorp/rcc/common"
 )
 
 type PathParts []string
 
+func noDuplicates(paths PathParts) PathParts {
+	seen := make(map[string]bool)
+	result := make(PathParts, 0, len(paths))
+	for _, part := range paths {
+		if seen[part] {
+			continue
+		}
+		result = append(result, part)
+		seen[part] = true
+	}
+	return result
+}
+
+func noPreviousHolotrees(paths PathParts) PathParts {
+	form := fmt.Sprintf("\\b(?:%s|UNMNGED)_[0-9a-f]{7}_[0-9a-f]{8}\\b", common.SymbolicUserIdentity())
+	pattern, err := regexp.Compile(form)
+	if err != nil {
+		return paths
+	}
+	result := make(PathParts, 0, len(paths))
+	for _, part := range paths {
+		if !pattern.MatchString(part) {
+			result = append(result, part)
+		}
+	}
+	return result
+}
+
 func TargetPath() PathParts {
-	return filepath.SplitList(os.Getenv("PATH"))
+	return noPreviousHolotrees(noDuplicates(filepath.SplitList(os.Getenv("PATH"))))
 }
 
 func PathFrom(parts ...string) PathParts {

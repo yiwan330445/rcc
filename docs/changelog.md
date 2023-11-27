@@ -1,5 +1,10 @@
 # rcc change log
 
+## v17.12.1 (date: 27.11.2023)
+
+- bugfix: removing duplicates and existing holotree from PATHs before adding
+  new items in PATH
+
 ## v17.12.0 (date: 23.11.2023)
 
 - reverted changes done in v17.8.0 (git hash 8771d622443efae2aa04c2d8c85b5b5c2e7aa3d6)

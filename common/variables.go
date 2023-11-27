@@ -381,14 +381,18 @@ func ensureDirectory(name string) {
 	}
 }
 
-func UserHomeIdentity() string {
-	if UnmanagedSpace {
-		return "UNMNGED"
-	}
+func SymbolicUserIdentity() string {
 	location, err := os.UserHomeDir()
 	if err != nil {
 		return "badcafe"
 	}
 	digest := fmt.Sprintf("%02x", Siphash(9007799254740993, 2147487647, []byte(location)))
 	return digest[:7]
+}
+
+func UserHomeIdentity() string {
+	if UnmanagedSpace {
+		return "UNMNGED"
+	}
+	return SymbolicUserIdentity()
 }
