@@ -30,7 +30,7 @@ RCC is actively maintained by [Robocorp](https://www.robocorp.com/).
 ## Getting Started
 
 :arrow_double_down: Install rcc 
-> [Installation guide](#installing-rcc-from-command-line)
+> [Installation guide](https://github.com/robocorp/rcc?tab=readme-ov-file#installing-rcc-from-the-command-line)
 
 :octocat: Pull robot from GitHub:
 > `rcc pull github.com/robocorp/template-python-browser`
