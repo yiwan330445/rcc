@@ -1,8 +1,10 @@
 ![RCC](/docs/title.png)
 
-RCC is a set of tooling that allows you to create, manage, and distribute Python-based self-contained automation packages - or robots :robot: as we call them. And run them on soft-containers that have access to rest of your machine.
+RCC allows you to create, manage, and distribute Python-based self-contained automation packages. RCC also allows you to run your automations in isolated Python environments so they can still access the rest of your machine.
 
-Together with [robot.yaml](https://robocorp.com/docs/setup/robot-yaml-format) configuration file, `rcc` is a foundation that allows anyone to build and share automation with ease.
+🚀 "Repeatable, movable and isolated Python environments for your automation."
+
+Together with [robot.yaml](https://robocorp.com/docs/setup/robot-yaml-format) configuration file, `rcc` is a foundation that allows anyone to build and share automation easily.
 
 <p align="center">
   <img width="400" src="./docs/robocorp_stack.png">
@@ -12,30 +14,38 @@ RCC is actively maintained by [Robocorp](https://www.robocorp.com/).
 
 
 ## Why use rcc?
+ 
+* You do not need to install Python on the target machine
+* You can control exactly which version of Python your automation will run on (..and which pip version is used to resolve dependencies)
+* You can avoid `Works on my machine`
+* No need for `venv`, `pyenv`, ... tooling and knowledge sharing inside your team.
+* Define dependencies in `conda.yaml` and automation config in `robot.yaml` and let RCC do the heavy lifting.
+* If you have run into "dependency drifts", where once working runtime environment dependencies get updated and break your production system?, RCC can freeze ALL dependencies, pre-build environments, and more.
+* RCC will give you a heads-up if your automations have been leaving behind processes after running.
 
-* Are developers manually installing conda or pip packages? Here rcc makes it easier for developers to just worry about getting `conda.yaml` and `robot.yaml` right, and then let rcc to do the heavy lifting of keeping environments pristine, clean, and up to date.
-* Have you run into "works on my machine" problem, where the original developer has a working setup, but others have a hard time repeating the experience? In this case, let rcc help you to set up repeatable runtime environments across users and operating systems.
-* Have you experienced "configuration drift", where once working runtime environment dependencies get updated and break your production system? Here rcc can help by either making drift visible or freezing all dependencies so that drifting does not happen.
-* Do you have python programs that have conflicting dependencies? There rcc can help by making dedicated runtime environments for different setups, where different `robot.yaml` files define what to run and `conda.yaml` defines runtime environment dependencies
+...and much much more. 
 
+👉 If the command line seems scary, just pick up [Robocorp Code](https://marketplace.visualstudio.com/items?itemName=robocorp.robocorp-code) -extension for VS Code, and you'll get the power of RCC directly in VS Code without worrying about the commands.
 
 ## Getting Started
 
 :arrow_double_down: Install rcc 
-> [Install](#installing-rcc-from-command-line) or [Download RCC](#direct-downloads-for-signed-executables-provided-by-robocorp)
+> [Installation guide](#installing-rcc-from-command-line)
 
 :octocat: Pull robot from GitHub:
-> `rcc pull github.com/robocorp/example-google-image-search`
+> `rcc pull github.com/robocorp/template-python-browser`
 
 :running: Run robot
 > `rcc run`
 
-:hatching_chick: Create your own robot from template
-> `rcc robot initialize -t standard`
+:hatching_chick: Create your own robot from templates
+> `rcc create`
 
-For detailed instructions, visit [Robocorp RCC documentation](https://robocorp.com/docs/product-manuals/robocorp-cli) to get started. To build `rcc` from this repository see the [Setup Guide](/docs/BUILD.md)
+For detailed instructions, visit [Robocorp RCC documentation](https://robocorp.com/docs/product-manuals/robocorp-cli) to get started. To build `rcc` from this repository, see the [Setup Guide](/docs/BUILD.md)
 
-## Installing RCC from command line
+## Installing RCC from the command line
+
+> Links to changelog and different versions [available here](https://downloads.robocorp.com/rcc/releases/index.html)
 
 ### Windows
 
@@ -48,18 +58,11 @@ For detailed instructions, visit [Robocorp RCC documentation](https://robocorp.c
 
 #### Brew cask from Robocorp tap
 
+1. Update brew: `brew update`
 1. Install: `brew install robocorp/tools/rcc`
 1. Test: `rcc`
 
 Upgrading: `brew upgrade rcc`
-
-#### Raw download
-
-1. Open the terminal
-1. Download: `curl -o rcc https://downloads.robocorp.com/rcc/releases/latest/macos64/rcc`
-1. Make the downloaded file executable: `chmod a+x rcc`
-1. Add to path: `sudo mv rcc /usr/local/bin/`
-1. Test: `rcc`
 
 ### Linux
 
@@ -69,19 +72,16 @@ Upgrading: `brew upgrade rcc`
 1. Add to path: `sudo mv rcc /usr/local/bin/`
 1. Test: `rcc`
 
-### [Direct downloads for signed executables provided by Robocorp](https://downloads.robocorp.com/rcc/releases/index.html)
-
-Follow above link to download site. Both tested and bleeding edge versions are available from same location.
-
-*[EULA for pre-built distribution.](https://cdn.robocorp.com/legal/Robocorp-EULA-v1.0.pdf)*
-
 ## Documentation
 
 Visit [https://robocorp.com/docs](https://robocorp.com/docs) to view the full documentation on the full Robocorp stack.
 
-Changelog can be seen [here.](/docs/changelog.md) It is also visible inside rcc using command `rcc docs changelog`.
+The changelog can be seen [here](/docs/changelog.md). It is also visible inside RCC using the command `rcc docs changelog`.
 
-Some tips, tricks, and recipes can be found [here.](/docs/recipes.md) They are also visible inside rcc using command `rcc docs recipes`.
+[EULA for pre-built distribution.](https://cdn.robocorp.com/legal/Robocorp-EULA-v1.0.pdf)
+
+Some tips, tricks, and recipes can be found [here](/docs/recipes.md).
+These are also visible inside RCC using the command: `rcc docs recipes`.
 
 ## Community and Support
 
