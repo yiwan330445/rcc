@@ -18,7 +18,7 @@ func osSpecificHolotreeSharing(enable bool) {
 	parent := filepath.Dir(common.HoloLocation())
 	_, err := pathlib.ForceSharedDir(parent)
 	pretty.Guard(err == nil, 1, "Could not enable shared location at %q, reason: %v", parent, err)
-	task := shell.New(nil, ".", "icacls", "C:/ProgramData/robocorp", "/grant", "BUILTIN\\Users:(OI)(CI)M", "/T", "/Q")
+	task := shell.New(nil, ".", "icacls", "C:/ProgramData/robocorp", "/grant", "*S-1-5-32-545:(OI)(CI)M", "/T", "/Q")
 	_, err = task.Execute(false)
 	pretty.Guard(err == nil, 2, "Could not set 'icacls' settings, reason: %v", err)
 	err = os.WriteFile(common.SharedMarkerLocation(), []byte(common.Version), 0644)
