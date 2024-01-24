@@ -294,18 +294,13 @@ func StopAssistantRun(client cloud.Client, account *account, workspaceId, assist
 	return nil
 }
 
-func StartAssistantRun(client cloud.Client, account *account, workspaceId, assistantId string, ecc bool) (*AssistantRobot, error) {
+func StartAssistantRun(client cloud.Client, account *account, workspaceId, assistantId string) (*AssistantRobot, error) {
 	common.Timeline("start assistant run: %q", assistantId)
 	credentials, err := summonAssistantToken(client, account, workspaceId)
 	if err != nil {
 		return nil, err
 	}
-	var key Ephemeral
-	if ecc {
-		key, err = GenerateEphemeralEccKey()
-	} else {
-		key, err = GenerateEphemeralKey()
-	}
+	key, err := GenerateEphemeralKey()
 	if err != nil {
 		return nil, err
 	}

@@ -49,7 +49,7 @@ var assistantRunCmd = &cobra.Command{
 			cloud.BackgroundMetric(common.ControllerIdentity(), "rcc.assistant.run.stop", reason)
 		}()
 		common.Timeline("start assistant run cloud call started")
-		assistant, err := operations.StartAssistantRun(client, account, workspaceId, assistantId, useEcc)
+		assistant, err := operations.StartAssistantRun(client, account, workspaceId, assistantId)
 		common.Timeline("start assistant run cloud call completed")
 		if err != nil {
 			pretty.Exit(3, "Could not run assistant, reason: %v", err)
@@ -123,10 +123,6 @@ var assistantRunCmd = &cobra.Command{
 	},
 }
 
-var (
-	useEcc bool
-)
-
 func init() {
 	assistantCmd.AddCommand(assistantRunCmd)
 	assistantRunCmd.Flags().StringVarP(&workspaceId, "workspace", "w", "", "Workspace id to get assistant information.")
@@ -134,6 +130,5 @@ func init() {
 	assistantRunCmd.Flags().StringVarP(&assistantId, "assistant", "a", "", "Assistant id to execute.")
 	assistantRunCmd.MarkFlagRequired("assistant")
 	assistantRunCmd.Flags().StringVarP(&copyDirectory, "copy", "c", "", "Location to copy changed artifacts from run (optional).")
-	assistantRunCmd.Flags().BoolVarP(&useEcc, "ecc", "", false, "DO NOT USE! INTERNAL EXPERIMENT!")
 	assistantRunCmd.Flags().StringVarP(&common.HolotreeSpace, "space", "s", "user", "Client specific name to identify this environment.")
 }

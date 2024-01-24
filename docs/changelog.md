@@ -1,5 +1,10 @@
 # rcc change log
 
+## v17.13.0 (date: 24.1.2024)
+
+- removing internal ECC experiment code (since it never get proper support)
+- this should also remove one security vulnerability (Terrapin) hopefully
+
 ## v17.12.1 (date: 27.11.2023)
 
 - bugfix: removing duplicates and existing holotree from PATHs before adding
