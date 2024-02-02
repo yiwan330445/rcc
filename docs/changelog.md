@@ -1,5 +1,10 @@
 # rcc change log
 
+## v17.14.0 (date: 2.2.2024)
+
+- new experimental command `rcc holotree venv` to support python virtual
+  environments; this is still "work in progress"
+
 ## v17.13.0 (date: 24.1.2024)
 
 - removing internal ECC experiment code (since it never get proper support)
