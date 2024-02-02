@@ -420,6 +420,14 @@ The commands to enable the shared locations are:
 * Linux: `sudo rcc holotree shared --enable`
   * Shared location: `/opt/robocorp`
 
+Note: On Windows the command below assumes the standard `BUILTIN\Users`
+user group is present.
+If your organization has replaced this you can grant the permission with:
+
+```
+icacls "C:\ProgramData\robocorp" /grant "*S-1-5-32-545:(OI)(CI)M" /T
+```
+
 To switch the user to using shared holotrees use the following command.
 
 ```sh

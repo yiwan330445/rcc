@@ -1,5 +1,12 @@
 # rcc change log
 
+## v17.15.0 (date: 2.2.2024)
+
+- pull request from https://github.com/SoloJacobs/rcc relating to Windows
+  icacls usage. Thank you, Solomon Jacobs and Simon Meggle for bringing
+  this up.
+- this closes #54
+
 ## v17.14.0 (date: 2.2.2024)
 
 - new experimental command `rcc holotree venv` to support python virtual
