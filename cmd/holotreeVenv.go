@@ -1,8 +1,10 @@
 package cmd
 
 import (
+	"io/fs"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/robocorp/rcc/common"
 	"github.com/robocorp/rcc/conda"
@@ -72,10 +74,24 @@ var holotreeVenvCmd = &cobra.Command{
 		pretty.Guard(err == nil, 6, "Error: %v", err)
 		pretty.Guard(code == 0, 7, "Exit code %d from venv creation.", code)
 
-		pretty.Highlight("New venv is located at %q. For activation, use venv/bin/activate scripts.", location)
+		listActivationScripts(location)
 
 		pretty.Ok()
 	},
+}
+
+func listActivationScripts(root string) {
+	pretty.Highlight("New venv is located at %s. Following scripts seem to be available:", root)
+	base := filepath.Dir(root)
+	filepath.Walk(root, func(path string, entry fs.FileInfo, err error) error {
+		if entry.Mode().IsRegular() && strings.HasPrefix(strings.ToLower(entry.Name()), "activ") {
+			short, err := filepath.Rel(base, path)
+			if err == nil {
+				pretty.Highlight(" - %s", short)
+			}
+		}
+		return nil
+	})
 }
 
 func init() {

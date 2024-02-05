@@ -1,5 +1,9 @@
 # rcc change log
 
+## v17.15.2 (date: 5.2.2024)
+
+- bugfix: venv activation script search performed after initialization
+
 ## v17.15.1 (date: 5.2.2024)
 
 - bugfix: venv creation was missing `--system-site-packages` option, added
