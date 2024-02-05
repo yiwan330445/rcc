@@ -1,5 +1,11 @@
 # rcc change log
 
+## v17.15.1 (date: 5.2.2024)
+
+- bugfix: venv creation was missing `--system-site-packages` option, added
+- bugfix: in venv creation, picking path from actual environment and then
+  using python there to create venv
+
 ## v17.15.0 (date: 2.2.2024)
 
 - pull request from https://github.com/SoloJacobs/rcc relating to Windows

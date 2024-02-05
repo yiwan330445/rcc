@@ -5,6 +5,7 @@ import (
 	"path/filepath"
 
 	"github.com/robocorp/rcc/common"
+	"github.com/robocorp/rcc/conda"
 	"github.com/robocorp/rcc/htfs"
 	"github.com/robocorp/rcc/journal"
 	"github.com/robocorp/rcc/pathlib"
@@ -59,13 +60,19 @@ var holotreeVenvCmd = &cobra.Command{
 		}
 
 		env := holotreeExpandEnvironment(args, "", "", "", 0, holotreeForce)
-		pretty.Note("Trying to make new venv at %q ...", location)
-		task := shell.New(env, ".", "python", "-m", "venv", "--copies", location)
+		envPath := pathlib.EnvironmentPath(env)
+		python, ok := envPath.Which("python", conda.FileExtensions)
+		if !ok {
+			python, ok = envPath.Which("python3", conda.FileExtensions)
+		}
+		pretty.Guard(ok, 5, "For some reason, could not find python executable in environment paths. Report a bug. PATH: %q", envPath)
+		pretty.Note("Trying to make new venv at %q using %q ...", location, python)
+		task := shell.New(env, ".", python, "-m", "venv", "--system-site-packages", location)
 		code, err := task.Execute(false)
-		pretty.Guard(err == nil, 5, "Error: %v", err)
-		pretty.Guard(code == 0, 6, "Exit code %d from venv creation.", code)
+		pretty.Guard(err == nil, 6, "Error: %v", err)
+		pretty.Guard(code == 0, 7, "Exit code %d from venv creation.", code)
 
-		pretty.Highlight("New venv is located at %q. Use activation use venv/bin/activate scripts.", location)
+		pretty.Highlight("New venv is located at %q. For activation, use venv/bin/activate scripts.", location)
 
 		pretty.Ok()
 	},

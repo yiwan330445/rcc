@@ -44,6 +44,16 @@ func TargetPath() PathParts {
 	return noPreviousHolotrees(noDuplicates(filepath.SplitList(os.Getenv("PATH"))))
 }
 
+func EnvironmentPath(environment []string) PathParts {
+	path := ""
+	for _, entry := range environment {
+		if strings.HasPrefix(strings.ToLower(entry), "path=") {
+			path = entry[5:]
+		}
+	}
+	return noDuplicates(filepath.SplitList(path))
+}
+
 func PathFrom(parts ...string) PathParts {
 	if parts == nil {
 		return PathParts{}
