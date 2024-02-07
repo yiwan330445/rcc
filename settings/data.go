@@ -294,6 +294,7 @@ func (it *Meta) onTopOf(target *Settings) {
 }
 
 type Network struct {
+	NoProxy    string `yaml:"no-proxy" json:"no-proxy"`
 	HttpsProxy string `yaml:"https-proxy" json:"https-proxy"`
 	HttpProxy  string `yaml:"http-proxy" json:"http-proxy"`
 }
@@ -301,6 +302,9 @@ type Network struct {
 func (it *Network) onTopOf(target *Settings) {
 	if target.Network == nil {
 		target.Network = &Network{}
+	}
+	if len(it.NoProxy) > 0 {
+		target.Network.NoProxy = it.NoProxy
 	}
 	if len(it.HttpsProxy) > 0 {
 		target.Network.HttpsProxy = it.HttpsProxy

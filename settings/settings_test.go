@@ -35,5 +35,6 @@ func TestThatSomeDefaultValuesAreVisible(t *testing.T) {
 	must_be.Equal("", settings.Global.CondaURL())
 	must_be.Equal("", settings.Global.HttpProxy())
 	must_be.Equal("", settings.Global.HttpsProxy())
+	must_be.Equal("", settings.Global.NoProxy())
 	must_be.Equal(9, len(settings.Global.Hostnames()))
 }

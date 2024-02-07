@@ -56,6 +56,7 @@ Goal: Quick diagnostics can show alpha profile information
   Must Have   "config-settings-yaml-used": "true"
   Must Have   "config-ssl-no-revoke": "false"
   Must Have   "config-ssl-verify": "true"
+  Must Have   "config-no-proxy": ""
   Must Have   "config-https-proxy": ""
   Must Have   "config-http-proxy": ""
 
@@ -79,6 +80,7 @@ Goal: Quick diagnostics can show beta profile information
   Must Have   "config-ssl-no-revoke": "true"
   Must Have   "config-ssl-verify": "false"
   Must Have   "config-legacy-renegotiation-allowed": "true"
+  Must Have   "config-no-proxy": "noproxy.betaputkinen.net"
   Must Have   "config-https-proxy": "http://bad.betaputkinen.net:1234/"
   Must Have   "config-http-proxy": "http://bad.betaputkinen.net:2345/"
 

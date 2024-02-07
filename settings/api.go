@@ -27,6 +27,7 @@ type Api interface {
 	CondaLink(page string) string
 	Hostnames() []string
 	ConfiguredHttpTransport() *http.Transport
+	NoProxy() string
 	HttpsProxy() string
 	HttpProxy() string
 	HasPipRc() bool

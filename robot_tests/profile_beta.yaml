@@ -6,6 +6,7 @@ settings:
     ssl-no-revoke: true
     legacy-renegotiation-allowed: true
   network:
+    no-proxy: noproxy.betaputkinen.net
     https-proxy: http://bad.betaputkinen.net:1234/
     http-proxy: http://bad.betaputkinen.net:2345/
   meta:

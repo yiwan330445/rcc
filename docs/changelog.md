@@ -1,5 +1,11 @@
 # rcc change log
 
+## v17.16.0 (date: 7.2.2024)
+
+- new `NO_PROXY` configuration addition to `settings.yaml` file.
+- that `NO_PROXY` will override previous OS level configuration, so be careful
+- this closes #57
+
 ## v17.15.2 (date: 5.2.2024)
 
 - bugfix: venv activation script search performed after initialization

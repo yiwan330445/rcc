@@ -91,6 +91,7 @@ func runDiagnostics(quick bool) *common.DiagnosticStatus {
 	result.Details["config-active-profile"] = settings.Global.Name()
 	result.Details["config-https-proxy"] = settings.Global.HttpsProxy()
 	result.Details["config-http-proxy"] = settings.Global.HttpProxy()
+	result.Details["config-no-proxy"] = settings.Global.NoProxy()
 	result.Details["config-ssl-verify"] = fmt.Sprintf("%v", settings.Global.VerifySsl())
 	result.Details["config-ssl-no-revoke"] = fmt.Sprintf("%v", settings.Global.NoRevocation())
 	result.Details["config-legacy-renegotiation-allowed"] = fmt.Sprintf("%v", settings.Global.LegacyRenegotiation())

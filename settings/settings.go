@@ -175,6 +175,10 @@ func (it gateway) CondaURL() string {
 	return it.Endpoint("conda")
 }
 
+func (it gateway) NoProxy() string {
+	return it.settings().Network.NoProxy
+}
+
 func (it gateway) HttpsProxy() string {
 	return it.settings().Network.HttpsProxy
 }
