@@ -24,6 +24,7 @@ task :noassets do
   rm_f FileList['blobs/assets/micromamba.*']
   rm_f FileList['blobs/assets/*.zip']
   rm_f FileList['blobs/assets/*.yaml']
+  rm_f FileList['blobs/assets/*.py']
   rm_f FileList['blobs/assets/man/*.txt']
   rm_f FileList['blobs/docs/*.md']
 end
@@ -54,6 +55,7 @@ task :assets => [:noassets, :micromamba] do
   end
   cp FileList['assets/*.txt'], 'blobs/assets/'
   cp FileList['assets/*.yaml'], 'blobs/assets/'
+  cp FileList['assets/*.py'], 'blobs/assets/'
   cp FileList['assets/man/*.txt'], 'blobs/assets/man/'
   cp FileList['docs/*.md'], 'blobs/docs/'
 end

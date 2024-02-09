@@ -1,13 +1,16 @@
 package cmd
 
 import (
+	"fmt"
 	"io/fs"
 	"os"
 	"path/filepath"
 	"strings"
 
+	"github.com/robocorp/rcc/blobs"
 	"github.com/robocorp/rcc/common"
 	"github.com/robocorp/rcc/conda"
+	"github.com/robocorp/rcc/fail"
 	"github.com/robocorp/rcc/htfs"
 	"github.com/robocorp/rcc/journal"
 	"github.com/robocorp/rcc/pathlib"
@@ -74,24 +77,34 @@ var holotreeVenvCmd = &cobra.Command{
 		pretty.Guard(err == nil, 6, "Error: %v", err)
 		pretty.Guard(code == 0, 7, "Exit code %d from venv creation.", code)
 
-		listActivationScripts(location)
+		target := listActivationScripts(location)
+		if len(target) > 0 {
+			blob, err := blobs.Asset("assets/depxtraction.py")
+			fail.Fast(err)
+			location := filepath.Join(target, "depxtraction.py")
+			fail.Fast(os.WriteFile(location, blob, 0o755))
+			fmt.Printf("Experimental dependency extraction tool is available at %q.\nTry it after pip installing things into your venv.\n", location)
+		}
 
 		pretty.Ok()
 	},
 }
 
-func listActivationScripts(root string) {
+func listActivationScripts(root string) string {
 	pretty.Highlight("New venv is located at %s. Following scripts seem to be available:", root)
 	base := filepath.Dir(root)
+	pathcandidate := ""
 	filepath.Walk(root, func(path string, entry fs.FileInfo, err error) error {
 		if entry.Mode().IsRegular() && strings.HasPrefix(strings.ToLower(entry.Name()), "activ") {
 			short, err := filepath.Rel(base, path)
 			if err == nil {
 				pretty.Highlight(" - %s", short)
 			}
+			pathcandidate = filepath.Dir(short)
 		}
 		return nil
 	})
+	return pathcandidate
 }
 
 func init() {

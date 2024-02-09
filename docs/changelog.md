@@ -1,5 +1,9 @@
 # rcc change log
 
+## v17.17.0 (date: 9.2.2024)
+
+- adding depxtraction as part of `rcc holotree venv` creation
+
 ## v17.16.0 (date: 7.2.2024)
 
 - new `NO_PROXY` configuration addition to `settings.yaml` file.
