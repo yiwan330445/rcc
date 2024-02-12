@@ -54,8 +54,10 @@ func NewEnvironment(condafile, holozip string, restore, force bool, puller Catal
 			pretty.Regression(15, "Holotree restoration failure, see above [with %d workers on %d CPUs].", anywork.Scale(), runtime.NumCPU())
 		} else {
 			pretty.Progress(15, "Fresh %sholotree done [with %d workers on %d CPUs].", externally, anywork.Scale(), runtime.NumCPU())
-			usefile := fmt.Sprintf("%s.use", path)
-			pathlib.AppendFile(usefile, []byte{'.'})
+			if len(path) > 0 {
+				usefile := fmt.Sprintf("%s.use", path)
+				pathlib.AppendFile(usefile, []byte{'.'})
+			}
 		}
 		if haszip {
 			pretty.Note("There is hololib.zip present at: %q", holozip)

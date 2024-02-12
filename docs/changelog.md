@@ -1,5 +1,9 @@
 # rcc change log
 
+## v17.17.1 (date: 12.2.2024)
+
+- fixed space .use file to be written only when path is actually known
+
 ## v17.17.0 (date: 9.2.2024)
 
 - adding depxtraction as part of `rcc holotree venv` creation
