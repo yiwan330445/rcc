@@ -1,5 +1,9 @@
 # rcc change log
 
+## v17.17.2 (date: 14.2.2024)
+
+- depxtraction output update and refactoring code
+
 ## v17.17.1 (date: 12.2.2024)
 
 - fixed space .use file to be written only when path is actually known
