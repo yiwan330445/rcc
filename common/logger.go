@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"runtime"
+	"strings"
 	"sync"
 	"time"
 )
@@ -44,10 +45,21 @@ func init() {
 	go loggerLoop(logsource)
 }
 
+func AcceptableOutput(message string) bool {
+	for _, fragment := range LogHides {
+		if strings.Contains(message, fragment) {
+			return false
+		}
+	}
+	return true
+}
+
 func printout(out *os.File, message string) {
-	logbarrier.Add(1)
-	logsource <- func() (*os.File, string) {
-		return out, message
+	if AcceptableOutput(message) {
+		logbarrier.Add(1)
+		logsource <- func() (*os.File, string) {
+			return out, message
+		}
 	}
 }
 
@@ -88,8 +100,14 @@ func Trace(format string, details ...interface{}) error {
 }
 
 func Stdout(format string, details ...interface{}) {
-	fmt.Fprintf(os.Stdout, format, details...)
-	os.Stdout.Sync()
+	message := format
+	if len(details) > 0 {
+		message = fmt.Sprintf(format, details...)
+	}
+	if AcceptableOutput(message) {
+		fmt.Fprint(os.Stdout, message)
+		os.Stdout.Sync()
+	}
 }
 
 func WaitLogs() {

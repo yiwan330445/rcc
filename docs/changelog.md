@@ -1,5 +1,10 @@
 # rcc change log
 
+## v17.17.3 (date: 17.2.2024)
+
+- bugfix: unwanted logging output can now be hidden using global option
+  `--log-hide <text-fragment>` (and can be given multiple times)
+
 ## v17.17.2 (date: 14.2.2024)
 
 - depxtraction output update and refactoring code

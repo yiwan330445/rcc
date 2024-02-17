@@ -128,6 +128,7 @@ func init() {
 	rootCmd.PersistentFlags().BoolVarP(&common.WarrantyVoidedFlag, "warranty-voided", "", false, "experimental, warranty voided, dangerous mode ... DO NOT USE (unless you know what you are doing)")
 	rootCmd.PersistentFlags().BoolVarP(&common.NoTempManagement, "no-temp-management", "", false, "rcc wont do any temp directory management ... DO NOT USE (unless you know what you are doing)")
 	rootCmd.PersistentFlags().BoolVarP(&common.NoPycManagement, "no-pyc-management", "", false, "rcc wont do any .pyc file management ... DO NOT USE (unless you know what you are doing)")
+	rootCmd.PersistentFlags().StringArrayVarP(&common.LogHides, "log-hide", "", []string{}, "hide logging output that matches given text fragment and this option can be given multiple times")
 }
 
 func initConfig() {

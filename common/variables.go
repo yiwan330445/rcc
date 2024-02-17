@@ -63,6 +63,7 @@ var (
 	Clock                   *stopwatch
 	randomIdentifier        string
 	verbosity               Verbosity
+	LogHides                []string
 )
 
 func init() {
