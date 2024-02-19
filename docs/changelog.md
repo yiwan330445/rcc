@@ -1,5 +1,11 @@
 # rcc change log
 
+## v17.17.4 (date: 19.2.2024)
+
+- added `venv.md` for start of documentation for `rcc venv` and depxtraction
+  tooling and ideas how to use them
+- added new man page command into rcc: `rcc man venv`
+
 ## v17.17.3 (date: 17.2.2024)
 
 - bugfix: unwanted logging output can now be hidden using global option

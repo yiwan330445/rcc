@@ -22,6 +22,7 @@ PRIORITY_LIST = (
         'docs/profile_configuration.md',
         'docs/environment-caching.md',
         'docs/maintenance.md',
+        'docs/venv.md',
         'docs/troubleshooting.md',
         'docs/vocabulary.md',
         'docs/history.md',

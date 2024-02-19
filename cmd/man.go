@@ -87,6 +87,13 @@ func init() {
 	}
 
 	manCmd.AddCommand(&cobra.Command{
+		Use:   "venv",
+		Short: "Show virtual environment documentation.",
+		Long:  "Show virtual environment documentation.",
+		Run:   makeShowDoc("venv", "docs/venv.md"),
+	})
+
+	manCmd.AddCommand(&cobra.Command{
 		Use:     "vocabulary",
 		Short:   "Show vocabulary documentation",
 		Long:    "Show vocabulary documentation",
