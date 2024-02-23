@@ -125,10 +125,11 @@ func init() {
 	rootCmd.PersistentFlags().BoolVarP(&common.StrictFlag, "strict", "", false, "be more strict on environment creation and handling")
 	rootCmd.PersistentFlags().IntVarP(&anywork.WorkerCount, "workers", "", 0, "scale background workers manually (do not use, unless you know what you are doing)")
 	rootCmd.PersistentFlags().BoolVarP(&common.UnmanagedSpace, "unmanaged", "", false, "work with unmanaged holotree spaces, DO NOT USE (unless you know what you are doing)")
-	rootCmd.PersistentFlags().BoolVarP(&common.WarrantyVoidedFlag, "warranty-voided", "", false, "experimental, warranty voided, dangerous mode ... DO NOT USE (unless you know what you are doing)")
-	rootCmd.PersistentFlags().BoolVarP(&common.NoTempManagement, "no-temp-management", "", false, "rcc wont do any temp directory management ... DO NOT USE (unless you know what you are doing)")
-	rootCmd.PersistentFlags().BoolVarP(&common.NoPycManagement, "no-pyc-management", "", false, "rcc wont do any .pyc file management ... DO NOT USE (unless you know what you are doing)")
+	rootCmd.PersistentFlags().BoolVarP(&common.WarrantyVoidedFlag, "warranty-voided", "", common.WarrantyVoidedFlag, "experimental, warranty voided, dangerous mode ... DO NOT USE (unless you know what you are doing)")
+	rootCmd.PersistentFlags().BoolVarP(&common.NoTempManagement, "no-temp-management", "", common.NoTempManagement, "rcc wont do any temp directory management ... DO NOT USE (unless you know what you are doing)")
+	rootCmd.PersistentFlags().BoolVarP(&common.NoPycManagement, "no-pyc-management", "", common.NoPycManagement, "rcc wont do any .pyc file management ... DO NOT USE (unless you know what you are doing)")
 	rootCmd.PersistentFlags().StringArrayVarP(&common.LogHides, "log-hide", "", []string{}, "hide logging output that matches given text fragment and this option can be given multiple times")
+	rootCmd.PersistentFlags().BoolVarP(&common.BundledFlag, "bundled", "", common.BundledFlag, "used to tell rcc, that this is bundled use (do not use, unless you know what you are doing)")
 }
 
 func initConfig() {

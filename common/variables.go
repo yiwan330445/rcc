@@ -53,6 +53,7 @@ var (
 	UnmanagedSpace          bool
 	FreshlyBuildEnvironment bool
 	WarrantyVoidedFlag      bool
+	BundledFlag             bool
 	StageFolder             string
 	ControllerType          string
 	HolotreeSpace           string
@@ -76,20 +77,17 @@ func init() {
 	for _, arg := range os.Args {
 		lowargs = append(lowargs, strings.ToLower(arg))
 	}
-	// peek CLI options to pre-initialize "Warranty Voided" indicator
+	// peek CLI options to pre-initialize "Warranty Voided" and other indicators
 	args := set.Set(lowargs)
 	WarrantyVoidedFlag = set.Member(args, "--warranty-voided")
+	BundledFlag = set.Member(args, "--bundled")
+	NoTempManagement = set.Member(args, "--no-temp-management")
+	NoPycManagement = set.Member(args, "--no-pyc-management")
 	if set.Member(args, "--debug") {
 		verbosity = Debugging
 	}
 	if set.Member(args, "--trace") {
 		verbosity = Tracing
-	}
-	if set.Member(args, "--no-temp-management") {
-		NoTempManagement = true
-	}
-	if set.Member(args, "--no-pyc-management") {
-		NoPycManagement = true
 	}
 
 	// Note: HololibCatalogLocation, HololibLibraryLocation and HololibUsageLocation
@@ -142,6 +140,10 @@ func RccRemoteAuthorization() (string, bool) {
 
 func RobocorpLock() string {
 	return filepath.Join(RobocorpHome(), "robocorp.lck")
+}
+
+func IsBundled() bool {
+	return BundledFlag
 }
 
 func WarrantyVoided() bool {

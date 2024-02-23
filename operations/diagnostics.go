@@ -115,6 +115,7 @@ func runDiagnostics(quick bool) *common.DiagnosticStatus {
 	result.Details["warranty-voided-mode"] = fmt.Sprintf("%v", common.WarrantyVoided())
 	result.Details["temp-management-disabled"] = fmt.Sprintf("%v", common.DisableTempManagement())
 	result.Details["pyc-management-disabled"] = fmt.Sprintf("%v", common.DisablePycManagement())
+	result.Details["is-bundled"] = fmt.Sprintf("%v", common.IsBundled())
 
 	for name, filename := range lockfiles() {
 		result.Details[name] = filename

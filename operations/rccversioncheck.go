@@ -87,6 +87,10 @@ func pickLatestTestedVersion(versions *rccVersions) (uint64, string, string) {
 }
 
 func RccVersionCheck() func() {
+	if common.IsBundled() {
+		common.Debug("Did not check newer version existence, since this is bundled case.")
+		return nil
+	}
 	updateRccVersionInfo()
 	versions, err := loadVersionsInfo()
 	if err != nil || versions == nil {

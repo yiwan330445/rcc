@@ -265,7 +265,7 @@ func (it gateway) loadRootCAs() *x509.CertPool {
 
 	ok := roots.AppendCertsFromPEM(certificates)
 	if !ok {
-		common.Log("Warning! Problem appending sertificated from %q.", common.CaBundleFile())
+		common.Log("Warning! Problem appending certificates from %q.", common.CaBundleFile())
 	}
 	return roots
 }

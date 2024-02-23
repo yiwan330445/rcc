@@ -1,5 +1,13 @@
 # rcc change log
 
+## v17.18.0 (date: 23.2.2024)
+
+- new `--bundled` flag to support cases where rcc is bundled inside other apps
+- first thing behind "bundled" flag is version check (so when flag is given,
+  rcc will never check possible newer version existence)
+- bugfix: flag handling defaults on peek initialized flags
+- typofix: on certificate appending failure message
+
 ## v17.17.4 (date: 19.2.2024)
 
 - added `venv.md` for start of documentation for `rcc venv` and depxtraction

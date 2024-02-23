@@ -14,6 +14,16 @@ Goal: Show rcc version information.
   Step        build/rcc version --controller citests
   Must Have   v17.
 
+Goal: There is debug message when bundled case.
+  Step        build/rcc version --controller citests --debug --bundled
+  Use STDERR
+  Must Have   Did not check newer version existence, since this is bundled case.
+
+Goal: No debug message when user case.
+  Step        build/rcc version --controller citests --debug
+  Use STDERR
+  Wont Have   this is bundled case
+
 Goal: Show rcc license information.
   Step        build/rcc man license --controller citests
   Must Have   Apache License
