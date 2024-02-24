@@ -1,5 +1,9 @@
 # rcc change log
 
+## v17.19.0 (date: 26.2.2024)
+
+- Added support for `rcc pull` command to be able to flatten the retrieved file structure also based on finding `package.yaml` file.
+
 ## v17.18.0 (date: 23.2.2024)
 
 - new `--bundled` flag to support cases where rcc is bundled inside other apps

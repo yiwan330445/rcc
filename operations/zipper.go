@@ -206,7 +206,7 @@ func (it *unzipper) ExtraDirectoryPrefixLength() (int, string) {
 			continue
 		}
 		basename := filepath.Base(entry.Name)
-		if strings.ToLower(basename) != "robot.yaml" {
+		if strings.ToLower(basename) != "robot.yaml" && lowerBasename != "package.yaml" {
 			continue
 		}
 		dirname := filepath.Dir(entry.Name)
