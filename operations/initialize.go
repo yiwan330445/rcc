@@ -30,6 +30,10 @@ type MetaTemplates struct {
 	Url       string    `yaml:"url"`
 }
 
+func (it *MetaTemplates) MatchingHash(hash string) bool {
+	return strings.EqualFold(strings.TrimSpace(hash), strings.TrimSpace(it.Hash))
+}
+
 func (it StringPairList) Len() int {
 	return len(it)
 }
@@ -92,7 +96,7 @@ func needNewTemplates() (ignore *MetaTemplates, err error) {
 	fail.On(err != nil, "%s", err)
 	fail.On(!strings.HasPrefix(meta.Url, "https:"), "Location for templates.zip is not https: %q", meta.Url)
 	hash, err := pathlib.Sha256(TemplatesZip())
-	if err != nil || hash != meta.Hash {
+	if err != nil || !meta.MatchingHash(hash) {
 		return meta, nil
 	}
 	return nil, nil
@@ -120,7 +124,7 @@ func downloadTemplatesZip(meta *MetaTemplates) (err error) {
 	fail.On(err != nil, "Failure loading %q, reason: %s", meta.Url, err)
 	hash, err := pathlib.Sha256(partfile)
 	fail.On(err != nil, "Failure hashing %q, reason: %s", partfile, err)
-	fail.On(hash != meta.Hash, "Received broken templates.zip from %q", meta.Hash)
+	fail.On(!meta.MatchingHash(hash), "Received broken templates.zip, hash mismatch from expected %q vs. actual %q", meta.Hash, hash)
 	return nil
 }
 

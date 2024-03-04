@@ -1,5 +1,9 @@
 # rcc change log
 
+## v17.18.1 (date: 4.3.2024)
+
+- bugfix: template hash case-sensitivity fix
+
 ## v17.18.0 (date: 23.2.2024)
 
 - new `--bundled` flag to support cases where rcc is bundled inside other apps
