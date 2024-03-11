@@ -1,5 +1,9 @@
 # rcc change log
 
+## v17.19.0 (date: 11.3.2024)
+
+- micromamba upgrade to v1.5.7
+
 ## v17.18.1 (date: 4.3.2024)
 
 - bugfix: template hash case-sensitivity fix
