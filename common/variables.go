@@ -100,6 +100,7 @@ func init() {
 	ensureDirectory(JournalLocation())
 	ensureDirectory(TemplateLocation())
 	ensureDirectory(BinLocation())
+	ensureDirectory(UvCache())
 	ensureDirectory(PipCache())
 	ensureDirectory(WheelCache())
 	ensureDirectory(RobotCache())
@@ -286,6 +287,10 @@ func BadHololibScriptsLocation() string {
 
 func UsesHolotree() bool {
 	return len(HolotreeSpace) > 0
+}
+
+func UvCache() string {
+	return filepath.Join(RobocorpHome(), "uvcache")
 }
 
 func PipCache() string {

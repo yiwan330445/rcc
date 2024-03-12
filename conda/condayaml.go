@@ -87,6 +87,10 @@ func (it *Dependency) IsCacheable() bool {
 	return true
 }
 
+func (it *Dependency) Match(name string) bool {
+	return strings.EqualFold(name, it.Name)
+}
+
 func (it *Dependency) IsExact() bool {
 	return len(it.Qualifier)+len(it.Versions) > 0
 }
@@ -160,6 +164,15 @@ func SummonEnvironment(filename string) *Environment {
 		Conda:    []*Dependency{},
 		Pip:      []*Dependency{},
 	}
+}
+
+func (it *Environment) HasCondaDependency(name string) bool {
+	for _, dependency := range it.Conda {
+		if dependency.Match(name) {
+			return true
+		}
+	}
+	return false
 }
 
 func (it *Environment) IsCacheable() bool {

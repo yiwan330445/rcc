@@ -30,10 +30,13 @@ const (
 const (
 	micromambaInstall  = `micromamba install`
 	pipInstall         = `pip install`
+	uvInstall          = `uv install`
 	postInstallScripts = `post-install script execution`
 )
 
 type (
+	pipTool func(string, string, string, fmt.Stringer, io.Writer) (bool, bool, bool, string)
+
 	SkipLayer uint8
 	Recorder  interface {
 		Record([]byte) error
@@ -205,6 +208,50 @@ func micromambaLayer(fingerprint, condaYaml, targetFolder string, stopwatch fmt.
 	return true, false
 }
 
+func uvLayer(fingerprint, requirementsText, targetFolder string, stopwatch fmt.Stringer, planWriter io.Writer) (bool, bool, bool, string) {
+	assertStageFolder(targetFolder)
+	common.TimelineBegin("Layer: uv [%s]", fingerprint)
+	defer common.TimelineEnd()
+
+	pipUsed := false
+	fmt.Fprintf(planWriter, "\n---  uv plan @%ss  ---\n\n", stopwatch)
+	uv, uvok := FindUv(targetFolder)
+	if !uvok {
+		fmt.Fprintf(planWriter, "Note: no uv in target folder: %s\n", targetFolder)
+		return false, false, pipUsed, ""
+	}
+	python, pyok := FindPython(targetFolder)
+	if !pyok {
+		fmt.Fprintf(planWriter, "Note: no python in target folder: %s\n", targetFolder)
+	}
+	uvCache, wheelCache := common.UvCache(), common.WheelCache()
+	size, ok := pathlib.Size(requirementsText)
+	if !ok || size == 0 {
+		pretty.Progress(8, "Skipping pip install phase -- no pip dependencies.")
+	} else {
+		pretty.Progress(8, "Running uv install phase. (uv v%s) [layer: %s]", UvVersion(uv), fingerprint)
+		common.Debug("Updating new environment at %v with uv requirements from %v (size: %v)", targetFolder, requirementsText, size)
+		uvCommand := common.NewCommander(uv, "pip", "install", "--link-mode", "copy", "--color", "never", "--cache-dir", uvCache, "--find-links", wheelCache, "--requirement", requirementsText)
+		uvCommand.Option("--index-url", settings.Global.PypiURL())
+		// no "--trusted-host" on uv pip install
+		// uvCommand.Option("--trusted-host", settings.Global.PypiTrustedHost())
+		uvCommand.ConditionalFlag(common.VerboseEnvironmentBuilding(), "--verbose")
+		common.Debug("===  uv install phase ===")
+		code, err := LiveExecution(planWriter, targetFolder, uvCommand.CLI()...)
+		if err != nil || code != 0 {
+			cloud.BackgroundMetric(common.ControllerIdentity(), "rcc.env.fatal.uv", fmt.Sprintf("%d_%x", code, code))
+			common.Timeline("uv fail.")
+			common.Fatal(fmt.Sprintf("uv [%d/%x]", code, code), err)
+			pretty.RccPointOfView(uvInstall, err)
+			return false, false, pipUsed, ""
+		}
+		journal.CurrentBuildEvent().PipComplete()
+		common.Timeline("uv done.")
+		pipUsed = true
+	}
+	return true, false, pipUsed, python
+}
+
 func pipLayer(fingerprint, requirementsText, targetFolder string, stopwatch fmt.Stringer, planWriter io.Writer) (bool, bool, bool, string) {
 	assertStageFolder(targetFolder)
 	common.TimelineBegin("Layer: pip [%s]", fingerprint)
@@ -290,6 +337,13 @@ func holotreeLayers(condaYaml, requirementsText string, finalEnv *Environment, t
 	pipNeeded := len(requirementsText) > 0
 	postInstall := len(finalEnv.PostInstall) > 0
 
+	var pypiSelector pipTool = pipLayer
+
+	hasUv := finalEnv.HasCondaDependency("uv")
+	if hasUv {
+		pypiSelector = uvLayer
+	}
+
 	layers := finalEnv.AsLayers()
 	fingerprints := finalEnv.FingerprintLayers()
 
@@ -312,7 +366,7 @@ func holotreeLayers(condaYaml, requirementsText string, finalEnv *Environment, t
 		fmt.Fprintf(planWriter, "\n---  micromamba plan skipped, layer exists ---\n\n")
 	}
 	if skip < SkipPipLayer {
-		success, fatal, pipUsed, python = pipLayer(fingerprints[1], requirementsText, targetFolder, stopwatch, planWriter)
+		success, fatal, pipUsed, python = pypiSelector(fingerprints[1], requirementsText, targetFolder, stopwatch, planWriter)
 		if !success {
 			return success, fatal, pipUsed, python
 		}

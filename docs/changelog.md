@@ -1,5 +1,9 @@
 # rcc change log
 
+## v17.20.0 (date: 12.3.2024) WORK IN PROGRESS
+
+- uv experiment with limited scope and imperfect implementation
+
 ## v17.19.0 (date: 11.3.2024)
 
 - micromamba upgrade to v1.5.7

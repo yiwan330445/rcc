@@ -103,6 +103,15 @@ func FindPython(location string) (string, bool) {
 	return holotreePath.Which("python", FileExtensions)
 }
 
+func FindUv(location string) (string, bool) {
+	holotreePath := HolotreePath(location)
+	uv, ok := holotreePath.Which("uv", FileExtensions)
+	if ok {
+		return uv, ok
+	}
+	return holotreePath.Which("uv", FileExtensions)
+}
+
 func injectNetworkEnvironment(environment []string) []string {
 	if settings.Global.NoRevocation() {
 		environment = append(environment, "MAMBA_SSL_NO_REVOKE=true")
@@ -225,6 +234,16 @@ search:
 		version += multiplier * value
 	}
 	return version, versionText
+}
+
+func UvVersion(uv string) string {
+	environment := CondaExecutionEnvironment(".", nil, true)
+	versionText, _, err := shell.New(environment, ".", uv, "--version").CaptureOutput()
+	if err != nil {
+		return err.Error()
+	}
+	_, versionText = AsVersion(versionText)
+	return versionText
 }
 
 func PipVersion(python string) string {

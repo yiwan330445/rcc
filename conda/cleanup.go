@@ -71,10 +71,12 @@ func downloadCleanup(dryrun bool) error {
 	if dryrun {
 		common.Log("- %v", common.TemplateLocation())
 		common.Log("- %v", common.PipCache())
+		common.Log("- %v", common.UvCache())
 		common.Log("- %v", common.MambaPackages())
 	} else {
 		safeRemove("templates", common.TemplateLocation())
 		safeRemove("cache", common.PipCache())
+		safeRemove("cache", common.UvCache())
 		safeRemove("cache", common.MambaPackages())
 	}
 	return nil
