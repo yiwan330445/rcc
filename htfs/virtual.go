@@ -26,6 +26,10 @@ func Virtual() MutableLibrary {
 	}
 }
 
+func (it *virtual) Compress() bool {
+	return true
+}
+
 func (it *virtual) Identity() string {
 	suffix := fmt.Sprintf("%016x", it.identity)
 	return fmt.Sprintf("v%s_%sh", common.UserHomeIdentity(), suffix[:14])

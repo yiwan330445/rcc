@@ -20,10 +20,14 @@ func gzDelegateOpen(filename string, ungzip bool) (readable io.Reader, closer Cl
 		_, err = source.Seek(0, 0)
 		fail.On(err != nil, "Failed to seek %q -> %v", filename, err)
 		reader = source
-	}
-	closer = func() error {
-		reader.Close()
-		return source.Close()
+		closer = func() error {
+			return source.Close()
+		}
+	} else {
+		closer = func() error {
+			reader.Close()
+			return source.Close()
+		}
 	}
 	return reader, closer, nil
 }

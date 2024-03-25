@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/robocorp/rcc/common"
+	"github.com/robocorp/rcc/fail"
 	"github.com/robocorp/rcc/pathlib"
 	"github.com/robocorp/rcc/pretty"
 )
@@ -67,17 +68,18 @@ func alwaysCleanup(dryrun bool) {
 	safeRemove("legacy", miniconda3)
 }
 
-func downloadCleanup(dryrun bool) error {
+func downloadCleanup(dryrun bool) (err error) {
+	defer fail.Around(&err)
 	if dryrun {
 		common.Log("- %v", common.TemplateLocation())
 		common.Log("- %v", common.PipCache())
 		common.Log("- %v", common.UvCache())
 		common.Log("- %v", common.MambaPackages())
 	} else {
-		safeRemove("templates", common.TemplateLocation())
-		safeRemove("cache", common.PipCache())
-		safeRemove("cache", common.UvCache())
-		safeRemove("cache", common.MambaPackages())
+		fail.Fast(safeRemove("templates", common.TemplateLocation()))
+		fail.Fast(safeRemove("cache", common.PipCache()))
+		fail.Fast(safeRemove("cache", common.UvCache()))
+		fail.Fast(safeRemove("cache", common.MambaPackages()))
 	}
 	return nil
 }
@@ -96,11 +98,10 @@ func quickCleanup(dryrun bool) error {
 	return safeRemove("temp", common.RobocorpTempRoot())
 }
 
-func spotlessCleanup(dryrun bool) error {
-	err := quickCleanup(dryrun)
-	if err != nil {
-		return err
-	}
+func spotlessCleanup(dryrun, noCompress bool) (err error) {
+	defer fail.Around(&err)
+
+	fail.Fast(quickCleanup(dryrun))
 	rcccache := filepath.Join(common.RobocorpHome(), "rcccache.yaml")
 	if dryrun {
 		common.Log("- %v", common.BinLocation())
@@ -113,14 +114,18 @@ func spotlessCleanup(dryrun bool) error {
 		common.Log("- %v", common.HololibLocation())
 		return nil
 	}
-	safeRemove("executables", common.BinLocation())
-	safeRemove("micromamba", common.MicromambaLocation())
-	safeRemove("cache", common.RobotCache())
-	safeRemove("cache", rcccache)
-	safeRemove("old", common.OldEventJournal())
-	safeRemove("journals", common.JournalLocation())
-	safeRemove("catalogs", common.HololibCatalogLocation())
-	return safeRemove("cache", common.HololibLocation())
+	fail.Fast(safeRemove("executables", common.BinLocation()))
+	fail.Fast(safeRemove("micromamba", common.MicromambaLocation()))
+	fail.Fast(safeRemove("cache", common.RobotCache()))
+	fail.Fast(safeRemove("cache", rcccache))
+	fail.Fast(safeRemove("old", common.OldEventJournal()))
+	fail.Fast(safeRemove("journals", common.JournalLocation()))
+	fail.Fast(safeRemove("catalogs", common.HololibCatalogLocation()))
+	fail.Fast(safeRemove("cache", common.HololibLocation()))
+	if noCompress {
+		return pathlib.WriteFile(common.HololibCompressMarker(), []byte("present"), 0o666)
+	}
+	return nil
 }
 
 func cleanupTemp(deadline time.Time, dryrun bool) error {
@@ -160,7 +165,9 @@ func BugsCleanup() {
 	bugsCleanup(false)
 }
 
-func Cleanup(daylimit int, dryrun, quick, all, micromamba, downloads bool) error {
+func Cleanup(daylimit int, dryrun, quick, all, micromamba, downloads, noCompress bool) (err error) {
+	defer fail.Around(&err)
+
 	lockfile := common.RobocorpLock()
 	completed := pathlib.LockWaitMessage(lockfile, "Serialized environment cleanup [robocorp lock]")
 	locker, err := pathlib.Locker(lockfile, 30000)
@@ -183,7 +190,7 @@ func Cleanup(daylimit int, dryrun, quick, all, micromamba, downloads bool) error
 	}
 
 	if all {
-		return spotlessCleanup(dryrun)
+		return spotlessCleanup(dryrun, noCompress)
 	}
 
 	deadline := time.Now().Add(-24 * time.Duration(daylimit) * time.Hour)

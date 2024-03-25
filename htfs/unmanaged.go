@@ -26,6 +26,10 @@ func Unmanaged(core MutableLibrary) MutableLibrary {
 	}
 }
 
+func (it *unmanaged) Compress() bool {
+	return it.delegate.Compress()
+}
+
 func (it *unmanaged) Identity() string {
 	return it.delegate.Identity()
 }

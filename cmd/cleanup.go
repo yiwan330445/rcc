@@ -13,6 +13,7 @@ var (
 	quickFlag      bool
 	micromambaFlag bool
 	downloadsFlag  bool
+	noCompressFlag bool
 	daysOption     int
 )
 
@@ -25,7 +26,7 @@ After cleanup, they will not be available anymore.`,
 		if common.DebugFlag() {
 			defer common.Stopwatch("Env cleanup lasted").Report()
 		}
-		err := conda.Cleanup(daysOption, dryFlag, quickFlag, allFlag, micromambaFlag, downloadsFlag)
+		err := conda.Cleanup(daysOption, dryFlag, quickFlag, allFlag, micromambaFlag, downloadsFlag, noCompressFlag)
 		if err != nil {
 			pretty.Exit(1, "Error: %v", err)
 		}
@@ -40,5 +41,6 @@ func init() {
 	cleanupCmd.Flags().BoolVarP(&allFlag, "all", "", false, "Cleanup all enviroments.")
 	cleanupCmd.Flags().BoolVarP(&quickFlag, "quick", "q", false, "Cleanup most of enviroments, but leave hololib and pkgs cache intact.")
 	cleanupCmd.Flags().BoolVarP(&downloadsFlag, "downloads", "", false, "Cleanup downloaded cache files (pip/conda/templates)")
+	cleanupCmd.Flags().BoolVarP(&noCompressFlag, "no-compress", "", false, "Do not use compression in hololib content. Experimental! DANGEROUS! Do not use, unless you know what you are doing.")
 	cleanupCmd.Flags().IntVarP(&daysOption, "days", "", 30, "What is the limit in days to keep temp folders (deletes directories older than this).")
 }

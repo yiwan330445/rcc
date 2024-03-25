@@ -270,6 +270,10 @@ func HololibUsageLocation() string {
 	return filepath.Join(HololibLocation(), "used")
 }
 
+func HololibCompressMarker() string {
+	return filepath.Join(HololibCatalogLocation(), "compress.no")
+}
+
 func HolotreeLock() string {
 	return filepath.Join(HolotreeLocation(), "global.lck")
 }

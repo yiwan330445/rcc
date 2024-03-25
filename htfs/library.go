@@ -59,6 +59,7 @@ type Library interface {
 	TargetDir([]byte, []byte, []byte) (string, error)
 	Restore([]byte, []byte, []byte) (string, error)
 	RestoreTo([]byte, string, string, string, bool) (string, error)
+	Compress() bool
 }
 
 type MutableLibrary interface {
@@ -82,7 +83,7 @@ type hololib struct {
 }
 
 func (it *hololib) Open(digest string) (readable io.Reader, closer Closer, err error) {
-	return delegateOpen(it, digest, true)
+	return delegateOpen(it, digest, it.Compress())
 }
 
 func (it *hololib) Location(digest string) string {
@@ -266,6 +267,10 @@ func (it *hololib) CatalogPath(key string) string {
 
 func (it *hololib) ValidateBlueprint(blueprint []byte) error {
 	return nil
+}
+
+func (it *hololib) Compress() bool {
+	return !pathlib.IsFile(common.HololibCompressMarker())
 }
 
 func (it *hololib) HasBlueprint(blueprint []byte) bool {

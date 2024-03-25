@@ -34,6 +34,7 @@ func init() {
 
 	shellCmd.Flags().StringVarP(&environmentFile, "environment", "e", "", "Full path to the 'env.json' development environment data file.")
 	shellCmd.Flags().StringVarP(&robotFile, "robot", "r", "robot.yaml", "Full path to the 'robot.yaml' configuration file.")
+	shellCmd.Flags().StringVarP(&common.HolotreeSpace, "space", "s", "user", "Client specific name to identify used environment.")
 	shellCmd.Flags().StringVarP(&runTask, "task", "t", "", "Task to configure shell from configuration file. <deprecated, non-functional>")
 	shellCmd.MarkFlagRequired("config")
 }

@@ -182,6 +182,7 @@ detector:
 
 func ScheduleLifters(library MutableLibrary, stats *stats) Treetop {
 	var scheduler Treetop
+	compress := library.Compress()
 	seen := make(map[string]bool)
 	scheduler = func(path string, it *Dir) error {
 		if it.IsSymlink() {
@@ -211,14 +212,14 @@ func ScheduleLifters(library MutableLibrary, stats *stats) Treetop {
 				continue
 			}
 			sourcepath := filepath.Join(path, name)
-			anywork.Backlog(LiftFile(sourcepath, sinkpath))
+			anywork.Backlog(LiftFile(sourcepath, sinkpath, compress))
 		}
 		return nil
 	}
 	return scheduler
 }
 
-func LiftFile(sourcename, sinkname string) anywork.Work {
+func LiftFile(sourcename, sinkname string, compress bool) anywork.Work {
 	return func() {
 		source, err := os.Open(sourcename)
 		anywork.OnErrPanicCloseAll(err)
@@ -230,13 +231,20 @@ func LiftFile(sourcename, sinkname string) anywork.Work {
 		anywork.OnErrPanicCloseAll(err)
 
 		defer sink.Close()
-		writer, err := gzip.NewWriterLevel(sink, gzip.BestSpeed)
-		anywork.OnErrPanicCloseAll(err, sink)
+
+		var writer io.WriteCloser
+		writer = sink
+		if compress {
+			writer, err = gzip.NewWriterLevel(sink, gzip.BestSpeed)
+			anywork.OnErrPanicCloseAll(err, sink)
+		}
 
 		_, err = io.Copy(writer, source)
 		anywork.OnErrPanicCloseAll(err, sink)
 
-		anywork.OnErrPanicCloseAll(writer.Close(), sink)
+		if compress {
+			anywork.OnErrPanicCloseAll(writer.Close(), sink)
+		}
 
 		anywork.OnErrPanicCloseAll(sink.Close())
 
