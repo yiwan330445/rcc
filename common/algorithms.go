@@ -3,6 +3,7 @@ package common
 import (
 	"crypto/sha256"
 	"fmt"
+	"hash"
 	"math"
 	"math/rand"
 	"time"
@@ -35,15 +36,23 @@ func Hexdigest(raw []byte) string {
 	return fmt.Sprintf("%02x", raw)
 }
 
+func NewDigester(legacy bool) hash.Hash {
+	if legacy {
+		return sha256.New()
+	} else {
+		return siphash.New128([]byte("Very_Random-Seed"))
+	}
+}
+
 func ShortDigest(content string) string {
-	digester := sha256.New()
+	digester := NewDigester(true)
 	digester.Write([]byte(content))
 	result := Hexdigest(digester.Sum(nil))
 	return result[:16]
 }
 
 func Digest(content string) string {
-	digester := sha256.New()
+	digester := NewDigester(true)
 	digester.Write([]byte(content))
 	return Hexdigest(digester.Sum(nil))
 }

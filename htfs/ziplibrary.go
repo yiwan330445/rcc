@@ -40,10 +40,6 @@ func ZipLibrary(zipfile string) (Library, error) {
 	}, nil
 }
 
-func (it *ziplibrary) Compress() bool {
-	return true
-}
-
 func (it *ziplibrary) ValidateBlueprint(blueprint []byte) error {
 	return nil
 }

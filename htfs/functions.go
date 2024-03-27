@@ -2,7 +2,6 @@ package htfs
 
 import (
 	"compress/gzip"
-	"crypto/sha256"
 	"fmt"
 	"io"
 	"os"
@@ -113,7 +112,7 @@ func CheckHasher(known map[string]map[string]bool) Filetask {
 				fail.On(err != nil, "Failed to seek %q -> %v", fullpath, err)
 				reader = source
 			}
-			digest := sha256.New()
+			digest := common.NewDigester(Compress())
 			_, err = io.Copy(digest, reader)
 			if err != nil {
 				anywork.Backlog(RemoveFile(fullpath))
@@ -132,7 +131,7 @@ func Locator(seek string) Filetask {
 				panic(fmt.Sprintf("Open[Locator] %q, reason: %v", fullpath, err))
 			}
 			defer source.Close()
-			digest := sha256.New()
+			digest := common.NewDigester(Compress())
 			locator := RelocateWriter(digest, seek)
 			_, err = io.Copy(locator, source)
 			if err != nil {
@@ -182,7 +181,7 @@ detector:
 
 func ScheduleLifters(library MutableLibrary, stats *stats) Treetop {
 	var scheduler Treetop
-	compress := library.Compress()
+	compress := Compress()
 	seen := make(map[string]bool)
 	scheduler = func(path string, it *Dir) error {
 		if it.IsSymlink() {
@@ -193,10 +192,12 @@ func ScheduleLifters(library MutableLibrary, stats *stats) Treetop {
 		}
 		for name, file := range it.Files {
 			if file.IsSymlink() {
+				stats.Link()
 				continue
 			}
 			if seen[file.Digest] {
 				common.Trace("LiftFile %s %q already scheduled.", file.Digest, name)
+				stats.Duplicate()
 				continue
 			}
 			seen[file.Digest] = true
@@ -270,7 +271,7 @@ func DropFile(library Library, digest, sinkname string, details *File, rewrite [
 		sink, err := os.Create(partname)
 		anywork.OnErrPanicCloseAll(err)
 
-		digester := sha256.New()
+		digester := common.NewDigester(Compress())
 		many := io.MultiWriter(sink, digester)
 
 		_, err = io.Copy(many, reader)
@@ -386,7 +387,7 @@ func RestoreDirectory(library Library, fs *Root, current map[string]string, stat
 				}
 				link, ok := it.Dirs[part.Name()]
 				if ok && link.IsSymlink() {
-					stats.Dirty(false)
+					stats.Link()
 					continue
 				}
 				files[part.Name()] = true
@@ -398,7 +399,7 @@ func RestoreDirectory(library Library, fs *Root, current map[string]string, stat
 					continue
 				}
 				if found.IsSymlink() && isCorrectSymlink(found.Symlink, directpath) {
-					stats.Dirty(false)
+					stats.Link()
 					continue
 				}
 				shadow, ok := current[directpath]

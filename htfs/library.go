@@ -30,13 +30,34 @@ var (
 
 type stats struct {
 	sync.Mutex
-	total uint64
-	dirty uint64
+	total     uint64
+	dirty     uint64
+	links     uint64
+	duplicate uint64
 }
 
 func (it *stats) Dirtyness() float64 {
+	it.Lock()
+	defer it.Unlock()
+
 	dirtyness := (1000 * it.dirty) / it.total
 	return float64(dirtyness) / 10.0
+}
+
+func (it *stats) Duplicate() {
+	it.Lock()
+	defer it.Unlock()
+
+	it.total++
+	it.duplicate++
+}
+
+func (it *stats) Link() {
+	it.Lock()
+	defer it.Unlock()
+
+	it.total++
+	it.links++
 }
 
 func (it *stats) Dirty(dirty bool) {
@@ -59,7 +80,6 @@ type Library interface {
 	TargetDir([]byte, []byte, []byte) (string, error)
 	Restore([]byte, []byte, []byte) (string, error)
 	RestoreTo([]byte, string, string, string, bool) (string, error)
-	Compress() bool
 }
 
 type MutableLibrary interface {
@@ -83,7 +103,7 @@ type hololib struct {
 }
 
 func (it *hololib) Open(digest string) (readable io.Reader, closer Closer, err error) {
-	return delegateOpen(it, digest, it.Compress())
+	return delegateOpen(it, digest, Compress())
 }
 
 func (it *hololib) Location(digest string) string {
@@ -252,7 +272,7 @@ func (it *hololib) Record(blueprint []byte) error {
 	common.Timeline("holotree lift start %q", catalog)
 	err = fs.Treetop(ScheduleLifters(it, score))
 	common.Timeline("holotree lift done")
-	defer common.Timeline("- new %d/%d", score.dirty, score.total)
+	defer common.Timeline("- new %d/%d (duplicate: %d, links: %d)", score.dirty, score.total, score.duplicate, score.links)
 	common.Debug("Holotree new workload: %d/%d\n", score.dirty, score.total)
 	return err
 }
@@ -269,7 +289,7 @@ func (it *hololib) ValidateBlueprint(blueprint []byte) error {
 	return nil
 }
 
-func (it *hololib) Compress() bool {
+func Compress() bool {
 	return !pathlib.IsFile(common.HololibCompressMarker())
 }
 
@@ -409,7 +429,7 @@ func (it *hololib) RestoreTo(blueprint []byte, label, controller, space string, 
 	err = fs.AllDirs(RestoreDirectory(it, fs, currentstate, score))
 	fail.On(err != nil, "Failed to restore directories -> %v", err)
 	common.TimelineEnd()
-	defer common.Timeline("- dirty %d/%d", score.dirty, score.total)
+	defer common.Timeline("- dirty %d/%d (duplicate: %d, links: %d)", score.dirty, score.total, score.duplicate, score.links)
 	common.Debug("Holotree dirty workload: %d/%d\n", score.dirty, score.total)
 	journal.CurrentBuildEvent().Dirty(score.Dirtyness())
 	fs.Controller = controller

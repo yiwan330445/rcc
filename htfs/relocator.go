@@ -27,7 +27,7 @@ func RelocateWriter(delegate io.Writer, needle string) WriteLocator {
 	windowsize := len(blob)
 	result := &simple{
 		windowsize: windowsize,
-		window:     []byte{},
+		window:     make([]byte, 0, 8192+windowsize),
 		trigger:    blob[windowsize-1],
 		needle:     blob,
 		history:    0,
@@ -38,9 +38,10 @@ func RelocateWriter(delegate io.Writer, needle string) WriteLocator {
 }
 
 func (it *simple) trimWindow() {
-	total := len(it.window)
-	if total > it.windowsize {
-		it.window = it.window[total-it.windowsize:]
+	shift := len(it.window) - it.windowsize
+	if shift > 0 {
+		copy(it.window, it.window[shift:])
+		it.window = it.window[:it.windowsize]
 	}
 }
 

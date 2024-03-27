@@ -1,5 +1,11 @@
 # rcc change log
 
+## v17.22.0 (date: 27.3.2024) WORK IN PROGRESS
+
+- compression flag is now globally accessible
+- compression flag also switches using siphash as identity hasher
+- dirtyness stats also now lists duplicates and linked files
+
 ## v17.21.0 (date: 25.3.2024) WORK IN PROGRESS
 
 - experimental feature to disable compression of hololib content

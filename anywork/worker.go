@@ -97,7 +97,8 @@ func Backlog(todo Work) {
 }
 
 func Sync() error {
-	for retries := 0; retries < 10; retries++ {
+	trials := int(Scale())
+	for retries := 0; retries < trials; retries++ {
 		runtime.Gosched()
 	}
 	group.Wait()
