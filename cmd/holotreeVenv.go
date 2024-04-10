@@ -108,8 +108,8 @@ func listActivationScripts(root string) string {
 }
 
 func init() {
-	holotreeCmd.AddCommand(holotreeVenvCmd)
 	rootCmd.AddCommand(holotreeVenvCmd)
+	holotreeCmd.AddCommand(holotreeVenvCmd)
 
 	holotreeVenvCmd.Flags().StringVarP(&common.HolotreeSpace, "space", "s", "user", "Client specific name to identify this environment.")
 	holotreeVenvCmd.Flags().BoolVarP(&holotreeForce, "force", "f", false, "Force environment creation by deleting unmanaged space. Dangerous, do not use unless you understand what it means.")

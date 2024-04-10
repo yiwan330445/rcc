@@ -98,6 +98,16 @@ func quickCleanup(dryrun bool) error {
 	return safeRemove("temp", common.RobocorpTempRoot())
 }
 
+func cleanupAllCaches(dryrun bool) error {
+	downloadCleanup(dryrun)
+	if dryrun {
+		common.Log("- %v", common.HololibLocation())
+		return nil
+	}
+	fail.Fast(safeRemove("cache", common.HololibLocation()))
+	return nil
+}
+
 func spotlessCleanup(dryrun, noCompress bool) (err error) {
 	defer fail.Around(&err)
 
@@ -165,7 +175,7 @@ func BugsCleanup() {
 	bugsCleanup(false)
 }
 
-func Cleanup(daylimit int, dryrun, quick, all, micromamba, downloads, noCompress bool) (err error) {
+func Cleanup(daylimit int, dryrun, quick, all, micromamba, downloads, noCompress, caches bool) (err error) {
 	defer fail.Around(&err)
 
 	lockfile := common.RobocorpLock()
@@ -187,6 +197,10 @@ func Cleanup(daylimit int, dryrun, quick, all, micromamba, downloads, noCompress
 
 	if quick {
 		return quickCleanup(dryrun)
+	}
+
+	if caches {
+		fail.Fast(cleanupAllCaches(dryrun))
 	}
 
 	if all {

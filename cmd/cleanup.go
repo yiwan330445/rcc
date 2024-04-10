@@ -11,6 +11,7 @@ import (
 var (
 	allFlag        bool
 	quickFlag      bool
+	cachesFlag     bool
 	micromambaFlag bool
 	downloadsFlag  bool
 	noCompressFlag bool
@@ -26,7 +27,7 @@ After cleanup, they will not be available anymore.`,
 		if common.DebugFlag() {
 			defer common.Stopwatch("Env cleanup lasted").Report()
 		}
-		err := conda.Cleanup(daysOption, dryFlag, quickFlag, allFlag, micromambaFlag, downloadsFlag, noCompressFlag)
+		err := conda.Cleanup(daysOption, dryFlag, quickFlag, allFlag, micromambaFlag, downloadsFlag, noCompressFlag, cachesFlag)
 		if err != nil {
 			pretty.Exit(1, "Error: %v", err)
 		}
@@ -37,6 +38,7 @@ After cleanup, they will not be available anymore.`,
 func init() {
 	configureCmd.AddCommand(cleanupCmd)
 	cleanupCmd.Flags().BoolVarP(&dryFlag, "dryrun", "d", false, "Don't delete environments, just show what would happen.")
+	cleanupCmd.Flags().BoolVarP(&cachesFlag, "caches", "", false, "Just delete all caches (hololib/conda/uv/pip) but not holotree spaces. DANGEROUS! Do not use, unless you know what you are doing.")
 	cleanupCmd.Flags().BoolVarP(&micromambaFlag, "micromamba", "", false, "Remove micromamba installation.")
 	cleanupCmd.Flags().BoolVarP(&allFlag, "all", "", false, "Cleanup all enviroments.")
 	cleanupCmd.Flags().BoolVarP(&quickFlag, "quick", "q", false, "Cleanup most of enviroments, but leave hololib and pkgs cache intact.")

@@ -1,5 +1,12 @@
 # rcc change log
 
+## v17.23.0 (date: 10.4.2024)
+
+- cleanup improvement with option `--caches` to remove conda/pip/uv/hololib
+  caches but leave holotree available
+- also environment building now cleans up "building" space both before and
+  after environment is build
+
 ## v17.22.0 (date: 27.3.2024) WORK IN PROGRESS
 
 - compression flag is now globally accessible

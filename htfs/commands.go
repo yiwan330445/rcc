@@ -125,14 +125,17 @@ func NewEnvironment(condafile, holozip string, restore, force bool, puller Catal
 
 	externally, err = conda.ApplyExternallyManaged(path)
 	fail.Fast(err)
+	fail.Fast(CleanupHolotreeStage(tree))
 
 	return path, scorecard, nil
 }
 
 func CleanupHolotreeStage(tree MutableLibrary) error {
-	common.Timeline("holotree stage removal start")
-	defer common.Timeline("holotree stage removal done")
-	return pathlib.TryRemoveAll("stage", tree.Stage())
+	common.TimelineBegin("holotree stage removal")
+	defer common.TimelineEnd()
+	location := tree.Stage()
+	common.Timeline("- removing %q", location)
+	return pathlib.TryRemoveAll("stage", location)
 }
 
 func RecordEnvironment(tree MutableLibrary, blueprint []byte, force bool, scorecard common.Scorecard, puller CatalogPuller) (err error) {
