@@ -24,7 +24,7 @@ environments and catalogs that your maintenance targets to.
 ## Maintenance vs. tools using holotrees
 
 When doing maintenance on any holotree, you should be aware, that if Robocorp
-tooling (Worker, Assistant, Automation Studio, VS Code plugins, rcc, ...) is
+tooling (Worker, Assistant, VS Code plugins, rcc, ...) is
 also at same time using same holotree/hololib, your maintenance actions might
 have negative effect on those tools.
 
