@@ -1,5 +1,9 @@
 # rcc change log
 
+## v17.24.0 (date: 15.4.2024)
+
+- micromamba upgrade to v1.5.8
+
 ## v17.23.2 (date: 15.4.2024)
 
 - more github action upgrades
