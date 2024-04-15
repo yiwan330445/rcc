@@ -1,5 +1,9 @@
 # rcc change log
 
+## v17.23.1 (date: 15.4.2024)
+
+- github action upgrades
+
 ## v17.23.0 (date: 10.4.2024)
 
 - cleanup improvement with option `--caches` to remove conda/pip/uv/hololib
