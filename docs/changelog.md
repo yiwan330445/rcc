@@ -1,5 +1,10 @@
 # rcc change log
 
+## v17.26.0 (date: 17.4.2024)
+
+- feature: `--no-retry-build` flag for tools to prevent rcc doing retry
+  environment build in case of first build fails
+
 ## v17.25.0 (date: 17.4.2024)
 
 - bug: when first build failed, original layers were expected to still be there

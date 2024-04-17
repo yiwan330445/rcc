@@ -144,7 +144,7 @@ func newLive(yaml, condaYaml, requirementsText, key string, force, freshInstall 
 	common.Debug("===  first try phase ===")
 	common.Timeline("first try.")
 	success, fatal := newLiveInternal(yaml, condaYaml, requirementsText, key, force, freshInstall, skip, finalEnv, recorder)
-	if !success && !force && !fatal {
+	if !success && !force && !fatal && !common.NoRetryBuild {
 		journal.CurrentBuildEvent().Rebuild()
 		cloud.BackgroundMetric(common.ControllerIdentity(), "rcc.env.creation.retry", common.Version)
 		common.Debug("===  second try phase ===")

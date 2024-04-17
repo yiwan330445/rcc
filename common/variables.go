@@ -40,6 +40,7 @@ const (
 
 var (
 	NoBuild                 bool
+	NoRetryBuild            bool
 	NoTempManagement        bool
 	NoPycManagement         bool
 	ExternallyManaged       bool
