@@ -14,11 +14,12 @@ import (
 )
 
 const (
-	alternative     = `|`
-	reject_chars    = `(?:[][(){}%/:,;@*<=>!]+)`
-	and_or          = `\b(?:or|and)\b`
-	dash_start      = `^-+`
-	uncacheableForm = reject_chars + alternative + and_or + alternative + dash_start
+	useFeatureTruststore = `--use-feature=truststore`
+	alternative          = `|`
+	reject_chars         = `(?:[][(){}%/:,;@*<=>!]+)`
+	and_or               = `\b(?:or|and)\b`
+	dash_start           = `^-+`
+	uncacheableForm      = reject_chars + alternative + and_or + alternative + dash_start
 )
 
 var (
@@ -64,6 +65,11 @@ func AsDependency(value string) *Dependency {
 	}
 }
 
+func IsSpecialCacheable(name, version string) bool {
+	flat := fmt.Sprintf("%s=%s", strings.TrimSpace(name), strings.TrimSpace(version))
+	return strings.EqualFold(flat, useFeatureTruststore)
+}
+
 func IsCacheable(text string) bool {
 	flat := strings.TrimSpace(text)
 	return !uncacheablePattern.MatchString(flat)
@@ -75,6 +81,9 @@ func (it *Dependency) Representation() string {
 }
 
 func (it *Dependency) IsCacheable() bool {
+	if IsSpecialCacheable(it.Name, it.Versions) {
+		return true
+	}
 	if !it.IsExact() {
 		return false
 	}
@@ -609,6 +618,9 @@ func (it *Environment) Diagnostics(target *common.DiagnosticStatus, production b
 	}
 	ok = true
 	for _, dependency := range it.Pip {
+		if IsSpecialCacheable(dependency.Name, dependency.Versions) {
+			continue
+		}
 		presentation := dependency.Representation()
 		if packages[presentation] {
 			notice(0, "", "Dependency %q seems to be duplicate of previous dependency.", dependency.Original)

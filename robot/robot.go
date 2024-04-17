@@ -203,19 +203,17 @@ func (it *robot) Diagnostics(target *common.DiagnosticStatus, production bool) {
 			diagnose.Ok(0, "Artifacts directory defined in robot.yaml")
 		}
 	}
-	if it.Conda == "" {
-		diagnose.Ok(0, "In robot.yaml, 'condaConfigFile:' is missing. So this is shell robot.")
+	effectiveConfig := it.CondaConfigFile()
+	if effectiveConfig == "" {
+		diagnose.Ok(0, "In robot.yaml, effective environment configuration is missing. So this is shell robot.")
+		target.Details["cacheable-environment-configuration"] = "false"
 	} else {
-		if filepath.IsAbs(it.Conda) {
-			diagnose.Fail(0, "", "condaConfigFile %q seems to be absolute, which makes robot machine dependent.", it.Artifacts)
+		diagnose.Ok(0, "In robot.yaml, environment configuration %q is present. So this is python robot.", effectiveConfig)
+		condaEnv, err := conda.ReadCondaYaml(effectiveConfig)
+		if err != nil {
+			diagnose.Fail(0, "", "From robot.yaml, loading conda.yaml failed with: %v", err)
 		} else {
-			diagnose.Ok(0, "In robot.yaml, 'condaConfigFile:' is present. So this is python robot.")
-			condaEnv, err := conda.ReadCondaYaml(it.CondaConfigFile())
-			if err != nil {
-				diagnose.Fail(0, "", "From robot.yaml, loading conda.yaml failed with: %v", err)
-			} else {
-				condaEnv.Diagnostics(target, production)
-			}
+			condaEnv.Diagnostics(target, production)
 		}
 	}
 	target.Details["robot-use-conda"] = fmt.Sprintf("%v", it.UsesConda())

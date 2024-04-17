@@ -159,6 +159,7 @@ func TestCacheability(t *testing.T) {
 	must_be.True(conda.IsCacheable("2023c"))
 	must_be.True(conda.IsCacheable("2023.3"))
 	must_be.True(conda.IsCacheable("0.1.0.post0"))
+	must_be.True(conda.IsSpecialCacheable("--use-feature", "truststore"))
 
 	wont_be.True(conda.IsCacheable("a,b"))
 	wont_be.True(conda.IsCacheable("simple or not"))

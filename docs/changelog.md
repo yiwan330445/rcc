@@ -1,5 +1,12 @@
 # rcc change log
 
+## v17.27.0 (date: 17.4.2024)
+
+- when pip dependencies has `--use-feature=truststore` those environments
+  are identified as cacheable
+- removed some robot.yaml file diagnostic checks since those are not valid
+  anymore
+
 ## v17.26.0 (date: 17.4.2024)
 
 - feature: `--no-retry-build` flag for tools to prevent rcc doing retry
