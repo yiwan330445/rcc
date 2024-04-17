@@ -1,5 +1,10 @@
 # rcc change log
 
+## v17.25.0 (date: 17.4.2024)
+
+- bug: when first build failed, original layers were expected to still be there
+- fix: now second build always builds all layers (since failure needs that)
+
 ## v17.24.0 (date: 15.4.2024)
 
 - micromamba upgrade to v1.5.8
