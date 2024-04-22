@@ -261,7 +261,7 @@ func ComposeFinalBlueprint(userFiles []string, packfile string) (config robot.Ro
 
 	for _, filename := range filenames {
 		left = right
-		right, err = conda.ReadCondaYaml(filename)
+		right, err = conda.ReadPackageCondaYaml(filename)
 		fail.On(err != nil, "Failure: %v", err)
 		if left == nil {
 			continue

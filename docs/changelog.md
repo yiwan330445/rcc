@@ -1,5 +1,9 @@
 # rcc change log
 
+## v17.28.0 (date: 22.4.2024)
+
+- adding support for `package.yaml` as replacement for `conda.yaml`
+
 ## v17.27.0 (date: 17.4.2024)
 
 - when pip dependencies has `--use-feature=truststore` those environments
