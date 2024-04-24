@@ -469,8 +469,8 @@ func LogUnifiedEnvironment(content []byte) {
 	common.Log("FINAL unified conda environment descriptor:\n---\n%v---", yaml)
 }
 
-func finalUnifiedEnvironment(filename string, verbose bool) (string, *Environment, error) {
-	right, err := ReadCondaYaml(filename)
+func finalUnifiedEnvironment(filename string) (string, *Environment, error) {
+	right, err := ReadPackageCondaYaml(filename)
 	if err != nil {
 		return "", nil, err
 	}
@@ -482,7 +482,7 @@ func finalUnifiedEnvironment(filename string, verbose bool) (string, *Environmen
 }
 
 func temporaryConfig(condaYaml, requirementsText, filename string) (string, string, *Environment, error) {
-	yaml, right, err := finalUnifiedEnvironment(filename, true)
+	yaml, right, err := finalUnifiedEnvironment(filename)
 	if err != nil {
 		return "", "", nil, err
 	}
