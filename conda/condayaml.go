@@ -163,7 +163,7 @@ func remove(index int, target []*Dependency) []*Dependency {
 
 func SummonEnvironment(filename string) *Environment {
 	if pathlib.IsFile(filename) {
-		result, err := ReadCondaYaml(filename)
+		result, err := ReadPackageCondaYaml(filename)
 		if err == nil {
 			return result
 		}
@@ -658,7 +658,7 @@ func CondaYamlFrom(content []byte) (*Environment, error) {
 	return result.AsEnvironment(), nil
 }
 
-func ReadCondaYaml(filename string) (*Environment, error) {
+func readCondaYaml(filename string) (*Environment, error) {
 	var content []byte
 	var err error
 

@@ -334,10 +334,6 @@ func CaBundleFile() string {
 	return ExpandPath(filepath.Join(RobocorpHome(), "ca-bundle.pem"))
 }
 
-func CaBundleDir() string {
-	return ExpandPath(RobocorpHome())
-}
-
 func DefineVerbosity(silent, debug, trace bool) {
 	override := os.Getenv(RCC_VERBOSITY)
 	switch {

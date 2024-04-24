@@ -1,5 +1,9 @@
 # rcc change log
 
+## v17.28.2 (date: 24.4.2024)
+
+- bugfix: more places are now using package/conda YAML loading
+
 ## v17.28.1 (date: 24.4.2024)
 
 - bugfix: when exporting prebuild environments, include layer catalogs also

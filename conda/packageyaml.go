@@ -84,7 +84,7 @@ func ReadPackageCondaYaml(filename string) (*Environment, error) {
 			return environment, nil
 		}
 	}
-	return ReadCondaYaml(filename)
+	return readCondaYaml(filename)
 }
 
 func ReadPackageYaml(filename string) (*Environment, error) {

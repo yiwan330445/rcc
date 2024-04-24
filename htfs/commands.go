@@ -212,7 +212,7 @@ func RecordEnvironment(tree MutableLibrary, blueprint []byte, force bool, scorec
 }
 
 func RestoreLayersTo(tree MutableLibrary, identityfile string, targetDir string) conda.SkipLayer {
-	config, err := conda.ReadCondaYaml(identityfile)
+	config, err := conda.ReadPackageCondaYaml(identityfile)
 	if err != nil {
 		return conda.SkipNoLayers
 	}
