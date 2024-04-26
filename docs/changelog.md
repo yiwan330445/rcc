@@ -1,5 +1,10 @@
 # rcc change log
 
+## v17.28.3 (date: 26.4.2024)
+
+- bugfix: metrics sending was stating things as error, but they are not
+  critical (so that is now mentioned in message)
+
 ## v17.28.2 (date: 24.4.2024)
 
 - bugfix: more places are now using package/conda YAML loading

@@ -31,13 +31,14 @@ func sendMetric(metricsHost, kind, name, value string) {
 	}()
 	client, err := NewClient(metricsHost)
 	if err != nil {
-		common.Debug("ERROR: %v", err)
+		common.Debug("WARNING: %v (not critical)", err)
 		return
 	}
-	client = client.WithTimeout(5 * time.Second)
+	timeout := 5 * time.Second
+	client = client.Uncritical().WithTimeout(timeout)
 	timestamp := time.Now().UnixNano()
 	url := fmt.Sprintf(trackingUrl, url.PathEscape(kind), timestamp, url.PathEscape(xviper.TrackingIdentity()), url.PathEscape(name), url.PathEscape(value))
-	common.Debug("Sending metric as %v%v", metricsHost, url)
+	common.Debug("Sending metric (timeout %v) as %v%v", timeout, metricsHost, url)
 	client.Put(client.NewRequest(url))
 }
 
