@@ -1,5 +1,10 @@
 # rcc change log
 
+## v17.28.4 (date: 26.4.2024)
+
+- bugfix: when there is "rcc point of view" message, it was not showing
+  who was controller, so now controller is visible
+
 ## v17.28.3 (date: 26.4.2024)
 
 - bugfix: metrics sending was stating things as error, but they are not
