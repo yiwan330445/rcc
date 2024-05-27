@@ -1,5 +1,10 @@
 # rcc change log
 
+## v17.29.0 (date: 27.5.2024)
+
+- bugfix: removing `VIRTUAL_ENV` when rcc is executing subprocesses
+- adding warning about that environment variable also in diagnostics
+
 ## v17.28.4 (date: 26.4.2024)
 
 - bugfix: when there is "rcc point of view" message, it was not showing

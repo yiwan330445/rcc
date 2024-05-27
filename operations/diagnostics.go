@@ -155,6 +155,7 @@ func runDiagnostics(quick bool) *common.DiagnosticStatus {
 	result.Checks = append(result.Checks, anyPathCheck("SSL_CERT_DIR"))
 	result.Checks = append(result.Checks, anyPathCheck("SSL_CERT_FILE"))
 	result.Checks = append(result.Checks, anyPathCheck("WDM_SSL_VERIFY"))
+	result.Checks = append(result.Checks, anyPathCheck("VIRTUAL_ENV"))
 
 	result.Checks = append(result.Checks, anyEnvVarCheck("RCC_NO_TEMP_MANAGEMENT"))
 	result.Checks = append(result.Checks, anyEnvVarCheck("RCC_NO_PYC_MANAGEMENT"))

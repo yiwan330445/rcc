@@ -13,6 +13,7 @@ import (
 	"github.com/robocorp/rcc/blobs"
 	"github.com/robocorp/rcc/common"
 	"github.com/robocorp/rcc/pathlib"
+	"github.com/robocorp/rcc/pretty"
 	"github.com/robocorp/rcc/settings"
 	"github.com/robocorp/rcc/shell"
 	"github.com/robocorp/rcc/xviper"
@@ -137,10 +138,27 @@ func injectNetworkEnvironment(environment []string) []string {
 	return environment
 }
 
+func removeIncompatibleEnvironmentVariables(environment []string, unwanted ...string) []string {
+	result := make([]string, 0, len(environment))
+search:
+	for _, here := range environment {
+		parts := strings.Split(strings.TrimSpace(here), "=")
+		for _, name := range unwanted {
+			if strings.EqualFold(name, parts[0]) {
+				pretty.Warning("Removing incompatible variable %q from environment.", here)
+				continue search
+			}
+		}
+		result = append(result, here)
+	}
+	return result
+}
+
 func CondaExecutionEnvironment(location string, inject []string, full bool) []string {
 	environment := make([]string, 0, 100)
 	if full {
 		environment = append(environment, os.Environ()...)
+		environment = removeIncompatibleEnvironmentVariables(environment, "VIRTUAL_ENV")
 	}
 	if inject != nil && len(inject) > 0 {
 		environment = append(environment, inject...)
