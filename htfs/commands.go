@@ -79,7 +79,7 @@ func NewEnvironment(condafile, holozip string, restore, force bool, puller Catal
 
 	lockfile := common.HolotreeLock()
 	completed := pathlib.LockWaitMessage(lockfile, "Serialized environment creation [holotree lock]")
-	locker, err := pathlib.Locker(lockfile, 30000)
+	locker, err := pathlib.Locker(lockfile, 30000, common.SharedHolotree)
 	completed()
 	fail.On(err != nil, "Could not get lock for holotree. Quiting.")
 	defer locker.Release()

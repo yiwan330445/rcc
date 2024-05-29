@@ -180,7 +180,7 @@ func Cleanup(daylimit int, dryrun, quick, all, micromamba, downloads, noCompress
 
 	lockfile := common.RobocorpLock()
 	completed := pathlib.LockWaitMessage(lockfile, "Serialized environment cleanup [robocorp lock]")
-	locker, err := pathlib.Locker(lockfile, 30000)
+	locker, err := pathlib.Locker(lockfile, 30000, false)
 	completed()
 	if err != nil {
 		common.Log("Could not get lock on live environment. Quitting!")

@@ -1,5 +1,10 @@
 # rcc change log
 
+## v17.29.1 (date: 29.5.2024)
+
+- bugfix: when taking locks, some of those need to be in shared directory,
+  while others should not; code was making too much directories shared
+
 ## v17.29.0 (date: 27.5.2024)
 
 - bugfix: removing `VIRTUAL_ENV` when rcc is executing subprocesses

@@ -501,7 +501,7 @@ func LegacyEnvironment(recorder Recorder, force bool, skip SkipLayer, configurat
 
 	lockfile := common.RobocorpLock()
 	completed := pathlib.LockWaitMessage(lockfile, "Serialized environment creation [robocorp lock]")
-	locker, err := pathlib.Locker(lockfile, 30000)
+	locker, err := pathlib.Locker(lockfile, 30000, false)
 	completed()
 	if err != nil {
 		common.Log("Could not get lock on live environment. Quitting!")
