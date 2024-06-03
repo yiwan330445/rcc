@@ -468,7 +468,7 @@ func New() (MutableLibrary, error) {
 	if err != nil {
 		return nil, err
 	}
-	basedir := common.RobocorpHome()
+	basedir := common.Product.Home()
 	identity := strings.ToLower(fmt.Sprintf("%s %s", runtime.GOOS, runtime.GOARCH))
 	return &hololib{
 		identity:   common.Sipit([]byte(identity)),

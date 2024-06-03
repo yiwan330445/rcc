@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"github.com/robocorp/rcc/common"
 	"github.com/spf13/cobra"
 )
 
@@ -13,7 +14,9 @@ They are either local, or in relation to Robocorp Control Room and tooling.`,
 }
 
 func init() {
-	rootCmd.AddCommand(assistantCmd)
+	if common.Product.IsLegacy() {
+		rootCmd.AddCommand(assistantCmd)
 
-	assistantCmd.PersistentFlags().StringVarP(&accountName, "account", "", "", "Account used for Robocorp Control Room operations.")
+		assistantCmd.PersistentFlags().StringVarP(&accountName, "account", "", "", "Account used for Robocorp Control Room operations.")
+	}
 }

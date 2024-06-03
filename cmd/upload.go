@@ -34,10 +34,12 @@ var uploadCmd = &cobra.Command{
 }
 
 func init() {
-	cloudCmd.AddCommand(uploadCmd)
-	uploadCmd.Flags().StringVarP(&zipfile, "zipfile", "z", "robot.zip", "The filename for the robot.")
-	uploadCmd.Flags().StringVarP(&workspaceId, "workspace", "w", "", "The workspace id to use as the upload target.")
-	uploadCmd.MarkFlagRequired("workspace")
-	uploadCmd.Flags().StringVarP(&robotId, "robot", "r", "", "The robot id to use as the upload target.")
-	uploadCmd.MarkFlagRequired("robot")
+	if common.Product.IsLegacy() {
+		cloudCmd.AddCommand(uploadCmd)
+		uploadCmd.Flags().StringVarP(&zipfile, "zipfile", "z", "robot.zip", "The filename for the robot.")
+		uploadCmd.Flags().StringVarP(&workspaceId, "workspace", "w", "", "The workspace id to use as the upload target.")
+		uploadCmd.MarkFlagRequired("workspace")
+		uploadCmd.Flags().StringVarP(&robotId, "robot", "r", "", "The robot id to use as the upload target.")
+		uploadCmd.MarkFlagRequired("robot")
+	}
 }

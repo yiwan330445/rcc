@@ -49,11 +49,13 @@ var pushCmd = &cobra.Command{
 }
 
 func init() {
-	cloudCmd.AddCommand(pushCmd)
-	pushCmd.Flags().StringVarP(&directory, "directory", "d", ".", "The root directory to create the robot from.")
-	pushCmd.Flags().StringArrayVarP(&ignores, "ignore", "i", []string{}, "Files containing ignore patterns.")
-	pushCmd.Flags().StringVarP(&workspaceId, "workspace", "w", "", "The workspace id to use as the upload target.")
-	pushCmd.MarkFlagRequired("workspace")
-	pushCmd.Flags().StringVarP(&robotId, "robot", "r", "", "The robot id to use as the upload target.")
-	pushCmd.MarkFlagRequired("robot")
+	if common.Product.IsLegacy() {
+		cloudCmd.AddCommand(pushCmd)
+		pushCmd.Flags().StringVarP(&directory, "directory", "d", ".", "The root directory to create the robot from.")
+		pushCmd.Flags().StringArrayVarP(&ignores, "ignore", "i", []string{}, "Files containing ignore patterns.")
+		pushCmd.Flags().StringVarP(&workspaceId, "workspace", "w", "", "The workspace id to use as the upload target.")
+		pushCmd.MarkFlagRequired("workspace")
+		pushCmd.Flags().StringVarP(&robotId, "robot", "r", "", "The robot id to use as the upload target.")
+		pushCmd.MarkFlagRequired("robot")
+	}
 }

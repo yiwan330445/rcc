@@ -22,7 +22,7 @@ var (
 )
 
 func profileMap() map[string]string {
-	pattern := common.ExpandPath(filepath.Join(common.RobocorpHome(), "profile_*.yaml"))
+	pattern := common.ExpandPath(filepath.Join(common.Product.Home(), "profile_*.yaml"))
 	found, err := filepath.Glob(pattern)
 	pretty.Guard(err == nil, 1, "Error while searching profiles: %v", err)
 	profiles := make(map[string]string)
@@ -57,7 +57,7 @@ func listProfiles() {
 
 func profileFullPath(name string) string {
 	filename := fmt.Sprintf("profile_%s.yaml", strings.ToLower(name))
-	return common.ExpandPath(filepath.Join(common.RobocorpHome(), filename))
+	return common.ExpandPath(filepath.Join(common.Product.Home(), filename))
 }
 
 func loadNamedProfile(name string) *settings.Profile {

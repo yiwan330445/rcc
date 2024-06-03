@@ -64,10 +64,12 @@ var prepareCloudCmd = &cobra.Command{
 }
 
 func init() {
-	cloudCmd.AddCommand(prepareCloudCmd)
-	prepareCloudCmd.Flags().StringVarP(&workspaceId, "workspace", "w", "", "The workspace id to use as the download source.")
-	prepareCloudCmd.MarkFlagRequired("workspace")
-	prepareCloudCmd.Flags().StringVarP(&robotId, "robot", "r", "", "The robot id to use as the download source.")
-	prepareCloudCmd.MarkFlagRequired("robot")
-	prepareCloudCmd.Flags().StringVarP(&common.HolotreeSpace, "space", "s", "user", "Client specific name to identify this environment.")
+	if common.Product.IsLegacy() {
+		cloudCmd.AddCommand(prepareCloudCmd)
+		prepareCloudCmd.Flags().StringVarP(&workspaceId, "workspace", "w", "", "The workspace id to use as the download source.")
+		prepareCloudCmd.MarkFlagRequired("workspace")
+		prepareCloudCmd.Flags().StringVarP(&robotId, "robot", "r", "", "The robot id to use as the download source.")
+		prepareCloudCmd.MarkFlagRequired("robot")
+		prepareCloudCmd.Flags().StringVarP(&common.HolotreeSpace, "space", "s", "user", "Client specific name to identify this environment.")
+	}
 }

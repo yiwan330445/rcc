@@ -62,7 +62,7 @@ func cacheLocation() string {
 	if len(reference) > 0 {
 		return filepath.Join(filepath.Dir(reference), "rcccache.yaml")
 	} else {
-		return filepath.Join(common.RobocorpHome(), "rcccache.yaml")
+		return filepath.Join(common.Product.Home(), "rcccache.yaml")
 	}
 }
 

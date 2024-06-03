@@ -120,7 +120,7 @@ func (it InstallObserver) HasFailures(targetFolder string) bool {
 	if it["safetyerror"] && it["corrupted"] && len(it) > 2 {
 		cloud.BackgroundMetric(common.ControllerIdentity(), "rcc.env.creation.failure", common.Version)
 		renameRemove(targetFolder)
-		location := filepath.Join(common.RobocorpHome(), "pkgs")
+		location := filepath.Join(common.Product.Home(), "pkgs")
 		common.Log("%sWARNING! Conda environment is unstable, see above error.%s", pretty.Red, pretty.Reset)
 		common.Log("%sWARNING! To fix it, try to remove directory: %v%s", pretty.Red, location, pretty.Reset)
 		return true

@@ -1,5 +1,12 @@
 # rcc change log
 
+## v18.0.0 (date: 3.6.2024) WORK IN PROGRESS
+
+- MAJOR breaking change: rcc will now live in two product domains,
+  Robocorp and Sema4.ai
+- feature: initial support for `--sema4ai` strategy selection
+- robot tests to test Sema4.ai support
+
 ## v17.29.1 (date: 29.5.2024)
 
 - bugfix: when taking locks, some of those need to be in shared directory,

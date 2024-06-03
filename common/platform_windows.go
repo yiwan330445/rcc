@@ -12,6 +12,9 @@ import (
 const (
 	defaultRobocorpLocation = "%LOCALAPPDATA%\\robocorp"
 	defaultHoloLocation     = "c:\\ProgramData\\robocorp\\ht"
+
+	defaultSema4Location     = "%LOCALAPPDATA%\\sema4ai"
+	defaultSema4HoloLocation = "c:\\ProgramData\\sema4ai\\ht"
 )
 
 var (

@@ -44,7 +44,7 @@ func EnsureUserRegistered() (string, error) {
 	updated, ok := set.Update(cache.Users, strings.ToLower(who.Username))
 	size := len(updated)
 	if size > 1 {
-		warning = fmt.Sprintf("More than one user is using same ROBOCORP_HOME location! Those users are: %s!", strings.Join(updated, ", "))
+		warning = fmt.Sprintf("More than one user is using same %s location! Those users are: %s!", common.Product.HomeVariable(), strings.Join(updated, ", "))
 	}
 	if !ok {
 		return warning, nil

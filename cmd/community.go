@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"github.com/robocorp/rcc/common"
 	"github.com/spf13/cobra"
 )
 
@@ -12,5 +13,7 @@ var communityCmd = &cobra.Command{
 }
 
 func init() {
-	rootCmd.AddCommand(communityCmd)
+	if common.Product.IsLegacy() {
+		rootCmd.AddCommand(communityCmd)
+	}
 }

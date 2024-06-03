@@ -14,7 +14,9 @@ executed either locally, or in connection to Robocorp Control Room and tooling.`
 }
 
 func init() {
-	rootCmd.AddCommand(taskCmd)
+	if common.Product.IsLegacy() {
+		rootCmd.AddCommand(taskCmd)
 
-	taskCmd.PersistentFlags().BoolVarP(&common.ExternallyManaged, "externally-managed", "", false, "mark created Python environments as EXTERNALLY-MANAGED (PEP 668)")
+		taskCmd.PersistentFlags().BoolVarP(&common.ExternallyManaged, "externally-managed", "", false, "mark created Python environments as EXTERNALLY-MANAGED (PEP 668)")
+	}
 }

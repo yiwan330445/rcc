@@ -52,19 +52,21 @@ func captureRunFlags(assistant bool) *operations.RunFlags {
 }
 
 func init() {
-	rootCmd.AddCommand(runCmd)
-	taskCmd.AddCommand(runCmd)
+	if common.Product.IsLegacy() {
+		rootCmd.AddCommand(runCmd)
+		taskCmd.AddCommand(runCmd)
 
-	runCmd.Flags().StringVarP(&environmentFile, "environment", "e", "", "Full path to the 'env.json' development environment data file.")
-	runCmd.Flags().StringVarP(&robotFile, "robot", "r", "robot.yaml", "Full path to the 'robot.yaml' configuration file.")
-	runCmd.Flags().StringVarP(&runTask, "task", "t", "", "Task to run from the configuration file.")
-	runCmd.Flags().StringVarP(&workspaceId, "workspace", "w", "", "Optional workspace id to get authorization tokens for. OPTIONAL")
-	runCmd.Flags().IntVarP(&validityTime, "minutes", "m", 15, "How many minutes the authorization should be valid for (minimum 15 minutes).")
-	runCmd.Flags().IntVarP(&gracePeriod, "graceperiod", "", 5, "What is grace period buffer in minutes on top of validity minutes (minimum 5 minutes).")
-	runCmd.Flags().StringVarP(&accountName, "account", "", "", "Account used for workspace. OPTIONAL")
-	runCmd.Flags().BoolVarP(&forceFlag, "force", "f", false, "Force conda cache update (only for new environments).")
-	runCmd.Flags().BoolVarP(&interactiveFlag, "interactive", "", false, "Allow robot to be interactive in terminal/command prompt. For development only, not for production!")
-	runCmd.Flags().StringVarP(&common.HolotreeSpace, "space", "s", "user", "Client specific name to identify this environment.")
-	runCmd.Flags().BoolVarP(&common.NoOutputCapture, "no-outputs", "", false, "Do not capture stderr/stdout into files.")
-	runCmd.Flags().BoolVarP(&common.DeveloperFlag, "dev", "", false, "Use devTasks instead of normal tasks. For development work only. Stragegy selection.")
+		runCmd.Flags().StringVarP(&environmentFile, "environment", "e", "", "Full path to the 'env.json' development environment data file.")
+		runCmd.Flags().StringVarP(&robotFile, "robot", "r", "robot.yaml", "Full path to the 'robot.yaml' configuration file.")
+		runCmd.Flags().StringVarP(&runTask, "task", "t", "", "Task to run from the configuration file.")
+		runCmd.Flags().StringVarP(&workspaceId, "workspace", "w", "", "Optional workspace id to get authorization tokens for. OPTIONAL")
+		runCmd.Flags().IntVarP(&validityTime, "minutes", "m", 15, "How many minutes the authorization should be valid for (minimum 15 minutes).")
+		runCmd.Flags().IntVarP(&gracePeriod, "graceperiod", "", 5, "What is grace period buffer in minutes on top of validity minutes (minimum 5 minutes).")
+		runCmd.Flags().StringVarP(&accountName, "account", "", "", "Account used for workspace. OPTIONAL")
+		runCmd.Flags().BoolVarP(&forceFlag, "force", "f", false, "Force conda cache update (only for new environments).")
+		runCmd.Flags().BoolVarP(&interactiveFlag, "interactive", "", false, "Allow robot to be interactive in terminal/command prompt. For development only, not for production!")
+		runCmd.Flags().StringVarP(&common.HolotreeSpace, "space", "s", "user", "Client specific name to identify this environment.")
+		runCmd.Flags().BoolVarP(&common.NoOutputCapture, "no-outputs", "", false, "Do not capture stderr/stdout into files.")
+		runCmd.Flags().BoolVarP(&common.DeveloperFlag, "dev", "", false, "Use devTasks instead of normal tasks. For development work only. Stragegy selection.")
+	}
 }

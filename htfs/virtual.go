@@ -22,7 +22,7 @@ type virtual struct {
 
 func Virtual() MutableLibrary {
 	return &virtual{
-		identity: common.Sipit([]byte(common.RobocorpHome())),
+		identity: common.Sipit([]byte(common.Product.Home())),
 	}
 }
 

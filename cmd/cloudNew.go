@@ -44,10 +44,12 @@ var newCloudCmd = &cobra.Command{
 }
 
 func init() {
-	cloudCmd.AddCommand(newCloudCmd)
-	newCloudCmd.Flags().StringVarP(&robotName, "robot", "r", "", "Name for new robot to create.")
-	newCloudCmd.MarkFlagRequired("robot")
-	newCloudCmd.Flags().StringVarP(&workspaceId, "workspace", "w", "", "Workspace id to use as creation target.")
-	newCloudCmd.MarkFlagRequired("workspace")
-	newCloudCmd.Flags().BoolVarP(&jsonFlag, "json", "j", false, "Output in JSON format")
+	if common.Product.IsLegacy() {
+		cloudCmd.AddCommand(newCloudCmd)
+		newCloudCmd.Flags().StringVarP(&robotName, "robot", "r", "", "Name for new robot to create.")
+		newCloudCmd.MarkFlagRequired("robot")
+		newCloudCmd.Flags().StringVarP(&workspaceId, "workspace", "w", "", "Workspace id to use as creation target.")
+		newCloudCmd.MarkFlagRequired("workspace")
+		newCloudCmd.Flags().BoolVarP(&jsonFlag, "json", "j", false, "Output in JSON format")
+	}
 }

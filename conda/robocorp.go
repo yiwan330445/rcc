@@ -196,7 +196,7 @@ func CondaExecutionEnvironment(location string, inject []string, full bool) []st
 		"PYTHONSTARTUP=",
 		"PYTHONEXECUTABLE=",
 		"PYTHONNOUSERSITE=1",
-		"ROBOCORP_HOME="+common.RobocorpHome(),
+		fmt.Sprintf("%s=%s", common.Product.HomeVariable(), common.Product.Home()),
 		"RCC_ENVIRONMENT_HASH="+common.EnvironmentHash,
 		"RCC_INSTALLATION_ID="+xviper.TrackingIdentity(),
 		"RCC_HOLOTREE_SPACE_ROOT="+location,
@@ -295,7 +295,7 @@ func HasMicroMamba() bool {
 }
 
 func LocalChannel() (string, bool) {
-	basefolder := filepath.Join(common.RobocorpHome(), "channel")
+	basefolder := filepath.Join(common.Product.Home(), "channel")
 	fullpath := filepath.Join(basefolder, "channeldata.json")
 	stats, err := os.Stat(fullpath)
 	if err != nil {

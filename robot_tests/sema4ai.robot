@@ -1,0 +1,51 @@
+*** Settings ***
+Library  OperatingSystem
+Library  supporting.py
+Resource  resources.robot
+Suite Setup  Sema4.ai setup
+Suite Teardown  Sema4.ai teardown
+Default tags   WIP
+
+*** Keywords ***
+Sema4.ai setup
+  Remove Directory  tmp/sema4home  True
+  Prepare Sema4.ai Home    tmp/sema4home
+
+Sema4.ai teardown
+  Remove Directory  tmp/sema4home  True
+  Prepare Robocorp Home    tmp/robocorp
+
+*** Test cases ***
+
+Goal: See rcc toplevel help for Sema4.ai
+  Step        build/rcc --sema4ai --controller citests --help
+  Must Have   SEMA4AI
+  Must Have   completion
+  Wont Have   ROBOCORP
+  Wont Have   Robot
+  Wont Have   robot
+  Wont Have   bash
+  Wont Have   fish
+
+Goal: See rcc commands for Sema4.ai
+  Step        build/rcc --sema4ai --controller citests
+  Use STDERR
+  Must Have   SEMA4AI
+  Wont Have   ROBOCORP
+  Wont Have   Robot
+  Wont Have   robot
+  Wont Have   completion
+  Wont Have   bash
+  Wont Have   fish
+
+Goal: Create package.yaml environment using uv
+  Step        build/rcc --sema4ai ht vars -s sema4ai --controller citests robot_tests/bare_action/package.yaml
+  Must Have   RCC_ENVIRONMENT_HASH=
+  Must Have   RCC_INSTALLATION_ID=
+  Must Have   SEMA4AI_HOME=
+  Wont Have   ROBOCORP_HOME=
+  Must Have   _4e67cd8_81359368
+  Use STDERR
+  Must Have   Progress: 01/15
+  Must Have   Progress: 15/15
+  Must Have   Running uv install phase.
