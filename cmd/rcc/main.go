@@ -97,7 +97,7 @@ func startTempRecycling() {
 		return
 	}
 	defer common.Timeline("temp recycling done")
-	pattern := filepath.Join(common.RobocorpTempRoot(), "*", "recycle.now")
+	pattern := filepath.Join(common.ProductTempRoot(), "*", "recycle.now")
 	found, err := filepath.Glob(pattern)
 	if err != nil {
 		common.Debug("Recycling failed, reason: %v", err)
@@ -121,7 +121,7 @@ func markTempForRecycling() {
 	if markedAlready {
 		return
 	}
-	target := common.RobocorpTempName()
+	target := common.ProductTempName()
 	if pathlib.Exists(target) {
 		filename := filepath.Join(target, "recycle.now")
 		pathlib.WriteFile(filename, []byte("True"), 0o644)

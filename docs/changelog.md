@@ -1,5 +1,11 @@
 # rcc change log
 
+## v18.0.1 (date: 5.6.2024) WORK IN PROGRESS
+
+- added company name as strategy name (dynamic name handling for user messages)
+- replaced static "Robocorp" references with strategy name
+- renamed some Robocorp functions to more generic Product functions
+
 ## v18.0.0 (date: 3.6.2024) WORK IN PROGRESS
 
 - MAJOR breaking change: rcc will now live in two product domains,

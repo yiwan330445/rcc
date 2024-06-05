@@ -22,6 +22,7 @@ Goal: See rcc toplevel help for Sema4.ai
   Must Have   SEMA4AI
   Must Have   completion
   Wont Have   ROBOCORP
+  Wont Have   Robocorp
   Wont Have   Robot
   Wont Have   robot
   Wont Have   bash
@@ -32,6 +33,7 @@ Goal: See rcc commands for Sema4.ai
   Use STDERR
   Must Have   SEMA4AI
   Wont Have   ROBOCORP
+  Wont Have   Robocorp
   Wont Have   Robot
   Wont Have   robot
   Wont Have   completion

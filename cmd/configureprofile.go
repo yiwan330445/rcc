@@ -82,8 +82,8 @@ func cleanupProfile() {
 
 var configureSwitchCmd = &cobra.Command{
 	Use:   "switch",
-	Short: "Switch active configuration profile for Robocorp tooling.",
-	Long:  "Switch active configuration profile for Robocorp tooling.",
+	Short: fmt.Sprintf("Switch active configuration profile for %s tooling.", common.Product.Name()),
+	Long:  fmt.Sprintf("Switch active configuration profile for %s tooling.", common.Product.Name()),
 	Run: func(cmd *cobra.Command, args []string) {
 		if common.DebugFlag() {
 			defer common.Stopwatch("Configuration switch lasted").Report()
@@ -108,8 +108,8 @@ var configureSwitchCmd = &cobra.Command{
 
 var configureRemoveCmd = &cobra.Command{
 	Use:   "remove",
-	Short: "Remove named a configuration profile for Robocorp tooling.",
-	Long:  "Remove named a configuration profile for Robocorp tooling.",
+	Short: fmt.Sprintf("Remove named a configuration profile for %s tooling.", common.Product.Name()),
+	Long:  fmt.Sprintf("Remove named a configuration profile for %s tooling.", common.Product.Name()),
 	Run: func(cmd *cobra.Command, args []string) {
 		if common.DebugFlag() {
 			defer common.Stopwatch("Configuration remove lasted").Report()
@@ -129,8 +129,8 @@ var configureRemoveCmd = &cobra.Command{
 
 var configureExportCmd = &cobra.Command{
 	Use:   "export",
-	Short: "Export a configuration profile for Robocorp tooling.",
-	Long:  "Export a configuration profile for Robocorp tooling.",
+	Short: fmt.Sprintf("Export a configuration profile for %s tooling.", common.Product.Name()),
+	Long:  fmt.Sprintf("Export a configuration profile for %s tooling.", common.Product.Name()),
 	Run: func(cmd *cobra.Command, args []string) {
 		if common.DebugFlag() {
 			defer common.Stopwatch("Configuration export lasted").Report()
@@ -144,8 +144,8 @@ var configureExportCmd = &cobra.Command{
 
 var configureImportCmd = &cobra.Command{
 	Use:   "import",
-	Short: "Import a configuration profile for Robocorp tooling.",
-	Long:  "Import a configuration profile for Robocorp tooling.",
+	Short: fmt.Sprintf("Import a configuration profile for %s tooling.", common.Product.Name()),
+	Long:  fmt.Sprintf("Import a configuration profile for %s tooling.", common.Product.Name()),
 	Run: func(cmd *cobra.Command, args []string) {
 		if common.DebugFlag() {
 			defer common.Stopwatch("Configuration import lasted").Report()

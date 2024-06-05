@@ -499,7 +499,7 @@ func temporaryConfig(condaYaml, requirementsText, filename string) (string, stri
 func LegacyEnvironment(recorder Recorder, force bool, skip SkipLayer, configuration string) error {
 	cloud.BackgroundMetric(common.ControllerIdentity(), "rcc.env.create.start", common.Version)
 
-	lockfile := common.RobocorpLock()
+	lockfile := common.ProductLock()
 	completed := pathlib.LockWaitMessage(lockfile, "Serialized environment creation [robocorp lock]")
 	locker, err := pathlib.Locker(lockfile, 30000, false)
 	completed()

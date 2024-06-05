@@ -202,7 +202,7 @@ func lockfiles() map[string]string {
 	result["lock-config"] = xviper.Lockfile()
 	result["lock-cache"] = cacheLockFile()
 	result["lock-holotree"] = common.HolotreeLock()
-	result["lock-robocorp"] = common.RobocorpLock()
+	result["lock-robocorp"] = common.ProductLock()
 	result["lock-userlock"] = htfs.UserHolotreeLockfile()
 	return result
 }

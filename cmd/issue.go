@@ -1,6 +1,8 @@
 package cmd
 
 import (
+	"fmt"
+
 	"github.com/robocorp/rcc/common"
 	"github.com/robocorp/rcc/operations"
 	"github.com/robocorp/rcc/pretty"
@@ -16,8 +18,8 @@ var (
 
 var issueCmd = &cobra.Command{
 	Use:   "issue",
-	Short: "Send an issue to Robocorp Control Room via rcc.",
-	Long:  "Send an issue to Robocorp Control Room via rcc.",
+	Short: fmt.Sprintf("Send an issue to %s Control Room via rcc.", common.Product.Name()),
+	Long:  fmt.Sprintf("Send an issue to %s Control Room via rcc.", common.Product.Name()),
 	Run: func(cmd *cobra.Command, args []string) {
 		if common.DebugFlag() {
 			defer common.Stopwatch("Feedback issue lasted").Report()

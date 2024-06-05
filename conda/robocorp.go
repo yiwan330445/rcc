@@ -174,15 +174,15 @@ func CondaExecutionEnvironment(location string, inject []string, full bool) []st
 	if !common.DisablePycManagement() {
 		environment = append(environment,
 			"PYTHONDONTWRITEBYTECODE=x",
-			"PYTHONPYCACHEPREFIX="+common.RobocorpTemp(),
+			"PYTHONPYCACHEPREFIX="+common.ProductTemp(),
 		)
 	} else {
 		common.Timeline(".pyc file management was disabled.")
 	}
 	if !common.DisableTempManagement() {
 		environment = append(environment,
-			"TEMP="+common.RobocorpTemp(),
-			"TMP="+common.RobocorpTemp(),
+			"TEMP="+common.ProductTemp(),
+			"TMP="+common.ProductTemp(),
 		)
 	} else {
 		common.Timeline("temp directory management was disabled.")

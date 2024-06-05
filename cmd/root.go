@@ -66,10 +66,10 @@ func commandTree(level int, prefix string, parent *cobra.Command) {
 
 var rootCmd = &cobra.Command{
 	Use:   "rcc",
-	Short: "rcc is environment manager for Robocorp Automation Stack",
-	Long: `rcc provides support for creating and managing tasks,
-communicating with Robocorp Control Room, and managing virtual environments where
-tasks can be developed, debugged, and run.`,
+	Short: fmt.Sprintf("rcc is environment manager for %s Automation Stack", common.Product.Name()),
+	Long: fmt.Sprintf(`rcc provides support for creating and managing tasks,
+communicating with %s Control Room, and managing virtual environments where
+tasks can be developed, debugged, and run.`, common.Product.Name()),
 	Run: func(cmd *cobra.Command, args []string) {
 		if versionFlag {
 			common.Stdout("%s\n", common.Version)

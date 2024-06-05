@@ -133,7 +133,7 @@ func RccRemoteAuthorization() (string, bool) {
 	return result, len(result) > 0
 }
 
-func RobocorpLock() string {
+func ProductLock() string {
 	return filepath.Join(Product.Home(), "robocorp.lck")
 }
 
@@ -185,16 +185,16 @@ func TemplateLocation() string {
 	return filepath.Join(Product.Home(), "templates")
 }
 
-func RobocorpTempRoot() string {
+func ProductTempRoot() string {
 	return filepath.Join(Product.Home(), "temp")
 }
 
-func RobocorpTempName() string {
-	return filepath.Join(RobocorpTempRoot(), RandomIdentifier())
+func ProductTempName() string {
+	return filepath.Join(ProductTempRoot(), RandomIdentifier())
 }
 
-func RobocorpTemp() string {
-	tempLocation := RobocorpTempName()
+func ProductTemp() string {
+	tempLocation := ProductTempName()
 	fullpath, err := filepath.Abs(tempLocation)
 	if err != nil {
 		fullpath = tempLocation

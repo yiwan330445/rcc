@@ -1,6 +1,8 @@
 package cmd
 
 import (
+	"fmt"
+
 	"github.com/robocorp/rcc/cloud"
 	"github.com/robocorp/rcc/common"
 	"github.com/robocorp/rcc/pretty"
@@ -17,8 +19,8 @@ var (
 
 var metricCmd = &cobra.Command{
 	Use:   "metric",
-	Short: "Send some metric to Robocorp Control Room.",
-	Long:  "Send some metric to Robocorp Control Room.",
+	Short: fmt.Sprintf("Send some metric to %s Control Room.", common.Product.Name()),
+	Long:  fmt.Sprintf("Send some metric to %s Control Room.", common.Product.Name()),
 	Run: func(cmd *cobra.Command, args []string) {
 		if common.DebugFlag() {
 			defer common.Stopwatch("Feedback metric lasted").Report()

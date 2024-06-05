@@ -4,11 +4,14 @@ import "os"
 
 const (
 	ROBOCORP_HOME_VARIABLE = `ROBOCORP_HOME`
+	ROBOCORP_NAME          = `Robocorp`
 	SEMA4AI_HOME_VARIABLE  = `SEMA4AI_HOME`
+	SEMA4AI_NAME           = `Sema4.ai`
 )
 
 type (
 	ProductStrategy interface {
+		Name() string
 		IsLegacy() bool
 		ForceHome(string)
 		HomeVariable() string
@@ -31,6 +34,10 @@ func LegacyMode() ProductStrategy {
 
 func Sema4Mode() ProductStrategy {
 	return &sema4Strategy{}
+}
+
+func (it *legacyStrategy) Name() string {
+	return ROBOCORP_NAME
 }
 
 func (it *legacyStrategy) IsLegacy() bool {
@@ -58,6 +65,10 @@ func (it *legacyStrategy) Home() string {
 
 func (it *legacyStrategy) HoloLocation() string {
 	return ExpandPath(defaultHoloLocation)
+}
+
+func (it *sema4Strategy) Name() string {
+	return SEMA4AI_NAME
 }
 
 func (it *sema4Strategy) IsLegacy() bool {

@@ -309,7 +309,7 @@ func (it *hololib) queryBlueprint(key string) bool {
 	if !pathlib.IsFile(catalog) {
 		return false
 	}
-	tempdir := filepath.Join(common.RobocorpTemp(), key)
+	tempdir := filepath.Join(common.ProductTemp(), key)
 	shadow, err := NewRoot(tempdir)
 	if err != nil {
 		return false

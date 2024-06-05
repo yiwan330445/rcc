@@ -69,7 +69,7 @@ var speedtestCmd = &cobra.Command{
 			common.DefineVerbosity(true, false, false)
 		}
 		go workingWorm(signal, timing, debug)
-		folder := common.RobocorpTemp()
+		folder := common.ProductTemp()
 		pretty.DebugNote("Speed test will force temporary %s to be %q while testing.", common.Product.HomeVariable(), folder)
 		err := os.RemoveAll(folder)
 		pretty.Guard(err == nil, 4, "Error: %v", err)

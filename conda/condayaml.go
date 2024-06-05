@@ -645,7 +645,7 @@ func (it *Environment) Diagnostics(target *common.DiagnosticStatus, production b
 		diagnose.Ok(0, "Pip dependencies in conda.yaml are ok.")
 	}
 	if floating {
-		diagnose.Warning(0, "", "Floating dependencies in Robocorp Cloud containers will be slow, because floating environments cannot be cached.")
+		diagnose.Warning(0, "", "Floating dependencies in %s Cloud containers will be slow, because floating environments cannot be cached.", common.Product.Name())
 	}
 }
 

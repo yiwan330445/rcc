@@ -88,14 +88,14 @@ func quickCleanup(dryrun bool) error {
 	downloadCleanup(dryrun)
 	if dryrun {
 		common.Log("- %v", common.HolotreeLocation())
-		common.Log("- %v", common.RobocorpTempRoot())
+		common.Log("- %v", common.ProductTempRoot())
 		return nil
 	}
 	err := safeRemove("cache", common.HolotreeLocation())
 	if err != nil {
 		return err
 	}
-	return safeRemove("temp", common.RobocorpTempRoot())
+	return safeRemove("temp", common.ProductTempRoot())
 }
 
 func cleanupAllCaches(dryrun bool) error {
@@ -139,7 +139,7 @@ func spotlessCleanup(dryrun, noCompress bool) (err error) {
 }
 
 func cleanupTemp(deadline time.Time, dryrun bool) error {
-	basedir := common.RobocorpTempRoot()
+	basedir := common.ProductTempRoot()
 	handle, err := os.Open(basedir)
 	if err != nil {
 		return err
@@ -178,7 +178,7 @@ func BugsCleanup() {
 func Cleanup(daylimit int, dryrun, quick, all, micromamba, downloads, noCompress, caches bool) (err error) {
 	defer fail.Around(&err)
 
-	lockfile := common.RobocorpLock()
+	lockfile := common.ProductLock()
 	completed := pathlib.LockWaitMessage(lockfile, "Serialized environment cleanup [robocorp lock]")
 	locker, err := pathlib.Locker(lockfile, 30000, false)
 	completed()
@@ -223,7 +223,7 @@ func Cleanup(daylimit int, dryrun, quick, all, micromamba, downloads, noCompress
 }
 
 func RemoveCurrentTemp() {
-	target := common.RobocorpTempName()
+	target := common.ProductTempName()
 	common.Debug("removing current temp %v", target)
 	common.Timeline("removing current temp: %v", target)
 	err := safeRemove("temp", target)
