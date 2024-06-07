@@ -1,5 +1,10 @@
 # rcc change log
 
+## v18.0.3 (date: 7.6.2024) WORK IN PROGRESS
+
+- Windows bugfix: icacls now applied on shared holotree location from product
+  strategy (was hardcoded before)
+
 ## v18.0.2 (date: 7.6.2024) WORK IN PROGRESS
 
 - default `settings.yaml` is now behind product strategy (each product can
