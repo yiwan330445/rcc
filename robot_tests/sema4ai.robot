@@ -40,6 +40,13 @@ Goal: See rcc commands for Sema4.ai
   Wont Have   bash
   Wont Have   fish
 
+Goal: Default settings.yaml for Sema4.ai
+  Step        build/rcc --sema4ai configuration settings --controller citests
+  Must Have   Sema4.ai default settings.yaml
+  Wont Have   assistant
+  Wont Have   branding
+  Wont Have   logo
+
 Goal: Create package.yaml environment using uv
   Step        build/rcc --sema4ai ht vars -s sema4ai --controller citests robot_tests/bare_action/package.yaml
   Must Have   RCC_ENVIRONMENT_HASH=

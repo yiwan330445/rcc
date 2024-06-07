@@ -1,5 +1,10 @@
 # rcc change log
 
+## v18.0.2 (date: 7.6.2024) WORK IN PROGRESS
+
+- default `settings.yaml` is now behind product strategy (each product can
+  have their own default settings)
+
 ## v18.0.1 (date: 5.6.2024) WORK IN PROGRESS
 
 - added company name as strategy name (dynamic name handling for user messages)

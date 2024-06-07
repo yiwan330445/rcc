@@ -17,6 +17,7 @@ type (
 		HomeVariable() string
 		Home() string
 		HoloLocation() string
+		DefaultSettingsYamlFile() string
 	}
 
 	legacyStrategy struct {
@@ -67,6 +68,10 @@ func (it *legacyStrategy) HoloLocation() string {
 	return ExpandPath(defaultHoloLocation)
 }
 
+func (it *legacyStrategy) DefaultSettingsYamlFile() string {
+	return "assets/robocorp_settings.yaml"
+}
+
 func (it *sema4Strategy) Name() string {
 	return SEMA4AI_NAME
 }
@@ -96,4 +101,8 @@ func (it *sema4Strategy) Home() string {
 
 func (it *sema4Strategy) HoloLocation() string {
 	return ExpandPath(defaultSema4HoloLocation)
+}
+
+func (it *sema4Strategy) DefaultSettingsYamlFile() string {
+	return "assets/sema4ai_settings.yaml"
 }
