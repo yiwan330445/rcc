@@ -19,14 +19,14 @@ import (
 )
 
 var (
-	anythingIgnore string
-	profilefile    string
-	profiling      *os.File
-	versionFlag    bool
-	silentFlag     bool
-	debugFlag      bool
-	traceFlag      bool
-	sema4FakeFlag  bool
+	anythingIgnore  string
+	profilefile     string
+	profiling       *os.File
+	versionFlag     bool
+	silentFlag      bool
+	debugFlag       bool
+	traceFlag       bool
+	productFakeFlag bool // this is handled in common init
 
 	excludedCommands = []string{"completion"}
 )
@@ -118,7 +118,8 @@ func init() {
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", fmt.Sprintf("config file (default is $%s/rcc.yaml)", common.Product.HomeVariable()))
 	rootCmd.PersistentFlags().StringVar(&anythingIgnore, "anything", "", "freeform string value that can be set without any effect, for example CLI versioning/reference")
 
-	rootCmd.PersistentFlags().BoolVarP(&sema4FakeFlag, "sema4ai", "", false, "Select Sema4.ai toolset strategy.")
+	rootCmd.PersistentFlags().BoolVarP(&productFakeFlag, "sema4ai", "", false, "Select Sema4.ai toolset strategy.")
+	rootCmd.PersistentFlags().BoolVarP(&productFakeFlag, "robocorp", "", false, "Select Robocorp toolset strategy.")
 	rootCmd.PersistentFlags().BoolVarP(&common.NoBuild, "no-build", "", false, "never allow building new environments, only use what exists already in hololib (also RCC_NO_BUILD=1)")
 	rootCmd.PersistentFlags().BoolVarP(&common.NoRetryBuild, "no-retry-build", "", false, "no retry in case of first environment build fails, just report error immediately")
 	rootCmd.PersistentFlags().BoolVarP(&silentFlag, "silent", "", false, "be less verbose on output (also RCC_VERBOSITY=silent)")

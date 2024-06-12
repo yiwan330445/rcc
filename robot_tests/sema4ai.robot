@@ -20,9 +20,11 @@ Sema4.ai teardown
 Goal: See rcc toplevel help for Sema4.ai
   Step        build/rcc --sema4ai --controller citests --help
   Must Have   SEMA4AI
+  Must Have   Robocorp
+  Must Have   --robocorp
+  Must Have   --sema4ai
   Must Have   completion
   Wont Have   ROBOCORP
-  Wont Have   Robocorp
   Wont Have   Robot
   Wont Have   robot
   Wont Have   bash

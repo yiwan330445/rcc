@@ -81,9 +81,17 @@ func init() {
 	args := set.Set(lowargs)
 	WarrantyVoidedFlag = set.Member(args, "--warranty-voided")
 	BundledFlag = set.Member(args, "--bundled")
-	if set.Member(args, "--sema4ai") {
+	sema4ai := set.Member(args, "--sema4ai")
+	robocorp := set.Member(args, "--robocorp")
+	switch {
+	case sema4ai && robocorp:
+		fmt.Fprintln(os.Stderr, "Fatal: rcc cannot be on both --robocorp and --sema4ai product modes at same time! Just use one of those, not both!")
+		os.Exit(99)
+	case sema4ai:
 		Product = Sema4Mode()
-	} else {
+	case robocorp:
+		Product = LegacyMode()
+	default:
 		Product = LegacyMode()
 	}
 	NoTempManagement = set.Member(args, "--no-temp-management")

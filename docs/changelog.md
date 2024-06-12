@@ -1,5 +1,11 @@
 # rcc change log
 
+## v18.0.4 (date: 12.6.2024) WORK IN PROGRESS
+
+- Additional `--robocorp` product flag added. To match `--sema4ai` flag.
+- Now using `%ProgramData%` instead of hard coded `c:\ProgramData\` in code.
+- Update on default `settings.yaml` for Sema4.ai products.
+
 ## v18.0.3 (date: 7.6.2024) WORK IN PROGRESS
 
 - Windows bugfix: icacls now applied on shared holotree location from product
