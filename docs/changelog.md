@@ -1,5 +1,11 @@
 # rcc change log
 
+## v18.0.5 (date: 14.6.2024) WORK IN PROGRESS
+
+- MAJOR breaking change: now command `rcc configuration settings` will require
+  `--defaults` flag to show defaults template. Without it, default functionality
+  now is to show effective/active settings in YAML format.
+
 ## v18.0.4 (date: 12.6.2024) WORK IN PROGRESS
 
 - Additional `--robocorp` product flag added. To match `--sema4ai` flag.

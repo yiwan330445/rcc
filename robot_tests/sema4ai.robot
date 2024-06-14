@@ -43,7 +43,7 @@ Goal: See rcc commands for Sema4.ai
   Wont Have   fish
 
 Goal: Default settings.yaml for Sema4.ai
-  Step        build/rcc --sema4ai configuration settings --controller citests
+  Step        build/rcc --sema4ai configuration settings --defaults --controller citests
   Must Have   Sema4.ai default settings.yaml
   Wont Have   assistant
   Wont Have   branding
