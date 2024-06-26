@@ -52,14 +52,12 @@ var pullCmd = &cobra.Command{
 }
 
 func init() {
-	if common.Product.IsLegacy() {
-		cloudCmd.AddCommand(pullCmd)
-		pullCmd.Flags().StringVarP(&workspaceId, "workspace", "w", "", "The workspace id to use as the download source.")
-		pullCmd.MarkFlagRequired("workspace")
-		pullCmd.Flags().StringVarP(&robotId, "robot", "r", "", "The robot id to use as the download source.")
-		pullCmd.MarkFlagRequired("robot")
-		pullCmd.Flags().StringVarP(&directory, "directory", "d", "", "The root directory to extract the robot into.")
-		pullCmd.MarkFlagRequired("directory")
-		pullCmd.Flags().BoolVarP(&forceFlag, "force", "f", false, "Remove safety nets around the unwrapping of the robot.")
-	}
+	cloudCmd.AddCommand(pullCmd)
+	pullCmd.Flags().StringVarP(&workspaceId, "workspace", "w", "", "The workspace id to use as the download source.")
+	pullCmd.MarkFlagRequired("workspace")
+	pullCmd.Flags().StringVarP(&robotId, "robot", "r", "", "The robot id to use as the download source.")
+	pullCmd.MarkFlagRequired("robot")
+	pullCmd.Flags().StringVarP(&directory, "directory", "d", "", "The root directory to extract the robot into.")
+	pullCmd.MarkFlagRequired("directory")
+	pullCmd.Flags().BoolVarP(&forceFlag, "force", "f", false, "Remove safety nets around the unwrapping of the robot.")
 }

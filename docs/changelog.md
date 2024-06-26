@@ -1,5 +1,10 @@
 # rcc change log
 
+## v18.1.1 (date: 26.6.2024) WORK IN PROGRESS
+
+- bug fix: too many commands were only visible with `--robocorp` product
+  strategy, but they are needed also in `--sema4ai` strategy
+
 ## v18.1.0 (date: 26.6.2024) WORK IN PROGRESS
 
 - new command `feedback batch` for applications to send many metrics at once

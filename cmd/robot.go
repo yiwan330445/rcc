@@ -16,7 +16,5 @@ executed either locally, or in connection to %s Control Room and tooling.`, comm
 }
 
 func init() {
-	if common.Product.IsLegacy() {
-		rootCmd.AddCommand(robotCmd)
-	}
+	rootCmd.AddCommand(robotCmd)
 }

@@ -36,12 +36,10 @@ var downloadCmd = &cobra.Command{
 }
 
 func init() {
-	if common.Product.IsLegacy() {
-		cloudCmd.AddCommand(downloadCmd)
-		downloadCmd.Flags().StringVarP(&zipfile, "zipfile", "z", "robot.zip", "The filename for the downloaded robot.")
-		downloadCmd.Flags().StringVarP(&workspaceId, "workspace", "w", "", "The workspace id to use as the download source.")
-		downloadCmd.MarkFlagRequired("workspace")
-		downloadCmd.Flags().StringVarP(&robotId, "robot", "r", "", "The robot id to use as the download source.")
-		downloadCmd.MarkFlagRequired("robot")
-	}
+	cloudCmd.AddCommand(downloadCmd)
+	downloadCmd.Flags().StringVarP(&zipfile, "zipfile", "z", "robot.zip", "The filename for the downloaded robot.")
+	downloadCmd.Flags().StringVarP(&workspaceId, "workspace", "w", "", "The workspace id to use as the download source.")
+	downloadCmd.MarkFlagRequired("workspace")
+	downloadCmd.Flags().StringVarP(&robotId, "robot", "r", "", "The robot id to use as the download source.")
+	downloadCmd.MarkFlagRequired("robot")
 }

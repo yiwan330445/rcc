@@ -24,9 +24,13 @@ Goal: See rcc toplevel help for Sema4.ai
   Must Have   --robocorp
   Must Have   --sema4ai
   Must Have   completion
+  Must Have   robot
   Wont Have   ROBOCORP
   Wont Have   Robot
-  Wont Have   robot
+  Wont Have   assistant
+  Wont Have   interactive
+  Wont Have   community
+  Wont Have   tutorial
   Wont Have   bash
   Wont Have   fish
 
@@ -37,7 +41,11 @@ Goal: See rcc commands for Sema4.ai
   Wont Have   ROBOCORP
   Wont Have   Robocorp
   Wont Have   Robot
-  Wont Have   robot
+  Must Have   robot
+  Wont Have   assistant
+  Wont Have   interactive
+  Wont Have   community
+  Wont Have   tutorial
   Wont Have   completion
   Wont Have   bash
   Wont Have   fish

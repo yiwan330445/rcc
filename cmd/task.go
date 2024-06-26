@@ -16,9 +16,7 @@ executed either locally, or in connection to %s Control Room and tooling.`, comm
 }
 
 func init() {
-	if common.Product.IsLegacy() {
-		rootCmd.AddCommand(taskCmd)
+	rootCmd.AddCommand(taskCmd)
 
-		taskCmd.PersistentFlags().BoolVarP(&common.ExternallyManaged, "externally-managed", "", false, "mark created Python environments as EXTERNALLY-MANAGED (PEP 668)")
-	}
+	taskCmd.PersistentFlags().BoolVarP(&common.ExternallyManaged, "externally-managed", "", false, "mark created Python environments as EXTERNALLY-MANAGED (PEP 668)")
 }
