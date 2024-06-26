@@ -323,7 +323,7 @@ func (it *hololib) queryBlueprint(key string) bool {
 	err = shadow.Treetop(CatalogCheck(it, shadow))
 	common.TimelineEnd()
 	if err != nil {
-		cloud.BackgroundMetric(common.ControllerIdentity(), "rcc.holotree.catalog.failure", common.Version)
+		cloud.InternalBackgroundMetric(common.ControllerIdentity(), "rcc.holotree.catalog.failure", common.Version)
 		common.Debug("Catalog check failed, reason: %v", err)
 		return false
 	}

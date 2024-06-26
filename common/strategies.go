@@ -18,6 +18,7 @@ type (
 		Home() string
 		HoloLocation() string
 		DefaultSettingsYamlFile() string
+		AllowInternalMetrics() bool
 	}
 
 	legacyStrategy struct {
@@ -42,6 +43,10 @@ func (it *legacyStrategy) Name() string {
 }
 
 func (it *legacyStrategy) IsLegacy() bool {
+	return true
+}
+
+func (it *legacyStrategy) AllowInternalMetrics() bool {
 	return true
 }
 
@@ -78,6 +83,10 @@ func (it *sema4Strategy) Name() string {
 
 func (it *sema4Strategy) IsLegacy() bool {
 	return false
+}
+
+func (it *sema4Strategy) AllowInternalMetrics() bool {
+	return !IsBundled()
 }
 
 func (it *sema4Strategy) ForceHome(value string) {

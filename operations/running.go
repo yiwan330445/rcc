@@ -372,7 +372,7 @@ func ExecuteTask(flags *RunFlags, template []string, config robot.Robot, todo ro
 		}
 		if exitcode != 0 {
 			details := fmt.Sprintf("%s_%d_%08x", common.Platform(), exitcode, uint32(exitcode))
-			cloud.BackgroundMetric(common.ControllerIdentity(), "rcc.cli.run.failure", details)
+			cloud.InternalBackgroundMetric(common.ControllerIdentity(), "rcc.cli.run.failure", details)
 		}
 	})
 	pretty.RccPointOfView(actualRun, err)

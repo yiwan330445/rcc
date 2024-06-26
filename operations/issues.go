@@ -77,7 +77,7 @@ func ReportIssue(email, robotFile, reportFile string, attachmentsFiles []string,
 	if len(issueHost) == 0 {
 		return nil
 	}
-	cloud.BackgroundMetric(common.ControllerIdentity(), "rcc.submit.issue", common.Version)
+	cloud.InternalBackgroundMetric(common.ControllerIdentity(), "rcc.submit.issue", common.Version)
 	token, err := loadToken(reportFile)
 	if err != nil {
 		return err

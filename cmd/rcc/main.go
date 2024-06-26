@@ -64,8 +64,8 @@ func TimezoneMetric() error {
 	}
 	cache.Stamps[timezonekey] = common.When + daily
 	zone := time.Now().Format("MST-0700")
-	cloud.BackgroundMetric(common.ControllerIdentity(), timezonekey, zone)
-	cloud.BackgroundMetric(common.ControllerIdentity(), oskey, common.Platform())
+	cloud.InternalBackgroundMetric(common.ControllerIdentity(), timezonekey, zone)
+	cloud.InternalBackgroundMetric(common.ControllerIdentity(), oskey, common.Platform())
 	return cache.Save()
 }
 
@@ -82,7 +82,7 @@ func ExitProtection() {
 			common.WaitLogs()
 			os.Exit(exit.Code)
 		}
-		cloud.BackgroundMetric(common.ControllerIdentity(), "rcc.panic.origin", cmd.Origin())
+		cloud.InternalBackgroundMetric(common.ControllerIdentity(), "rcc.panic.origin", cmd.Origin())
 		cloud.WaitTelemetry()
 		common.WaitLogs()
 		panic(status)

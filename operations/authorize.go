@@ -108,7 +108,7 @@ func RunAssistantClaims(seconds int, workspace string) *Claims {
 func RunRobotClaims(seconds int, workspace string) *Claims {
 	result := NewClaims("RunRobot", fmt.Sprintf(WorkspaceApi, workspace), seconds)
 	result.CapabilitySet = "run/robot"
-	cloud.BackgroundMetric(common.ControllerIdentity(), "rcc.capabilityset.runrobot", common.Version)
+	cloud.InternalBackgroundMetric(common.ControllerIdentity(), "rcc.capabilityset.runrobot", common.Version)
 	return result
 }
 

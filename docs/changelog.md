@@ -1,5 +1,11 @@
 # rcc change log
 
+## v18.1.0 (date: 26.6.2024) WORK IN PROGRESS
+
+- new command `feedback batch` for applications to send many metrics at once
+- disabling rcc internal metrics based on product strategy
+- bug fix: journal appending as more atomic operation (just one write)
+
 ## v18.0.5 (date: 14.6.2024) WORK IN PROGRESS
 
 - MAJOR breaking change: now command `rcc configuration settings` will require
