@@ -2,8 +2,8 @@ endpoints:
   cloud-api: https://api.eu1.robocorp.com/
   cloud-linking: https://cloud.robocorp.com/link/
   cloud-ui: https://cloud.robocorp.com/
-  downloads: https://downloads.robocorp.com/
-  docs: https://robocorp.com/docs/
+  downloads: https://cdn.sema4.ai/
+  docs: https://sema4.ai/docs/
   telemetry: https://sema4.ai/api/telemetry
   issues: https://telemetry.robocorp.com/
 
@@ -12,6 +12,9 @@ diagnostics-hosts:
   - github.com
   - conda.anaconda.org
   - pypi.org
+
+autoupdates:
+  templates: https://cdn.sema4.ai/templates/templates.yaml
 
 certificates:
   verify-ssl: true

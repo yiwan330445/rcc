@@ -1,5 +1,11 @@
 # rcc change log
 
+## v18.1.2 (date: 28.6.2024)
+
+- updated default settings.yaml for Sema4.ai products.
+- templates location also back in Sema4.ai settings.yaml.
+- documentation updates
+
 ## v18.1.1 (date: 26.6.2024) WORK IN PROGRESS
 
 - bug fix: too many commands were only visible with `--robocorp` product
