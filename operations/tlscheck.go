@@ -70,6 +70,9 @@ func tlsCheckHeadOnly(url string) (*tls.ConnectionState, error) {
 	if err != nil {
 		return nil, err
 	}
+	if response.TLS == nil {
+		return nil, fmt.Errorf("Strange state, could not get TLS information from URL %q and there was no error.", url)
+	}
 	return response.TLS, nil
 }
 

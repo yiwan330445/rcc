@@ -1,5 +1,10 @@
 # rcc change log
 
+## v18.1.3 (date: 2.8.2024)
+
+- bugfix: tlsCheck was giving nil TLS information without error
+- CONTRIBUTING.md -- things to note when developing rcc
+
 ## v18.1.2 (date: 28.6.2024)
 
 - updated default settings.yaml for Sema4.ai products.
