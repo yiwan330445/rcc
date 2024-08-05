@@ -129,7 +129,21 @@ func holotreeExpandEnvironment(userFiles []string, packfile, environment, worksp
 		env = append(env, fmt.Sprintf("RC_WORKSPACE_ID=%s", workspaceId))
 	}
 
-	return env
+	return removeUnwanted(env)
+}
+
+func removeUnwanted(variables []string) []string {
+	result := make([]string, 0, len(variables))
+	for _, line := range variables {
+		switch {
+		case strings.HasPrefix(line, "PS1="):
+			continue
+		default:
+			result = append(result, line)
+		}
+	}
+
+	return result
 }
 
 var holotreeVariablesCmd = &cobra.Command{

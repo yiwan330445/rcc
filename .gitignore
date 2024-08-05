@@ -20,6 +20,7 @@ __pycache__/
 build/
 output/
 tmp/
+developer/tmp/
 rcc.yaml
 rcccache.yaml
 tags

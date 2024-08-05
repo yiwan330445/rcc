@@ -1,5 +1,10 @@
 # rcc change log
 
+## v18.1.4 (date: 5.8.2024)
+
+- bugfix: when there is PS1 in holotree variables, it is now filtered out
+- developer directory with toolkit.yaml (hidden robot.yaml)
+
 ## v18.1.3 (date: 2.8.2024)
 
 - bugfix: tlsCheck was giving nil TLS information without error
