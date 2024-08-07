@@ -1,5 +1,9 @@
 # rcc change log
 
+## v18.1.5 (date: 7.8.2024)
+
+- developer directory tooling update
+
 ## v18.1.4 (date: 5.8.2024)
 
 - bugfix: when there is PS1 in holotree variables, it is now filtered out

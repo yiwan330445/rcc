@@ -9,6 +9,8 @@ Required tools are:
 - robot for testing the thing
 - zip to build template zipfiles
 
+See also: developer/README.md and developer/setup.yaml
+
 Internal requirements:
 
 - can be seen from go.mod and go.sum files in toplevel directory

@@ -1,15 +1,23 @@
 tasks:
-  test:
-    shell: python tester.py
+  robot:
+    shell: python rake.py robot
+
+devTasks:
   build:
-    shell: python builder.py
+    shell: python rake.py build
+  local:
+    shell: python rake.py local
+  tools:
+    shell: python rake.py tooling
+  toc:
+    shell: python rake.py toc
 
 environmentConfigs:
-  - setup.yaml
+- setup.yaml
 
 artifactsDir: tmp
 
 PATH:
 PYTHONPATH:
 ignoreFiles:
-  - .gitignore
+- .gitignore

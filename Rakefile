@@ -1,9 +1,11 @@
 if Rake::Win32.windows? then
   PYTHON='python'
   LS='dir'
+  WHICH='where'
 else
   PYTHON='python3'
   LS='ls -l'
+  WHICH='which -a'
 end
 
 desc 'Show latest HEAD with stats'
@@ -16,8 +18,9 @@ task :tooling do
   puts "PATH is #{ENV['PATH']}"
   puts "GOPATH is #{ENV['GOPATH']}"
   puts "GOROOT is #{ENV['GOROOT']}"
-  sh "which -a zip || echo NA"
-  sh "ls -l $HOME/go/bin"
+  sh "#{WHICH} git || echo NA"
+  sh "#{WHICH} sed || echo NA"
+  sh "#{WHICH} zip || echo NA"
 end
 
 task :noassets do
@@ -64,7 +67,12 @@ task :clean do
   sh 'rm -rf build/'
 end
 
-task :support do
+desc 'Update table of contents on docs/ directory.'
+task :toc do
+  sh "#{PYTHON} scripts/toc.py"
+end
+
+task :support => [:toc] do
   sh 'mkdir -p tmp build/linux64 build/macos64 build/windows64'
 end
 
@@ -102,7 +110,7 @@ task :robotsetup do
 end
 
 desc 'Build local, operating system specific rcc'
-task :local => [:tooling, :support, :assets] do
+task :local => [:tooling, :test] do
   sh "go build -o build/ ./cmd/..."
 end
 
