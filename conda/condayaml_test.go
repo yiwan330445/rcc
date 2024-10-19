@@ -77,7 +77,7 @@ func TestCanCreateCondaYamlFromEmptyByteSlice(t *testing.T) {
 func TestCanReadPackageCondaYaml(t *testing.T) {
 	must_be, wont_be := hamlet.Specifications(t)
 
-	sut, err := conda.ReadPackageCondaYaml("testdata/conda.yaml")
+	sut, err := conda.ReadPackageCondaYaml("testdata/conda.yaml", false)
 	must_be.Nil(err)
 	wont_be.Nil(sut)
 	must_be.Equal("", sut.Name)
@@ -87,13 +87,49 @@ func TestCanReadPackageCondaYaml(t *testing.T) {
 	must_be.Equal(1, len(sut.Pip))
 }
 
+func TestCanReadPackageDevYaml(t *testing.T) {
+	must_be, wont_be := hamlet.Specifications(t)
+
+	sut, err := conda.ReadPackageCondaYaml("testdata/case_package_dev/package.yaml", true)
+	must_be.Nil(err)
+	wont_be.Nil(sut)
+	must_be.Equal("", sut.Name)
+	must_be.Equal("", sut.Prefix)
+	must_be.Equal(3, len(sut.Conda))
+	must_be.Equal(3, len(sut.Pip))
+}
+
+func TestCanReadPackageDevNotThereYaml(t *testing.T) {
+	must_be, wont_be := hamlet.Specifications(t)
+
+	sut, err := conda.ReadPackageCondaYaml("testdata/case_package/package.yaml", true)
+	must_be.Nil(err)
+	wont_be.Nil(sut)
+	must_be.Equal("", sut.Name)
+	must_be.Equal("", sut.Prefix)
+	must_be.Equal(2, len(sut.Conda))
+	must_be.Equal(2, len(sut.Pip))
+}
+
+func TestCanReadPackageNoDevYaml(t *testing.T) {
+	must_be, wont_be := hamlet.Specifications(t)
+
+	sut, err := conda.ReadPackageCondaYaml("testdata/case_package/package.yaml", false)
+	must_be.Nil(err)
+	wont_be.Nil(sut)
+	must_be.Equal("", sut.Name)
+	must_be.Equal("", sut.Prefix)
+	must_be.Equal(2, len(sut.Conda))
+	must_be.Equal(2, len(sut.Pip))
+}
+
 func TestCanMergeTwoEnvironments(t *testing.T) {
 	must_be, wont_be := hamlet.Specifications(t)
 
-	left, err := conda.ReadPackageCondaYaml("testdata/third.yaml")
+	left, err := conda.ReadPackageCondaYaml("testdata/third.yaml", false)
 	must_be.Nil(err)
 	wont_be.Nil(left)
-	right, err := conda.ReadPackageCondaYaml("testdata/other.yaml")
+	right, err := conda.ReadPackageCondaYaml("testdata/other.yaml", false)
 	must_be.Nil(err)
 	wont_be.Nil(right)
 	sut, err := left.Merge(right)
@@ -115,14 +151,14 @@ func TestCanMergeTwoEnvironments(t *testing.T) {
 func TestCanCreateEmptyEnvironment(t *testing.T) {
 	_, wont_be := hamlet.Specifications(t)
 
-	sut := conda.SummonEnvironment("tmp/missing.yaml")
+	sut := conda.SummonEnvironment("tmp/missing.yaml", false)
 	wont_be.Nil(sut)
 }
 
 func TestCanGetLayersFromCondaYaml(t *testing.T) {
 	must_be, wont_be := hamlet.Specifications(t)
 
-	sut, err := conda.ReadPackageCondaYaml("testdata/layers.yaml")
+	sut, err := conda.ReadPackageCondaYaml("testdata/layers.yaml", false)
 	must_be.Nil(err)
 	wont_be.Nil(sut)
 

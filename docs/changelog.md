@@ -1,5 +1,10 @@
 # rcc change log
 
+## v18.2.0 (date: 21.10.2024)
+
+- support for a `--devenv` flag to install `dev-dependencies` in a `package.yaml`.
+  - supported in `rcc ht variables` and `rcc ht venv` commands.
+
 ## v18.1.7 (date: 17.10.2024)
 
 - adding support for windows development of rcc
